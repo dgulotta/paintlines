@@ -98,7 +98,7 @@ hyperbolic_symmetry_group hyperbolic_mirror_2_180(double a1, double a2,
   double z3=(cos3+cos1*cos2)/(sin1*sin2);
   double r3=sqrt(z3*z3-1.);
   hyperbolic_symmetry_group s;
-  s.trans1=new hyperbolic_rotation
+  s.trans1=new hyperbolic_reflection
     (hyperbolic_coord(sqrt((z2-1)/2.),0.,sqrt(z2+1)/2.));
   s.trans3=new hyperbolic_reflection
     (normalize(cross(hyperbolic_coord(r2,0.,z2),
@@ -109,21 +109,21 @@ hyperbolic_symmetry_group hyperbolic_mirror_2_180(double a1, double a2,
   return s;
 }
 
-hyperbolic_symmetry_group hyperbolic_rotation_180(int n1, int n2)
+hyperbolic_symmetry_group hyperbolic_180_rotation(int n1, int n2)
 {
   hyperbolic_symmetry_group s;
   s.trans1=new hyperbolic_rotation(n1,hyperbolic_coord(0.,0.,1.));
-  s.trans2=new hyperbolic_rotation_origin(-n1,hyperbolic_coord(0.,0.,1.));
+  s.trans2=new hyperbolic_rotation(-n1,hyperbolic_coord(0.,0.,1.));
   double z=cos(M_PI/n2)/sin(M_PI/n1);
   s.trans3=new hyperbolic_rotation_180(hyperbolic_coord(sqrt(z*z-1.),0,z));
   return s;
 }
 
-hyperbolic_symmetry_group hyperbolic_rotation_mirror(int n1, int n2)
+hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2)
 {
   hyperbolic_symmetry_group s;
   s.trans1=new hyperbolic_rotation(n1,hyperbolic_coord(0.,0.,1.));
-  s.trans2=new hyperbolic_rotation_origin(-n1,hyperbolic_coord(0.,0.,1.));
+  s.trans2=new hyperbolic_rotation(-n1,hyperbolic_coord(0.,0.,1.));
   double z=cos(M_PI_2/n2)/sin(M_PI/n1);
   s.trans3=new hyperbolic_reflection
     (hyperbolic_coord(-z*cos(M_PI/n1),0,sqrt(z*z-1.)));

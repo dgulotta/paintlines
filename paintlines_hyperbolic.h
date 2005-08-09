@@ -27,6 +27,7 @@ using namespace std;
 
 struct hyperbolic_coord
 {
+  hyperbolic_coord() {}
   hyperbolic_coord(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {}
   double x;
   double y;
@@ -106,7 +107,7 @@ inline hyperbolic_coord & operator /= (hyperbolic_coord &a,double b)
   return a;
 }
 
-inline hyperbolic_coord & operator += (hyperbolic_coord &a
+inline hyperbolic_coord & operator += (hyperbolic_coord &a,
 				       const hyperbolic_coord &b)
 {
   a.x+=b.x;
@@ -115,7 +116,7 @@ inline hyperbolic_coord & operator += (hyperbolic_coord &a
   return a;
 }
 
-inline hyperbolic_coord & operator -= (hyperbolic_coord &a
+inline hyperbolic_coord & operator -= (hyperbolic_coord &a,
 				       const hyperbolic_coord &b)
 {
   a.x-=b.x;
@@ -206,7 +207,7 @@ class hyperbolic_glide_reflection : public hyperbolic_transformation
     return ans;
   }
  private:
-  hyperbolic_rotatation_180 r;
+  hyperbolic_rotation_180 r;
 };
 
 class hyperbolic_symmetry_group
@@ -218,13 +219,17 @@ class hyperbolic_symmetry_group
 							  double a3);
   friend hyperbolic_symmetry_group hyperbolic_mirror_2_180
     (double a1, double a2,double a3);
-  friend hyperbolic_symmetry_group hyperbolic_rotation_180(int n1, int n2);
-  friend hyperbolic_symmetry_group hyperbolic_rotation_mirror(int n1, int n2);
+  friend hyperbolic_symmetry_group hyperbolic_180_rotation(int n1, int n2);
+  friend hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2);
+  friend hyperbolic_symmetry_group hyperbolic_3rotation(int n);
+  friend hyperbolic_symmetry_group hyperbolic_glide_180(double a1, double a2);
+  friend hyperbolic_symmetry_group hyperbolic_glide_mirror
+    (double a1, double a2);
  public:
   hyperbolic_symmetry_group(hyperbolic_symmetry_group &s) {
     trans1=s.trans1;
     trans2=s.trans2;
-    trans3.s.trans3;
+    trans3=s.trans3;
     s.trans1=NULL;
     s.trans2=NULL;
     s.trans3=NULL;
@@ -233,7 +238,7 @@ class hyperbolic_symmetry_group
     if(this!=&s) {
       trans1=s.trans1;
       trans2=s.trans2;
-      trans3.s.trans3;
+      trans3=s.trans3;
       s.trans1=NULL;
       s.trans2=NULL;
       s.trans3=NULL;
@@ -257,11 +262,10 @@ hyperbolic_symmetry_group hyperbolic_3_180(double a1, double a2, double a3);
 hyperbolic_symmetry_group hyperbolic_2mirror_180(int n1, double a2, double a3);
 hyperbolic_symmetry_group hyperbolic_mirror_2_180(double a1, double a2,
 						  double a3);
-hyperbolic_symmetry_group hyperbolic_rotation_180(int n1, int n2);
-hyperbolic_symmetry_group hyperbolic_rotation_mirror(int n1, int n2);
+hyperbolic_symmetry_group hyperbolic_180_rotation(int n1, int n2);
+hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2);
 hyperbolic_symmetry_group hyperbolic_3rotation(int n);
 hyperbolic_symmetry_group hyperbolic_glide_180(double a1, double a2);
-hyperbolic_symmetry_group hyperbolic_glide_mirror(double a1, double a2,
-						  double a3);
+hyperbolic_symmetry_group hyperbolic_glide_mirror(double a1, double a2);
 
 #endif
