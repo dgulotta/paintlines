@@ -154,7 +154,7 @@ class hyperbolic_transformation
 {
  public:
   virtual ~hyperbolic_transformation() {}
-  virtual hyperbolic_coord operator () (const hyperbolic_coord &c) const;
+  virtual hyperbolic_coord operator () (const hyperbolic_coord &c) const {};
 };
 
 class hyperbolic_reflection : public hyperbolic_transformation

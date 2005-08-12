@@ -57,6 +57,7 @@ void paintlineswidget::randomize(int xtiles, int ytiles)
   int size=get_size();
   QImage myimage(xtiles*size,ytiles*size,32);
   int halfsize=size/2, size1=size-1, halfsize1=halfsize-1, i,j,k,l;
+  int qsize=halfsize/2, sizeq1=size1+halfsize-qsize, sizesq=size*size;
   switch(sg) {
   case SYM_CMM:
   case SYM_P2:
@@ -75,6 +76,48 @@ void paintlineswidget::randomize(int xtiles, int ytiles)
 	    myimage.setPixel(i+k*size,size1-j+l*size,
 			     qRgb(red[index],green[index],blue[index]));
 	    index=((z&8)?i:(size1-i))+size*j;
+	    myimage.setPixel(size1-i+k*size,size1-j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	  }
+      }
+    break;
+  case SYM_PMG:
+    for(k=0;k<xtiles;k++)
+      for(l=0;l<ytiles;l++) {
+	int z=rand();
+	for(i=0;i<halfsize;i++)
+	  for(j=0;j<halfsize;j++) {
+	    int index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
+	    myimage.setPixel(i+k*size,j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	    index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
+	    myimage.setPixel(size1-i+k*size,j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	    index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
+	    myimage.setPixel(i+k*size,size1-j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	    index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
+	    myimage.setPixel(size1-i+k*size,size1-j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	  }
+      }
+    break;
+  case SYM_PGG:
+     for(k=0;k<xtiles;k++)
+      for(l=0;l<ytiles;l++) {
+	int z=rand();
+	for(i=0;i<halfsize;i++)
+	  for(j=0;j<halfsize;j++) {
+	    int index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*(j+qsize),sizesq);
+	    myimage.setPixel(i+k*size,j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	    index=mod(((z&2)?(i+qsize):(sizeq1-i))+size*(j+qsize),sizesq);
+	    myimage.setPixel(size1-i+k*size,j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	    index=mod(((z&4)?(i+qsize):(sizeq1-i))+size*(j+qsize),sizesq);
+	    myimage.setPixel(i+k*size,size1-j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	    index=mod(((z&8)?(i+qsize):(sizeq1-i))+size*(j+qsize),sizesq);
 	    myimage.setPixel(size1-i+k*size,size1-j+l*size,
 			     qRgb(red[index],green[index],blue[index]));
 	  }
