@@ -41,29 +41,25 @@ void randomcauchy(double &x, double &y, double var)
   y+=r*sin(z);
 }
 
-void paintlines::paint(int sz, int n, symgroup sym)
+void paintlines::paint(int sz, symgroup sym)
 {
-  size=sz;
+  painter::paint(sz,sym);
   last.resize(size*size);
   alpha.resize(size*size);
   red.resize(size*size);
   green.resize(size*size);
   blue.resize(size*size);
-  halfsize=size/2;
-  size1=size-1;
-  halfsize1=halfsize-1;
   int z;
   double d1, d2;
-  sg=sym;
-  t=n;
+  t=ncolors;
   fill(red.begin(),red.end(),0);
   fill(green.begin(),green.end(),0);
   fill(blue.begin(),blue.end(),0);
   fill(last.begin(),last.end(),-1);
-  red_brushes.resize(n);
-  green_brushes.resize(n);
-  blue_brushes.resize(n);
-  pastel.resize(n);
+  red_brushes.resize(ncolors);
+  green_brushes.resize(ncolors);
+  blue_brushes.resize(ncolors);
+  pastel.resize(ncolors);
   unsigned char temp;
   while(t--) {
     z=rand();

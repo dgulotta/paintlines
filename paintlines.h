@@ -23,22 +23,10 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <memory.h>
-#include <vector>
-
-using std::vector;
-
-inline int mod(int x, int y) {
-  int ans=x%y;
-  return (ans<0)?(ans+y):ans;
-}
+#include "painter.h"
 
 void randomnormal(double &x, double &y, double var);
 void randomcauchy(double &x, double &y, double var);
-
-enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P3LM, SYM_P3ML,
-	       SYM_P4, SYM_P4G, SYM_P4M, SYM_P6, SYM_P6M, SYM_PG_O, SYM_PGG,
-	       SYM_PM, SYM_PMG, SYM_PMM, SYM_CM_2, SYM_P4M_2,SYM_PG_D};
 
 enum ruletype {RULE_SMOOTHLINE2_BEADS, RULE_CLUSTER, RULE_CLUSTER2,
 	       RULE_SMOOTHLINE2};
@@ -51,12 +39,12 @@ struct paintrule
   bool operator < (int n) {return weight<n;}
 };
 
-class paintlines
+class paintlines : public painter
 {
  public:
-  paintlines() : size(0) {}
+  paintlines() : ncolors(0) {}
   ~paintlines() {}
-  void paint(int sz, int n, symgroup sym);
+  void paint(int sz, symgroup sym);
   void set_rules(const vector<paintrule> &r) {
     rules=r;
     int i;
@@ -71,11 +59,8 @@ class paintlines
   const vector<unsigned char> & get_green() {return green;}
   const vector<unsigned char> & get_blue() {return blue;}
   symgroup get_symgroup() {return sg;}
-  int get_size() {return size;}
+  void set_ncolors(int n) {ncolors=n;}
  private:
-  vector<unsigned char> red;
-  vector<unsigned char> green;
-  vector<unsigned char> blue;
   vector<unsigned char> red_brushes;
   vector<unsigned char> green_brushes;
   vector<unsigned char> blue_brushes;
@@ -83,12 +68,8 @@ class paintlines
   vector<unsigned char> alpha;
   vector<bool> pastel;
   vector<paintrule> rules;
-  int size;
-  int halfsize;
-  int size1;
-  int halfsize1;
   int t;
-  symgroup sg;
+  int ncolors;
   void drawpixel(int x, int y, unsigned char myalpha);
   void drawpixelsymmetric(int x, int y,
 			  unsigned char myalpha);
