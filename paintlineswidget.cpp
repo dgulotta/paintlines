@@ -55,7 +55,8 @@ void paintlineswidget::randomize(int xtiles, int ytiles)
   const vector<unsigned char> green=get_green();
   const vector<unsigned char> blue=get_blue();
   int size=get_size();
-  QImage myimage(xtiles*size,ytiles*size,32);
+  int width=xtiles*size, height=ytiles*size;
+  QImage myimage(width,height,32);
   int halfsize=size/2, size1=size-1, halfsize1=halfsize-1, i,j,k,l;
   int qsize=halfsize/2, sizeq1=size1+halfsize-qsize, sizesq=size*size;
   switch(sg) {
@@ -155,6 +156,36 @@ void paintlineswidget::randomize(int xtiles, int ytiles)
 	    myimage.setPixel(size1-j+k*size,i+l*size,
 			     qRgb(red[index],green[index],blue[index]));
 	  }
+      }
+    break;
+  case SYM_PMM:
+  case SYM_P4M:
+    for(k=0;k<xtiles;k++)
+      for(l=0;l<ytiles;l++) {
+	int z=rand();
+	for(i=0;i<halfsize;i++) {
+	  int end=halfsize+i;
+	  for(j=halfsize1-i;j<=end;j++) {
+	    int index=(z&1)?(i+size*j):
+	      mod((halfsize1-j)+size*(halfsize1-i),sizesq);
+	    myimage.setPixel(i+k*size,j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	    index=(z&1)?((size1-i)+size*j):
+	      mod((halfsize1-j)+size*(i-halfsize),sizesq);
+	    myimage.setPixel((size1-i)+k*size,j+l*size,
+			     qRgb(red[index],green[index],blue[index]));
+	    index=(z&2)?(i+size*j):
+	      mod((halfsize1-j)+size*(halfsize1-i),sizesq);
+	    myimage.setPixel(mod((halfsize1-j)+k*size,width),
+			     mod((halfsize1-i)+l*size,height),
+			     qRgb(red[index],green[index],blue[index]));
+	    index=(z&2)?((size1-i)+size*j):
+	      mod((halfsize1-j)+size*(i-halfsize),sizesq);
+	    myimage.setPixel(mod((halfsize1-j)+k*size,width),
+			     mod((i-halfsize)+l*size,height),
+			     qRgb(red[index],green[index],blue[index]));
+	  }
+	}
       }
   }
   mypixmap.convertFromImage(myimage);
