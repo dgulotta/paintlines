@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2003-2005 by Daniel Gulotta                             *
+ *   Copyright (C) 2005 by Daniel Gulotta                             *
  *   dgulotta@mit.edu                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,58 +18,25 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _PAINTER_H
-#define _PAINTER_H
+#ifndef _PAINTCLOUDS_H
+#define _PAINTCLOUDS_H
 
-#include <vector>
-using std::vector;
+#include "painter.h"
 
-inline int mod(int x, int y) 
-{
-  int ans=x%y;
-  return (ans<0)?(ans+y):ans;
-}
-
-inline unsigned char colorchop(double x)
-{
-  if(x<0.) return 0;
-  else if(x>255.) return 255;
-  else return (unsigned char) x;
-}
-
-enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P3LM, SYM_P3ML,
-	       SYM_P4, SYM_P4G, SYM_P4M, SYM_P6, SYM_P6M, SYM_PG_O, SYM_PGG,
-	       SYM_PM, SYM_PMG, SYM_PMM, SYM_CM_2, SYM_P4M_2};
-
-class painter
+class paintclouds : public painter
 {
  public:
-  painter() : sg(SYM_P1), size(0), halfsize(0), size1(-1), halfsize1(-1) {}
-  void paint(int sz, symgroup sym) {
-    size=sz;
-    size1=size-1;
-    halfsize=size/2;
-    halfsize1=halfsize-1;
-    sg=sym;
-    red.resize(size*size);
-    green.resize(size*size);
-    blue.resize(size*size);
-  }
-  int get_size() {return size;}
-  void randomize(int xtiles, int ytiles, vector<unsigned char> &r,
-		 vector<unsigned char> &g, vector<unsigned char> &b);
- protected:
-  inline unsigned char & mi(vector<unsigned char> &v,int i, int j) {
-    return v[mod(i,size)+size*mod(j,size)];
-  }
-  vector<unsigned char> red;
-  vector<unsigned char> green;
-  vector<unsigned char> blue;
-  symgroup sg;
-  int size;
-  int halfsize;
-  int size1;
-  int halfsize1;
+  void paint(int size, symgroup sg);
+  void set_colors(unsigned char r1, unsigned char b1, unsigned char g1,
+		  unsigned char r2, unsigned char b2, unsigned char g2,
+		  unsigned char r3, unsigned char b3, unsigned char g3)
+    {red1=r1;red2=r2;red3=r3;blue1=b1;blue2=b2;blue3=b3;green1=g1;green2=g2;
+    green3=g3;}
+ private:
+  void paint_border(int x1, int y1, int x2, int y2);
+  void paint_border0(int x1, int y1, int x2, int y2);
+  void paint_triangle(int x1, int y1, int x2, int y2, int x3, int y3);
+  unsigned char red1, red2, red3, blue1, blue2, blue3, green1, green2, green3;
 };
 
 #endif

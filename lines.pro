@@ -6,13 +6,15 @@ CONFIG	+= qt warn_on release
 HEADERS	+= paintlines.h \
 	paintlines_hyperbolic.h \
 	paintlineswidget.h \
-	painter.h
+	painter.h \
+	paintclouds.h
 
 SOURCES	+= paintlines.cpp \
 	paintlines_hyperbolic.cpp \
 	main.cpp \
 	paintlineswidget.cpp \
-	painter.cpp
+	painter.cpp \
+	paintclouds.cpp
 
 FORMS	= paintform.ui
 

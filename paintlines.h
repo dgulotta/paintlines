@@ -21,8 +21,6 @@
 #ifndef _PAINTLINES_H_
 #define _PAINTLINES_H_
 
-#include <stdlib.h>
-#include <math.h>
 #include "painter.h"
 
 void randomnormal(double &x, double &y, double var);

@@ -20,8 +20,15 @@
 
 #include "paintlines.h"
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 
 using std::lower_bound;
+using std::cos;
+using std::sin;
+using std::log;
+using std::sqrt;
+using std::rand;
 
 void randomnormal(double &x, double &y, double var)
 {
@@ -46,9 +53,6 @@ void paintlines::paint(int sz, symgroup sym)
   painter::paint(sz,sym);
   last.resize(size*size);
   alpha.resize(size*size);
-  red.resize(size*size);
-  green.resize(size*size);
-  blue.resize(size*size);
   int z;
   double d1, d2;
   t=ncolors;
@@ -278,10 +282,6 @@ void paintlines::drawpixelsymmetric(int x, int y, unsigned char myalpha)
     drawpixel(size1-y,size1-x,myalpha);
     drawpixel(x+y,size1-y,myalpha);
     drawpixel(size1-x,x+y,myalpha);
-    break;
-  case SYM_PG_D:
-    drawpixel(x,y,myalpha);
-    drawpixel(y+halfsize,x+halfsize,myalpha);
     break;
   case SYM_CM_2:
     drawpixel(x,y,myalpha);
