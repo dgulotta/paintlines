@@ -68,11 +68,15 @@ class paintlines : public painter
   vector<paintrule> rules;
   int t;
   int ncolors;
-  void drawpixel(int x, int y, unsigned char myalpha);
-  void drawpixelsymmetric(int x, int y,
-			  unsigned char myalpha);
-  void drawdotsymmetric(int x, int y, int radius,
-			double brightness);
+  unsigned char tempalpha;
+  void (painter::*drawfunc)(paintlines &,void (paintlines::*)(int,int),
+			    int,int);
+  void drawpixel(int x, int y);
+  inline void drawpixelsymmetric(int x, int y, unsigned char myalpha) {
+    tempalpha=myalpha;
+    (((painter *)this)->*drawfunc)(*this,&paintlines::drawpixel,x,y);
+  }
+  void drawdotsymmetric(int x, int y, int radius, double brightness);
   void drawcluster(double x, double y, double var, int maxdepth);
   void drawcluster2(int x, int y, int d);
   void drawcluster3(int x, int y, int d);

@@ -51,6 +51,7 @@ void randomcauchy(double &x, double &y, double var)
 void paintlines::paint(int sz, symgroup sym)
 {
   painter::paint(sz,sym);
+  drawfunc=get_sym_func<paintlines>();
   last.resize(size*size);
   alpha.resize(size*size);
   int z;
@@ -143,11 +144,11 @@ void paintlines::handle_rule(ruletype rt)
   }
 }
 
-void paintlines::drawpixel(int x, int y, unsigned char myalpha)
+void paintlines::drawpixel(int x, int y)
 {
   int i=mod(x,size)+mod(y,size)*size;
   if(last[i]==t) {
-    if(myalpha>alpha[i]) alpha[i]=myalpha;
+    if(tempalpha>alpha[i]) alpha[i]=tempalpha;
   }
   else {
     if(last[i]!=-1) {
@@ -164,139 +165,7 @@ void paintlines::drawpixel(int x, int y, unsigned char myalpha)
       }
     }
     last[i]=t;
-    alpha[i]=myalpha;
-  }
-}
-
-void paintlines::drawpixelsymmetric(int x, int y, unsigned char myalpha)
-{
-  switch(sg) {
-  case SYM_P1:
-    drawpixel(x,y,myalpha);
-    break;
-  case SYM_P2:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    break;
-  case SYM_PM:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x,y,myalpha);
-    break;
-  case SYM_CM:
-    drawpixel(x,y,myalpha);
-    drawpixel(y,x,myalpha);
-    break;
-  case SYM_PG_O:
-    drawpixel(x,y,myalpha);
-    drawpixel(x+halfsize,size1-y,myalpha);
-    break;
-  case SYM_P4:
-    drawpixel(x,y,myalpha);
-    drawpixel(y,size1-x,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    drawpixel(size1-y,x,myalpha);
-    break;
-  case SYM_PMM:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x,y,myalpha);
-    drawpixel(x,size1-y,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    break;
-  case SYM_CMM:
-    drawpixel(x,y,myalpha);
-    drawpixel(y,x,myalpha);
-    drawpixel(size1-y,size1-x,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    break;
-  case SYM_PMG:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x,y,myalpha);
-    drawpixel(x+halfsize,size1-y,myalpha);
-    drawpixel(halfsize1-x,size1-y,myalpha);
-    break;
-  case SYM_PGG:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x,y+halfsize,myalpha);
-    drawpixel(x+halfsize,size1-y,myalpha);
-    drawpixel(halfsize1-x,halfsize1-y,myalpha);
-    break;
-  case SYM_P4G:
-    drawpixel(x,y,myalpha);
-    drawpixel(y,size1-x,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    drawpixel(size1-y,x,myalpha);
-    drawpixel(halfsize1-y,halfsize1-x,myalpha);
-    drawpixel(x+halfsize,halfsize1-y,myalpha);
-    drawpixel(y+halfsize,x+halfsize,myalpha);
-    drawpixel(halfsize1-x,y+halfsize,myalpha);
-    break;
-  case SYM_P4M:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x,y,myalpha);
-    drawpixel(x,size1-y,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    drawpixel(y,x,myalpha);
-    drawpixel(size1-y,x,myalpha);
-    drawpixel(y,size1-x,myalpha);
-    drawpixel(size1-y,size1-x,myalpha);
-    break;
-  case SYM_P3:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x-y,x,myalpha);
-    drawpixel(y,size1-x-y,myalpha);
-    break;
-  case SYM_P3LM:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x-y,x,myalpha);
-    drawpixel(y,size1-x-y,myalpha);
-    drawpixel(size1-y,size1-x,myalpha);
-    drawpixel(size1-x,x+y,myalpha);
-    drawpixel(x+y,size1-y,myalpha);
-    break;
-  case SYM_P3ML:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x-y,x,myalpha);
-    drawpixel(y,size1-x-y,myalpha);
-    drawpixel(y,x,myalpha);
-    drawpixel(x,size1-x-y,myalpha);
-    drawpixel(size1-x-y,y,myalpha);
-    break;
-  case SYM_P6:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x-y,x,myalpha);
-    drawpixel(y,size1-x-y,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    drawpixel(x+y,size1-x,myalpha);
-    drawpixel(size1-y,x+y,myalpha);
-    break;
-  case SYM_P6M:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x-y,x,myalpha);
-    drawpixel(y,size1-x-y,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    drawpixel(x+y,size1-x,myalpha);
-    drawpixel(size1-y,x+y,myalpha);
-    drawpixel(y,x,myalpha);
-    drawpixel(size1-x-y,y,myalpha);
-    drawpixel(x,size1-x-y,myalpha);
-    drawpixel(size1-y,size1-x,myalpha);
-    drawpixel(x+y,size1-y,myalpha);
-    drawpixel(size1-x,x+y,myalpha);
-    break;
-  case SYM_CM_2:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-y,size1-x,myalpha);
-    break;
-  case SYM_P4M_2:
-    drawpixel(x,y,myalpha);
-    drawpixel(size1-x,y,myalpha);
-    drawpixel(x,size1-y,myalpha);
-    drawpixel(size1-x,size1-y,myalpha);
-    drawpixel(halfsize1-y,halfsize1-x,myalpha);
-    drawpixel(y+halfsize,halfsize1-x,myalpha);
-    drawpixel(halfsize1-y,x+halfsize,myalpha);
-    drawpixel(y+halfsize,x+halfsize,myalpha);
-    break;
+    alpha[i]=tempalpha;
   }
 }
 

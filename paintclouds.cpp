@@ -3,20 +3,15 @@
 void paintclouds::paint(int sz, symgroup sym)
 {
   painter::paint(sy,sym);
+  drawfunc=get_sym_func<paintclouds>();
   switch(sym) {
-  case SYM_P2:
-    red[0]=((int)red1+red2+red3)/3;
-    green[0]=((int)green1+green2+green3)/3;
-    blue[0]=((int)blue1+blue2+blue3)/3;
-    red[halfsize]=red1;
-    green[halfsize]=green1;
-    blue[halfsize]=blue1;
-    red[halfsize*size]=red2;
-    green[halfsize*size]=green2;
-    blue[halfsize*size]=blue2;
-    red[halfsize*(size+1)]=red3;
-    green[halfsize*(size+1)]=green3;
-    blue[halfsize*(size+1)]=blue3;
+  case SYM_P2_O:
+    drawpixelsymmetric(0,0,((int)red1+red2+red3)/3,
+		       ((int)green1+green2+green3)/3,
+		       ((int)blue1+blue2+blue3)/3);
+    drawpixelsymmetric(halfsize,0,red1,green1,blue1);
+    drawpixelsymmetric(0,halfsize,red2,green2,blue2);
+    drawpixelsymmetric(halfsize,halfsize,red3,blue3,green3);
     paint_border(0,0,0,halfsize);
     paint_border(0,0,halfsize,0);
     paint_border(size,0,halfsize,halfsize);
@@ -40,12 +35,10 @@ void paintclouds::paint_border(int x1, int y1, int x2, int y2)
   int mx=(x1+x2)/2;
   int my=(y1+y2)/2;
   if(!((mx==x1||mx==x2)&&(my==y1||my==y2))) {
-    mi(red,mx,my)=colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+
-			      /*random*/);
-    mi(green,mx,my)=colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+
-			      /*random*/);
-    mi(blue,mx,my)=colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+
-			      /*random*/);
+    drawpixelsymmetric
+      (mx,my,colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+/*random*/),
+       colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+/*random*/)
+       colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+/*random*/);
     paint_border(x1,x2,mx,my);
     paint_border(mx,my,x2,y2);
   }
