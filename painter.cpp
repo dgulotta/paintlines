@@ -65,13 +65,13 @@ switch(sg) {
 	    int index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
 	    int index2=i+k*size+width*(j+l*size);
 	    PAINTER_COPY_RGB
-	    index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
+	    index=mod(((z&2)?(i+qsize):(sizeq1-i))+size*j,sizesq);
 	    index2=size1-i+k*size+width*(j+l*size);
 	    PAINTER_COPY_RGB
-	    index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
+	    index=mod(((z&4)?(i+qsize):(sizeq1-i))+size*j,sizesq);
 	    index2=i+k*size+width*(size1-j+l*size);
 	    PAINTER_COPY_RGB
-	    index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
+	    index=mod(((z&8)?(i+qsize):(sizeq1-i))+size*j,sizesq);
 	    index2=size1-i+k*size+width*(size1-j+l*size);
 	    PAINTER_COPY_RGB
 	  }
