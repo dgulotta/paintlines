@@ -4,13 +4,13 @@ LANGUAGE	= C++
 CONFIG	+= qt warn_on release
 
 HEADERS	+= paintlines.h \
-	paintlines_hyperbolic.h \
+	hyperbolic_painter.h \
 	paintlineswidget.h \
 	painter.h \
 	paintclouds.h
 
 SOURCES	+= paintlines.cpp \
-	paintlines_hyperbolic.cpp \
+	hyperbolic_painter.cpp \
 	main.cpp \
 	paintlineswidget.cpp \
 	painter.cpp \

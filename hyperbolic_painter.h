@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <cmath>
+#include <memory>
 using namespace std;
 
 struct hyperbolic_coord
@@ -230,31 +231,30 @@ class hyperbolic_symmetry_group
     trans1=s.trans1;
     trans2=s.trans2;
     trans3=s.trans3;
-    s.trans1=NULL;
-    s.trans2=NULL;
-    s.trans3=NULL;
   }
   hyperbolic_symmetry_group & operator = (hyperbolic_symmetry_group &s) {
     if(this!=&s) {
       trans1=s.trans1;
       trans2=s.trans2;
       trans3=s.trans3;
-      s.trans1=NULL;
-      s.trans2=NULL;
-      s.trans3=NULL;
     }
     return s;
   }
-  ~hyperbolic_symmetry_group() {
-    if(trans1) delete trans1;
-    if(trans2) delete trans2;
-    if(trans3) delete trans3;
+  template<typename T>
+  void symmetrize(T &t,void (T::*p)(hyperbolic_coord), hyperbolic_coord &hc, 
+		  int depth) {
+    (T.*p)(hc);
+    if(depth) {
+      symmetrize(t,p,(*trans1)(hc),depth-1);
+      symmetrize(t,p,(*trans2)(hc),depth-1);
+      symmetrize(t,p,(*trans3)(hc),depth-1);
+    }
   }
  private:
   hyperbolic_symmetry_group() {}
-  hyperbolic_transformation *trans1;
-  hyperbolic_transformation *trans2;
-  hyperbolic_transformation *trans3;
+  auto_ptr<hyperbolic_transformation> trans1;
+  auto_ptr<hyperbolic_transformation> trans2;
+  auto_ptr<hyperbolic_transformation> trans3;
 };
 
 hyperbolic_symmetry_group hyperbolic_3mirror(int n1, int n2, int n3);
@@ -267,5 +267,24 @@ hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2);
 hyperbolic_symmetry_group hyperbolic_3rotation(int n);
 hyperbolic_symmetry_group hyperbolic_glide_180(double a1, double a2);
 hyperbolic_symmetry_group hyperbolic_glide_mirror(double a1, double a2);
+
+class hyperbolic_painter
+{
+ public:
+  hyperbolic_painter() : size(0), sg(NULL) {};
+  void paint(int sz, hyperbolic_symmetry_group &sym) {
+    size=sz;
+    sg=sym;
+    red.resize(size*size);
+    green.resize(size*size);
+    blue.resize(size*size);
+  }
+ protected:
+  int size;
+  vector<unsigned char> red;
+  vector<unsigned char> green;
+  vector<unsigned char> blue;
+  hyperbolic_symmetry_group sg;
+};
 
 #endif

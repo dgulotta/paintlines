@@ -175,8 +175,8 @@ void paintlines::drawdotsymmetric(int x, int y, int radius,double brightness)
   double num, denom;
   switch(sg) {
   case SYM_P3:
-  case SYM_P3ML:
-  case SYM_P3LM:
+  case SYM_P3M1:
+  case SYM_P31M:
   case SYM_P6:
   case SYM_P6M:
     denom=brightness*4.33;

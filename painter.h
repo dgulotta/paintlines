@@ -37,10 +37,10 @@ inline unsigned char colorchop(double x)
   else return (unsigned char) x;
 }
 
-enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P3LM, SYM_P3ML,
+enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
 	       SYM_P4, SYM_P4G, SYM_P4M, SYM_P6, SYM_P6M, SYM_PG, SYM_PGG,
 	       SYM_PM, SYM_PMG, SYM_PMM, SYM_CM_O, SYM_CMM_O, SYM_P1_O,
-	       SYM_P2_O, SYM_P3_O, SYM_P3LM_O, SYM_P3ML_O, SYM_P4_O, SYM_P4G_O,
+	       SYM_P2_O, SYM_P3_O, SYM_P31M_O, SYM_P3M1_O, SYM_P4_O, SYM_P4G_O,
 	       SYM_P4M_O, SYM_P6_O, SYM_P6M_O, SYM_PG_O, SYM_PGG_O, SYM_PM_O,
 	       SYM_PMG_O, SYM_PMM_O, SYM_CM_2,SYM_P4M_2};
 
@@ -67,8 +67,6 @@ class painter
   }
   template <typename T>
   void symmetrize(T &t, void (T::*p)(int,int), int x, int y);
-  //template <typename T>
-  //void (*(g(T &,(painter::*)(int,int))))() {}
   template <typename T>
   void (painter::*(get_sym_func()))(T &, void (T::*)(int,int),int, int);
   template <typename T>
@@ -98,9 +96,9 @@ class painter
   template<typename T>
   void symmetrize_p3(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
-  void symmetrize_p3lm(T &t, void (T::*p)(int,int), int x, int y);
+  void symmetrize_p31m(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
-  void symmetrize_p3ml(T &t, void (T::*p)(int,int), int x, int y);
+  void symmetrize_p3m1(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
   void symmetrize_p6(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
@@ -132,9 +130,9 @@ class painter
   template<typename T>
   void symmetrize_p3_o(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
-  void symmetrize_p3lm_o(T &t, void (T::*p)(int,int), int x, int y);
+  void symmetrize_p31m_o(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
-  void symmetrize_p3ml_o(T &t, void (T::*p)(int,int), int x, int y);
+  void symmetrize_p3m1_o(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
   void symmetrize_p6_o(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
@@ -231,7 +229,7 @@ void painter::symmetrize(T &t, void (T::*p)(int,int), int x, int y)
     (t.*p)(size1-x-y,x);
     (t.*p)(y,size1-x-y);
     break;
-  case SYM_P3LM:
+  case SYM_P31M:
     (t.*p)(x,y);
     (t.*p)(size1-x-y,x);
     (t.*p)(y,size1-x-y);
@@ -239,7 +237,7 @@ void painter::symmetrize(T &t, void (T::*p)(int,int), int x, int y)
     (t.*p)(size1-x,x+y);
     (t.*p)(x+y,size1-y);
     break;
-  case SYM_P3ML:
+  case SYM_P3M1:
     (t.*p)(x,y);
     (t.*p)(size1-x-y,x);
     (t.*p)(y,size1-x-y);
@@ -343,7 +341,7 @@ void painter::symmetrize(T &t, void (T::*p)(int,int), int x, int y)
     (t.*p)(size-x-y,x);
     (t.*p)(y,size-x-y);
     break;
-  case SYM_P3LM_O:
+  case SYM_P31M_O:
     (t.*p)(x,y);
     (t.*p)(size-x-y,x);
     (t.*p)(y,size-x-y);
@@ -351,7 +349,7 @@ void painter::symmetrize(T &t, void (T::*p)(int,int), int x, int y)
     (t.*p)(size-x,x+y);
     (t.*p)(x+y,size-y);
     break;
-  case SYM_P3ML_O:
+  case SYM_P3M1_O:
     (t.*p)(x,y);
     (t.*p)(size-x-y,x);
     (t.*p)(y,size-x-y);
@@ -428,10 +426,10 @@ void (painter::*(painter::get_sym_func()))(T &, void (T::*)(int,int),int, int)
     return &painter::symmetrize_p4m;
   case SYM_P3:
     return &painter::symmetrize_p3;
-  case SYM_P3LM:
-    return &painter::symmetrize_p3lm;
-  case SYM_P3ML:
-    return &painter::symmetrize_p3ml;
+  case SYM_P31M:
+    return &painter::symmetrize_p31m;
+  case SYM_P3M1:
+    return &painter::symmetrize_p3m1;
   case SYM_P6:
     return &painter::symmetrize_p6;
   case SYM_P6M:
@@ -462,10 +460,10 @@ void (painter::*(painter::get_sym_func()))(T &, void (T::*)(int,int),int, int)
     return &painter::symmetrize_p4m_o;
   case SYM_P3_O:
     return &painter::symmetrize_p3_o;
-  case SYM_P3LM_O:
-    return &painter::symmetrize_p3lm_o;
-  case SYM_P3ML_O:
-    return &painter::symmetrize_p3ml_o;
+  case SYM_P31M_O:
+    return &painter::symmetrize_p31m_o;
+  case SYM_P3M1_O:
+    return &painter::symmetrize_p3m1_o;
   case SYM_P6_O:
     return &painter::symmetrize_p6_o;
   case SYM_P6M_O:
@@ -580,7 +578,7 @@ void painter::symmetrize_p3(T &t, void (T::*p)(int,int), int x, int y) {
 }
 
 template<typename T>
-void painter::symmetrize_p3lm(T &t, void (T::*p)(int,int), int x, int y) {
+void painter::symmetrize_p31m(T &t, void (T::*p)(int,int), int x, int y) {
   (t.*p)(x,y);
   (t.*p)(size1-x-y,x);
   (t.*p)(y,size1-x-y);
@@ -590,7 +588,7 @@ void painter::symmetrize_p3lm(T &t, void (T::*p)(int,int), int x, int y) {
 }
 
 template<typename T>
-void painter::symmetrize_p3ml(T &t, void (T::*p)(int,int), int x, int y) {
+void painter::symmetrize_p3m1(T &t, void (T::*p)(int,int), int x, int y) {
   (t.*p)(x,y);
   (t.*p)(size1-x-y,x);
   (t.*p)(y,size1-x-y);
@@ -726,7 +724,7 @@ void painter::symmetrize_p3_o(T &t, void (T::*p)(int,int), int x, int y) {
 }
 
 template<typename T>
-void painter::symmetrize_p3lm_o(T &t, void (T::*p)(int,int), int x, int y) {
+void painter::symmetrize_p31m_o(T &t, void (T::*p)(int,int), int x, int y) {
   (t.*p)(x,y);
   (t.*p)(size-x-y,x);
   (t.*p)(y,size-x-y);
@@ -736,7 +734,7 @@ void painter::symmetrize_p3lm_o(T &t, void (T::*p)(int,int), int x, int y) {
 }
 
 template<typename T>
-void painter::symmetrize_p3ml_o(T &t, void (T::*p)(int,int), int x, int y) {
+void painter::symmetrize_p3m1_o(T &t, void (T::*p)(int,int), int x, int y) {
   (t.*p)(x,y);
   (t.*p)(size-x-y,x);
   (t.*p)(y,size-x-y);
