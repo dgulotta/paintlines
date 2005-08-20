@@ -18,18 +18,18 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "paintlines.h"
+#include "hyperbolic_paintlines.h"
 #include <qwidget.h>
 #include <qpixmap.h>
 
-class paintlineswidget : public QWidget, public paintlines
+class hyperbolic_paintlineswidget : public QWidget,
+				    public hyperbolic_paintlines
 {
     Q_OBJECT
 public:
-    paintlineswidget(QWidget *parent=0,const char *name=0);
-    void draw(int sz, int n, symgroup sg);
+    hyperbolic_paintlineswidget(QWidget *parent=0,const char *name=0);
+    void draw(int sz, int n, hyperbolic_symmetry_group sym);
     bool save(const QString &filename, const char *format);
-    void randomize(int xtiles, int ytiles);
     void restore();
 protected:
     void paintEvent(QPaintEvent *);

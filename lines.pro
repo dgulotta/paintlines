@@ -5,18 +5,21 @@ CONFIG	+= qt warn_on release
 
 HEADERS	+= paintlines.h \
 	hyperbolic_painter.h \
+	hyperbolic_paintlines.h \
+	hyperbolic_paintlineswidget.h \
 	paintlineswidget.h \
 	painter.h \
-	paintclouds.h
 
 SOURCES	+= paintlines.cpp \
 	hyperbolic_painter.cpp \
+	hyperbolic_paintlines.cpp \
+	hyperbolic_paintlineswidget.cpp \
 	main.cpp \
 	paintlineswidget.cpp \
 	painter.cpp \
-	paintclouds.cpp
 
-FORMS	= paintform.ui
+FORMS	= paintform.ui \
+	hyperboliclinesform.ui
 
 IMAGES	= images/filenew \
 	images/fileopen \
@@ -28,10 +31,8 @@ IMAGES	= images/filenew \
 	images/editcopy \
 	images/editpaste \
 	images/searchfind
-
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 }
-

@@ -18,21 +18,107 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "paintlines.h"
-#include <qwidget.h>
-#include <qpixmap.h>
+#include <qmessagebox.h>
 
-class paintlineswidget : public QWidget, public paintlines
+void HyperbolicLinesForm::fileNew()
 {
-    Q_OBJECT
-public:
-    paintlineswidget(QWidget *parent=0,const char *name=0);
-    void draw(int sz, int n, symgroup sg);
-    bool save(const QString &filename, const char *format);
-    void randomize(int xtiles, int ytiles);
-    void restore();
-protected:
-    void paintEvent(QPaintEvent *);
-private:
-    QPixmap mypixmap;
-};
+
+}
+
+
+void HyperbolicLinesForm::fileOpen()
+{
+
+}
+
+
+void HyperbolicLinesForm::fileSave()
+{
+
+}
+
+
+void HyperbolicLinesForm::fileSaveAs()
+{
+
+}
+
+
+void HyperbolicLinesForm::filePrint()
+{
+
+}
+
+
+void HyperbolicLinesForm::fileExit()
+{
+
+}
+
+
+void HyperbolicLinesForm::editUndo()
+{
+
+}
+
+
+void HyperbolicLinesForm::editRedo()
+{
+
+}
+
+
+void HyperbolicLinesForm::editCut()
+{
+
+}
+
+
+void HyperbolicLinesForm::editCopy()
+{
+
+}
+
+
+void HyperbolicLinesForm::editPaste()
+{
+
+}
+
+
+void HyperbolicLinesForm::editFind()
+{
+
+}
+
+
+void HyperbolicLinesForm::helpIndex()
+{
+
+}
+
+
+void HyperbolicLinesForm::helpContents()
+{
+
+}
+
+
+void HyperbolicLinesForm::helpAbout()
+{
+
+}
+
+
+void HyperbolicLinesForm::Draw()
+{
+  int size=EditSize->text().toInt();
+  if (size<0) {
+	QMessageBox::information(this,"Paintlines","The size must be nonnegative.");
+  }
+  else {
+    hyperbolic_symmetry_group sg(hyperbolic_3_180(2.*M_PI/9,2.*M_PI/9,2.*M_PI/9));
+    HyperbolicPaintFrame->draw(size,1,sg);
+  }
+
+}

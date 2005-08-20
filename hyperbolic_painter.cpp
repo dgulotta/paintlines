@@ -18,7 +18,42 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "paintlines_hyperbolic.h"
+#include "hyperbolic_painter.h"
+
+hyperbolic_coord normalize(const hyperbolic_coord &c)
+{
+  double n=c*c;
+  if(n>0.) return c/sqrt(n);
+  else if(n<0.) return c/sqrt(-n);
+  else return c;
+}
+
+hyperbolic_coord & inplace_normalize(hyperbolic_coord &c)
+{
+  double n=c*c;
+  if(n>0.) c/=sqrt(n);
+  else if(n<0.) c/=sqrt(-n);
+  return c;
+}
+
+hyperbolic_coord cross(const hyperbolic_coord &a, const hyperbolic_coord &b)
+{
+  hyperbolic_coord ans;
+  ans.x=a.z*b.y-a.y*b.z;
+  ans.y=a.x*b.z-a.z*b.x;
+  ans.z=a.x*b.y-a.y*b.x;
+  return ans;
+}
+
+planar_coord poincare_projection(const hyperbolic_coord &hc)
+{
+  return planar_coord(hc.x/(1+hc.z),hc.y/(1+hc.z));
+}
+
+planar_coord klein_projection(const hyperbolic_coord &hc)
+{
+  return planar_coord(hc.x/hc.z,hc.y/hc.z);
+}
 
 hyperbolic_symmetry_group hyperbolic_3mirror(int n1, int n2, int n3)
 {
@@ -124,9 +159,9 @@ hyperbolic_symmetry_group hyperbolic_180_rotation(int n1, int n2)
 {
   hyperbolic_symmetry_group s;
   s.trans1=auto_ptr<hyperbolic_transformation>
-    (new hyperbolic_rotation(n1,hyperbolic_coord(0.,0.,1.)));
+    (new hyperbolic_rotation_origin(n1));
   s.trans2=auto_ptr<hyperbolic_transformation>
-    (new hyperbolic_rotation(-n1,hyperbolic_coord(0.,0.,1.)));
+    (new hyperbolic_rotation_origin(-n1));
   double z=cos(M_PI/n2)/sin(M_PI/n1);
   s.trans3=auto_ptr<hyperbolic_transformation>
     (new hyperbolic_rotation_180(hyperbolic_coord(sqrt(z*z-1.),0,z)));
@@ -137,9 +172,9 @@ hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2)
 {
   hyperbolic_symmetry_group s;
   s.trans1=auto_ptr<hyperbolic_transformation>
-    (new hyperbolic_rotation(n1,hyperbolic_coord(0.,0.,1.)));
+    (new hyperbolic_rotation_origin(n1));
   s.trans2=auto_ptr<hyperbolic_transformation>
-    (new hyperbolic_rotation(-n1,hyperbolic_coord(0.,0.,1.)));
+    (new hyperbolic_rotation_origin(-n1));
   double z=cos(M_PI_2/n2)/sin(M_PI/n1);
   s.trans3=auto_ptr<hyperbolic_transformation>
     (new hyperbolic_reflection

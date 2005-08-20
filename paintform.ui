@@ -207,19 +207,6 @@
             <string>256</string>
         </property>
     </widget>
-    <widget class="paintlineswidget">
-        <property name="name">
-            <cstring>PaintFrame</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>170</x>
-                <y>14</y>
-                <width>290</width>
-                <height>240</height>
-            </rect>
-        </property>
-    </widget>
     <widget class="QCheckBox">
         <property name="name">
             <cstring>CheckPastel1</cstring>
@@ -479,22 +466,6 @@
     </widget>
     <widget class="QPushButton">
         <property name="name">
-            <cstring>ButtonDraw</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>494</y>
-                <width>161</width>
-                <height>31</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Draw</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
             <cstring>ButtonRandomize</cstring>
         </property>
         <property name="enabled">
@@ -668,6 +639,35 @@
         </property>
         <property name="sizeLimit">
             <number>20</number>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>ButtonDraw</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>494</y>
+                <width>161</width>
+                <height>31</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Draw</string>
+        </property>
+    </widget>
+    <widget class="paintlineswidget">
+        <property name="name">
+            <cstring>PaintFrame</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>170</x>
+                <y>14</y>
+                <width>290</width>
+                <height>240</height>
+            </rect>
         </property>
     </widget>
 </widget>
@@ -878,9 +878,6 @@
         </property>
         <property name="iconSet">
             <iconset>editcopy</iconset>
-        </property>
-        <property name="text">
-            <string>Copy</string>
         </property>
         <property name="menuText">
             <string>&amp;Copy</string>

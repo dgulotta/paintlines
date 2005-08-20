@@ -18,21 +18,32 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "paintlines.h"
-#include <qwidget.h>
-#include <qpixmap.h>
+#ifndef _HYPERBOLIC_PAINTLINES_H
+#define _HYPERBOLIC_PAINTLINES_H
 
-class paintlineswidget : public QWidget, public paintlines
+#include "hyperbolic_painter.h"
+
+class hyperbolic_paintlines : public hyperbolic_painter
 {
-    Q_OBJECT
-public:
-    paintlineswidget(QWidget *parent=0,const char *name=0);
-    void draw(int sz, int n, symgroup sg);
-    bool save(const QString &filename, const char *format);
-    void randomize(int xtiles, int ytiles);
-    void restore();
-protected:
-    void paintEvent(QPaintEvent *);
-private:
-    QPixmap mypixmap;
+ public:
+  hyperbolic_paintlines() : radius(5.99), brightness(5.), n_colors(0) {}
+  void paint(int sz, hyperbolic_symmetry_group &sym);
+  void set_ncolors(int n) {n_colors=n;}
+ private:
+  void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
+  planar_coord (*proj)(const hyperbolic_coord &);
+  void drawdot_poincare(const hyperbolic_coord &pc);
+  void drawdot_klein(const hyperbolic_coord &pc);
+  void drawpixel(int x, int y, unsigned char alpha);
+  double radius;
+  double brightness;
+  int n_colors;
+  //vector<unsigned char> red_brushes;
+  //vector<unsigned char> green_brushes;
+  //vector<unsigned char> blue_brushes;
+  //vector<int> last;
+  //vector<unsigned char> alpha;
+  //vector<bool> pastel;
 };
+
+#endif
