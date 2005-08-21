@@ -20,6 +20,18 @@
 
 #include "hyperbolic_paintlines.h"
 
+hyperbolic_coord random_mid(const hyperbolic_coord &c1,
+			    const hyperbolic_coord &c2, double var)
+{
+  hyperbolic_coord mid(normalize(c1+c2));
+  hyperbolic_coord diff(normalize(c1-c2));
+  hyperbolic_coord norm(cross(mid,diff));
+  double z=1.-var*log((double)rand()/RAND_MAX);
+  double r=sqrt(1.-z*z);
+  double q=(2.*M_PI*rand()/RAND_MAX);
+  return z*mid+r*cos(q)*diff+r*sin(q)*norm;
+}
+
 void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
 {
   hyperbolic_painter::paint(sz,sym);
@@ -93,5 +105,17 @@ void hyperbolic_paintlines::drawpixel(int x, int y, unsigned char alpha)
   if(x>=0&&x<size&&y>=0&&y<size) {
     int i=x+y*size;
     if(red[i]<alpha) red[i]=green[i]=blue[i]=alpha;
+  }
+}
+
+void hyperbolic_paintlines::drawsmoothline
+(const hyperbolic_coord &end1, const hyperbolic_coord &end2, double var,
+ double min)
+{
+  if(end1*end2>min) {
+    hyperbolic_coord mid=random_mid(end1,end2,var);
+    drawsmoothline(end1,mid,var/2.,min);
+    (this->*drawdot)(mid);
+    drawsmoothline(mid,end2,var/2.,min);
   }
 }

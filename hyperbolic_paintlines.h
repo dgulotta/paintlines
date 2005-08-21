@@ -23,6 +23,9 @@
 
 #include "hyperbolic_painter.h"
 
+hyperbolic_coord random_mid(const hyperbolic_coord &c1,
+			    const hyperbolic_coord &c2, double var);
+
 class hyperbolic_paintlines : public hyperbolic_painter
 {
  public:
@@ -35,6 +38,8 @@ class hyperbolic_paintlines : public hyperbolic_painter
   void drawdot_poincare(const hyperbolic_coord &pc);
   void drawdot_klein(const hyperbolic_coord &pc);
   void drawpixel(int x, int y, unsigned char alpha);
+  void drawsmoothline(const hyperbolic_coord &end1, 
+		      const hyperbolic_coord &end2, double var, double min);
   double radius;
   double brightness;
   int n_colors;
