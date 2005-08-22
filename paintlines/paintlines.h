@@ -21,7 +21,7 @@
 #ifndef _PAINTLINES_H_
 #define _PAINTLINES_H_
 
-#include "painter.h"
+#include "../painter.h"
 
 void randomnormal(double &x, double &y, double var);
 void randomcauchy(double &x, double &y, double var);

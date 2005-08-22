@@ -21,7 +21,7 @@
 #ifndef _HYPERBOLIC_PAINTLINES_H
 #define _HYPERBOLIC_PAINTLINES_H
 
-#include "hyperbolic_painter.h"
+#include "../hyperbolic_painter.h"
 
 hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 			    const hyperbolic_coord &c2, double var);
