@@ -27,7 +27,7 @@ hyperbolic_coord random_mid(const hyperbolic_coord &c1,
   hyperbolic_coord diff(normalize(c1-c2));
   hyperbolic_coord norm(cross(mid,diff));
   double z=1.-var*log((double)rand()/RAND_MAX);
-  double r=sqrt(1.-z*z);
+  double r=sqrt(z*z-1.);
   double q=(2.*M_PI*rand()/RAND_MAX);
   return z*mid+r*cos(q)*diff+r*sin(q)*norm;
 }
@@ -47,10 +47,14 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
     proj=&klein_projection;
     drawdot=&hyperbolic_paintlines::drawdot_klein;
   }
+  /*
   sg.symmetrize(*this,drawdot,
 		hyperbolic_coord(0,0,1.),5);
   sg.symmetrize(*this,drawdot,
 		hyperbolic_coord(5./12.,0,13./12.),5);
+  */
+  hyperbolic_coord c(5./12.,0.,13./12.);
+  drawsmoothline(c,sg.random_symmetry(c,2),.02,1.0002);
 }
 
 void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
@@ -112,10 +116,11 @@ void hyperbolic_paintlines::drawsmoothline
 (const hyperbolic_coord &end1, const hyperbolic_coord &end2, double var,
  double min)
 {
+  
   if(end1*end2>min) {
     hyperbolic_coord mid=random_mid(end1,end2,var);
     drawsmoothline(end1,mid,var/2.,min);
-    (this->*drawdot)(mid);
+    sg.symmetrize(*this,drawdot,mid,8);
     drawsmoothline(mid,end2,var/2.,min);
   }
 }

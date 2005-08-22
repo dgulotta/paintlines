@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <qmessagebox.h>
+#include <qfiledialog.h>
 
 void HyperbolicLinesForm::fileNew()
 {
@@ -40,7 +41,8 @@ void HyperbolicLinesForm::fileSave()
 
 void HyperbolicLinesForm::fileSaveAs()
 {
-
+ QString s=QFileDialog::getSaveFileName();
+    if(!s.isEmpty()) HyperbolicPaintFrame->save(s,"PNG");
 }
 
 
@@ -117,7 +119,14 @@ void HyperbolicLinesForm::Draw()
 	QMessageBox::information(this,"Paintlines","The size must be nonnegative.");
   }
   else {
-    hyperbolic_symmetry_group sg(hyperbolic_3_180(2.*M_PI/9,2.*M_PI/9,2.*M_PI/9));
+    hyperbolic_symmetry_group sg;
+    switch(ComboSymmetry->currentItem()) {
+    case 0:
+      sg=hyperbolic_3_180(2.*M_PI/9,2.*M_PI/9,2.*M_PI/9);
+      break;
+    case 1:
+       sg=hyperbolic_3mirror(4,3,3);
+    }
     HyperbolicPaintFrame->draw(size,1,sg);
   }
 

@@ -15,19 +15,6 @@
     <property name="caption">
         <string>Hyperbolic Paintlines</string>
     </property>
-    <widget class="hyperbolic_paintlineswidget">
-        <property name="name">
-            <cstring>HyperbolicPaintFrame</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>140</x>
-                <y>10</y>
-                <width>330</width>
-                <height>310</height>
-            </rect>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>textLabel2</cstring>
@@ -108,6 +95,35 @@
             </property>
         </widget>
     </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>134</y>
+                <width>124</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Symmetry Group</string>
+        </property>
+    </widget>
+    <widget class="hyperbolic_paintlineswidget">
+        <property name="name">
+            <cstring>HyperbolicPaintFrame</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>140</x>
+                <y>10</y>
+                <width>330</width>
+                <height>310</height>
+            </rect>
+        </property>
+    </widget>
     <widget class="QPushButton">
         <property name="name">
             <cstring>ButtonDraw</cstring>
@@ -115,13 +131,36 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>140</y>
+                <y>240</y>
                 <width>120</width>
                 <height>31</height>
             </rect>
         </property>
         <property name="text">
             <string>Draw</string>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>P2-Like</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>P4M-Like</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>ComboSymmetry</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>150</y>
+                <width>99</width>
+                <height>25</height>
+            </rect>
         </property>
     </widget>
 </widget>
@@ -182,7 +221,7 @@
             <cstring>fileNewAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>filenew</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>New</string>
@@ -199,7 +238,7 @@
             <cstring>fileOpenAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>fileopen</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Open</string>
@@ -216,7 +255,7 @@
             <cstring>fileSaveAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>filesave</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Save</string>
@@ -247,7 +286,7 @@
             <cstring>filePrintAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>print</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Print</string>
@@ -278,7 +317,7 @@
             <cstring>editUndoAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>undo</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Undo</string>
@@ -295,7 +334,7 @@
             <cstring>editRedoAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>redo</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Redo</string>
@@ -312,7 +351,7 @@
             <cstring>editCutAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>editcut</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Cut</string>
@@ -329,7 +368,7 @@
             <cstring>editCopyAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>editcopy</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Copy</string>
@@ -346,7 +385,7 @@
             <cstring>editPasteAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>editpaste</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Paste</string>
@@ -363,7 +402,7 @@
             <cstring>editFindAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>searchfind</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Find</string>
