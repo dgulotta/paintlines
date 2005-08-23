@@ -143,7 +143,7 @@ hyperbolic_symmetry_group hyperbolic_mirror_2_180(double a1, double a2,
   hyperbolic_symmetry_group s;
   s.trans1=auto_ptr<hyperbolic_transformation>
     (new hyperbolic_rotation_180
-     (hyperbolic_coord(sqrt((z2-1.)/2.),0.,sqrt(z2+1.)/2.)));
+     (hyperbolic_coord(sqrt((z2-1.)/2.),0.,sqrt((z2+1.)/2.))));
   s.trans3=auto_ptr<hyperbolic_transformation>
     (new hyperbolic_reflection
      (normalize(cross(hyperbolic_coord(r2,0.,z2),
