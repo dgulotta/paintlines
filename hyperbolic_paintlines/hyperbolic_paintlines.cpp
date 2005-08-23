@@ -20,6 +20,9 @@
 
 #include "hyperbolic_paintlines.h"
 
+#include <iostream>
+using namespace std;
+
 hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 			    const hyperbolic_coord &c2, double var)
 {
@@ -28,8 +31,8 @@ hyperbolic_coord random_mid(const hyperbolic_coord &c1,
   hyperbolic_coord norm(cross(mid,diff));
   double z=1.-var*log((double)rand()/RAND_MAX);
   double r=sqrt(z*z-1.);
-  double q=(2.*M_PI*rand()/RAND_MAX);
-  return z*mid+r*cos(q)*diff+r*sin(q)*norm;
+  double q=(2.*M_PI*rand())/RAND_MAX;
+  return normalize(z*mid+r*cos(q)*diff+r*sin(q)*norm);
 }
 
 void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
@@ -91,12 +94,17 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
       green_brushes[t]=0;
       blue_brushes[t]=temp;
     }
-    double z=1.-log((double)rand()/RAND_MAX);
-    double r=sqrt(z*z-1.);
-    double q=(2.*M_PI*rand())/RAND_MAX;
-    hyperbolic_coord c(r*cos(q),r*sin(q),z);
+    hyperbolic_coord c;
+    hyperbolic_coord c2;
+    do {
+      double z=1.-log((double)rand()/RAND_MAX);
+      double r=sqrt(z*z-1.);
+      double q=(2.*M_PI*rand())/RAND_MAX;
+      c=hyperbolic_coord(r*cos(q),r*sin(q),z);
+      c2=sg.random_symmetry(c,rand()%3);
+    } while(c.z>=10.||c2.z>=10.);
     k/=6;
-    drawsmoothline(c,sg.random_symmetry(c,k%3),.02,1.+.05/size);
+    drawsmoothline(c,c2,.02,1.+.05/size);
   }
   int x, y, i;
   for(x=0;x<size;x++)

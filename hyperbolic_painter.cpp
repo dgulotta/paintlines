@@ -142,8 +142,8 @@ hyperbolic_symmetry_group hyperbolic_mirror_2_180(double a1, double a2,
   double r3=sqrt(z3*z3-1.);
   hyperbolic_symmetry_group s;
   s.trans1=auto_ptr<hyperbolic_transformation>
-    (new hyperbolic_reflection
-     (hyperbolic_coord(sqrt((z2-1)/2.),0.,sqrt(z2+1)/2.)));
+    (new hyperbolic_rotation_180
+     (hyperbolic_coord(sqrt((z2-1.)/2.),0.,sqrt(z2+1.)/2.)));
   s.trans3=auto_ptr<hyperbolic_transformation>
     (new hyperbolic_reflection
      (normalize(cross(hyperbolic_coord(r2,0.,z2),
@@ -230,4 +230,5 @@ hyperbolic_symmetry_group hyperbolic_glide_mirror(double a1, double a2)
   s.trans3=auto_ptr<hyperbolic_transformation>
     (new hyperbolic_reflection
     (normalize(hyperbolic_coord(-z*sqrt((1.+cos1)/2),0,z))));
+  return s;
 }
