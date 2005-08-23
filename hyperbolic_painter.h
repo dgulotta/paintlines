@@ -275,7 +275,13 @@ class hyperbolic_symmetry_group
       trans2=s.trans2;
       trans3=s.trans3;
     }
-    return s;
+    return *this;
+  }
+  hyperbolic_symmetry_group & operator = (hyperbolic_symmetry_group_ref s) {
+    trans1=s.trans1;
+    trans2=s.trans2;
+    trans3=s.trans3;
+    return *this;
   }
   template<typename T>
   void symmetrize(T &t,void (T::*p)(const hyperbolic_coord &),
@@ -286,6 +292,22 @@ class hyperbolic_symmetry_group
       symmetrize(t,p,(*trans2)(hc),depth-1);
       symmetrize(t,p,(*trans3)(hc),depth-1);
     }
+  }
+  hyperbolic_coord random_symmetry(const hyperbolic_coord &c, int depth) {
+    hyperbolic_coord ans(c);
+    while(depth--) {
+      switch(rand()%3) {
+      case 0:
+	ans=(*trans1)(ans);
+	break;
+      case 1:
+	ans=(*trans2)(ans);
+	break;
+      case 2:
+	ans=(*trans3)(ans);
+      }
+    }
+    return ans;
   }
  private:
   auto_ptr<hyperbolic_transformation> trans1;

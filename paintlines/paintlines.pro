@@ -12,7 +12,7 @@ SOURCES	+= paintlines.cpp \
 	paintlineswidget.cpp \
 	../painter.cpp
 
-FORMS	= paintform.ui \
+FORMS	= paintform.ui
 
 unix {
   UI_DIR = .ui

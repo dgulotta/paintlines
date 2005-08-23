@@ -8,43 +8,24 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>597</width>
+            <width>600</width>
             <height>480</height>
         </rect>
     </property>
     <property name="caption">
         <string>Hyperbolic Paintlines</string>
     </property>
-    <widget class="QLabel">
+    <widget class="hyperbolic_paintlineswidget">
         <property name="name">
-            <cstring>textLabel2</cstring>
+            <cstring>HyperbolicPaintFrame</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>10</x>
+                <x>140</x>
                 <y>10</y>
-                <width>120</width>
-                <height>21</height>
+                <width>330</width>
+                <height>310</height>
             </rect>
-        </property>
-        <property name="text">
-            <string>Size</string>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>EditSize</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>30</y>
-                <width>120</width>
-                <height>26</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>256</string>
         </property>
     </widget>
     <widget class="QButtonGroup">
@@ -54,7 +35,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>60</y>
+                <y>10</y>
                 <width>121</width>
                 <height>71</height>
             </rect>
@@ -102,7 +83,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>134</y>
+                <y>90</y>
                 <width>124</width>
                 <height>20</height>
             </rect>
@@ -111,17 +92,52 @@
             <string>Symmetry Group</string>
         </property>
     </widget>
-    <widget class="hyperbolic_paintlineswidget">
+    <widget class="QLabel">
         <property name="name">
-            <cstring>HyperbolicPaintFrame</cstring>
+            <cstring>textLabel2</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>140</x>
-                <y>10</y>
-                <width>330</width>
-                <height>310</height>
+                <x>10</x>
+                <y>140</y>
+                <width>120</width>
+                <height>21</height>
             </rect>
+        </property>
+        <property name="text">
+            <string>Size</string>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>EditSize</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>160</y>
+                <width>120</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>256</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>190</y>
+                <width>120</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Colors</string>
         </property>
     </widget>
     <widget class="QPushButton">
@@ -140,7 +156,36 @@
             <string>Draw</string>
         </property>
     </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>SpinColors</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>214</y>
+                <width>120</width>
+                <height>22</height>
+            </rect>
+        </property>
+        <property name="maxValue">
+            <number>9999</number>
+        </property>
+        <property name="value">
+            <number>25</number>
+        </property>
+    </widget>
     <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>CM-Like</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>CMM-Like</string>
+            </property>
+        </item>
         <item>
             <property name="text">
                 <string>P2-Like</string>
@@ -148,7 +193,22 @@
         </item>
         <item>
             <property name="text">
+                <string>P4-Like</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
                 <string>P4M-Like</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>PGG-Like</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>PMG-Like</string>
             </property>
         </item>
         <property name="name">
@@ -157,7 +217,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>150</y>
+                <y>110</y>
                 <width>99</width>
                 <height>25</height>
             </rect>

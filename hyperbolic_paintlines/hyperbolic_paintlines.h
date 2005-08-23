@@ -29,26 +29,27 @@ hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 class hyperbolic_paintlines : public hyperbolic_painter
 {
  public:
-  hyperbolic_paintlines() : radius(5.99), brightness(5.), n_colors(0) {}
+  hyperbolic_paintlines() : radius(5.99), brightness(5.), ncolors(0) {}
   void paint(int sz, hyperbolic_symmetry_group &sym);
-  void set_ncolors(int n) {n_colors=n;}
+  void set_ncolors(int n) {ncolors=n;}
  private:
   void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
   planar_coord (*proj)(const hyperbolic_coord &);
   void drawdot_poincare(const hyperbolic_coord &pc);
   void drawdot_klein(const hyperbolic_coord &pc);
-  void drawpixel(int x, int y, unsigned char alpha);
+  void drawpixel(int x, int y, unsigned char myalpha);
   void drawsmoothline(const hyperbolic_coord &end1, 
 		      const hyperbolic_coord &end2, double var, double min);
   double radius;
   double brightness;
-  int n_colors;
-  //vector<unsigned char> red_brushes;
-  //vector<unsigned char> green_brushes;
-  //vector<unsigned char> blue_brushes;
-  //vector<int> last;
-  //vector<unsigned char> alpha;
-  //vector<bool> pastel;
+  int ncolors;
+  int t;
+  vector<unsigned char> red_brushes;
+  vector<unsigned char> green_brushes;
+  vector<unsigned char> blue_brushes;
+  vector<int> last;
+  vector<unsigned char> alpha;
+  vector<bool> pastel;
 };
 
 #endif

@@ -35,9 +35,17 @@ hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
 {
   hyperbolic_painter::paint(sz,sym);
+  last.resize(size*size);
+  alpha.resize(size*size);
+  red_brushes.resize(ncolors);
+  green_brushes.resize(ncolors);
+  blue_brushes.resize(ncolors);
   fill(red.begin(),red.end(),0);
   fill(green.begin(),green.end(),0);
   fill(blue.begin(),blue.end(),0);
+  fill(last.begin(),last.end(),-1);
+  unsigned char temp;
+  int k;
   switch(pt) {
   case POINCARE:
     proj=&poincare_projection;
@@ -47,14 +55,67 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
     proj=&klein_projection;
     drawdot=&hyperbolic_paintlines::drawdot_klein;
   }
-  /*
-  sg.symmetrize(*this,drawdot,
-		hyperbolic_coord(0,0,1.),5);
-  sg.symmetrize(*this,drawdot,
-		hyperbolic_coord(5./12.,0,13./12.),5);
-  */
-  hyperbolic_coord c(5./12.,0.,13./12.);
-  drawsmoothline(c,sg.random_symmetry(c,2),.02,1.0002);
+  t=ncolors;
+  while(t--) {
+    k=rand();
+    temp=k&255;
+    k>>=8;
+    switch(k%6) {
+    case 0:
+      red_brushes[t]=255;
+      green_brushes[t]=temp;
+      blue_brushes[t]=0;
+      break;
+    case 1:
+      red_brushes[t]=0;
+      green_brushes[t]=255;
+      blue_brushes[t]=temp;
+      break;
+    case 2:
+      red_brushes[t]=temp;
+      green_brushes[t]=0;
+      blue_brushes[t]=255;
+      break;
+    case 3:
+      red_brushes[t]=temp;
+      green_brushes[t]=255;
+      blue_brushes[t]=0;
+      break;
+    case 4:
+      red_brushes[t]=0;
+      green_brushes[t]=temp;
+      blue_brushes[t]=255;
+      break;
+    default:
+      red_brushes[t]=255;
+      green_brushes[t]=0;
+      blue_brushes[t]=temp;
+    }
+    double z=1.-log((double)rand()/RAND_MAX);
+    double r=sqrt(z*z-1.);
+    double q=(2.*M_PI*rand())/RAND_MAX;
+    hyperbolic_coord c(r*cos(q),r*sin(q),z);
+    k/=6;
+    drawsmoothline(c,sg.random_symmetry(c,k%3),.02,1.+.05/size);
+  }
+  int x, y, i;
+  for(x=0;x<size;x++)
+    for(y=0;y<size;y++) {
+      i=x+y*size;
+      if(last[i]!=-1) {
+        //if(pastel[last[i]]) {
+	//  double a=alpha[i]/255.;
+	//  red[i]+=a*(alpha[i]+(1-a)*red_brushes[last[i]]-red[i]);
+	//  green[i]+=a*(alpha[i]+(1-a)*green_brushes[last[i]]-green[i]);
+	//  blue[i]+=a*(alpha[i]+(1-a)*blue_brushes[last[i]]-blue[i]);
+        //}  
+	//else {
+	  red[i]+=(alpha[i]/255.)*(red_brushes[last[i]]-red[i]);
+	  green[i]+=(alpha[i]/255.)*(green_brushes[last[i]]-green[i]);
+	  blue[i]+=(alpha[i]/255.)*(blue_brushes[last[i]]-blue[i]);
+	//}
+      }
+    }
 }
 
 void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
@@ -104,11 +165,30 @@ void hyperbolic_paintlines::drawdot_klein(const hyperbolic_coord &hc)
   }
 }
 
-void hyperbolic_paintlines::drawpixel(int x, int y, unsigned char alpha)
+void hyperbolic_paintlines::drawpixel(int x, int y, unsigned char myalpha)
 {
   if(x>=0&&x<size&&y>=0&&y<size) {
     int i=x+y*size;
-    if(red[i]<alpha) red[i]=green[i]=blue[i]=alpha;
+    if(last[i]==t) {
+      if(myalpha>alpha[i]) alpha[i]=myalpha;
+    }
+    else {
+      if(last[i]!=-1) {
+	//if(pastel[last[i]]) {
+	//double a=alpha[i]/255.;
+	//red[i]+=a*(alpha[i]+(1-a)*red_brushes[last[i]]-red[i]);
+	//green[i]+=a*(alpha[i]+(1-a)*green_brushes[last[i]]-green[i]);
+	//blue[i]+=a*(alpha[i]+(1-a)*blue_brushes[last[i]]-blue[i]);
+	//}
+	//else {
+	red[i]+=(alpha[i]/255.)*(red_brushes[last[i]]-red[i]);
+	green[i]+=(alpha[i]/255.)*(green_brushes[last[i]]-green[i]);
+	blue[i]+=(alpha[i]/255.)*(blue_brushes[last[i]]-blue[i]);
+	//}
+      }
+    last[i]=t;
+    alpha[i]=myalpha;
+    }
   }
 }
 
@@ -120,7 +200,7 @@ void hyperbolic_paintlines::drawsmoothline
   if(end1*end2>min) {
     hyperbolic_coord mid=random_mid(end1,end2,var);
     drawsmoothline(end1,mid,var/2.,min);
-    sg.symmetrize(*this,drawdot,mid,8);
+    sg.symmetrize(*this,drawdot,mid,5);
     drawsmoothline(mid,end2,var/2.,min);
   }
 }

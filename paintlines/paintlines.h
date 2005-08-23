@@ -18,8 +18,8 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _PAINTLINES_H_
-#define _PAINTLINES_H_
+#ifndef _PAINTLINES_H
+#define _PAINTLINES_H
 
 #include "../painter.h"
 
