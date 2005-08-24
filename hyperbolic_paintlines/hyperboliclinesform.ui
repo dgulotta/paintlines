@@ -45,6 +45,22 @@
         </property>
         <widget class="QRadioButton">
             <property name="name">
+                <cstring>ButtonKlein</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>40</y>
+                    <width>100</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Klein</string>
+            </property>
+        </widget>
+        <widget class="QRadioButton">
+            <property name="name">
                 <cstring>ButtonPoincare</cstring>
             </property>
             <property name="geometry">
@@ -58,21 +74,8 @@
             <property name="text">
                 <string>Poincare</string>
             </property>
-        </widget>
-        <widget class="QRadioButton">
-            <property name="name">
-                <cstring>ButtonKlein</cstring>
-            </property>
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>40</y>
-                    <width>100</width>
-                    <height>21</height>
-                </rect>
-            </property>
-            <property name="text">
-                <string>Klein</string>
+            <property name="checked">
+                <bool>true</bool>
             </property>
         </widget>
     </widget>

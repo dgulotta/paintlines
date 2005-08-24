@@ -28,7 +28,7 @@ class hyperbolic_paintlineswidget : public QWidget,
     Q_OBJECT
 public:
     hyperbolic_paintlineswidget(QWidget *parent=0,const char *name=0);
-    void draw(int sz, int n, hyperbolic_symmetry_group sym);
+    void draw(int sz, int n, hyperbolic_symmetry_group sym, projtype p);
     bool save(const QString &filename, const char *format);
     void restore();
 protected:

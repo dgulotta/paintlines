@@ -160,7 +160,7 @@ void hyperbolic_paintlines::drawdot_klein(const hyperbolic_coord &hc)
     double s=pc.y/n1;
     double a=1./(d*brightness);
     d=sqrt(d);
-    int r=radius/d;
+    int r=radius*d;
     d=1./(d*brightness);
     int i,j;
     screen_coord sc=toscreen(pc);
@@ -208,7 +208,7 @@ void hyperbolic_paintlines::drawsmoothline
   if(end1*end2>min) {
     hyperbolic_coord mid=random_mid(end1,end2,var);
     drawsmoothline(end1,mid,var/2.,min);
-    sg.symmetrize(*this,drawdot,mid,7);
+    sg.symmetrize(*this,drawdot,mid,8);
     drawsmoothline(mid,end2,var/2.,min);
   }
 }

@@ -142,7 +142,9 @@ void HyperbolicLinesForm::Draw()
     case 6:
       sg=hyperbolic_mirror_2_180(M_PI/6.,M_PI/6.,M_PI/6.);
     }
-    HyperbolicPaintFrame->draw(size,SpinColors->value(),sg);
+    projtype pt;
+    if(ButtonPoincare->isChecked()) pt=POINCARE;
+    else pt=KLEIN;
+    HyperbolicPaintFrame->draw(size,SpinColors->value(),sg,pt);
   }
-
 }
