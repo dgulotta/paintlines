@@ -102,7 +102,7 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
       double q=(2.*M_PI*rand())/RAND_MAX;
       c=hyperbolic_coord(r*cos(q),r*sin(q),z);
       c2=sg.random_symmetry(c,rand()%3);
-    } while(c.z>=10.||c2.z>=10.);
+    } while(c.z>=25.||c2.z>=25.);
     k/=6;
     drawsmoothline(c,c2,.02,1.+.05/size);
   }
@@ -208,7 +208,7 @@ void hyperbolic_paintlines::drawsmoothline
   if(end1*end2>min) {
     hyperbolic_coord mid=random_mid(end1,end2,var);
     drawsmoothline(end1,mid,var/2.,min);
-    sg.symmetrize(*this,drawdot,mid,5);
+    sg.symmetrize(*this,drawdot,mid,7);
     drawsmoothline(mid,end2,var/2.,min);
   }
 }

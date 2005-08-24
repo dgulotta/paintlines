@@ -238,11 +238,12 @@ struct hyperbolic_symmetry_group_ref
   explicit hyperbolic_symmetry_group_ref
   (auto_ptr<hyperbolic_transformation> p1,
    auto_ptr<hyperbolic_transformation> p2,
-   auto_ptr<hyperbolic_transformation> p3) : trans1(p1), trans2(p2), trans3(p3)
-  {}
+   auto_ptr<hyperbolic_transformation> p3, bool rev)
+    : trans1(p1), trans2(p2), trans3(p3), reversed(rev) {}
   auto_ptr_ref<hyperbolic_transformation> trans1;
   auto_ptr_ref<hyperbolic_transformation> trans2;
   auto_ptr_ref<hyperbolic_transformation> trans3;
+  bool reversed;
 };
 
 class hyperbolic_symmetry_group
@@ -263,17 +264,20 @@ class hyperbolic_symmetry_group
  public:
   hyperbolic_symmetry_group() {}
   hyperbolic_symmetry_group(hyperbolic_symmetry_group &s)
-    : trans1(s.trans1), trans2(s.trans2), trans3(s.trans3) {}
+    : trans1(s.trans1), trans2(s.trans2), trans3(s.trans3),
+    reversed(s.reversed) {}
   hyperbolic_symmetry_group(hyperbolic_symmetry_group_ref s) 
-    : trans1(s.trans1), trans2(s.trans2), trans3(s.trans3) {}
+    : trans1(s.trans1), trans2(s.trans2), trans3(s.trans3),
+    reversed(s.reversed) {}
   operator hyperbolic_symmetry_group_ref () {
-    return hyperbolic_symmetry_group_ref(trans1,trans2,trans3);
+    return hyperbolic_symmetry_group_ref(trans1,trans2,trans3,reversed);
   }
   hyperbolic_symmetry_group & operator = (hyperbolic_symmetry_group &s) {
     if(this!=&s) {
       trans1=s.trans1;
       trans2=s.trans2;
       trans3=s.trans3;
+      reversed=s.reversed;
     }
     return *this;
   }
@@ -281,6 +285,7 @@ class hyperbolic_symmetry_group
     trans1=s.trans1;
     trans2=s.trans2;
     trans3=s.trans3;
+    reversed=s.reversed;
     return *this;
   }
   template<typename T>
@@ -288,9 +293,70 @@ class hyperbolic_symmetry_group
 		  const hyperbolic_coord &hc, int depth) {
     (t.*p)(hc);
     if(depth) {
-      symmetrize(t,p,(*trans1)(hc),depth-1);
-      symmetrize(t,p,(*trans2)(hc),depth-1);
-      symmetrize(t,p,(*trans3)(hc),depth-1);
+      if(reversed) {
+	symmetrize1r(t,p,(*trans1)(hc),depth-1);
+	symmetrize2r(t,p,(*trans2)(hc),depth-1);
+	symmetrize3r(t,p,(*trans3)(hc),depth-1);
+      }
+      else {
+	symmetrize1(t,p,(*trans1)(hc),depth-1);
+	symmetrize2(t,p,(*trans2)(hc),depth-1);
+	symmetrize3(t,p,(*trans3)(hc),depth-1);
+      }
+    }
+  }
+  template<typename T>
+  void symmetrize1(T &t,void (T::*p)(const hyperbolic_coord &),
+		  const hyperbolic_coord &hc, int depth) {
+    (t.*p)(hc);
+    if(depth) {
+      symmetrize2(t,p,(*trans2)(hc),depth-1);
+      symmetrize3(t,p,(*trans3)(hc),depth-1);
+    }
+  }
+  template<typename T>
+  void symmetrize2(T &t,void (T::*p)(const hyperbolic_coord &),
+		  const hyperbolic_coord &hc, int depth) {
+    (t.*p)(hc);
+    if(depth) {
+      symmetrize1(t,p,(*trans1)(hc),depth-1);
+      symmetrize3(t,p,(*trans3)(hc),depth-1);
+    }
+  }
+  template<typename T>
+  void symmetrize3(T &t,void (T::*p)(const hyperbolic_coord &),
+		  const hyperbolic_coord &hc, int depth) {
+    (t.*p)(hc);
+    if(depth) {
+      symmetrize1(t,p,(*trans1)(hc),depth-1);
+      symmetrize2(t,p,(*trans2)(hc),depth-1);
+    }
+  }
+  template<typename T>
+  void symmetrize1r(T &t,void (T::*p)(const hyperbolic_coord &),
+		  const hyperbolic_coord &hc, int depth) {
+    (t.*p)(hc);
+    if(depth) {
+      symmetrize1r(t,p,(*trans1)(hc),depth-1);
+      symmetrize3r(t,p,(*trans3)(hc),depth-1);
+    }
+  }
+  template<typename T>
+  void symmetrize2r(T &t,void (T::*p)(const hyperbolic_coord &),
+		  const hyperbolic_coord &hc, int depth) {
+    (t.*p)(hc);
+    if(depth) {
+      symmetrize2r(t,p,(*trans2)(hc),depth-1);
+      symmetrize3r(t,p,(*trans3)(hc),depth-1);
+    }
+  }
+  template<typename T>
+  void symmetrize3r(T &t,void (T::*p)(const hyperbolic_coord &),
+		  const hyperbolic_coord &hc, int depth) {
+    (t.*p)(hc);
+    if(depth) {
+      symmetrize1r(t,p,(*trans1)(hc),depth-1);
+      symmetrize2r(t,p,(*trans2)(hc),depth-1);
     }
   }
   hyperbolic_coord random_symmetry(const hyperbolic_coord &c, int depth) {
@@ -313,6 +379,7 @@ class hyperbolic_symmetry_group
   auto_ptr<hyperbolic_transformation> trans1;
   auto_ptr<hyperbolic_transformation> trans2;
   auto_ptr<hyperbolic_transformation> trans3;
+  bool reversed;
 };
 
 hyperbolic_symmetry_group hyperbolic_3mirror(int n1, int n2, int n3);
