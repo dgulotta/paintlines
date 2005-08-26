@@ -115,7 +115,7 @@ void HyperbolicLinesForm::helpAbout()
 void HyperbolicLinesForm::SymmetryChanged(int n)
 {
   *angle1=SpinAngle1->value();
-  if(angle2) *angle2=SpinAngle2->value;
+  if(angle2) *angle2=SpinAngle2->value();
   switch(n) {
   case 0:
     LabelAngle1->setText("Sum of angles");
