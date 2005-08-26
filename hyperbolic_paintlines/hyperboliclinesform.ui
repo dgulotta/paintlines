@@ -95,20 +95,20 @@
             <string>Symmetry Group</string>
         </property>
     </widget>
-    <widget class="QLabel">
+    <widget class="QPushButton">
         <property name="name">
-            <cstring>textLabel2</cstring>
+            <cstring>ButtonDraw</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>140</y>
+                <y>390</y>
                 <width>120</width>
-                <height>21</height>
+                <height>31</height>
             </rect>
         </property>
         <property name="text">
-            <string>Size</string>
+            <string>Draw</string>
         </property>
     </widget>
     <widget class="QLineEdit">
@@ -118,7 +118,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>160</y>
+                <y>310</y>
                 <width>120</width>
                 <height>26</height>
             </rect>
@@ -129,34 +129,34 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
+            <cstring>textLabel2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>290</y>
+                <width>120</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Size</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
             <cstring>textLabel3</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>190</y>
+                <y>340</y>
                 <width>120</width>
                 <height>21</height>
             </rect>
         </property>
         <property name="text">
             <string>Colors</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>ButtonDraw</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>240</y>
-                <width>120</width>
-                <height>31</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Draw</string>
         </property>
     </widget>
     <widget class="QSpinBox">
@@ -166,7 +166,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>214</y>
+                <y>360</y>
                 <width>120</width>
                 <height>22</height>
             </rect>
@@ -176,6 +176,41 @@
         </property>
         <property name="value">
             <number>25</number>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>LabelAngle1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>140</y>
+                <width>110</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Sum of angles</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>LabelAngle2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>190</y>
+                <width>110</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
         </property>
     </widget>
     <widget class="QComboBox">
@@ -197,6 +232,11 @@
         <item>
             <property name="text">
                 <string>P4-Like</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>P4G-Like</string>
             </property>
         </item>
         <item>
@@ -224,6 +264,142 @@
                 <width>99</width>
                 <height>25</height>
             </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>LabelAngle3</cstring>
+        </property>
+        <property name="enabled">
+            <bool>true</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>240</y>
+                <width>110</width>
+                <height>21</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string></string>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>SpinAngle1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>60</x>
+                <y>160</y>
+                <width>59</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="minValue">
+            <number>2</number>
+        </property>
+        <property name="value">
+            <number>2</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>SpinAngle2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>60</x>
+                <y>210</y>
+                <width>59</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="minValue">
+            <number>2</number>
+        </property>
+        <property name="value">
+            <number>2</number>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>SpinAngle3</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>60</x>
+                <y>260</y>
+                <width>59</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="minValue">
+            <number>2</number>
+        </property>
+        <property name="value">
+            <number>2</number>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>LabelPi3</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>260</y>
+                <width>50</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Pi/</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>LabelPi1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>160</y>
+                <width>50</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Pi/</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>LabelPi2</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>210</y>
+                <width>50</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Pi/</string>
         </property>
     </widget>
 </widget>
@@ -622,10 +798,33 @@
         <receiver>HyperbolicLinesForm</receiver>
         <slot>Draw()</slot>
     </connection>
+    <connection>
+        <sender>ComboSymmetry</sender>
+        <signal>activated(int)</signal>
+        <receiver>HyperbolicLinesForm</receiver>
+        <slot>SymmetryChanged(int)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">hyperboliclinesform.ui.h</include>
 </includes>
+<variables>
+    <variable access="private">int pmg_1;</variable>
+    <variable access="private">int pgg_1;</variable>
+    <variable access="private">int p4m_3;</variable>
+    <variable access="private">int p4m_2;</variable>
+    <variable access="private">int p4m_1;</variable>
+    <variable access="private">int p4g_2;</variable>
+    <variable access="private">int p4g_1;</variable>
+    <variable access="private">int p4_2;</variable>
+    <variable access="private">int p4_1;</variable>
+    <variable access="private">int p2_1;</variable>
+    <variable access="private">int cmm_2;</variable>
+    <variable access="private">int cmm_1;</variable>
+    <variable access="private">int cm_1;</variable>
+    <variable access="private">int *angle1;</variable>
+    <variable access="private">int *angle2;</variable>
+</variables>
 <slots>
     <slot>fileNew()</slot>
     <slot>fileOpen()</slot>
@@ -642,7 +841,9 @@
     <slot>helpIndex()</slot>
     <slot>helpContents()</slot>
     <slot>helpAbout()</slot>
+    <slot>SymmetryChanged( int n )</slot>
     <slot>Draw()</slot>
+    <slot>init()</slot>
 </slots>
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>

@@ -112,39 +112,225 @@ void HyperbolicLinesForm::helpAbout()
 }
 
 
+void HyperbolicLinesForm::SymmetryChanged(int n)
+{
+  *angle1=SpinAngle1->value();
+  if(angle2) *angle2=SpinAngle2->value;
+  switch(n) {
+  case 0:
+    LabelAngle1->setText("Sum of angles");
+    LabelAngle2->setText("");
+    LabelAngle3->setText("");
+    LabelPi1->setText("Pi/");
+    LabelPi2->setEnabled(false);
+    LabelPi3->setEnabled(false);
+    SpinAngle1->setMinValue(2);
+    SpinAngle2->setEnabled(false);
+    SpinAngle3->setEnabled(false);
+    angle1=&cm_1;
+    SpinAngle1->setValue(cm_1);
+    break;
+  case 1:
+    LabelAngle1->setText("Mirror angle");
+    LabelAngle2->setText("Other angles");
+    LabelAngle3->setText("");
+    LabelPi1->setText("Pi/");
+    LabelPi2->setText("Pi/2*");
+    LabelPi2->setEnabled(true);
+    LabelPi3->setEnabled(false);
+    SpinAngle1->setMinValue(2);
+    SpinAngle2->setMinValue(2);
+    SpinAngle2->setEnabled(true);
+    SpinAngle3->setEnabled(false);
+    angle1=&cmm_1;
+    angle2=&cmm_2;
+    SpinAngle1->setValue(cmm_1);
+    SpinAngle2->setValue(cmm_2);
+    break;
+  case 2:
+    LabelAngle1->setText("Sum of angles");
+    LabelAngle2->setText("");
+    LabelAngle3->setText("");
+    LabelPi1->setText("2 Pi/");
+    LabelPi2->setEnabled(false);
+    LabelPi3->setEnabled(false);
+    SpinAngle1->setMinValue(3);
+    SpinAngle2->setEnabled(false);
+    SpinAngle3->setEnabled(false);
+    angle1=&p2_1;
+    SpinAngle1->setValue(p2_1);
+    break;
+  case 3:
+    LabelAngle1->setText("Rotation angle");
+    LabelAngle2->setText("Other angles");
+    LabelAngle3->setText("");
+    LabelPi1->setText("2 Pi/");
+    LabelPi2->setText("Pi/");
+    LabelPi2->setEnabled(true);
+    LabelPi3->setEnabled(false);
+    SpinAngle1->setMinValue(3);
+    SpinAngle2->setMinValue(3);
+    SpinAngle2->setEnabled(true);
+    SpinAngle3->setEnabled(false);
+    angle1=&p4_1;
+    angle2=&p4_2;
+    SpinAngle1->setValue(p4_1);
+    SpinAngle2->setValue(p4_2);
+    break;
+  case 4:
+    LabelAngle1->setText("Rotation angle");
+    LabelAngle2->setText("Other angles");
+    LabelAngle3->setText("");
+    LabelPi1->setText("2 Pi/");
+    LabelPi2->setText("Pi/2*");
+    LabelPi2->setEnabled(true);
+    LabelPi3->setEnabled(false);
+    SpinAngle1->setMinValue(3);
+    SpinAngle2->setMinValue(2);
+    SpinAngle2->setEnabled(true);
+    SpinAngle3->setEnabled(false);
+    angle1=&p4g_1;
+    angle2=&p4g_2;
+    SpinAngle1->setValue(p4g_1);
+    SpinAngle2->setValue(p4g_2);
+    break;
+  case 5:
+    LabelAngle1->setText("Angle 1");
+    LabelAngle2->setText("Angle 2");
+    LabelAngle3->setText("Angle 3");
+    LabelPi1->setText("Pi/");
+    LabelPi2->setText("Pi/");
+    LabelPi3->setText("Pi/");
+    LabelPi2->setEnabled(true);
+    LabelPi3->setEnabled(true);
+    SpinAngle1->setMinValue(2);
+    SpinAngle2->setMinValue(2);
+    SpinAngle2->setEnabled(true);
+    SpinAngle3->setEnabled(true);
+    angle1=&p4m_1;
+    angle2=&p4m_2;
+    SpinAngle1->setValue(p4m_1);
+    SpinAngle2->setValue(p4m_2);
+    break;
+  case 6:
+    LabelAngle1->setText("Sum of angles");
+    LabelAngle2->setText("");
+    LabelAngle3->setText("");
+    LabelPi1->setText("2 Pi/");
+    LabelPi2->setEnabled(false);
+    LabelPi3->setEnabled(false);
+    SpinAngle1->setMinValue(3);
+    SpinAngle2->setEnabled(false);
+    SpinAngle3->setEnabled(false);
+    angle1=&pgg_1;
+    SpinAngle1->setValue(pgg_1);
+    break;
+  case 7:
+    LabelAngle1->setText("Sum of angles");
+    LabelAngle2->setText("");
+    LabelAngle3->setText("");
+    LabelPi1->setText("Pi/");
+    LabelPi2->setEnabled(false);
+    LabelPi3->setEnabled(false);
+    SpinAngle1->setMinValue(2);
+    SpinAngle2->setEnabled(false);
+    SpinAngle3->setEnabled(false);
+    angle1=&pmg_1;
+    SpinAngle1->setValue(pmg_1);
+    break;
+  }
+}
+
 void HyperbolicLinesForm::Draw()
 {
   int size=EditSize->text().toInt();
   if (size<0) {
-	QMessageBox::information(this,"Paintlines","The size must be nonnegative.");
+	QMessageBox::information(this,"Hyperbolic Paintlines",
+				 "The size must be nonnegative.");
   }
   else {
     hyperbolic_symmetry_group sg;
+    bool candraw;
     switch(ComboSymmetry->currentItem()) {
     case 0:
-      sg=hyperbolic_glide_mirror(M_PI/6.,M_PI/6.);
+      cm_1=SpinAngle1->value();
+      candraw=true;
+      sg=hyperbolic_glide_mirror((M_PI/3.)/cm_1,(M_PI/3.)/cm_1);
       break;
     case 1:
-      sg=hyperbolic_2mirror_180(3,M_PI/4.,M_PI/4.);
+      cmm_1=SpinAngle1->value();
+      cmm_2=SpinAngle2->value();
+      candraw=(cmm_1>2||cmm_2>2);
+      if(candraw) sg=hyperbolic_2mirror_180(cmm_1,M_PI_2/cmm_2,M_PI_2/cmm_2);
       break;
     case 2:
-      sg=hyperbolic_3_180(2.*M_PI/9.,2.*M_PI/9.,2.*M_PI/9.);
+      p2_1=SpinAngle1->value();
+      candraw=true;
+      sg=hyperbolic_3_180((2.*M_PI/3.)/p2_1,(2.*M_PI/3.)/p2_1,
+			  (2.*M_PI/3.)/p2_1);
       break;
     case 3:
-      sg=hyperbolic_180_rotation(4,3);
+      p4_1=SpinAngle1->value();
+      p4_2=SpinAngle2->value();
+      candraw=(2*(p4_1+p4_2)<p4_1*p4_2);
+      if (candraw) sg=hyperbolic_180_rotation(p4_1,p4_2);
       break;
     case 4:
-      sg=hyperbolic_3mirror(4,3,3);
+      p4g_1=SpinAngle1->value();
+      p4g_2=SpinAngle2->value();
+      candraw=(p4g_1+2*p4g_2<p4g_1*p4g_2);
+      if(candraw) sg=hyperbolic_mirror_rotation(p4g_1,p4g_2);
       break;
     case 5:
-      sg=hyperbolic_glide_180(2.*M_PI/9,2.*M_PI/9.);
+      p4m_1=SpinAngle1->value();
+      p4m_2=SpinAngle2->value();
+      {
+	int p4m_3=SpinAngle3->value();
+	candraw=(p4m_1*p4m_2+p4m_1*p4m_3+p4m_2*p4m_3<p4m_1*p4m_2*p4m_3);
+	if(candraw) sg=hyperbolic_3mirror(p4m_1,p4m_2,p4m_3);
+      }
       break;
     case 6:
-      sg=hyperbolic_mirror_2_180(M_PI/6.,M_PI/6.,M_PI/6.);
+      pgg_1=SpinAngle1->value();
+      candraw=true;
+      sg=hyperbolic_glide_180((2.*M_PI/3.)/pgg_1,(2.*M_PI/3.)/pgg_1);
+      break;
+    case 7:
+      pmg_1=SpinAngle1->value();
+      candraw=true;
+      sg=hyperbolic_mirror_2_180((M_PI/3.)/pmg_1,(M_PI/3.)/pmg_1,
+				 (M_PI/3.)/pmg_1);
     }
-    projtype pt;
-    if(ButtonPoincare->isChecked()) pt=POINCARE;
-    else pt=KLEIN;
-    HyperbolicPaintFrame->draw(size,SpinColors->value(),sg,pt);
+    if(candraw) {
+      projtype pt;
+      if(ButtonPoincare->isChecked()) pt=POINCARE;
+      else pt=KLEIN;
+      HyperbolicPaintFrame->draw(size,SpinColors->value(),sg,pt);
+    }
+    else QMessageBox::information
+	   (this,"Hyperbolic Paintlines",
+	    "The sum of the angles must be less than pi.");
   }
 }
+
+void HyperbolicLinesForm::init()
+{
+  cm_1=2;
+  cmm_1=3;
+  cmm_2=2;
+  p2_1=3;
+  p4_1=4;
+  p4_2=5;
+  p4g_1=5;
+  p4g_2=2;
+  p4m_1=4;
+  p4m_2=3;
+  pgg_1=3;
+  pmg_1=2;
+  angle1=&cm_1;
+  angle2=NULL;
+}
+
+
+
+

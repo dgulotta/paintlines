@@ -33,8 +33,8 @@ void hyperbolic_paintlineswidget::draw
 (int sz, int n,hyperbolic_symmetry_group sym,projtype p)
 {
   set_ncolors(n);
-  paint(sz,sym);
   pt=p;
+  paint(sz,sym);
   QImage myimage(sz,sz,32);
   int i, sz2=sz*sz;
   for(i=0;i<sz2;i++)

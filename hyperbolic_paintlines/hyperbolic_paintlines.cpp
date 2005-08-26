@@ -49,14 +49,17 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
   fill(last.begin(),last.end(),-1);
   unsigned char temp;
   int k;
+  double dist;
   switch(pt) {
   case POINCARE:
     proj=&poincare_projection;
     drawdot=&hyperbolic_paintlines::drawdot_poincare;
+    dist=1.+.01/size;
     break;
   case KLEIN:
     proj=&klein_projection;
     drawdot=&hyperbolic_paintlines::drawdot_klein;
+    dist=1.+.005/size;
   }
   t=ncolors;
   while(t--) {
@@ -104,7 +107,7 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
       c2=sg.random_symmetry(c,rand()%3);
     } while(c.z>=25.||c2.z>=25.);
     k/=6;
-    drawsmoothline(c,c2,.02,1.+.05/size);
+    drawsmoothline(c,c2,.02,dist);
   }
   int x, y, i;
   for(x=0;x<size;x++)
@@ -207,8 +210,8 @@ void hyperbolic_paintlines::drawsmoothline
   
   if(end1*end2>min) {
     hyperbolic_coord mid=random_mid(end1,end2,var);
-    drawsmoothline(end1,mid,var/2.,min);
+    drawsmoothline(end1,mid,var/3.,min);
     sg.symmetrize(*this,drawdot,mid,8);
-    drawsmoothline(mid,end2,var/2.,min);
+    drawsmoothline(mid,end2,var/3.,min);
   }
 }
