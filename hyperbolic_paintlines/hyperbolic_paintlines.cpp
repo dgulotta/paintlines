@@ -145,35 +145,21 @@ void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
 
 void hyperbolic_paintlines::drawdot_klein(const hyperbolic_coord &hc)
 {
+  planar_coord pc=(*proj)(hc);
+  double a=hc.z/(hc.z+1);
+  double x2=hc.x*hc.x;
+  double y2=hc.y*hc.y;
+  double z2=1.+x2+y2;
+  double xx=(z2-a*y2)/brightness;
+  double yy=(z2-a*x2)/brightness;
+  double xy=-hc.x*hc.y*a/brightness;
+  int r=radius/hc.z;
   int i,j;
-  if(!(hc.x||hc.y)) {
-    int r=radius;
-    int x=(size+1)/2;
-    for(i=-r;i<r;i++)
-      for(j=-r;j<r;j++) {
-	drawpixel(x+i,x+j,255.99/(1.+(i*i+j*j)/brightness));
-      }
-  }
-  else {
-    planar_coord pc=(*proj)(hc);
-    double n1=pc.x*pc.x+pc.y*pc.y;
-    double d=1.-n1;
-    n1=sqrt(n1);
-    double c=pc.x/n1;
-    double s=pc.y/n1;
-    double a=1./(d*brightness);
-    d=sqrt(d);
-    int r=radius*d;
-    d=1./(d*brightness);
-    int i,j;
-    screen_coord sc=toscreen(pc);
-    for(i=-r;i<r;i++)
-      for(j=-r;j<r;j++) {
-	double dr=c*i-s*j;
-	double dq=s*i+c*j;
-	drawpixel(sc.x+i,sc.y+j,255.99/(1.+a*dr*dr+d*dq*dq));
-      }
-  }
+  screen_coord sc=toscreen(pc);
+  for(i=-r;i<=r;i++)
+    for(j=-r;j<=r;j++) {
+      drawpixel(sc.x+i,sc.y+j,255.99/(1.+xx*i*i+xy*i*j+yy*j*j));
+    }
 }
 
 void hyperbolic_paintlines::drawpixel(int x, int y, unsigned char myalpha)
