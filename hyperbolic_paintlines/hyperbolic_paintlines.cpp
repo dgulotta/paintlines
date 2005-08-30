@@ -132,9 +132,9 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
 void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
 {
   planar_coord pc=(*proj)(hc);
-  double d=1.-(pc.x*pc.x+pc.y*pc.y);
-  int r=radius*d;
-  d=1./(d*d*brightness);
+  double d=hc.z+1.;
+  int r=int(radius/d)+1;
+  d=d*d/brightness;
   int i,j;
   screen_coord sc=toscreen(pc);
   for(i=-r;i<=r;i++)
@@ -146,14 +146,13 @@ void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
 void hyperbolic_paintlines::drawdot_klein(const hyperbolic_coord &hc)
 {
   planar_coord pc=(*proj)(hc);
-  double a=hc.z/(hc.z+1);
   double x2=hc.x*hc.x;
   double y2=hc.y*hc.y;
-  double z2=1.+x2+y2;
-  double xx=(z2-a*y2)/brightness;
-  double yy=(z2-a*x2)/brightness;
-  double xy=-hc.x*hc.y*a/brightness;
-  int r=radius/hc.z;
+  double z2=(1.+x2+y2)/brightness;
+  double xx=z2*(1.+x2);
+  double yy=z2*(1.+y2);
+  double xy=z2*hc.x*hc.y;
+  int r=int(radius/hc.z)+1;
   int i,j;
   screen_coord sc=toscreen(pc);
   for(i=-r;i<=r;i++)

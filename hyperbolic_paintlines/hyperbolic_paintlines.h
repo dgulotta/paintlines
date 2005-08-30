@@ -29,7 +29,7 @@ hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 class hyperbolic_paintlines : public hyperbolic_painter
 {
  public:
-  hyperbolic_paintlines() : radius(5.99), brightness(5.), ncolors(0) {}
+  hyperbolic_paintlines() : radius(4.99), brightness(5.), ncolors(0) {}
   void paint(int sz, hyperbolic_symmetry_group &sym);
   void set_ncolors(int n) {ncolors=n;}
  private:

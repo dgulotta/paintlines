@@ -116,6 +116,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
 {
   *angle1=SpinAngle1->value();
   if(angle2) *angle2=SpinAngle2->value();
+  if(angle3) *angle3=SpinAngle3->value();
   switch(n) {
   case 0:
     LabelAngle1->setText("Sum of angles");
@@ -128,6 +129,8 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle2->setEnabled(false);
     SpinAngle3->setEnabled(false);
     angle1=&cm_1;
+    angle2=NULL;
+    angle3=NULL;
     SpinAngle1->setValue(cm_1);
     break;
   case 1:
@@ -144,6 +147,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle3->setEnabled(false);
     angle1=&cmm_1;
     angle2=&cmm_2;
+    angle3=NULL;
     SpinAngle1->setValue(cmm_1);
     SpinAngle2->setValue(cmm_2);
     break;
@@ -158,24 +162,30 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle2->setEnabled(false);
     SpinAngle3->setEnabled(false);
     angle1=&p2_1;
+    angle2=NULL;
+    angle3=NULL;
     SpinAngle1->setValue(p2_1);
     break;
   case 3:
-    LabelAngle1->setText("Rotation angle");
-    LabelAngle2->setText("Other angles");
-    LabelAngle3->setText("");
-    LabelPi1->setText("2 Pi/");
+    LabelAngle1->setText("Angle 1");
+    LabelAngle2->setText("Angle 2");
+    LabelAngle3->setText("Angle 3");
+    LabelPi1->setText("Pi/");
     LabelPi2->setText("Pi/");
+    LabelPi3->setText("Pi/");
     LabelPi2->setEnabled(true);
-    LabelPi3->setEnabled(false);
-    SpinAngle1->setMinValue(3);
-    SpinAngle2->setMinValue(3);
+    LabelPi3->setEnabled(true);
+    SpinAngle1->setMinValue(2);
+    SpinAngle2->setMinValue(2);
+    SpinAngle3->setMinValue(2);
     SpinAngle2->setEnabled(true);
-    SpinAngle3->setEnabled(false);
+    SpinAngle3->setEnabled(true);
     angle1=&p4_1;
     angle2=&p4_2;
+    angle3=&p4_3;
     SpinAngle1->setValue(p4_1);
     SpinAngle2->setValue(p4_2);
+    SpinAngle3->setValue(p4_3);
     break;
   case 4:
     LabelAngle1->setText("Rotation angle");
@@ -191,6 +201,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle3->setEnabled(false);
     angle1=&p4g_1;
     angle2=&p4g_2;
+    angle3=NULL;
     SpinAngle1->setValue(p4g_1);
     SpinAngle2->setValue(p4g_2);
     break;
@@ -209,8 +220,10 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle3->setEnabled(true);
     angle1=&p4m_1;
     angle2=&p4m_2;
+    angle3=&p4m_3;
     SpinAngle1->setValue(p4m_1);
     SpinAngle2->setValue(p4m_2);
+    SpinAngle3->setValue(p4m_3);
     break;
   case 6:
     LabelAngle1->setText("Sum of angles");
@@ -223,6 +236,8 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle2->setEnabled(false);
     SpinAngle3->setEnabled(false);
     angle1=&pgg_1;
+    angle2=NULL;
+    angle3=NULL;
     SpinAngle1->setValue(pgg_1);
     break;
   case 7:
@@ -236,6 +251,8 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle2->setEnabled(false);
     SpinAngle3->setEnabled(false);
     angle1=&pmg_1;
+    angle2=NULL;
+    angle3=NULL;
     SpinAngle1->setValue(pmg_1);
     break;
   }
@@ -272,8 +289,9 @@ void HyperbolicLinesForm::Draw()
     case 3:
       p4_1=SpinAngle1->value();
       p4_2=SpinAngle2->value();
-      candraw=(2*(p4_1+p4_2)<p4_1*p4_2);
-      if (candraw) sg=hyperbolic_180_rotation(p4_1,p4_2);
+      p4_3=SpinAngle3->value();
+      candraw=(p4_1*p4_2+p4_1*p4_3+p4_2*p4_3<p4_1*p4_2*p4_3);
+      if (candraw) sg=hyperbolic_3rotation(p4_1,p4_2,p4_3);
       break;
     case 4:
       p4g_1=SpinAngle1->value();
@@ -284,11 +302,9 @@ void HyperbolicLinesForm::Draw()
     case 5:
       p4m_1=SpinAngle1->value();
       p4m_2=SpinAngle2->value();
-      {
-	int p4m_3=SpinAngle3->value();
-	candraw=(p4m_1*p4m_2+p4m_1*p4m_3+p4m_2*p4m_3<p4m_1*p4m_2*p4m_3);
-	if(candraw) sg=hyperbolic_3mirror(p4m_1,p4m_2,p4m_3);
-      }
+      p4m_3=SpinAngle3->value();
+      candraw=(p4m_1*p4m_2+p4m_1*p4m_3+p4m_2*p4m_3<p4m_1*p4m_2*p4m_3);
+      if(candraw) sg=hyperbolic_3mirror(p4m_1,p4m_2,p4m_3);
       break;
     case 6:
       pgg_1=SpinAngle1->value();
@@ -319,16 +335,19 @@ void HyperbolicLinesForm::init()
   cmm_1=3;
   cmm_2=2;
   p2_1=3;
-  p4_1=4;
-  p4_2=5;
+  p4_1=3;
+  p4_2=3;
+  p4_3=4;
   p4g_1=5;
   p4g_2=2;
-  p4m_1=4;
-  p4m_2=3;
+  p4m_1=5;
+  p4m_2=4;
+  p4m_3=2;
   pgg_1=3;
   pmg_1=2;
   angle1=&cm_1;
   angle2=NULL;
+  angle3=NULL;
 }
 
 

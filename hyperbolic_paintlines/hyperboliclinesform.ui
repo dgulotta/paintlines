@@ -816,6 +816,7 @@
     <variable access="private">int p4m_1;</variable>
     <variable access="private">int p4g_2;</variable>
     <variable access="private">int p4g_1;</variable>
+    <variable access="private">int p4_3;</variable>
     <variable access="private">int p4_2;</variable>
     <variable access="private">int p4_1;</variable>
     <variable access="private">int p2_1;</variable>
@@ -824,6 +825,7 @@
     <variable access="private">int cm_1;</variable>
     <variable access="private">int *angle1;</variable>
     <variable access="private">int *angle2;</variable>
+    <variable access="private">int *angle3;</variable>
 </variables>
 <slots>
     <slot>fileNew()</slot>
