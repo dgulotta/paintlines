@@ -257,7 +257,8 @@ class hyperbolic_symmetry_group
     (double a1, double a2,double a3);
   friend hyperbolic_symmetry_group hyperbolic_180_rotation(int n1, int n2);
   friend hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2);
-  friend hyperbolic_symmetry_group hyperbolic_3rotation(int n);
+  friend hyperbolic_symmetry_group hyperbolic_3rotation(int n1, int n2,
+							int n3);
   friend hyperbolic_symmetry_group hyperbolic_glide_180(double a1, double a2);
   friend hyperbolic_symmetry_group hyperbolic_glide_mirror
     (double a1, double a2);
@@ -389,7 +390,7 @@ hyperbolic_symmetry_group hyperbolic_mirror_2_180(double a1, double a2,
 						  double a3);
 hyperbolic_symmetry_group hyperbolic_180_rotation(int n1, int n2);
 hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2);
-hyperbolic_symmetry_group hyperbolic_3rotation(int n);
+hyperbolic_symmetry_group hyperbolic_3rotation(int n1, int n2, int n3);
 hyperbolic_symmetry_group hyperbolic_glide_180(double a1, double a2);
 hyperbolic_symmetry_group hyperbolic_glide_mirror(double a1, double a2);
 

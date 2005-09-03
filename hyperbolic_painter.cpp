@@ -188,20 +188,23 @@ hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2)
   return s;
 }
 
-hyperbolic_symmetry_group hyperbolic_3rotation(int n)
+hyperbolic_symmetry_group hyperbolic_3rotation(int n1, int n2, int n3)
 {
+  double cos1=cos(M_PI/n1);
+  double sin1=sin(M_PI/n1);
+  double cos2=cos(M_PI/n2);
+  double sin2=sin(M_PI/n2);
+  double cos3=cos(M_PI/n3);
+  double z2=(cos3+cos1*cos2)/(sin1*sin2);
+  double r2=sqrt(z2*z2-1.);
   hyperbolic_symmetry_group s;
   s.trans1=auto_ptr<hyperbolic_transformation>
-    (new hyperbolic_rotation(n,hyperbolic_coord(0.,0.,1.)));
-  double cosine=cos(2.*M_PI/n);
-  double sine=sin(2.*M_PI/n);
-  double z=cosine/(1.-cosine);
-  double r=sqrt(z*z-1.);
+    (new hyperbolic_rotation_origin(n1));
   s.trans2=auto_ptr<hyperbolic_transformation>
-    (new hyperbolic_rotation(n,hyperbolic_coord(r,0.,z)));
+    (new hyperbolic_rotation_origin(-n1));
   s.trans3=auto_ptr<hyperbolic_transformation>
-    (new hyperbolic_rotation(n,hyperbolic_coord(r*cosine,r*sine,z)));
-  s.reversed=false;
+    (new hyperbolic_rotation(n2,hyperbolic_coord(r2,0.,z2)));
+  s.reversed=true;
   return s;
 }
 
