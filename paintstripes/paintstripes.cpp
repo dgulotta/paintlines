@@ -54,7 +54,7 @@ void paintstripes::fill(vector<unsigned char> &arr)
       double d=array[i+size2*j];
       norm+=d*d;
     }
-  norm=sqrt(norm)/(size*64);
+  norm=sqrt(norm)/(size*128);
   for(i=0;i<size;i++)
     for(j=0;j<size;j++)
       arr[i+size*j]=colorchop(128.+array[i+size2*j]/norm);

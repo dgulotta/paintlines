@@ -22,10 +22,10 @@ class paintstripes : virtual public painter
     painter::symmetrize(*this,&paintstripes::set,x,y);
   }
   void accumulate(int x, int y) {
-    sum+=array[x+y*size2];
+    sum+=array[mod(x,size)+mod(y,size)*size2];
   }
   void set(int x, int y) {
-    array[x+y*size2]=sum;
+    array[mod(x,size)+mod(y,size)*size2]=sum;
   }
   double norm_square(int x, int y) {
     if(x||y)

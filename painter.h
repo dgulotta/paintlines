@@ -406,7 +406,6 @@ void painter::enumerate(T &t, void (T::*p)(int,int))
   int i,j;
   switch(sg) {
   case SYM_CM:
-  case SYM_P2:
     for(i=0;i<size;i++)
       for(j=0;j<=i;j++)
 	(t.*p)(i,j);
@@ -420,6 +419,42 @@ void painter::enumerate(T &t, void (T::*p)(int,int))
     break;
   case SYM_P1:
     for(i=0;i<size;i++)
+      for(j=0;j<size;j++)
+	(t.*p)(i,j);
+    break;
+  case SYM_P2:
+  case SYM_PG:
+   for(i=0;i<size;i++)
+     for(j=0;j<halfsize;j++)
+       (t.*p)(i,j);
+   break;
+  case SYM_P4:
+  case SYM_PMM:
+    for(i=0;i<halfsize;i++)
+      for(j=0;j<halfsize;j++)
+	(t.*p)(i,j);
+    break;
+  case SYM_P4G:
+    for(i=0;i<halfsize;i++)
+      for(j=0;i+j<halfsize;j++)
+	(t.*p)(i,j);
+    break;
+  case SYM_P4M:
+    for(i=0;i<halfsize;i++)
+      for(j=0;j<=i;j++)
+	(t.*p)(i,j);
+    break;
+  case SYM_PGG:
+    {
+      int begin=halfsize/2, end=halfsize+begin;
+      for(i=begin;i<end;i++)
+	for(j=begin;j<end;j++)
+	(t.*p)(i,j);
+    }
+    break;
+  case SYM_PM:
+  case SYM_PMG:
+    for(i=0;i<halfsize;i++)
       for(j=0;j<size;j++)
 	(t.*p)(i,j);
     break;
