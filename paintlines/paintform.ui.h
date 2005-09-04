@@ -153,7 +153,7 @@ void PaintForm::Draw()
 
 void PaintForm::Randomize()
 {
-    PaintFrame->randomize(SpinXTile->value(),SpinYTile->value());
+    PaintFrame->painterwidget::randomize(SpinXTile->value(),SpinYTile->value());
     ButtonRestore->setEnabled(true);
 }
 

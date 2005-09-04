@@ -18,21 +18,18 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "paintlines.h"
-#include <qwidget.h>
-#include <qpixmap.h>
+#ifndef _PAINTLINESWIDGET_H
+#define _PAINTLINESWIDGET_H
 
-class paintlineswidget : public QWidget, public paintlines
+#include "paintlines.h"
+#include "../painterwidget.h"
+
+class paintlineswidget : public painterwidget, public paintlines
 {
     Q_OBJECT
 public:
     paintlineswidget(QWidget *parent=0,const char *name=0);
     void draw(int sz, int n, symgroup sg);
-    bool save(const QString &filename, const char *format);
-    void randomize(int xtiles, int ytiles);
-    void restore();
-protected:
-    void paintEvent(QPaintEvent *);
-private:
-    QPixmap mypixmap;
 };
+
+#endif

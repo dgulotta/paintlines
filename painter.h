@@ -22,7 +22,9 @@
 #define _PAINTER_H
 
 #include <vector>
+#include <cmath>
 using std::vector;
+using std::cos;
 
 inline int mod(int x, int y) 
 {
@@ -67,6 +69,8 @@ class painter
   }
   template <typename T>
   void symmetrize(T &t, void (T::*p)(int,int), int x, int y);
+  template <typename T>
+  void enumerate(T &t, void (T::*p)(int,int));
   template <typename T>
   void (painter::*(get_sym_func()))(T &, void (T::*)(int,int),int, int);
   template <typename T>
@@ -392,6 +396,32 @@ void painter::symmetrize(T &t, void (T::*p)(int,int), int x, int y)
     (t.*p)(y+halfsize,halfsize1-x);
     (t.*p)(halfsize1-y,x+halfsize);
     (t.*p)(y+halfsize,x+halfsize);
+    break;
+  }
+}
+
+template <typename T>
+void painter::enumerate(T &t, void (T::*p)(int,int))
+{
+  int i,j;
+  switch(sg) {
+  case SYM_CM:
+  case SYM_P2:
+    for(i=0;i<size;i++)
+      for(j=0;j<=i;j++)
+	(t.*p)(i,j);
+    break;
+  case SYM_CMM:
+    for(i=0;i<halfsize;i++)
+      for(j=0;j<=i;j++) {
+	(t.*p)(i,j);
+	(t.*p)(size1-i,j);
+      }
+    break;
+  case SYM_P1:
+    for(i=0;i<size;i++)
+      for(j=0;j<size;j++)
+	(t.*p)(i,j);
     break;
   }
 }

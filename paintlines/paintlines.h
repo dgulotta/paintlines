@@ -37,7 +37,7 @@ struct paintrule
   bool operator < (int n) {return weight<n;}
 };
 
-class paintlines : public painter
+class paintlines : virtual public painter
 {
  public:
   paintlines() : ncolors(0) {}

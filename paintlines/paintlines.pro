@@ -5,12 +5,14 @@ CONFIG	+= qt warn_on release
 
 HEADERS	+= paintlines.h \
 	paintlineswidget.h \
-	../painter.h
+	../painter.h \
+	../painterwidget.h
 
 SOURCES	+= paintlines.cpp \
 	main.cpp \
 	paintlineswidget.cpp \
-	../painter.cpp
+	../painter.cpp \
+	../painterwidget.cpp
 
 FORMS	= paintform.ui
 

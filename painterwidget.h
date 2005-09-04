@@ -18,16 +18,26 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "paintlineswidget.h"
+#ifndef _PAINTERWIDGET_H
+#define _PAINTERWIDGET_H
 
-paintlineswidget::paintlineswidget(QWidget *parent,const char *name)
-    :painterwidget(parent,name)	
-{
-}
+#include "painter.h"
+#include <qwidget.h>
+#include <qpixmap.h>
 
-void paintlineswidget::draw(int sz, int n, symgroup sg)
+class painterwidget : public QWidget, virtual public painter
 {
-  set_ncolors(n);
-  paintlines::paint(sz,sg);
-  painterwidget::paint(sz,sg);
-}
+    Q_OBJECT
+public:
+    painterwidget(QWidget *parent=0,const char *name=0);
+    void paint(int sz, symgroup sg);
+    bool save(const QString &filename, const char *format);
+    void randomize(int xtiles, int ytiles);
+    void restore();
+protected:
+    void paintEvent(QPaintEvent *);
+private:
+    QPixmap mypixmap;
+};
+
+#endif
