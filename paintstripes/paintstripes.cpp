@@ -14,14 +14,26 @@ void randomcauchy(double *d,double var)
 
 void paintstripes::paint(int sz, symgroup sym)
 {
-  size2=size+2;
+  size2=sz+2;
   if(sz!=size) {
     if(array) fftw_free(array);
     array=(double *)fftw_malloc(sizeof(double)*sz*size2);
     if(fftplan) fftw_destroy_plan(fftplan);
-    fftw_plan_dft_c2r_2d(sz,sz,(fftw_complex *)array,array,FFTW_MEASURE);
+    fftplan=fftw_plan_dft_c2r_2d(sz,sz,(fftw_complex *)array,array,
+				 FFTW_MEASURE);
   }
   painter::paint(sz,sym);
+  switch(sym) {
+  case SYM_P3:
+  case SYM_P31M:
+  case SYM_P3M1:
+  case SYM_P6:
+  case SYM_P6M:
+    norm=&paintstripes::norm_hexagonal;
+    break;
+  default:
+    norm=&paintstripes::norm_square;
+  }
   dq=M_PI/halfsize;
   fill(red);
   fill(green);
@@ -42,7 +54,7 @@ void paintstripes::fill(vector<unsigned char> &arr)
       double d=array[i+size2*j];
       norm+=d*d;
     }
-  norm=64*sqrt(norm)/size;
+  norm=sqrt(norm)/(size*64);
   for(i=0;i<size;i++)
     for(j=0;j<size;j++)
       arr[i+size*j]=colorchop(128.+array[i+size2*j]/norm);
