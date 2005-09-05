@@ -30,6 +30,16 @@ void paintclouds::paint(int sz, symgroup sym)
   painter::paint(sz,sym);
   drawfunc=get_sym_func<paintclouds>();
   switch(sym) {
+  case SYM_CM_O:
+    drawpixelsymmetric(0,0,red1,green1,blue1);
+    drawpixelsymmetric(halfsize,0,red2,green2,blue2);
+    drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
+    paint_border(0,0,halfsize,0);
+    paint_border(halfsize,0,size,0);
+    paint_border(0,0,halfsize,halfsize);
+    paint_border(halfsize,halfsize,size,size);
+    paint_triangle(0,0,size,0,size,size);
+    break;
   case SYM_CMM_O:
     drawpixelsymmetric(0,0,red1,green1,blue1);
     drawpixelsymmetric(halfsize,halfsize,red2,green2,blue2);
@@ -70,6 +80,7 @@ void paintclouds::paint(int sz, symgroup sym)
       paint_border(0,halfsize,mx,my);
     }
     paint_triangle(0,0,halfsize,0,0,halfsize);
+    break;
   case SYM_P4M_O:
     drawpixelsymmetric(0,0,red1,green1,blue1);
     drawpixelsymmetric(halfsize,0,red2,green2,blue2);
@@ -91,11 +102,11 @@ void paintclouds::paint_border(int x1, int y1, int x2, int y2)
     double norm=sqrt(dx*dx+dy*dy);
     drawpixelsymmetric
       (mx,my,colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+norm*
-		       randomnormal()),
+		       randomnormal()+.5),
        colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+norm*
-		 randomnormal()),
+		 randomnormal()+.5),
        colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+norm*
-		 randomnormal()));
+		 randomnormal()+.5));
     paint_border(x1,y1,mx,my);
     paint_border(mx,my,x2,y2);
   }
