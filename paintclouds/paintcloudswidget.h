@@ -18,42 +18,21 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _PAINTCLOUDS_H
-#define _PAINTCLOUDS_H
+#ifndef _PAINTCLOUDSWIDGET_H
+#define _PAINTCLOUDSWIDGET_H
 
-#include "../painter.h"
+#include "paintclouds.h"
+#include "../painterwidget.h"
 
-double randomnormal();
-
-class paintclouds : virtual public painter
+class paintcloudswidget : public painterwidget, public paintclouds
 {
- public:
-  void paint(int size, symgroup sg);
-  void set_colors(unsigned char r1, unsigned char b1, unsigned char g1,
-		  unsigned char r2, unsigned char b2, unsigned char g2,
-		  unsigned char r3, unsigned char b3, unsigned char g3)
-    {red1=r1;red2=r2;red3=r3;blue1=b1;blue2=b2;blue3=b3;green1=g1;green2=g2;
-    green3=g3;}
- private:
-  void (painter::*drawfunc)(paintclouds &,void (paintclouds::*)(int,int),
-			    int,int);
-  inline void drawpixelsymmetric(int x, int y, unsigned char r,
-				 unsigned char g, unsigned char b) {
-    tempr=r;
-    tempg=g;
-    tempb=b;
-    (((painter *)this)->*drawfunc)(*this,&paintclouds::drawpixel,x,y);
-  }
-  void drawpixel(int x, int y) {
-    mi(red,x,y)=tempr;
-    mi(green,x,y)=tempg;
-    mi(blue,x,y)=tempb;
-  }
-  void paint_border(int x1, int y1, int x2, int y2);
-  void paint_border0(int x1, int y1, int x2, int y2);
-  void paint_triangle(int x1, int y1, int x2, int y2, int x3, int y3);
-  unsigned char red1, red2, red3, blue1, blue2, blue3, green1, green2, green3;
-  unsigned char tempr,tempg,tempb;
+    Q_OBJECT
+public:
+    paintcloudswidget(QWidget *parent=0,const char *name=0);
+    void draw(int sz, symgroup sg, unsigned char red1, unsigned char green1,
+	      unsigned char blue1, unsigned char red2, unsigned char green2,
+	      unsigned char blue2, unsigned char red3, unsigned char green3,
+	      unsigned char blue3);
 };
 
 #endif

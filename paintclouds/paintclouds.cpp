@@ -1,8 +1,33 @@
+/***************************************************************************
+ *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   dgulotta@mit.edu                                                      *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
+ *   02110-1301  USA                                                       *
+ ***************************************************************************/
+
 #include "paintclouds.h"
+
+double randomnormal()
+{
+  return log(double(rand())/RAND_MAX)*cos((M_PI*rand())/RAND_MAX);
+}
 
 void paintclouds::paint(int sz, symgroup sym)
 {
-  painter::paint(sy,sym);
+  painter::paint(sz,sym);
   drawfunc=get_sym_func<paintclouds>();
   switch(sym) {
   case SYM_CMM_O:
@@ -13,13 +38,14 @@ void paintclouds::paint(int sz, symgroup sym)
     paint_border(0,0,halfsize,halfsize);
     paint_border(halfsize,halfsize,size,0);
     paint_triangle(0,0,size,0,halfsize,halfsize);
+    break;
   case SYM_P2_O:
     drawpixelsymmetric(0,0,((int)red1+red2+red3)/3,
 		       ((int)green1+green2+green3)/3,
 		       ((int)blue1+blue2+blue3)/3);
     drawpixelsymmetric(halfsize,0,red1,green1,blue1);
     drawpixelsymmetric(0,halfsize,red2,green2,blue2);
-    drawpixelsymmetric(halfsize,halfsize,red3,blue3,green3);
+    drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
     paint_border(0,0,0,halfsize);
     paint_border(0,0,halfsize,0);
     paint_border(size,0,halfsize,halfsize);
@@ -61,11 +87,16 @@ void paintclouds::paint_border(int x1, int y1, int x2, int y2)
   int mx=(x1+x2)/2;
   int my=(y1+y2)/2;
   if(!((mx==x1||mx==x2)&&(my==y1||my==y2))) {
+    double dx=x1-x2, dy=y1-y2;
+    double norm=sqrt(dx*dx+dy*dy);
     drawpixelsymmetric
-      (mx,my,colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+/*random*/),
-       colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+/*random*/)
-       colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+/*random*/);
-    paint_border(x1,x2,mx,my);
+      (mx,my,colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+norm*
+		       randomnormal()),
+       colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+norm*
+		 randomnormal()),
+       colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+norm*
+		 randomnormal()));
+    paint_border(x1,y1,mx,my);
     paint_border(mx,my,x2,y2);
   }
 }
@@ -83,6 +114,7 @@ void paintclouds::paint_triangle(int x1, int y1, int x2, int y2, int x3,
      paint_border(m3x,m3y,m1x,m1y);
      paint_triangle(x1,y1,m3x,m3y,m2x,m2y);
      paint_triangle(m3x,m3y,x2,y2,m1x,m1y);
-     paint_triangle(m2x,m2x,m1x,m1y,x3,y3);
+     paint_triangle(m2x,m2y,m1x,m1y,x3,y3);
+     paint_triangle(m1x,m1y,m2x,m2y,m3x,m3y);
   }
 }
