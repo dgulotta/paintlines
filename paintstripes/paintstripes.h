@@ -24,7 +24,7 @@
 #include "../painter.h"
 #include <fftw3.h>
 
-double random_levy_1d(double alpha, double scale);
+double random_levy_1d_power_alpha(double alpha, double scale);
 
 void random_levy_2d(double *d,double alpha,double scale);
 

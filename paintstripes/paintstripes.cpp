@@ -30,17 +30,15 @@ using std::copy;
   This function is adapted from gsl_ran_levy function from the GNU Scientific
   Library.
 */
-double random_levy_1d(double alpha,double scale)
+double random_levy_1d_power_alpha(double alpha,double scale)
 {
   double u, v, t, s;
-  u=M_PI*(double(rand())/RAND_MAX-.5);
+  u=(M_PI_2*rand())/RAND_MAX;
   v=log((RAND_MAX+1.)/(rand()+.5));
-  t=sin(alpha*u)/pow(cos(u),1/alpha);
-  s=pow(cos((1-alpha)*u)/v,(1-alpha)/alpha);
-  return scale*t*s;
+  t=pow(scale*sin(alpha*u),alpha)/cos(u);
+  s=pow(cos((1-alpha)*u)/v,(1-alpha));
+  return t*s;
 }
-
-#include <stdio.h>
 
 void random_levy_2d(double *d,double alpha,double scale)
 {
@@ -49,10 +47,8 @@ void random_levy_2d(double *d,double alpha,double scale)
     *(d+1)=0.;
   }
   else {
-    double x=fabs(random_levy_1d(alpha,scale));
-    double y=fabs(random_levy_1d(alpha,scale));
-    double r=sqrt(x*x+y*y);
-    r*=r/pow((pow(x,alpha)+pow(y,alpha)),1./alpha);
+    double r=pow(random_levy_1d_power_alpha(alpha,scale)+
+		 random_levy_1d_power_alpha(alpha,scale),1./alpha);
     double q=(rand()*(2.*M_PI))/RAND_MAX;
     *d=r*cos(q);
     *(d+1)=r*sin(q);

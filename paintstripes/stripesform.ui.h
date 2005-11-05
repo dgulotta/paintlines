@@ -122,8 +122,8 @@ void StripesForm::Draw()
   else if (size<0) {
     QMessageBox::information(this,"Paintstripes","The size must be nonnegative.");
   }
-  else if (alpha<=0.) {
-    QMessageBox::information(this,"Paintstripes","Alpha must be positive.");
+  else if (alpha<=0.||alpha>2.) {
+    QMessageBox::information(this,"Paintstripes","Alpha must be in (0,2].");
   }
   else {
     symgroup sg=symgroup(ComboSymmetry->currentItem());
