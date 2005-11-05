@@ -115,11 +115,15 @@ void StripesForm::helpAbout()
 void StripesForm::Draw()
 {
   int size=EditSize->text().toInt();
+  double alpha=EditAlpha->text().toDouble();
   if(size&1) {
     QMessageBox::information(this,"Paintstripes","The size must be even.");
   }
   else if (size<0) {
     QMessageBox::information(this,"Paintstripes","The size must be nonnegative.");
+  }
+  else if (alpha<=0.) {
+    QMessageBox::information(this,"Paintstripes","Alpha must be positive.");
   }
   else {
     symgroup sg=symgroup(ComboSymmetry->currentItem());
@@ -137,6 +141,7 @@ void StripesForm::Draw()
 	default:
 	    ButtonRandomize->setEnabled(false);
 	}
+    StripesFrame->set_alpha(alpha);
     StripesFrame->draw(size,sg);
   }
 }

@@ -18,17 +18,6 @@ SOURCES	+= paintstripes.cpp \
 
 FORMS	= stripesform.ui
 
-IMAGES	= images/editcopy \
-	images/editcut \
-	images/editpaste \
-	images/filenew \
-	images/fileopen \
-	images/filesave \
-	images/print \
-	images/redo \
-	images/searchfind \
-	images/undo
-
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc

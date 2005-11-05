@@ -1,15 +1,62 @@
+/***************************************************************************
+ *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   dgulotta@mit.edu                                                      *
+ *   Portions copyright (C)  1996, 1997, 1998, 1999, 2000 James Theiler,   *
+ *   Brian Gough                                                           *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the Free Software           *
+ *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
+ *   02110-1301  USA                                                       *
+ ***************************************************************************/
+
 #include "paintstripes.h"
 #include <algorithm>
+#include <math.h>
 
 using std::copy;
 
-void randomcauchy(double *d,double var)
+/*
+  This function is adapted from gsl_ran_levy function from the GNU Scientific
+  Library.
+*/
+double random_levy_1d(double alpha,double scale)
 {
-  double z=(double)rand()/RAND_MAX;
-  double r=var*sqrt(1./(z*z)-1.);
-  z=(2.*M_PI*rand())/RAND_MAX;
-  *d=r*cos(z);
-  *(d+1)=r*sin(z);
+  double u, v, t, s;
+  u=M_PI*(double(rand())/RAND_MAX-.5);
+  v=log((RAND_MAX+1.)/(rand()+.5));
+  t=sin(alpha*u)/pow(cos(u),1/alpha);
+  s=pow(cos((1-alpha)*u)/v,(1-alpha)/alpha);
+  return scale*t*s;
+}
+
+#include <stdio.h>
+
+void random_levy_2d(double *d,double alpha,double scale)
+{
+  if(scale==0.) {
+    *d=0.;
+    *(d+1)=0.;
+  }
+  else {
+    double x=fabs(random_levy_1d(alpha,scale));
+    double y=fabs(random_levy_1d(alpha,scale));
+    double r=sqrt(x*x+y*y);
+    r*=r/pow((pow(x,alpha)+pow(y,alpha)),1./alpha);
+    double q=(rand()*(2.*M_PI))/RAND_MAX;
+    *d=r*cos(q);
+    *(d+1)=r*sin(q);
+  }
 }
 
 void paintstripes::paint(int sz, symgroup sym)
@@ -45,7 +92,7 @@ void paintstripes::fill(vector<unsigned char> &arr)
   int i,j;
   for(i=0;i<=halfsize;i++)
     for(j=0;j<size;j++)
-      randomcauchy(array+2*i+j*size2,(this->*norm)(i,j));
+      random_levy_2d(array+2*i+j*size2,levy_alpha,(this->*norm)(i,j));
   fftw_execute(fftplan);
   enumerate(*this,&paintstripes::symmetrize);
   double norm(0.);
@@ -54,7 +101,7 @@ void paintstripes::fill(vector<unsigned char> &arr)
       double d=array[i+size2*j];
       norm+=d*d;
     }
-  norm=sqrt(norm)/(size*128);
+  norm=sqrt(norm)/(size*64);
   for(i=0;i<size;i++)
     for(j=0;j<size;j++)
       arr[i+size*j]=colorchop(128.+array[i+size2*j]/norm);
