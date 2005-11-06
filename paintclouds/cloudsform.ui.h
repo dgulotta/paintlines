@@ -136,7 +136,7 @@ void CloudsForm::Draw()
 	default:
 	    ButtonRandomize->setEnabled(false);
 	}
-    CloudsFrame->draw(size,sg,255,0,0,0,255,0,0,0,255);
+    CloudsFrame->draw(size,sg,255,255,0,0,255,255,255,0,255);
   }
 }
 

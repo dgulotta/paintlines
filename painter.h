@@ -428,6 +428,19 @@ void painter::enumerate(T &t, void (T::*p)(int,int))
      for(j=0;j<halfsize;j++)
        (t.*p)(i,j);
    break;
+  case SYM_P3:
+      for(i=0;i*3<size;i++)
+	for(j=i;j+2*i<size1;j++)
+	  (t.*p)(i,j);
+      for(i=2*size/3;i<size;i++)
+	for(j=2*(size-i);j<=i;j++)
+	  (t.*p)(i,j);
+    break;
+  case SYM_P31M:
+      for(i=0;i*3<size;i++)
+	for(j=i;j+2*i<size1;j++)
+	  (t.*p)(i,j);
+    break;
   case SYM_P4:
   case SYM_PMM:
     for(i=0;i<halfsize;i++)
@@ -443,6 +456,13 @@ void painter::enumerate(T &t, void (T::*p)(int,int))
     for(i=0;i<halfsize;i++)
       for(j=0;j<=i;j++)
 	(t.*p)(i,j);
+    break;
+  case SYM_P6:
+    for(j=0;j<halfsize;j++)
+      (t.*p)(0,j);
+    for(i=1;i*3<size;i++)
+	for(j=i;j+2*i<size1;j++)
+	  (t.*p)(i,j);
     break;
   case SYM_PGG:
     {
