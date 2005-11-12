@@ -1,20 +1,157 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>StripesForm</class>
+<class>SquigglesForm</class>
 <widget class="QMainWindow">
     <property name="name">
-        <cstring>StripesForm</cstring>
+        <cstring>SquigglesForm</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>504</width>
-            <height>434</height>
+            <width>552</width>
+            <height>454</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Paintstripes</string>
+        <string>Paintsquiggles</string>
     </property>
+    <widget class="paintsquiggleswidget">
+        <property name="name">
+            <cstring>StripesFrame</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>150</x>
+                <y>10</y>
+                <width>360</width>
+                <height>360</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel2_3_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>70</x>
+                <y>240</y>
+                <width>16</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Y</string>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>SpinYTile</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>90</x>
+                <y>240</y>
+                <width>40</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="minValue">
+            <number>1</number>
+        </property>
+        <property name="value">
+            <number>2</number>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>ButtonRestore</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>300</y>
+                <width>130</width>
+                <height>31</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Restore Original</string>
+        </property>
+    </widget>
+    <widget class="QPushButton">
+        <property name="name">
+            <cstring>ButtonRandomize</cstring>
+        </property>
+        <property name="enabled">
+            <bool>false</bool>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>270</y>
+                <width>130</width>
+                <height>31</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Randomize</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>220</y>
+                <width>50</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Tiles</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel2_3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>240</y>
+                <width>16</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>X</string>
+        </property>
+    </widget>
+    <widget class="QSpinBox">
+        <property name="name">
+            <cstring>SpinXTile</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>30</x>
+                <y>240</y>
+                <width>40</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="minValue">
+            <number>1</number>
+        </property>
+        <property name="value">
+            <number>2</number>
+        </property>
+    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>textLabel1</cstring>
@@ -29,6 +166,38 @@
         </property>
         <property name="text">
             <string>Size</string>
+        </property>
+    </widget>
+    <widget class="QLineEdit">
+        <property name="name">
+            <cstring>EditSize</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>80</y>
+                <width>100</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>256</string>
+        </property>
+    </widget>
+    <widget class="QLabel">
+        <property name="name">
+            <cstring>textLabel1_2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>100</width>
+                <height>20</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Symmetry</string>
         </property>
     </widget>
     <widget class="QComboBox">
@@ -134,171 +303,37 @@
     </widget>
     <widget class="QLabel">
         <property name="name">
-            <cstring>textLabel1_2</cstring>
+            <cstring>textLabel3</cstring>
         </property>
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>10</y>
-                <width>100</width>
-                <height>20</height>
+                <y>110</y>
+                <width>120</width>
+                <height>21</height>
             </rect>
         </property>
         <property name="text">
-            <string>Symmetry</string>
-        </property>
-    </widget>
-    <widget class="QLineEdit">
-        <property name="name">
-            <cstring>EditSize</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>80</y>
-                <width>100</width>
-                <height>25</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>256</string>
-        </property>
-    </widget>
-    <widget class="paintstripeswidget">
-        <property name="name">
-            <cstring>StripesFrame</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>150</x>
-                <y>10</y>
-                <width>360</width>
-                <height>360</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabel2_3_2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>70</x>
-                <y>190</y>
-                <width>16</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Y</string>
+            <string>Colors</string>
         </property>
     </widget>
     <widget class="QSpinBox">
         <property name="name">
-            <cstring>SpinXTile</cstring>
+            <cstring>SpinColors</cstring>
         </property>
         <property name="geometry">
             <rect>
-                <x>30</x>
-                <y>190</y>
-                <width>40</width>
-                <height>26</height>
+                <x>10</x>
+                <y>130</y>
+                <width>130</width>
+                <height>22</height>
             </rect>
         </property>
-        <property name="minValue">
-            <number>1</number>
+        <property name="maxValue">
+            <number>9999</number>
         </property>
         <property name="value">
-            <number>2</number>
-        </property>
-    </widget>
-    <widget class="QSpinBox">
-        <property name="name">
-            <cstring>SpinYTile</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>90</x>
-                <y>190</y>
-                <width>40</width>
-                <height>26</height>
-            </rect>
-        </property>
-        <property name="minValue">
-            <number>1</number>
-        </property>
-        <property name="value">
-            <number>2</number>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>ButtonRestore</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>250</y>
-                <width>130</width>
-                <height>31</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Restore Original</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabel2_3</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>190</y>
-                <width>16</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>X</string>
-        </property>
-    </widget>
-    <widget class="QLabel">
-        <property name="name">
-            <cstring>textLabel1_3</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>170</y>
-                <width>50</width>
-                <height>20</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Tiles</string>
-        </property>
-    </widget>
-    <widget class="QPushButton">
-        <property name="name">
-            <cstring>ButtonRandomize</cstring>
-        </property>
-        <property name="enabled">
-            <bool>false</bool>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>220</y>
-                <width>130</width>
-                <height>31</height>
-            </rect>
-        </property>
-        <property name="text">
-            <string>Randomize</string>
+            <number>25</number>
         </property>
     </widget>
     <widget class="QLabel">
@@ -308,7 +343,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>110</y>
+                <y>160</y>
                 <width>76</width>
                 <height>21</height>
             </rect>
@@ -324,13 +359,13 @@
         <property name="geometry">
             <rect>
                 <x>60</x>
-                <y>110</y>
+                <y>160</y>
                 <width>81</width>
                 <height>26</height>
             </rect>
         </property>
         <property name="text">
-            <string>1.0</string>
+            <string>2.0</string>
         </property>
     </widget>
     <widget class="QPushButton">
@@ -340,7 +375,7 @@
         <property name="geometry">
             <rect>
                 <x>10</x>
-                <y>140</y>
+                <y>190</y>
                 <width>102</width>
                 <height>28</height>
             </rect>
@@ -385,8 +420,8 @@
 </toolbars>
 <customwidgets>
     <customwidget>
-        <class>paintstripeswidget</class>
-        <header location="local">paintstripeswidget.h</header>
+        <class>paintsquiggleswidget</class>
+        <header location="local">paintsquiggleswidget.h</header>
         <sizehint>
             <width>-1</width>
             <height>-1</height>
@@ -652,114 +687,114 @@
     <connection>
         <sender>fileNewAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>fileNew()</slot>
     </connection>
     <connection>
         <sender>fileOpenAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>fileOpen()</slot>
     </connection>
     <connection>
         <sender>fileSaveAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>fileSave()</slot>
     </connection>
     <connection>
         <sender>fileSaveAsAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>fileSaveAs()</slot>
     </connection>
     <connection>
         <sender>filePrintAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>filePrint()</slot>
     </connection>
     <connection>
         <sender>fileExitAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>fileExit()</slot>
     </connection>
     <connection>
         <sender>editUndoAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>editUndo()</slot>
     </connection>
     <connection>
         <sender>editRedoAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>editRedo()</slot>
     </connection>
     <connection>
         <sender>editCutAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>editCut()</slot>
     </connection>
     <connection>
         <sender>editCopyAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>editCopy()</slot>
     </connection>
     <connection>
         <sender>editPasteAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>editPaste()</slot>
     </connection>
     <connection>
         <sender>editFindAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>editFind()</slot>
     </connection>
     <connection>
         <sender>helpIndexAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>helpIndex()</slot>
     </connection>
     <connection>
         <sender>helpContentsAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>helpContents()</slot>
     </connection>
     <connection>
         <sender>helpAboutAction</sender>
         <signal>activated()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>helpAbout()</slot>
     </connection>
     <connection>
         <sender>ButtonDraw</sender>
         <signal>clicked()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>Draw()</slot>
     </connection>
     <connection>
         <sender>ButtonRandomize</sender>
         <signal>clicked()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>Randomize()</slot>
     </connection>
     <connection>
         <sender>ButtonRestore</sender>
         <signal>clicked()</signal>
-        <receiver>StripesForm</receiver>
+        <receiver>SquigglesForm</receiver>
         <slot>Restore()</slot>
     </connection>
 </connections>
 <includes>
-    <include location="local" impldecl="in implementation">stripesform.ui.h</include>
+    <include location="local" impldecl="in implementation">squigglesform.ui.h</include>
 </includes>
 <slots>
     <slot>fileNew()</slot>
@@ -784,6 +819,6 @@
 <pixmapinproject/>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>paintstripeswidget.h</includehint>
+    <includehint>paintsquiggleswidget.h</includehint>
 </includehints>
 </UI>
