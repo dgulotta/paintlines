@@ -130,8 +130,12 @@ void paintlines::handle_rule(ruletype rt)
 {
   int i(rand()%size),j(rand()%size);
   switch(rt) {
+  case RULE_SMOOTH_ARC:
+    drawsmootharc(i,j,i+(rand()%5-2)*size, j+(rand()%5-2)*size,.8,2000.,1.);
+    break;
   case RULE_SMOOTHLINE2_BEADS:
     drawsmoothline2(i,j,i+(rand()%5-2)*size, j+(rand()%5-2)*size,25000.,100.);
+    break;
   case RULE_SMOOTHLINE2:
     drawsmoothline2(i,j,i+(rand()%5-2)*size, j+(rand()%5-2)*size,25000.,1.);
     break;
@@ -520,14 +524,14 @@ void paintlines::drawsmoothline2(double x1, double y1, double x2, double y2,
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
   randomnormal(mx,my,var);
-  var/=2.;
+  var/=4.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
   dy=my-y1;
-  if(dx*dx+dy*dy>=dist) drawsmoothline2(x1,y1,mx,my,var/4.,dist);
+  if(dx*dx+dy*dy>=dist) drawsmoothline2(x1,y1,mx,my,var,dist);
   dx=mx-x2;
   dy=my-y2;
-  if(dx*dx+dy*dy>=dist) drawsmoothline2(mx,my,x2,y2,var/4.,dist);
+  if(dx*dx+dy*dy>=dist) drawsmoothline2(mx,my,x2,y2,var,dist);
 }
 
 void paintlines::drawsmoothline3(double x1, double y1, double x2, double y2,
@@ -564,6 +568,21 @@ void paintlines::drawsmoothline4(double x1, double y1, double x2, double y2,
   dx=mx-x2;
   dy=my-y2;
   if(dx*dx+dy*dy>=dist) drawsmoothline4(mx,my,x2,y2,var/4.,dist);
+}
+
+void paintlines::drawsmootharc(double x1, double y1, double x2, double y2,
+			       double k, double var, double dist)
+{
+  double mx=(x1+x2)/2+k*(y2-y1), my=(y1+y2)/2+k*(x1-x2), dx, dy;
+  randomnormal(mx,my,var);
+  var/=4.;
+  drawdotsymmetric(mx,my,5,1.);
+  dx=mx-x1;
+  dy=my-y1;
+  if(dx*dx+dy*dy>=dist) drawsmootharc(x1,y1,mx,my,k/2.,var,dist);
+  dx=mx-x2;
+  dy=my-y2;
+  if(dx*dx+dy*dy>=dist) drawsmootharc(mx,my,x2,y2,k/2.,var,dist);
 }
 
 void paintlines::drawtriangle(double x1, double y1, double x2, double y2,

@@ -292,111 +292,6 @@
             <number>0</number>
         </property>
     </widget>
-    <widget class="QComboBox">
-        <item>
-            <property name="text">
-                <string>Beads</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Cluster</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Fractal</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Smooth Line</string>
-            </property>
-        </item>
-        <property name="name">
-            <cstring>ComboType1</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>190</y>
-                <width>151</width>
-                <height>26</height>
-            </rect>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <item>
-            <property name="text">
-                <string>Beads</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Cluster</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Fractal</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Smooth Line</string>
-            </property>
-        </item>
-        <property name="name">
-            <cstring>ComboType2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>300</y>
-                <width>151</width>
-                <height>26</height>
-            </rect>
-        </property>
-        <property name="currentItem">
-            <number>1</number>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <item>
-            <property name="text">
-                <string>Beads</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Cluster</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Fractal</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Smooth Line</string>
-            </property>
-        </item>
-        <property name="name">
-            <cstring>ComboType3</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>410</y>
-                <width>151</width>
-                <height>26</height>
-            </rect>
-        </property>
-        <property name="currentItem">
-            <number>2</number>
-        </property>
-    </widget>
     <widget class="QLabel">
         <property name="name">
             <cstring>textLabel1_3</cstring>
@@ -670,6 +565,126 @@
             </rect>
         </property>
     </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>Arc</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Beads</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Cluster</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Fractal</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Line</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>ComboType1</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>190</y>
+                <width>151</width>
+                <height>26</height>
+            </rect>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>Arc</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Beads</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Cluster</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Fractal</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Line</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>ComboType2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>300</y>
+                <width>151</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="currentItem">
+            <number>1</number>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>Arc</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Beads</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Cluster</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Fractal</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Line</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>ComboType3</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>410</y>
+                <width>151</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="currentItem">
+            <number>2</number>
+        </property>
+    </widget>
 </widget>
 <menubar>
     <property name="name">
@@ -730,7 +745,7 @@
             <cstring>fileNewAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>filenew</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>New</string>
@@ -747,7 +762,7 @@
             <cstring>fileOpenAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>fileopen</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Open</string>
@@ -764,7 +779,7 @@
             <cstring>fileSaveAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>filesave</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Save</string>
@@ -795,7 +810,7 @@
             <cstring>filePrintAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>print</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Print</string>
@@ -826,7 +841,7 @@
             <cstring>editUndoAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>undo</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Undo</string>
@@ -843,7 +858,7 @@
             <cstring>editRedoAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>redo</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Redo</string>
@@ -860,7 +875,7 @@
             <cstring>editCutAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>editcut</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Cut</string>
@@ -877,7 +892,7 @@
             <cstring>editCopyAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>editcopy</iconset>
+            <iconset></iconset>
         </property>
         <property name="menuText">
             <string>&amp;Copy</string>
@@ -891,7 +906,7 @@
             <cstring>editPasteAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>editpaste</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Paste</string>
@@ -908,7 +923,7 @@
             <cstring>editFindAction</cstring>
         </property>
         <property name="iconSet">
-            <iconset>searchfind</iconset>
+            <iconset></iconset>
         </property>
         <property name="text">
             <string>Find</string>
