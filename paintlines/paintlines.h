@@ -27,7 +27,7 @@ void randomnormal(double &x, double &y, double var);
 void randomcauchy(double &x, double &y, double var);
 
 enum ruletype {RULE_SMOOTH_ARC, RULE_SMOOTHLINE2_BEADS, RULE_CLUSTER,
-	       RULE_CLUSTER2, RULE_SMOOTHLINE2};
+	       RULE_CLUSTER2, RULE_SMOOTHLINE2, RULE_OPEN_STRING};
 
 struct paintrule
 {

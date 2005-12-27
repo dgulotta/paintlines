@@ -145,6 +145,15 @@ void paintlines::handle_rule(ruletype rt)
   case RULE_CLUSTER2:
     drawcluster2(i,j,size);
     break;
+  case RULE_OPEN_STRING:
+    {
+      double sigma=size*.1*log((1.+RAND_MAX)/(1.+rand()));
+      double var=sigma*sigma;
+      double x2=i,y2=j;
+      randomnormal(x2,y2,var);
+      drawline(i,j,x2,y2,var/4.,1.);
+    }
+    break;
   }
 }
 
@@ -497,10 +506,10 @@ void paintlines::drawline(double x1, double y1, double x2, double y2,
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
   dy=my-y1;
-  if(dx*dx+dy*dy>=dist) drawline(x1,y1,mx,my,var/2.,dist);
+  if(dx*dx+dy*dy>=dist) drawline(x1,y1,mx,my,var,dist);
   dx=mx-x2;
   dy=my-y2;
-  if(dx*dx+dy*dy>=dist) drawline(mx,my,x2,y2,var/2.,dist);
+  if(dx*dx+dy*dy>=dist) drawline(mx,my,x2,y2,var,dist);
 }
 
 
