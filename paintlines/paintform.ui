@@ -583,6 +583,11 @@
         </item>
         <item>
             <property name="text">
+                <string>Flower</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
                 <string>Fractal</string>
             </property>
         </item>
@@ -594,6 +599,11 @@
         <item>
             <property name="text">
                 <string>Open String</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>New Item</string>
             </property>
         </item>
         <property name="name">
@@ -626,48 +636,7 @@
         </item>
         <item>
             <property name="text">
-                <string>Fractal</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Line</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Open String</string>
-            </property>
-        </item>
-        <property name="name">
-            <cstring>ComboType2</cstring>
-        </property>
-        <property name="geometry">
-            <rect>
-                <x>10</x>
-                <y>300</y>
-                <width>151</width>
-                <height>26</height>
-            </rect>
-        </property>
-        <property name="currentItem">
-            <number>1</number>
-        </property>
-    </widget>
-    <widget class="QComboBox">
-        <item>
-            <property name="text">
-                <string>Arc</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Beads</string>
-            </property>
-        </item>
-        <item>
-            <property name="text">
-                <string>Cluster</string>
+                <string>Flower</string>
             </property>
         </item>
         <item>
@@ -698,6 +667,57 @@
         </property>
         <property name="currentItem">
             <number>2</number>
+        </property>
+    </widget>
+    <widget class="QComboBox">
+        <item>
+            <property name="text">
+                <string>Arc</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Beads</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Cluster</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Flower</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Fractal</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Line</string>
+            </property>
+        </item>
+        <item>
+            <property name="text">
+                <string>Open String</string>
+            </property>
+        </item>
+        <property name="name">
+            <cstring>ComboType2</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>300</y>
+                <width>151</width>
+                <height>26</height>
+            </rect>
+        </property>
+        <property name="currentItem">
+            <number>1</number>
         </property>
     </widget>
 </widget>

@@ -140,7 +140,10 @@ void paintlines::handle_rule(ruletype rt)
     drawsmoothline2(i,j,i+(rand()%5-2)*size, j+(rand()%5-2)*size,25000.,1.);
     break;
   case RULE_CLUSTER:
-    drawcluster(i,j,2500.,6);
+    drawcluster(i,j,4000.,4);
+    break;
+  case RULE_FLOWER:
+    drawflower(i,j,.1,50);
     break;
   case RULE_CLUSTER2:
     drawcluster2(i,j,size);
@@ -211,9 +214,13 @@ void paintlines::drawdotsymmetric(int x, int y, int radius,double brightness)
 
 void paintlines::drawcluster(double x, double y, double var, int maxdepth)
 {
-  randomnormal(x,y,var);
+  double mx=x,my=y;
+  randomnormal(mx,my,var);
   int z=rand()%maxdepth, i, j;
-  while(z--) drawcluster(x,y,var/2.,maxdepth-1);
+  while(z--) {
+    drawsmoothline2(x,y,mx,my,var/4.,1.);
+    drawcluster(mx,my,var/4.,maxdepth-1);
+  }
   drawdotsymmetric(x,y,5,1.);
 }
 
@@ -592,6 +599,23 @@ void paintlines::drawsmootharc(double x1, double y1, double x2, double y2,
   dx=mx-x2;
   dy=my-y2;
   if(dx*dx+dy*dy>=dist) drawsmootharc(mx,my,x2,y2,k/2.,var,dist);
+}
+
+void paintlines::drawflower(double x, double y, double var, int steps)
+{
+  int n=3.+3.*log((RAND_MAX+1.)/(rand()+1.));
+  while(n--) {
+    double xn(x), yn(y);
+    double vx(0.), vy(0.);
+    int st(steps);
+    randomnormal(vx,vy,var);
+    while(st--) {
+      randomnormal(vx,vy,var);
+      xn+=vx;
+      yn+=vy;
+      drawdotsymmetric(xn,yn,5,1.);
+    }
+  }
 }
 
 void paintlines::drawtriangle(double x1, double y1, double x2, double y2,

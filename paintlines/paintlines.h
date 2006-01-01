@@ -27,7 +27,7 @@ void randomnormal(double &x, double &y, double var);
 void randomcauchy(double &x, double &y, double var);
 
 enum ruletype {RULE_SMOOTH_ARC, RULE_SMOOTHLINE2_BEADS, RULE_CLUSTER,
-	       RULE_CLUSTER2, RULE_SMOOTHLINE2, RULE_OPEN_STRING};
+	       RULE_FLOWER, RULE_CLUSTER2, RULE_SMOOTHLINE2, RULE_OPEN_STRING};
 
 struct paintrule
 {
@@ -119,6 +119,7 @@ class paintlines : virtual public painter
 		       double var, double dist);
   void drawsmootharc(double x1, double y1, double x2, double y2, double k,
 		     double var, double dist);
+  void drawflower(double x, double y, double var, int steps);
   void drawtriangle(double x1, double y1, double x2, double y2, double x3,
 		    double y3, double var, double dist);
 };
