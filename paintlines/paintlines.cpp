@@ -603,20 +603,24 @@ void paintlines::drawsmootharc(double x1, double y1, double x2, double y2,
 
 void paintlines::drawflower(double x, double y, double var, int steps)
 {
-  int n=3.+3.*log((RAND_MAX+1.)/(rand()+1.));
-  while(n--) {
+  int n=3.+10.*log((RAND_MAX+1.)/(rand()+1.));
+  int i;
+  double offset=double(rand())/RAND_MAX;
+  for(i=0.;i<n;i++)
+  {
     double xn(x), yn(y);
-    double vx(0.), vy(0.);
+    double vx(cos(2.*M_PI*(i+offset)/n)), vy(sin(2.*M_PI*(i+offset)/n));
     int st(steps);
-    randomnormal(vx,vy,var);
+    randomnormal(vx,vy,.01);
     while(st--) {
-      randomnormal(vx,vy,var);
+      randomnormal(vx,vy,.01);
       xn+=vx;
       yn+=vy;
       drawdotsymmetric(xn,yn,5,1.);
     }
   }
 }
+
 
 void paintlines::drawtriangle(double x1, double y1, double x2, double y2,
 			      double x3, double y3, double var, double dist)
