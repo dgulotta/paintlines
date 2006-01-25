@@ -30,7 +30,18 @@ using std::log;
 using std::sqrt;
 using std::rand;
 
-void randomnormal(double &x, double &y, double var)
+void randomnormal_hexagonal(double &x, double &y, double var)
+{
+  double z=(double)rand()/RAND_MAX;
+  double r=sqrt(-var*log(z));
+  z=(2.*M_PI*rand())/RAND_MAX;
+  double s=r*cos(z)*.93060485910209959893;
+  double d=r*sin(z)*.53728496591177095978;
+  x+=s+d;
+  y+=s-d;
+}
+
+void randomnormal_orthogonal(double &x, double &y, double var)
 {
   double z=(double)rand()/RAND_MAX;
   double r=sqrt(-var*log(z));
@@ -52,6 +63,17 @@ void paintlines::paint(int sz, symgroup sym)
 {
   painter::paint(sz,sym);
   drawfunc=get_sym_func<paintlines>();
+  switch(sym) {
+  case SYM_P3:
+  case SYM_P3M1:
+  case SYM_P31M:
+  case SYM_P6:
+  case SYM_P6M:
+    randomnormal=&randomnormal_hexagonal;
+    break;
+  default:
+    randomnormal=&randomnormal_orthogonal;
+  }
   last.resize(size*size);
   alpha.resize(size*size);
   int z;
@@ -153,7 +175,7 @@ void paintlines::handle_rule(ruletype rt)
       double sigma=size*.1*log((1.+RAND_MAX)/(1.+rand()));
       double var=sigma*sigma;
       double x2=i,y2=j;
-      randomnormal(x2,y2,var);
+      (*randomnormal)(x2,y2,var);
       drawline(i,j,x2,y2,var/4.,1.);
     }
     break;
@@ -215,7 +237,7 @@ void paintlines::drawdotsymmetric(int x, int y, int radius,double brightness)
 void paintlines::drawcluster(double x, double y, double var, int maxdepth)
 {
   double mx=x,my=y;
-  randomnormal(mx,my,var);
+  (*randomnormal)(mx,my,var);
   int z=rand()%maxdepth, i, j;
   while(z--) {
     drawsmoothline2(x,y,mx,my,var/4.,1.);
@@ -336,7 +358,7 @@ void paintlines::drawcluster11(double x, double y, double var, int maxdepth,
 		   double dist)
 {
   double xx=x, yy=y;
-  randomnormal(x,y,var);
+  (*randomnormal)(x,y,var);
   int z=rand()%maxdepth, i, j;
   while(z--) {
     drawcluster11(x,y,var/2.,maxdepth-1,dist);
@@ -368,7 +390,7 @@ void paintlines::drawcluster12(int x, int y, int d, unsigned char myalpha)
 
 void paintlines::drawcluster13(double x, double y, double var, int maxdepth)
 {
-  randomnormal(x,y,var);
+  (*randomnormal)(x,y,var);
   int z=rand()%maxdepth, i, j;
   while(z--) drawcluster13(x,y,var/2.,maxdepth-1);
   int s=sqrt(var);
@@ -377,7 +399,7 @@ void paintlines::drawcluster13(double x, double y, double var, int maxdepth)
 
 void paintlines::drawcluster14(double x, double y, double var, int maxdepth)
 {
-  randomnormal(x,y,var);
+  (*randomnormal)(x,y,var);
   int z=rand()%maxdepth, i, j;
   while(z--) drawcluster13(x,y,var/2.,maxdepth-1);
   double s=sqrt(var);
@@ -508,7 +530,7 @@ void paintlines::drawline(double x1, double y1, double x2, double y2,
 			  double var, double dist)
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
-  randomnormal(mx,my,var);
+  (*randomnormal)(mx,my,var);
   var/=2.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
@@ -526,9 +548,9 @@ void paintlines::drawsmoothline(double var, double steps)
   x=rand()%size;
   y=rand()%size;
   double vx(0.), vy(0.);
-  randomnormal(vx,vy,var*sqrt(steps));
+  (*randomnormal)(vx,vy,var*sqrt(steps));
   while(steps--) {
-    randomnormal(vx,vy,var);
+    (*randomnormal)(vx,vy,var);
     x+=vx;
     y+=vy;
     drawdotsymmetric(x,y,5,1.);
@@ -539,7 +561,7 @@ void paintlines::drawsmoothline2(double x1, double y1, double x2, double y2,
 			  double var, double dist)
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
-  randomnormal(mx,my,var);
+  (*randomnormal)(mx,my,var);
   var/=4.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
@@ -554,7 +576,7 @@ void paintlines::drawsmoothline3(double x1, double y1, double x2, double y2,
 			  double var, double dist)
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
-  randomnormal(mx,my,var);
+  (*randomnormal)(mx,my,var);
   var/=2.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
@@ -571,7 +593,7 @@ void paintlines::drawsmoothline4(double x1, double y1, double x2, double y2,
 			  double var, double dist)
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
-  randomnormal(mx,my,var);
+  (*randomnormal)(mx,my,var);
   var/=2.;
   int i, j;
   double a=15.*sqrt(var);
@@ -590,7 +612,7 @@ void paintlines::drawsmootharc(double x1, double y1, double x2, double y2,
 			       double k, double var, double dist)
 {
   double mx=(x1+x2)/2+k*(y2-y1), my=(y1+y2)/2+k*(x1-x2), dx, dy;
-  randomnormal(mx,my,var);
+  (*randomnormal)(mx,my,var);
   var/=4.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
@@ -611,9 +633,9 @@ void paintlines::drawflower(double x, double y, double var, int steps)
     double xn(x), yn(y);
     double vx(cos(2.*M_PI*(i+offset)/n)), vy(sin(2.*M_PI*(i+offset)/n));
     int st(steps);
-    randomnormal(vx,vy,.01);
+    (*randomnormal)(vx,vy,.01);
     while(st--) {
-      randomnormal(vx,vy,.01);
+      (*randomnormal)(vx,vy,.01);
       xn+=vx;
       yn+=vy;
       drawdotsymmetric(xn,yn,5,1.);
@@ -627,9 +649,9 @@ void paintlines::drawtriangle(double x1, double y1, double x2, double y2,
 {
   double mx3((x1+x2)/2.), my3((y1+y2)/2.), mx1((x2+x3)/2.), my1((y2+y3)/2.),
     mx2((x3+x1)/2.), my2((y3+y1)/2.);
-  randomnormal(mx1,my1,var);
-  randomnormal(mx2,my2,var);
-  randomnormal(mx3,my3,var);
+  (*randomnormal)(mx1,my1,var);
+  (*randomnormal)(mx2,my2,var);
+  (*randomnormal)(mx3,my3,var);
   if(mx1*mx1+my1*my1+mx2*mx2+my2*my2+mx3*mx3+my3*my3-mx1*mx2-mx2*mx3-mx3*mx1-
      my1*my2-my2*my3-my3*my1>dist) {
     drawtriangle(mx1,my1,mx2,my2,mx3,my3,var/2.,dist);

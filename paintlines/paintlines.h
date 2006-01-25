@@ -23,7 +23,8 @@
 
 #include "../painter.h"
 
-void randomnormal(double &x, double &y, double var);
+void randomnormal_orthogonal(double &x, double &y, double var);
+void randomnormal_hexagonal(double &x, double &y, double var);
 void randomcauchy(double &x, double &y, double var);
 
 enum ruletype {RULE_SMOOTH_ARC, RULE_SMOOTHLINE2_BEADS, RULE_CLUSTER,
@@ -66,6 +67,7 @@ class paintlines : virtual public painter
   vector<unsigned char> alpha;
   vector<bool> pastel;
   vector<paintrule> rules;
+  void (*randomnormal)(double &, double &, double);
   int t;
   int ncolors;
   unsigned char tempalpha;
