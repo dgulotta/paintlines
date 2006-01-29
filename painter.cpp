@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005-2006 by Daniel Gulotta                             *
  *   dgulotta@mit.edu                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -33,7 +33,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
   r.resize(bigsize);
   g.resize(bigsize);
   b.resize(bigsize);
-switch(sg) {
+  switch(sg) {
   case SYM_CMM:
   case SYM_P2:
     for(k=0;k<xtiles;k++)
@@ -160,6 +160,81 @@ switch(sg) {
 	    PAINTER_COPY_RGB
 	  }
 	}
+      }
+    break;
+  case SYM_P3:
+  case SYM_P31M:
+   for(k=0;k<xtiles;k++)
+      for(l=0;l<ytiles;l++) {
+	int z=rand();
+	for(i=0;i*3<size;i++) {
+	  for(j=i;j<(size-i)/2;j++) {
+	    int index=(z&4)?(i+size*j):(j+size*i);
+	    int index2=((k+1)%xtiles)*size+i+width*(l*size+j);
+	    PAINTER_COPY_RGB
+	    index=(z&8)?(i+size*j):(j+size*i);
+	    index2=k*size+j+width*(((l+1)%ytiles)*size+i);
+	    PAINTER_COPY_RGB
+	  }
+	  for(;j<size-2*i;j++) {
+	    int index=(z&16)?(i+size*j):(j+size*i);
+	    int index2=((k+1)%xtiles)*size+i+width*(l*size+j);
+	    PAINTER_COPY_RGB
+	    index=(z&32)?(i+size*j):(j+size*i);
+	    index2=k*size+j+width*(((l+1)%ytiles)*size+i);
+	    PAINTER_COPY_RGB
+	  }
+	  for(;j<size-i/2;j++) {
+	    int index=(z&1)?(i+size*j):(j+size*i);
+	    int index2=k*size+i+width*(l*size+j);
+	    PAINTER_COPY_RGB
+	    index=(z&2)?(i+size*j):(j+size*i);
+	    index2=k*size+j+width*(l*size+i);
+	    PAINTER_COPY_RGB 
+	  }
+	}
+	for(;i*3<2*size;i++)
+	  for(j=i;j<size-i/2;j++) {
+	    int index=(z&1)?(i+size*j):(j+size*i);
+	    int index2=k*size+i+width*(l*size+j);
+	    PAINTER_COPY_RGB
+	    index=(z&2)?(i+size*j):(j+size*i);
+	    index2=k*size+j+width*(l*size+i);
+	    PAINTER_COPY_RGB 
+	  }
+	for(;i<size;i++) {
+	  for(j=2*(size-i);j<size-i/2;j++) {
+	    int index=(z&4)?(i+size*j):(j+size*i);
+	    int index2=k*size+i+width*(l*size+j);
+	    PAINTER_COPY_RGB
+	    index=(z&8)?(i+size*j):(j+size*i);
+	    index2=k*size+j+width*(l*size+i);
+	    PAINTER_COPY_RGB 
+	  }
+	  for(;j<=i;j++) {
+	    int index=(z&16)?(i+size*j):(j+size*i);
+	    int index2=k*size+i+width*(l*size+j);
+	    PAINTER_COPY_RGB
+	    index=(z&32)?(i+size*j):(j+size*i);
+	    index2=k*size+j+width*(l*size+i);
+	    PAINTER_COPY_RGB
+	  }
+	}
+      }
+   break;
+  case SYM_P3M1:
+    for(k=0;k<xtiles;k++)
+      for(l=0;l<ytiles;l++) {
+	int z=rand();
+	for(i=0;i<size;i++)
+	  for(j=0;i+j<=size;j++) {
+	    int index=(z&1)?(i+size*j):((size1-j)+size*(size1-i));
+	    int index2=i+k*size+width*(j+l*size);
+	    PAINTER_COPY_RGB
+	    index=(z&2)?(i+size*j):((size1-j)+size*(size1-i));
+	    index2=size1-j+k*size+width*(size1-i+l*size);
+	    PAINTER_COPY_RGB
+	  }
       }
   }
 }
