@@ -130,6 +130,9 @@ void StripesForm::Draw()
     switch(sg) {
 	case SYM_CMM:
 	case SYM_P2:
+	case SYM_P3:
+	case SYM_P31M:
+	case SYM_P3M1:
 	case SYM_P4:
 	case SYM_P4G:
 	case SYM_P4M:

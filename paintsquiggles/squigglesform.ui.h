@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005-2006 by Daniel Gulotta                             *
  *   dgulotta@mit.edu                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -130,6 +130,9 @@ void SquigglesForm::Draw()
     switch(sg) {
 	case SYM_CMM:
 	case SYM_P2:
+	case SYM_P3:
+	case SYM_P31M:
+	case SYM_P3M1:
 	case SYM_P4:
 	case SYM_P4G:
 	case SYM_P4M:
