@@ -90,6 +90,30 @@ void paintclouds::paint(int sz, symgroup sym)
     paint_border(halfsize,0,halfsize,halfsize);
     paint_triangle(0,0,halfsize,0,halfsize,halfsize);
     break;
+  case SYM_PGG_O:
+    {
+      int y1=(halfsize+1)/2;
+      drawpixelsymmetric(-y1,y1,red1,green1,blue1);
+      drawpixelsymmetric(y1,y1,red2,green2,blue2);
+      drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
+      paint_border(-y1,y1,y1,y1);
+      paint_border(y1,y1,halfsize,halfsize);
+      paint_border(size-y1,size-y1,halfsize,halfsize);
+      paint_triangle(-y1,size-y1,y1,y1,size-y1,size-y1);
+    }
+    break;
+  case SYM_PMG_O:
+    {
+      int y1=(halfsize+1)/2;
+      drawpixelsymmetric(0,y1,red1,green1,blue1);
+      drawpixelsymmetric(halfsize-y1,halfsize,red2,green2,blue2);
+      drawpixelsymmetric(halfsize-y1,0,red3,green3,blue3);
+      paint_border(0,y1,0,size+y1);
+      paint_border(0,y1,halfsize-y1,halfsize);
+      paint_border(0,y1,halfsize-y1,0);
+      paint_triangle(0,size+y1,0,y1,halfsize,halfsize+y1);
+    }
+    break;
   }
 }
 

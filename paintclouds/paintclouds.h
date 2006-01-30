@@ -29,11 +29,17 @@ class paintclouds : virtual public painter
 {
  public:
   void paint(int size, symgroup sg);
-  void set_colors(unsigned char r1, unsigned char b1, unsigned char g1,
-		  unsigned char r2, unsigned char b2, unsigned char g2,
-		  unsigned char r3, unsigned char b3, unsigned char g3)
+  void set_colors(unsigned char r1, unsigned char g1, unsigned char b1,
+		  unsigned char r2, unsigned char g2, unsigned char b2,
+		  unsigned char r3, unsigned char g3, unsigned char b3)
     {red1=r1;red2=r2;red3=r3;blue1=b1;blue2=b2;blue3=b3;green1=g1;green2=g2;
     green3=g3;}
+  void set_color1(unsigned char r, unsigned char g, unsigned char b)
+    {red1=r;green1=g;blue1=b;}
+  void set_color2(unsigned char r, unsigned char g, unsigned char b)
+    {red2=r;green2=g;blue2=b;}
+  void set_color3(unsigned char r, unsigned char g, unsigned char b)
+    {red3=r;green3=g;blue3=b;}
  private:
   void (painter::*drawfunc)(paintclouds &,void (paintclouds::*)(int,int),
 			    int,int);
