@@ -377,6 +377,16 @@ hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3)
   return s;
 }
 
+hyperbolic_symmetry_group * hyperbolic_3mirror_randomized
+(int n1, int n2, int n3)
+{
+  hyperbolic_symmetry_group *s=hyperbolic_3rotation(n1,n2,n3);
+  int i;
+  for(i=0;i<s->flipped.size();i++)
+    s->flipped[i]=((rand()&1)==1);
+  return s;
+}
+
 /* The current tile system doesn't work when the fundamental cell
  * isn't triangular.  Maybe fix this someday.
 hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3)
