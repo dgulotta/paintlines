@@ -261,25 +261,27 @@ class hyperbolic_symmetry_group
     (double a1, double a2,double a3);
   friend hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
   friend hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2);
-  //friend hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2,
-  //							int n3);
+  friend hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2,
+							  int n3);
   friend hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2);
   friend hyperbolic_symmetry_group * hyperbolic_glide_mirror
     (double a1, double a2);
- public:
+public:
   template <typename T>
   void symmetrize(T &t,void (T::*p)(const hyperbolic_coord &),
-		  const hyperbolic_coord &hc);
+			  const hyperbolic_coord &hc);
   hyperbolic_coord random_symmetry(const hyperbolic_coord &c) {
     double i=double(rand())/RAND_MAX;
     return tiles[pow(tiles.size(),i)].t(c);
   }
- private:
-  hyperbolic_symmetry_group() {}
+private:
+  hyperbolic_symmetry_group() : alternating(false) {}
   void make_tiles(const hyperbolic_transformation &t1,
-		  const hyperbolic_transformation &t2,
-		  const hyperbolic_transformation &t3);
+			  const hyperbolic_transformation &t2,
+			  const hyperbolic_transformation &t3);
   vector<hyperbolic_tile> tiles;
+  vector<bool> flipped;
+  bool alternating;
 };
 
 template <typename T>
@@ -292,11 +294,21 @@ void hyperbolic_symmetry_group::symmetrize
   }
   if(it!=tiles.end()) {
     hyperbolic_coord c=(it->t).inverse(hc);
-    // the following two lines are useful for debugging
-    //(t.*p)(c);
-    //(t.*p)(tiles[1].t(c));
-    for(it=tiles.begin();it!=tiles.end();it++)
-      (t.*p)((it->t)(c));
+    if(alternating) {
+      bool b=flipped[it-tiles.begin()];
+      vector<bool>::iterator it2=flipped.begin();
+      for(it=tiles.begin();it!=tiles.end();it++,it2++) {
+	if(b==*it2) (t.*p)((it->t)(c));
+      }
+    }
+    else {
+      // the following two lines are useful for debugging
+      //(t.*p)(c);
+      //(t.*p)(tiles[1].t(c));
+      for(it=tiles.begin();it!=tiles.end();it++) {
+	(t.*p)((it->t)(c));
+      }
+    }
   }
 }
 
@@ -307,7 +319,7 @@ hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
 						  double a3);
 hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
 hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2);
-//hyperbolic_symmetry_group hyperbolic_3rotation(int n1, int n2, int n3);
+hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3);
 hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2);
 hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2);
 

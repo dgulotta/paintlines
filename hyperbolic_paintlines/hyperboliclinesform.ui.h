@@ -296,10 +296,9 @@ void HyperbolicLinesForm::Draw()
       p4_1=SpinAngle1->value();
       p4_2=SpinAngle2->value();
       p4_3=SpinAngle3->value();
-      //candraw=(p4_1*p4_2+p4_1*p4_3+p4_2*p4_3<p4_1*p4_2*p4_3);
-      //not supported right now due to fundamental unit not being triangular
-      candraw=false;
-      //if (candraw) sg=hyperbolic_3rotation(p4_1,p4_2,p4_3);
+      candraw=(p4_1*p4_2+p4_1*p4_3+p4_2*p4_3<p4_1*p4_2*p4_3);
+      if (candraw) sg=auto_ptr<hyperbolic_symmetry_group>
+		     (hyperbolic_3rotation(p4_1,p4_2,p4_3));
       break;
     case 4:
       p4g_1=SpinAngle1->value();

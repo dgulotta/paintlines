@@ -162,7 +162,10 @@ void hyperbolic_symmetry_group::make_tiles
 	   fabs(t.t.zx-it2->t.zx)<EPSILON&&fabs(t.t.zy-it2->t.zy)<EPSILON&&
 	   fabs(t.t.zz-it2->t.zz)<EPSILON) break;
       }
-      if(it2==tiles.end()) tiles.push_back(t);
+      if(it2==tiles.end()) {
+	tiles.push_back(t);
+	if(alternating) flipped.push_back(!flipped[i]);
+      }
     }
     tt2=tiles[i].t*t2*inverse(tiles[i].t);
     t.edge1=tt2(tiles[i].edge1);
@@ -177,7 +180,10 @@ void hyperbolic_symmetry_group::make_tiles
 	   fabs(t.t.zx-it2->t.zx)<EPSILON&&fabs(t.t.zy-it2->t.zy)<EPSILON&&
 	   fabs(t.t.zz-it2->t.zz)<EPSILON) break;
       }
-      if(it2==tiles.end()) tiles.push_back(t);
+      if(it2==tiles.end()) {
+	tiles.push_back(t);
+	if(alternating) flipped.push_back(!flipped[i]);
+      }
     }
     tt3=tiles[i].t*t3*inverse(tiles[i].t);
     t.edge1=tt3(tiles[i].edge1);
@@ -192,7 +198,10 @@ void hyperbolic_symmetry_group::make_tiles
 	   fabs(t.t.zx-it2->t.zx)<EPSILON&&fabs(t.t.zy-it2->t.zy)<EPSILON&&
 	   fabs(t.t.zz-it2->t.zz)<EPSILON) break;
       }
-      if(it2==tiles.end()) tiles.push_back(t);
+      if(it2==tiles.end()) {
+	tiles.push_back(t);
+	if(alternating) flipped.push_back(!flipped[i]);
+      }
     }
   }
 }
@@ -337,6 +346,34 @@ hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2)
   s->tiles[0].edge3=hyperbolic_coord(-z,0,sqrt(z*z-1.));
   s->make_tiles(hyperbolic_rotation_origin(n1),hyperbolic_rotation_origin(-n1),
     hyperbolic_reflection(s->tiles[0].edge3));
+  return s;
+}
+
+hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3)
+{
+  double cos1=cos(M_PI/n1);
+  double sin1=sin(M_PI/n1);
+  double cos2=cos(M_PI/n2);
+  double sin2=sin(M_PI/n2);
+  double cos3=cos(M_PI/n3);
+  double sin3=sin(M_PI/n3);
+  double z2=(cos2+cos1*cos3)/(sin1*sin3);
+  double r2=sqrt(z2*z2-1.);
+  double z3=(cos3+cos1*cos2)/(sin1*sin2);
+  double r3=sqrt(z3*z3-1.);
+  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
+  s->alternating=true;
+  s->tiles.resize(1);
+  s->flipped.resize(1);
+  s->flipped[0]=true;
+  s->tiles[0].t=identity();
+  s->tiles[0].edge1=hyperbolic_coord(0.,-1.,0.);
+  s->tiles[0].edge2=hyperbolic_coord(-sin1,cos1,0.);
+  s->tiles[0].edge3=normalize
+    (cross(hyperbolic_coord(r2,0,z2),hyperbolic_coord(r3*cos1,r3*sin1,z3)));
+  s->make_tiles(hyperbolic_reflection(s->tiles[0].edge1),
+	       hyperbolic_reflection(s->tiles[0].edge2),
+	       hyperbolic_reflection(normalize(s->tiles[0].edge3)));
   return s;
 }
 
