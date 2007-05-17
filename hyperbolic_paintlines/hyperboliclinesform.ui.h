@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
  *   dgulotta@mit.edu                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,6 +20,10 @@
 
 #include <qmessagebox.h>
 #include <qfiledialog.h>
+#include <memory>
+#include "../hyperbolic_painter.h"
+
+using namespace std;
 
 void HyperbolicLinesForm::fileNew()
 {
@@ -266,62 +270,70 @@ void HyperbolicLinesForm::Draw()
 				 "The size must be nonnegative.");
   }
   else {
-    hyperbolic_symmetry_group sg;
+    auto_ptr<hyperbolic_symmetry_group> sg;
     bool candraw;
     switch(ComboSymmetry->currentItem()) {
     case 0:
       cm_1=SpinAngle1->value();
       candraw=true;
-      sg=hyperbolic_glide_mirror((M_PI/3.)/cm_1,(M_PI/3.)/cm_1);
+      sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_glide_mirror((M_PI/3.)/cm_1,(M_PI/3.)/cm_1));
       break;
     case 1:
       cmm_1=SpinAngle1->value();
       cmm_2=SpinAngle2->value();
       candraw=(cmm_1>2||cmm_2>2);
-      if(candraw) sg=hyperbolic_2mirror_180(cmm_1,M_PI_2/cmm_2,M_PI_2/cmm_2);
+      if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>
+		    (hyperbolic_2mirror_180(cmm_1,M_PI_2/cmm_2,M_PI_2/cmm_2));
       break;
     case 2:
       p2_1=SpinAngle1->value();
       candraw=true;
-      sg=hyperbolic_3_180((2.*M_PI/3.)/p2_1,(2.*M_PI/3.)/p2_1,
-			  (2.*M_PI/3.)/p2_1);
+      sg=auto_ptr<hyperbolic_symmetry_group>
+	(hyperbolic_3_180((2.*M_PI/3.)/p2_1,(2.*M_PI/3.)/p2_1,
+			  (2.*M_PI/3.)/p2_1));
       break;
     case 3:
       p4_1=SpinAngle1->value();
       p4_2=SpinAngle2->value();
       p4_3=SpinAngle3->value();
-      candraw=(p4_1*p4_2+p4_1*p4_3+p4_2*p4_3<p4_1*p4_2*p4_3);
-      if (candraw) sg=hyperbolic_3rotation(p4_1,p4_2,p4_3);
+      //candraw=(p4_1*p4_2+p4_1*p4_3+p4_2*p4_3<p4_1*p4_2*p4_3);
+      //not supported right now due to fundamental unit not being triangular
+      candraw=false;
+      //if (candraw) sg=hyperbolic_3rotation(p4_1,p4_2,p4_3);
       break;
     case 4:
       p4g_1=SpinAngle1->value();
       p4g_2=SpinAngle2->value();
       candraw=(p4g_1+2*p4g_2<p4g_1*p4g_2);
-      if(candraw) sg=hyperbolic_mirror_rotation(p4g_1,p4g_2);
+      if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>
+		    (hyperbolic_mirror_rotation(p4g_1,p4g_2));
       break;
     case 5:
       p4m_1=SpinAngle1->value();
       p4m_2=SpinAngle2->value();
       p4m_3=SpinAngle3->value();
       candraw=(p4m_1*p4m_2+p4m_1*p4m_3+p4m_2*p4m_3<p4m_1*p4m_2*p4m_3);
-      if(candraw) sg=hyperbolic_3mirror(p4m_1,p4m_2,p4m_3);
+      if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>
+		    (hyperbolic_3mirror(p4m_1,p4m_2,p4m_3));
       break;
     case 6:
       pgg_1=SpinAngle1->value();
       candraw=true;
-      sg=hyperbolic_glide_180((2.*M_PI/3.)/pgg_1,(2.*M_PI/3.)/pgg_1);
+      sg=auto_ptr<hyperbolic_symmetry_group>
+	(hyperbolic_glide_180((2.*M_PI/3.)/pgg_1,(2.*M_PI/3.)/pgg_1));
       break;
     case 7:
       pmg_1=SpinAngle1->value();
       candraw=true;
-      sg=hyperbolic_mirror_2_180((M_PI/3.)/pmg_1,(M_PI/3.)/pmg_1,
-				 (M_PI/3.)/pmg_1);
+      sg=auto_ptr<hyperbolic_symmetry_group>
+	(hyperbolic_mirror_2_180((M_PI/3.)/pmg_1,(M_PI/3.)/pmg_1,
+				 (M_PI/3.)/pmg_1));
     }
     if(candraw) {
       projtype pt;
       if(ButtonPoincare->isChecked()) pt=POINCARE;
       else pt=KLEIN;
-      HyperbolicPaintFrame->draw(size,SpinColors->value(),sg,pt);
+      HyperbolicPaintFrame->draw(size,SpinColors->value(),*sg,pt);
     }
     else QMessageBox::information
 	   (this,"Hyperbolic Paintlines",

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
  *   dgulotta@mit.edu                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -104,10 +104,10 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
       double r=sqrt(z*z-1.);
       double q=(2.*M_PI*rand())/RAND_MAX;
       c=hyperbolic_coord(r*cos(q),r*sin(q),z);
-      c2=sg.random_symmetry(c,rand()%3);
+      c2=sg->random_symmetry(c);
     } while(c.z>=25.||c2.z>=25.);
     k/=6;
-    drawsmoothline(c,c2,.02,dist);
+    drawsmoothline(c,normalize(c2),.02,dist);
   }
   int x, y, i;
   for(x=0;x<size;x++)
@@ -192,11 +192,13 @@ void hyperbolic_paintlines::drawsmoothline
 (const hyperbolic_coord &end1, const hyperbolic_coord &end2, double var,
  double min)
 {
-  
+  if(end1*end1<.99||end2*end2<.99) {
+    cout << "bad point!" << endl;
+  }
   if(end1*end2>min) {
     hyperbolic_coord mid=random_mid(end1,end2,var);
     drawsmoothline(end1,mid,var/3.,min);
-    sg.symmetrize(*this,drawdot,mid,8);
+    sg->symmetrize(*this,drawdot,mid);
     drawsmoothline(mid,end2,var/3.,min);
   }
 }

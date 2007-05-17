@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
  *   dgulotta@mit.edu                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,7 +23,6 @@
 
 #include <vector>
 #include <cmath>
-#include <memory>
 using namespace std;
 
 struct hyperbolic_coord
@@ -156,243 +155,161 @@ enum projtype {POINCARE, KLEIN};
 
 class hyperbolic_transformation
 {
+  friend inline hyperbolic_transformation identity();
+  friend inline hyperbolic_transformation inverse
+    (const hyperbolic_transformation &t);
+  friend hyperbolic_transformation hyperbolic_reflection
+    (const hyperbolic_coord &c);
+  friend hyperbolic_transformation hyperbolic_rotation_180
+    (const hyperbolic_coord &c);
+  friend hyperbolic_transformation hyperbolic_rotation_origin(int n);
+  friend hyperbolic_transformation hyperbolic_rotation
+    (int n, hyperbolic_coord &c);
+  friend hyperbolic_transformation hyperbolic_glide_reflection
+    (double a, double z);
  public:
-  virtual ~hyperbolic_transformation() {}
-  virtual hyperbolic_coord operator () (const hyperbolic_coord &c) const {
-    return c;
-  };
-};
-
-class hyperbolic_reflection : public hyperbolic_transformation
-{
- public:
-  hyperbolic_reflection(const hyperbolic_coord &c) : normal(c) {}
-  virtual hyperbolic_coord operator () (const hyperbolic_coord &c) const {
-    return c+2.*(normal*c)*normal;
+  hyperbolic_transformation() {}
+  hyperbolic_transformation(double _xx, double _xy, double _xz, double _yx,
+			    double _yy, double _yz, double _zx, double _zy,
+			    double _zz)
+    : xx(_xx), xy(_xy), xz(_xz), yx(_yx), yy(_yy), yz(_yz), zx(_zx), zy(_zy),
+    zz(_zz) {}
+  hyperbolic_transformation(const hyperbolic_transformation &t)
+    : xx(t.xx), xy(t.xy), xz(t.xz), yx(t.yx), yy(t.yy), yz(t.yz), zx(t.zx),
+    zy(t.zy), zz(t.zz) {}
+  hyperbolic_transformation & operator = (const hyperbolic_transformation &t) {
+    xx=t.xx;xy=t.xy;xz=t.xz;yx=t.yx;yy=t.yy;yz=t.yz;zx=t.zx;zy=t.zy;zz=t.zz;
+    return *this;
   }
- private:
-  hyperbolic_coord normal;
-};
-
-class hyperbolic_rotation_180 : public hyperbolic_transformation
-{
- public:
-  hyperbolic_rotation_180(const hyperbolic_coord &c) : center(c) {}
-  virtual hyperbolic_coord operator () (const hyperbolic_coord &c) const {
-    return 2.*(center*c)*center-c;
-  }
- private:
-  hyperbolic_coord center;
-};
-
-class hyperbolic_rotation_origin : public hyperbolic_transformation
-{
- public:
-  hyperbolic_rotation_origin(int n) : cosine(cos(2.*M_PI/n)),
-    sine(sin(2.*M_PI/n)) {}
-  virtual hyperbolic_coord operator () (const hyperbolic_coord &c) const {
+  ~hyperbolic_transformation() {}
+  inline hyperbolic_coord operator () (const hyperbolic_coord &c) const {
     hyperbolic_coord ans;
-    ans.x=cosine*c.x-sine*c.y;
-    ans.y=sine*c.x+cosine*c.y;
-    ans.z=c.z;
+    ans.x=xx*c.x+xy*c.y+xz*c.z;
+    ans.y=yx*c.x+yy*c.y+yz*c.z;
+    ans.z=zx*c.x+zy*c.y+zz*c.z;
     return ans;
   }
-  private:
-    double cosine;
-    double sine;
-};
-
-class hyperbolic_rotation : public hyperbolic_transformation
-{
- public:
-  hyperbolic_rotation(int n, const hyperbolic_coord &c)
-    : cosine(cos(2.*M_PI/n)), cosine1(1.-cosine), sine(sin(2.*M_PI/n)),
-    center(c) {}
-  virtual hyperbolic_coord operator () (const hyperbolic_coord &c) const {
-    return cosine*c+cosine1*(c*center)*center+sine*cross(center,c);
-  }
- private:
-  double cosine;
-  double cosine1;
-  double sine;
-  hyperbolic_coord center;
-};
-
-class hyperbolic_glide_reflection : public hyperbolic_transformation
-{
- public:
-  hyperbolic_glide_reflection(double a, double z)
-    : r(normalize(hyperbolic_coord(cos(a/2.)*sqrt(z*z-1.),
-				   sin(a/2.)*sqrt(z*z-1.),z+1.))) {}
-    virtual hyperbolic_coord operator () (const hyperbolic_coord &c) const {
-    hyperbolic_coord ans=r(c);
-    ans.y=-ans.y;
+  inline hyperbolic_coord transpose(const hyperbolic_coord &c) const {
+    hyperbolic_coord ans;
+    ans.x=xx*c.x+yx*c.y+zx*c.z;
+    ans.y=xy*c.x+yy*c.y+zy*c.z;
+    ans.z=xz*c.x+yz*c.y+zz*c.z;
     return ans;
   }
- private:
-  hyperbolic_rotation_180 r;
+  inline hyperbolic_coord inverse(const hyperbolic_coord &c) const {
+    hyperbolic_coord ans;
+    ans.x=xx*c.x+yx*c.y-zx*c.z;
+    ans.y=xy*c.x+yy*c.y-zy*c.z;
+    ans.z=-xz*c.x-yz*c.y+zz*c.z;
+    return ans;
+  }
+  double xx, xy, xz, yx, yy, yz, zx, zy, zz;
+  // it would probably be faster to use opengl for this
 };
 
-struct hyperbolic_symmetry_group_ref
+inline hyperbolic_transformation identity()
 {
-  explicit hyperbolic_symmetry_group_ref
-  (auto_ptr<hyperbolic_transformation> p1,
-   auto_ptr<hyperbolic_transformation> p2,
-   auto_ptr<hyperbolic_transformation> p3, bool rev)
-    : trans1(p1), trans2(p2), trans3(p3), reversed(rev) {}
-  auto_ptr_ref<hyperbolic_transformation> trans1;
-  auto_ptr_ref<hyperbolic_transformation> trans2;
-  auto_ptr_ref<hyperbolic_transformation> trans3;
-  bool reversed;
+  return hyperbolic_transformation(1.,0.,0.,0.,1.,0.,0.,0.,1.);
+}
+
+inline hyperbolic_transformation inverse(const hyperbolic_transformation &t)
+{
+  return hyperbolic_transformation(t.xx,t.yx,-t.zx,t.xy,t.yy,-t.zy,-t.xz,-t.yz,
+				   t.zz);
+}
+
+inline hyperbolic_transformation operator *
+(const hyperbolic_transformation &t1, const hyperbolic_transformation &t2)
+{
+  hyperbolic_transformation ans;
+  ans.xx=t1.xx*t2.xx+t1.xy*t2.yx+t1.xz*t2.zx;
+  ans.xy=t1.xx*t2.xy+t1.xy*t2.yy+t1.xz*t2.zy;
+  ans.xz=t1.xx*t2.xz+t1.xy*t2.yz+t1.xz*t2.zz;
+  ans.yx=t1.yx*t2.xx+t1.yy*t2.yx+t1.yz*t2.zx;
+  ans.yy=t1.yx*t2.xy+t1.yy*t2.yy+t1.yz*t2.zy;
+  ans.yz=t1.yx*t2.xz+t1.yy*t2.yz+t1.yz*t2.zz;
+  ans.zx=t1.zx*t2.xx+t1.zy*t2.yx+t1.zz*t2.zx;
+  ans.zy=t1.zx*t2.xy+t1.zy*t2.yy+t1.zz*t2.zy;
+  ans.zz=t1.zx*t2.xz+t1.zy*t2.yz+t1.zz*t2.zz;
+  return ans;
+}
+
+hyperbolic_transformation hyperbolic_reflection(const hyperbolic_coord &c);
+hyperbolic_transformation hyperbolic_rotation_180(const hyperbolic_coord &c);
+hyperbolic_transformation hyperbolic_rotation_origin(int n);
+hyperbolic_transformation hyperbolic_rotation
+(int n, const hyperbolic_coord &c);
+hyperbolic_transformation hyperbolic_glide_reflection
+(const hyperbolic_coord &c, double r);
+
+struct hyperbolic_tile
+{
+  hyperbolic_transformation t;
+  hyperbolic_coord edge1;
+  hyperbolic_coord edge2;
+  hyperbolic_coord edge3;
 };
 
 class hyperbolic_symmetry_group
 {
-  friend hyperbolic_symmetry_group hyperbolic_3mirror(int n1, int n2, int n3);
-  friend hyperbolic_symmetry_group hyperbolic_3_180(double a1, double a2,
+  friend hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3);
+  friend hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2,
 						    double a3);
-  friend hyperbolic_symmetry_group hyperbolic_2mirror_180(int n1, double a2,
+  friend hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2,
 							  double a3);
-  friend hyperbolic_symmetry_group hyperbolic_mirror_2_180
+  friend hyperbolic_symmetry_group * hyperbolic_mirror_2_180
     (double a1, double a2,double a3);
-  friend hyperbolic_symmetry_group hyperbolic_180_rotation(int n1, int n2);
-  friend hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2);
-  friend hyperbolic_symmetry_group hyperbolic_3rotation(int n1, int n2,
-							int n3);
-  friend hyperbolic_symmetry_group hyperbolic_glide_180(double a1, double a2);
-  friend hyperbolic_symmetry_group hyperbolic_glide_mirror
+  friend hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
+  friend hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2);
+  //friend hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2,
+  //							int n3);
+  friend hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2);
+  friend hyperbolic_symmetry_group * hyperbolic_glide_mirror
     (double a1, double a2);
  public:
-  hyperbolic_symmetry_group() {}
-  hyperbolic_symmetry_group(hyperbolic_symmetry_group &s)
-    : trans1(s.trans1), trans2(s.trans2), trans3(s.trans3),
-    reversed(s.reversed) {}
-  hyperbolic_symmetry_group(hyperbolic_symmetry_group_ref s) 
-    : trans1(s.trans1), trans2(s.trans2), trans3(s.trans3),
-    reversed(s.reversed) {}
-  operator hyperbolic_symmetry_group_ref () {
-    return hyperbolic_symmetry_group_ref(trans1,trans2,trans3,reversed);
-  }
-  hyperbolic_symmetry_group & operator = (hyperbolic_symmetry_group &s) {
-    if(this!=&s) {
-      trans1=s.trans1;
-      trans2=s.trans2;
-      trans3=s.trans3;
-      reversed=s.reversed;
-    }
-    return *this;
-  }
-  hyperbolic_symmetry_group & operator = (hyperbolic_symmetry_group_ref s) {
-    trans1=s.trans1;
-    trans2=s.trans2;
-    trans3=s.trans3;
-    reversed=s.reversed;
-    return *this;
-  }
-  template<typename T>
+  template <typename T>
   void symmetrize(T &t,void (T::*p)(const hyperbolic_coord &),
-		  const hyperbolic_coord &hc, int depth) {
-    (t.*p)(hc);
-    if(depth) {
-      if(reversed) {
-	symmetrize1r(t,p,(*trans1)(hc),depth-1);
-	symmetrize2r(t,p,(*trans2)(hc),depth-1);
-	symmetrize3r(t,p,(*trans3)(hc),depth-1);
-      }
-      else {
-	symmetrize1(t,p,(*trans1)(hc),depth-1);
-	symmetrize2(t,p,(*trans2)(hc),depth-1);
-	symmetrize3(t,p,(*trans3)(hc),depth-1);
-      }
-    }
-  }
-  template<typename T>
-  void symmetrize1(T &t,void (T::*p)(const hyperbolic_coord &),
-		  const hyperbolic_coord &hc, int depth) {
-    (t.*p)(hc);
-    if(depth) {
-      symmetrize2(t,p,(*trans2)(hc),depth-1);
-      symmetrize3(t,p,(*trans3)(hc),depth-1);
-    }
-  }
-  template<typename T>
-  void symmetrize2(T &t,void (T::*p)(const hyperbolic_coord &),
-		  const hyperbolic_coord &hc, int depth) {
-    (t.*p)(hc);
-    if(depth) {
-      symmetrize1(t,p,(*trans1)(hc),depth-1);
-      symmetrize3(t,p,(*trans3)(hc),depth-1);
-    }
-  }
-  template<typename T>
-  void symmetrize3(T &t,void (T::*p)(const hyperbolic_coord &),
-		  const hyperbolic_coord &hc, int depth) {
-    (t.*p)(hc);
-    if(depth) {
-      symmetrize1(t,p,(*trans1)(hc),depth-1);
-      symmetrize2(t,p,(*trans2)(hc),depth-1);
-    }
-  }
-  template<typename T>
-  void symmetrize1r(T &t,void (T::*p)(const hyperbolic_coord &),
-		  const hyperbolic_coord &hc, int depth) {
-    (t.*p)(hc);
-    if(depth) {
-      symmetrize1r(t,p,(*trans1)(hc),depth-1);
-      symmetrize3r(t,p,(*trans3)(hc),depth-1);
-    }
-  }
-  template<typename T>
-  void symmetrize2r(T &t,void (T::*p)(const hyperbolic_coord &),
-		  const hyperbolic_coord &hc, int depth) {
-    (t.*p)(hc);
-    if(depth) {
-      symmetrize2r(t,p,(*trans2)(hc),depth-1);
-      symmetrize3r(t,p,(*trans3)(hc),depth-1);
-    }
-  }
-  template<typename T>
-  void symmetrize3r(T &t,void (T::*p)(const hyperbolic_coord &),
-		  const hyperbolic_coord &hc, int depth) {
-    (t.*p)(hc);
-    if(depth) {
-      symmetrize1r(t,p,(*trans1)(hc),depth-1);
-      symmetrize2r(t,p,(*trans2)(hc),depth-1);
-    }
-  }
-  hyperbolic_coord random_symmetry(const hyperbolic_coord &c, int depth) {
-    hyperbolic_coord ans(c);
-    while(depth--) {
-      switch(rand()%3) {
-      case 0:
-	ans=(*trans1)(ans);
-	break;
-      case 1:
-	ans=(*trans2)(ans);
-	break;
-      case 2:
-	ans=(*trans3)(ans);
-      }
-    }
-    return ans;
+		  const hyperbolic_coord &hc);
+  hyperbolic_coord random_symmetry(const hyperbolic_coord &c) {
+    double i=double(rand())/RAND_MAX;
+    return tiles[pow(tiles.size(),i)].t(c);
   }
  private:
-  auto_ptr<hyperbolic_transformation> trans1;
-  auto_ptr<hyperbolic_transformation> trans2;
-  auto_ptr<hyperbolic_transformation> trans3;
-  bool reversed;
+  hyperbolic_symmetry_group() {}
+  void make_tiles(const hyperbolic_transformation &t1,
+		  const hyperbolic_transformation &t2,
+		  const hyperbolic_transformation &t3);
+  vector<hyperbolic_tile> tiles;
 };
 
-hyperbolic_symmetry_group hyperbolic_3mirror(int n1, int n2, int n3);
-hyperbolic_symmetry_group hyperbolic_3_180(double a1, double a2, double a3);
-hyperbolic_symmetry_group hyperbolic_2mirror_180(int n1, double a2, double a3);
-hyperbolic_symmetry_group hyperbolic_mirror_2_180(double a1, double a2,
+template <typename T>
+void hyperbolic_symmetry_group::symmetrize
+(T &t,void (T::*p)(const hyperbolic_coord &),const hyperbolic_coord &hc)
+{
+  vector<hyperbolic_tile>::iterator it=tiles.begin();
+  while(it!=tiles.end()&&(it->edge1*hc<0||it->edge2*hc<0||it->edge3*hc<0)) {
+    it++;
+  }
+  if(it!=tiles.end()) {
+    hyperbolic_coord c=(it->t).inverse(hc);
+    // the following two lines are useful for debugging
+    //(t.*p)(c);
+    //(t.*p)(tiles[1].t(c));
+    for(it=tiles.begin();it!=tiles.end();it++)
+      (t.*p)((it->t)(c));
+  }
+}
+
+hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3);
+hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3);
+hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3);
+hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
 						  double a3);
-hyperbolic_symmetry_group hyperbolic_180_rotation(int n1, int n2);
-hyperbolic_symmetry_group hyperbolic_mirror_rotation(int n1, int n2);
-hyperbolic_symmetry_group hyperbolic_3rotation(int n1, int n2, int n3);
-hyperbolic_symmetry_group hyperbolic_glide_180(double a1, double a2);
-hyperbolic_symmetry_group hyperbolic_glide_mirror(double a1, double a2);
+hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
+hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2);
+//hyperbolic_symmetry_group hyperbolic_3rotation(int n1, int n2, int n3);
+hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2);
+hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2);
 
 class hyperbolic_painter
 {
@@ -401,7 +318,7 @@ class hyperbolic_painter
   void paint(int sz, hyperbolic_symmetry_group &sym) {
     size=sz;
     pixel_width=2./size;
-    sg=sym;
+    sg=&sym;
     red.resize(size*size);
     green.resize(size*size);
     blue.resize(size*size);
@@ -416,7 +333,7 @@ class hyperbolic_painter
   vector<unsigned char> red;
   vector<unsigned char> green;
   vector<unsigned char> blue;
-  hyperbolic_symmetry_group sg;
+  hyperbolic_symmetry_group *sg;
   projtype pt;
 };
 
