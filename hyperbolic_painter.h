@@ -242,6 +242,8 @@ hyperbolic_transformation hyperbolic_rotation
 hyperbolic_transformation hyperbolic_glide_reflection
 (const hyperbolic_coord &c, double r);
 
+enum flip_type { FLIP_ALL, FLIP_ALTERNATING, FLIP_RANDOM };
+
 struct hyperbolic_tile
 {
   hyperbolic_transformation t;
@@ -250,24 +252,30 @@ struct hyperbolic_tile
   hyperbolic_coord edge3;
 };
 
+class hyperbolic_symmetry_group;
+
+hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3, flip_type f=FLIP_ALL);
+hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3);
+hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3, flip_type f=FLIP_ALL);
+hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
+						    double a3, flip_type f=FLIP_ALL);
+hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
+hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2, flip_type f=FLIP_ALL);
+hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2, flip_type f=FLIP_ALL);
+hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2, flip_type f=FLIP_ALL);
+
 class hyperbolic_symmetry_group
 {
-  friend hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3);
-  friend hyperbolic_symmetry_group * hyperbolic_3mirror_randomized
-  (int n1, int n2, int n3);
-  friend hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2,
-						    double a3);
-  friend hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2,
-							  double a3);
+  friend hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3, flip_type f);
+  friend hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3);
+  friend hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3, flip_type f);
   friend hyperbolic_symmetry_group * hyperbolic_mirror_2_180
-    (double a1, double a2,double a3);
+    (double a1, double a2,double a3, flip_type f);
   friend hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
-  friend hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2);
-  friend hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2,
-							  int n3);
-  friend hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2);
+  friend hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2, flip_type f);
+  friend hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2, flip_type f);
   friend hyperbolic_symmetry_group * hyperbolic_glide_mirror
-    (double a1, double a2);
+    (double a1, double a2, flip_type f);
 public:
   template <typename T>
   void symmetrize(T &t,void (T::*p)(const hyperbolic_coord &),
@@ -279,8 +287,8 @@ public:
 private:
   hyperbolic_symmetry_group() : alternating(false) {}
   void make_tiles(const hyperbolic_transformation &t1,
-			  const hyperbolic_transformation &t2,
-			  const hyperbolic_transformation &t3);
+		  const hyperbolic_transformation &t2,
+		  const hyperbolic_transformation &t3, flip_type f=FLIP_ALL);
   vector<hyperbolic_tile> tiles;
   vector<bool> flipped;
   bool alternating;
@@ -313,20 +321,6 @@ void hyperbolic_symmetry_group::symmetrize
     }
   }
 }
-
-hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3);
-hyperbolic_symmetry_group * hyperbolic_3mirror_randomized
-(int n1, int n2, int n3);
-
-hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3);
-hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3);
-hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
-						  double a3);
-hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
-hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2);
-hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3);
-hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2);
-hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2);
 
 class hyperbolic_painter
 {

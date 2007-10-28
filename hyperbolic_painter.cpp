@@ -120,6 +120,12 @@ hyperbolic_transformation hyperbolic_glide_reflection(const hyperbolic_coord &c,
   return t;					       
 }
 
+double det(const hyperbolic_transformation &t)
+{
+  return t.xx*t.yy*t.zz+t.xy*t.yz*t.zx+t.xz*t.zy*t.yx
+    -t.xx*t.yz*t.zy-t.xz*t.zx*t.yy-t.xy*t.yx*t.zz;
+};
+
 planar_coord poincare_projection(const hyperbolic_coord &hc)
 {
   return planar_coord(hc.x/(1+hc.z),hc.y/(1+hc.z));
@@ -142,8 +148,13 @@ void hyperbolic_symmetry_group::symmetrize
 
 void hyperbolic_symmetry_group::make_tiles
 (const hyperbolic_transformation &t1, const hyperbolic_transformation &t2,
- const hyperbolic_transformation &t3)
+ const hyperbolic_transformation &t3, flip_type f)
 {
+  alternating=(f!=FLIP_ALL);
+  if(alternating) flipped.push_back(true);
+  bool flip1=(det(t1)*t1.zz<0);
+  bool flip2=(det(t2)*t2.zz<0);
+  bool flip3=(det(t3)*t3.zz<0);
   int i;
   vector<hyperbolic_tile>::iterator it2;
   hyperbolic_tile t;
@@ -164,7 +175,8 @@ void hyperbolic_symmetry_group::make_tiles
       }
       if(it2==tiles.end()) {
 	tiles.push_back(t);
-	if(alternating) flipped.push_back(!flipped[i]);
+	if(f==FLIP_ALTERNATING) flipped.push_back(flip1?!flipped[i]:flipped[i]);
+	else if(f==FLIP_RANDOM) flipped.push_back(rand()&1==1);
       }
     }
     tt2=tiles[i].t*t2*inverse(tiles[i].t);
@@ -182,7 +194,8 @@ void hyperbolic_symmetry_group::make_tiles
       }
       if(it2==tiles.end()) {
 	tiles.push_back(t);
-	if(alternating) flipped.push_back(!flipped[i]);
+	if(f==FLIP_ALTERNATING) flipped.push_back(flip2?!flipped[i]:flipped[i]);
+	else if(f==FLIP_RANDOM) flipped.push_back(rand()&1==1);
       }
     }
     tt3=tiles[i].t*t3*inverse(tiles[i].t);
@@ -200,13 +213,14 @@ void hyperbolic_symmetry_group::make_tiles
       }
       if(it2==tiles.end()) {
 	tiles.push_back(t);
-	if(alternating) flipped.push_back(!flipped[i]);
+	if(f==FLIP_ALTERNATING) flipped.push_back(flip3?!flipped[i]:flipped[i]);
+	else if(f==FLIP_RANDOM) flipped.push_back(rand()&1==1);
       }
     }
   }
 }
 
-hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3)
+hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3, flip_type f)
 {
   double cos1=cos(M_PI/n1);
   double sin1=sin(M_PI/n1);
@@ -227,7 +241,7 @@ hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3)
     (cross(hyperbolic_coord(r2,0,z2),hyperbolic_coord(r3*cos1,r3*sin1,z3)));
   s->make_tiles(hyperbolic_reflection(s->tiles[0].edge1),
 	       hyperbolic_reflection(s->tiles[0].edge2),
-	       hyperbolic_reflection(normalize(s->tiles[0].edge3)));
+		hyperbolic_reflection(normalize(s->tiles[0].edge3)),f);
   return s;
 }
 
@@ -260,7 +274,7 @@ hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3)
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3)
+hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3, flip_type f)
 {
   double cos1=cos(M_PI/n1);
   double sin1=sin(M_PI/n1);
@@ -282,12 +296,12 @@ hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3)
   s->make_tiles(hyperbolic_reflection(s->tiles[0].edge1),
 	       hyperbolic_reflection(s->tiles[0].edge2),
 	       hyperbolic_rotation_180
-	       (normalize(hyperbolic_coord(r3*cos1+r2,r3*sin1,z2+z3))));
+		(normalize(hyperbolic_coord(r3*cos1+r2,r3*sin1,z2+z3))),f);
   return s;
 }
 
 hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
-						  double a3)
+						    double a3, flip_type f)
 {
   double cos1=cos(a1);
   double sin1=sin(a1);
@@ -308,11 +322,11 @@ hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
   s->tiles[0].edge3=normalize(cross(hyperbolic_coord(r2,0.,z2),
 			 hyperbolic_coord(r3*cos1,r3*sin1,z3)));
   s->make_tiles(hyperbolic_rotation_180
-	     (hyperbolic_coord(sqrt((z2-1.)/2.),0.,sqrt((z2+1.)/2.))),
-	     hyperbolic_rotation_180
-	     (hyperbolic_coord(r4*cos1,r4*sin1,sqrt((z3+1.)/2.))),
-	     hyperbolic_reflection
-	     (s->tiles[0].edge3));
+		(hyperbolic_coord(sqrt((z2-1.)/2.),0.,sqrt((z2+1.)/2.))),
+		hyperbolic_rotation_180
+		(hyperbolic_coord(r4*cos1,r4*sin1,sqrt((z3+1.)/2.))),
+		hyperbolic_reflection
+		(s->tiles[0].edge3),f);
   return s;
 }
 
@@ -333,7 +347,7 @@ hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2)
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2)
+hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2, flip_type f)
 {
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->tiles.resize(1);
@@ -345,10 +359,11 @@ hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2)
   s->tiles[0].edge2=hyperbolic_coord(co,si,0);
   s->tiles[0].edge3=hyperbolic_coord(-z,0,sqrt(z*z-1.));
   s->make_tiles(hyperbolic_rotation_origin(n1),hyperbolic_rotation_origin(-n1),
-    hyperbolic_reflection(s->tiles[0].edge3));
+		hyperbolic_reflection(s->tiles[0].edge3),f);
   return s;
 }
 
+/*
 hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3)
 {
   double cos1=cos(M_PI/n1);
@@ -364,8 +379,6 @@ hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3)
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->alternating=true;
   s->tiles.resize(1);
-  s->flipped.resize(1);
-  s->flipped[0]=true;
   s->tiles[0].t=identity();
   s->tiles[0].edge1=hyperbolic_coord(0.,-1.,0.);
   s->tiles[0].edge2=hyperbolic_coord(-sin1,cos1,0.);
@@ -376,7 +389,9 @@ hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3)
 	       hyperbolic_reflection(normalize(s->tiles[0].edge3)));
   return s;
 }
+*/
 
+/*
 hyperbolic_symmetry_group * hyperbolic_3mirror_randomized
 (int n1, int n2, int n3)
 {
@@ -386,6 +401,7 @@ hyperbolic_symmetry_group * hyperbolic_3mirror_randomized
     s->flipped[i]=((rand()&1)==1);
   return s;
 }
+*/
 
 /* The current tile system doesn't work when the fundamental cell
  * isn't triangular.  Maybe fix this someday.
@@ -417,11 +433,10 @@ hyperbolic_symmetry_group * hyperbolic_3rotation(int n1, int n2, int n3)
 }
 */
 
-hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2)
+hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2, flip_type f)
 {
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->tiles.resize(1);
-  s->tiles[0].t=identity();
   double cos1=cos(a1);
   double sin1=sin(a1);
   double cos2=cos(a2);
@@ -438,11 +453,11 @@ hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2)
   s->tiles[0].edge3=hyperbolic_coord(sin(a1/2),-cos(a1/2),0.);
   s->make_tiles(hyperbolic_glide_reflection(hyperbolic_coord(-z2,0,r2),r3),
 		hyperbolic_glide_reflection(hyperbolic_coord(-z2,0,r2),-r3),
-		hyperbolic_rotation_180(hyperbolic_coord(-sqrt(z*z-1.),0.,z)));
+		hyperbolic_rotation_180(hyperbolic_coord(-sqrt(z*z-1.),0.,z)),f);
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2)
+hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2, flip_type f)
 {
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->tiles.resize(1);
@@ -462,6 +477,6 @@ hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2)
   s->tiles[0].edge3=hyperbolic_coord(sin(a1/2),cos(a1/2),0.);
   s->make_tiles(hyperbolic_glide_reflection(hyperbolic_coord(-z2,0,r2),r3),
 		hyperbolic_glide_reflection(hyperbolic_coord(-z2,0,r2),-r3),
-		hyperbolic_reflection(hyperbolic_coord(-z,0,sqrt(z*z-1.))));
+		hyperbolic_reflection(hyperbolic_coord(-z,0,sqrt(z*z-1.))),f);
   return s;
 }

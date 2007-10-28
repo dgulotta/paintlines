@@ -136,6 +136,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     angle2=NULL;
     angle3=NULL;
     SpinAngle1->setValue(cm_1);
+    ComboSubset->setEnabled(true);
     break;
   case 1:
     LabelAngle1->setText("Mirror angle");
@@ -154,6 +155,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     angle3=NULL;
     SpinAngle1->setValue(cmm_1);
     SpinAngle2->setValue(cmm_2);
+    ComboSubset->setEnabled(true);
     break;
   case 2:
     LabelAngle1->setText("Sum of angles");
@@ -169,6 +171,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     angle2=NULL;
     angle3=NULL;
     SpinAngle1->setValue(p2_1);
+    ComboSubset->setEnabled(false);
     break;
   case 3:
     LabelAngle1->setText("Angle 1");
@@ -183,13 +186,14 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle2->setMinValue(2);
     SpinAngle3->setMinValue(2);
     SpinAngle2->setEnabled(true);
-    SpinAngle3->setEnabled(true);
+    SpinAngle3->setEnabled(false);
     angle1=&p4_1;
     angle2=&p4_2;
     angle3=&p4_3;
     SpinAngle1->setValue(p4_1);
     SpinAngle2->setValue(p4_2);
-    SpinAngle3->setValue(p4_3);
+    //SpinAngle3->setValue(p4_3);
+    ComboSubset->setEnabled(false);
     break;
   case 4:
     LabelAngle1->setText("Rotation angle");
@@ -208,6 +212,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     angle3=NULL;
     SpinAngle1->setValue(p4g_1);
     SpinAngle2->setValue(p4g_2);
+    ComboSubset->setEnabled(true);
     break;
   case 5:
     LabelAngle1->setText("Angle 1");
@@ -228,6 +233,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     SpinAngle1->setValue(p4m_1);
     SpinAngle2->setValue(p4m_2);
     SpinAngle3->setValue(p4m_3);
+    ComboSubset->setEnabled(true);
     break;
   case 6:
     LabelAngle1->setText("Sum of angles");
@@ -243,6 +249,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     angle2=NULL;
     angle3=NULL;
     SpinAngle1->setValue(pgg_1);
+    ComboSubset->setEnabled(true);
     break;
   case 7:
     LabelAngle1->setText("Sum of angles");
@@ -258,6 +265,7 @@ void HyperbolicLinesForm::SymmetryChanged(int n)
     angle2=NULL;
     angle3=NULL;
     SpinAngle1->setValue(pmg_1);
+    ComboSubset->setEnabled(true);
     break;
   }
 }
@@ -276,14 +284,15 @@ void HyperbolicLinesForm::Draw()
     case 0:
       cm_1=SpinAngle1->value();
       candraw=true;
-      sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_glide_mirror((M_PI/3.)/cm_1,(M_PI/3.)/cm_1));
+      sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_glide_mirror((M_PI/3.)/cm_1,(M_PI/3.)/cm_1,(flip_type)ComboSubset->currentItem()));
       break;
     case 1:
       cmm_1=SpinAngle1->value();
       cmm_2=SpinAngle2->value();
       candraw=(cmm_1>2||cmm_2>2);
       if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>
-		    (hyperbolic_2mirror_180(cmm_1,M_PI_2/cmm_2,M_PI_2/cmm_2));
+	(hyperbolic_2mirror_180(cmm_1,M_PI_2/cmm_2,M_PI_2/cmm_2,
+				(flip_type)ComboSubset->currentItem()));
       break;
     case 2:
       p2_1=SpinAngle1->value();
@@ -296,16 +305,17 @@ void HyperbolicLinesForm::Draw()
       p4_1=SpinAngle1->value();
       p4_2=SpinAngle2->value();
       p4_3=SpinAngle3->value();
-      candraw=(p4_1*p4_2+p4_1*p4_3+p4_2*p4_3<p4_1*p4_2*p4_3);
+      candraw=(p4_1*p4_2+p4_1*2+p4_2*2<p4_1*p4_2*2);
       if (candraw) sg=auto_ptr<hyperbolic_symmetry_group>
-		     (hyperbolic_3rotation(p4_1,p4_2,p4_3));
+	(hyperbolic_180_rotation(p4_1,p4_2));
       break;
     case 4:
       p4g_1=SpinAngle1->value();
       p4g_2=SpinAngle2->value();
       candraw=(p4g_1+2*p4g_2<p4g_1*p4g_2);
       if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>
-		    (hyperbolic_mirror_rotation(p4g_1,p4g_2));
+		    (hyperbolic_mirror_rotation
+		     (p4g_1,p4g_2,(flip_type)ComboSubset->currentItem()));
       break;
     case 5:
       p4m_1=SpinAngle1->value();
@@ -313,20 +323,23 @@ void HyperbolicLinesForm::Draw()
       p4m_3=SpinAngle3->value();
       candraw=(p4m_1*p4m_2+p4m_1*p4m_3+p4m_2*p4m_3<p4m_1*p4m_2*p4m_3);
       if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>
-		    (hyperbolic_3mirror(p4m_1,p4m_2,p4m_3));
+		    (hyperbolic_3mirror(p4m_1,p4m_2,p4m_3,
+					(flip_type)ComboSubset->currentItem()));
       break;
     case 6:
       pgg_1=SpinAngle1->value();
       candraw=true;
       sg=auto_ptr<hyperbolic_symmetry_group>
-	(hyperbolic_glide_180((2.*M_PI/3.)/pgg_1,(2.*M_PI/3.)/pgg_1));
+	(hyperbolic_glide_180((2.*M_PI/3.)/pgg_1,(2.*M_PI/3.)/pgg_1,
+			      (flip_type)ComboSubset->currentItem()));
       break;
     case 7:
       pmg_1=SpinAngle1->value();
       candraw=true;
       sg=auto_ptr<hyperbolic_symmetry_group>
 	(hyperbolic_mirror_2_180((M_PI/3.)/pmg_1,(M_PI/3.)/pmg_1,
-				 (M_PI/3.)/pmg_1));
+				 (M_PI/3.)/pmg_1,
+				 (flip_type)ComboSubset->currentItem()));
     }
     if(candraw) {
       projtype pt;
