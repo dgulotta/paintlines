@@ -18,6 +18,7 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <qapplication.h>
 #include <qmessagebox.h>
 #include <qfiledialog.h>
 #include <memory>
@@ -25,58 +26,16 @@
 
 using namespace std;
 
-void HyperbolicLinesForm::fileNew()
-{
-
-}
-
-
-void HyperbolicLinesForm::fileOpen()
-{
-
-}
-
-
-void HyperbolicLinesForm::fileSave()
-{
-
-}
-
-
 void HyperbolicLinesForm::fileSaveAs()
 {
  QString s=QFileDialog::getSaveFileName();
-    if(!s.isEmpty()) HyperbolicPaintFrame->save(s,"PNG");
-}
-
-
-void HyperbolicLinesForm::filePrint()
-{
-
+ if(!s.isEmpty()) HyperbolicPaintFrame->save(s);
 }
 
 
 void HyperbolicLinesForm::fileExit()
 {
-
-}
-
-
-void HyperbolicLinesForm::editUndo()
-{
-
-}
-
-
-void HyperbolicLinesForm::editRedo()
-{
-
-}
-
-
-void HyperbolicLinesForm::editCut()
-{
-
+  QApplication::exit(0);
 }
 
 
@@ -86,33 +45,10 @@ void HyperbolicLinesForm::editCopy()
 }
 
 
-void HyperbolicLinesForm::editPaste()
-{
-
-}
-
-
-void HyperbolicLinesForm::editFind()
-{
-
-}
-
-
-void HyperbolicLinesForm::helpIndex()
-{
-
-}
-
-
-void HyperbolicLinesForm::helpContents()
-{
-
-}
-
-
 void HyperbolicLinesForm::helpAbout()
 {
-
+  QMessageBox::information(this,"About Hyperbolic Paintlines",
+				 "Hyperbolic Paintlines copyright (C) 2005-2007 Daniel Gulotta.\n\nThis program is free software; you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation; either version 2 of the License, or\n(at your option) any later version.  See COPYING for details.");
 }
 
 
