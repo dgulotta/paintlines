@@ -144,6 +144,7 @@ void PaintForm::Draw()
 	case SYM_P3:
 	case SYM_P31M:
 	case SYM_P3M1:
+	case SYM_P6:
 	    ButtonRandomize->setEnabled(true);
 	    break;
 	default:
