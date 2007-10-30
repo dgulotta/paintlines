@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -29,7 +29,7 @@ using namespace std;
 void HyperbolicLinesForm::fileSaveAs()
 {
  QString s=QFileDialog::getSaveFileName();
- if(!s.isEmpty()) HyperbolicPaintFrame->save(s);
+ if(!s.isEmpty()) HyperbolicPaintFrame->save(s,"PNG");
 }
 
 

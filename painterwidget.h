@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
+ *   Copyright (C) 2005 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -31,7 +31,7 @@ class painterwidget : public QWidget, virtual public painter
 public:
     painterwidget(QWidget *parent=0,const char *name=0);
     void paint(int sz, symgroup sg);
-    bool save(const QString &filename, const char *format=0);
+    bool save(const QString &filename, const char *format);
     void randomize(int xtiles, int ytiles);
     void restore();
 protected:
