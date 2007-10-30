@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005-2006 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -145,6 +145,7 @@ void PaintForm::Draw()
 	case SYM_P31M:
 	case SYM_P3M1:
 	case SYM_P6:
+	case SYM_P6M:
 	    ButtonRandomize->setEnabled(true);
 	    break;
 	default:

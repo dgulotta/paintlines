@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2003-2005 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2003-2007 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -48,6 +48,7 @@ enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
 
 class painter
 {
+  friend class painter_randomize;
  public:
   painter() : sg(SYM_P1), size(0), halfsize(0), size1(-1), halfsize1(-1) {}
   void paint(int sz, symgroup sym) {
@@ -61,9 +62,21 @@ class painter
     blue.resize(size*size);
   }
   int get_size() {return size;}
-  void randomize(int xtiles, int ytiles, vector<unsigned char> &r,
+  void randomize(int _xtiles, int _ytiles, vector<unsigned char> &r,
 		 vector<unsigned char> &g, vector<unsigned char> &b);
  protected:
+  void rot0(int &i, int &j);
+  void rot60(int &i, int &j);
+  void rot120(int &i, int &j);
+  void rot180(int &i, int &j);
+  void rot240(int &i, int &j);
+  void rot300(int &i, int &j);
+  void trans1_3(int &i, int &j);
+  void transrot120(int &i, int &j);
+  void transrot240(int &i, int &j);
+  void randomize_p3m1_helper
+    (vector<unsigned char> &r, vector<unsigned char> &g,
+     vector<unsigned char> &b, int a, int z, int i, int j, void (painter::*f)(int &, int &));
   inline unsigned char & mi(vector<unsigned char> &v,int i, int j) {
     return v[mod(i,size)+size*mod(j,size)];
   }
@@ -153,6 +166,13 @@ class painter
   int halfsize;
   int size1;
   int halfsize1;
+  // used only by randomize:
+  int width;
+  int height;
+  int xtiles;
+  int ytiles;
+  int k;
+  int l;
 };
 
 template <typename T>

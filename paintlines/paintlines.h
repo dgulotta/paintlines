@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2003-2005 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
