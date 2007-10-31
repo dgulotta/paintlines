@@ -26,13 +26,8 @@ paintcloudswidget::paintcloudswidget(QWidget *parent, const char *name)
 }
 
 void paintcloudswidget::draw
-(int sz, symgroup sg, unsigned char red1,unsigned char green1,
- unsigned char blue1, unsigned char red2, unsigned char green2,
- unsigned char blue2, unsigned char red3, unsigned char green3,
- unsigned char blue3)
+(int sz, symgroup sg)
 {
-  paintclouds::set_colors(red1,green1,blue1,red2,green2,blue2,red3,green3,
-			  blue3);
   paintclouds::paint(sz,sg);
   painterwidget::paint(sz,sg);
 }

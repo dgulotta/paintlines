@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
  *   dgulotta@mit.edu                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,6 +20,7 @@
 
 #include <qfiledialog.h>
 #include <qmessagebox.h>
+#include <qcolordialog.h>
 
 void CloudsForm::fileNew()
 {
@@ -136,7 +137,8 @@ void CloudsForm::Draw()
 	default:
 	    ButtonRandomize->setEnabled(false);
 	}
-    CloudsFrame->draw(size,sg,255,255,0,0,255,255,255,0,255);
+    CloudsFrame->draw(size,sg);
+    //CloudsFrame->draw(size,sg,255,255,0,0,255,255,255,0,255);
   }
 }
 
@@ -154,3 +156,36 @@ void CloudsForm::Restore()
     ButtonRestore->setEnabled(false);
 }
 
+
+
+void CloudsForm::SetColor1()
+{
+  QColor c=QColorDialog::getColor(ButtonColor1->paletteBackgroundColor(),this);
+  if(c.isValid()) {
+    ButtonColor1->setPaletteBackgroundColor(c);
+    ButtonColor1->setDown(false);
+    CloudsFrame->set_color1(c.red(),c.green(),c.blue());
+  }
+}
+
+
+void CloudsForm::SetColor2()
+{
+  QColor c=QColorDialog::getColor(ButtonColor2->paletteBackgroundColor(),this);
+  if(c.isValid()) {
+    ButtonColor2->setPaletteBackgroundColor(c);
+    ButtonColor2->setDown(false);
+    CloudsFrame->set_color2(c.red(),c.green(),c.blue());
+  }
+}
+
+
+void CloudsForm::SetColor3()
+{
+  QColor c=QColorDialog::getColor(ButtonColor3->paletteBackgroundColor(),this);
+  if(c.isValid()) {
+    ButtonColor3->setPaletteBackgroundColor(c);
+    ButtonColor3->setDown(false);
+    CloudsFrame->set_color3(c.red(),c.green(),c.blue());
+  }
+}

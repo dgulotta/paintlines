@@ -29,10 +29,7 @@ class paintcloudswidget : public painterwidget, public paintclouds
     Q_OBJECT
 public:
     paintcloudswidget(QWidget *parent=0,const char *name=0);
-    void draw(int sz, symgroup sg, unsigned char red1, unsigned char green1,
-	      unsigned char blue1, unsigned char red2, unsigned char green2,
-	      unsigned char blue2, unsigned char red3, unsigned char green3,
-	      unsigned char blue3);
+    void draw(int sz, symgroup sg);
 };
 
 #endif
