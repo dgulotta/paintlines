@@ -48,7 +48,6 @@ enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
 
 class painter
 {
-  friend class painter_randomize;
  public:
   painter() : sg(SYM_P1), size(0), halfsize(0), size1(-1), halfsize1(-1) {}
   void paint(int sz, symgroup sym) {
