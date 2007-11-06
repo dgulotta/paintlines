@@ -218,6 +218,8 @@ void paintclouds::copy_border(int dx1, int dy1, int dx2, int dy2,
     int smy=midpt(sy1,sy2);
     drawpixelsymmetric(dmx,dmy,mi(red,smx,smy),mi(green,smx,smy),
 		       mi(blue,smx,smy));
+    copy_border(dx1,dy1,dmx,dmy,sx1,sy1,smx,smy);
+    copy_border(dmx,dmy,dx2,dy2,smx,smy,sx2,sy2);
   }
 }
 
@@ -231,6 +233,8 @@ void paintclouds::copy_border_backward(int dx1, int dy1, int dx2, int dy2,
     int smy=midpt(sy2,sy1);
     drawpixelsymmetric(dmx,dmy,mi(red,smx,smy),mi(green,smx,smy),
 		       mi(blue,smx,smy));
+    copy_border_backward(dx1,dy1,dmx,dmy,sx1,sy1,smx,smy);
+    copy_border_backward(dmx,dmy,dx2,dy2,smx,smy,sx2,sy2);
   }
 }
 
