@@ -158,9 +158,9 @@ void paintclouds::paint(int sz, symgroup sym)
       drawpixelsymmetric(x1,x1,red2,green2,blue2);
       drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
       paint_border(x1,x1,-1,size+1);
-      copy_border_backward(size+1,-1,x1,x1,x1,x1,-1,size+1);
-      paint_border(-1,size+1,halfsize,halfsize);
-      paint_triangle(-1,size+1,size+1,-1,x1,x1);
+      copy_border_backward(-1,size+1,size-x1,size-x1,-1,size+1,x1,x1);
+      paint_border(x1,x1,halfsize,halfsize);
+      paint_triangle(-1,size+1,size-x1,size-x1,x1,x1);
     }
     break;
   case SYM_P6M_O:
