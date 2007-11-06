@@ -123,6 +123,12 @@ void CloudsForm::Draw()
   }
   else {
     symgroup sg=symgroup(ComboSymmetry->currentItem()+int(SYM_CM_O));
+    QColor c=ButtonColor1->paletteBackgroundColor();
+    CloudsFrame->set_color1(c.red(),c.green(),c.blue());
+    c=ButtonColor2->paletteBackgroundColor();
+    CloudsFrame->set_color2(c.red(),c.green(),c.blue());
+    c=ButtonColor3->paletteBackgroundColor();
+    CloudsFrame->set_color3(c.red(),c.green(),c.blue());
     switch(sg) {
 	case SYM_CMM_O:
 	case SYM_P2_O:
@@ -164,7 +170,6 @@ void CloudsForm::SetColor1()
   if(c.isValid()) {
     ButtonColor1->setPaletteBackgroundColor(c);
     ButtonColor1->setDown(false);
-    CloudsFrame->set_color1(c.red(),c.green(),c.blue());
   }
 }
 
@@ -175,7 +180,6 @@ void CloudsForm::SetColor2()
   if(c.isValid()) {
     ButtonColor2->setPaletteBackgroundColor(c);
     ButtonColor2->setDown(false);
-    CloudsFrame->set_color2(c.red(),c.green(),c.blue());
   }
 }
 
@@ -186,6 +190,5 @@ void CloudsForm::SetColor3()
   if(c.isValid()) {
     ButtonColor3->setPaletteBackgroundColor(c);
     ButtonColor3->setDown(false);
-    CloudsFrame->set_color3(c.red(),c.green(),c.blue());
   }
 }

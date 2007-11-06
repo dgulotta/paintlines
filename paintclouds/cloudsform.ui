@@ -377,6 +377,13 @@
                 <height>31</height>
             </rect>
         </property>
+        <property name="paletteBackgroundColor">
+            <color>
+                <red>255</red>
+                <green>255</green>
+                <blue>0</blue>
+            </color>
+        </property>
         <property name="palette">
             <palette>
                 <active>
@@ -387,7 +394,7 @@
                     </color>
                     <color>
                         <red>255</red>
-                        <green>0</green>
+                        <green>255</green>
                         <blue>0</blue>
                     </color>
                     <color>
@@ -469,7 +476,7 @@
                     </color>
                     <color>
                         <red>255</red>
-                        <green>0</green>
+                        <green>255</green>
                         <blue>0</blue>
                     </color>
                     <color>
@@ -551,7 +558,7 @@
                     </color>
                     <color>
                         <red>255</red>
-                        <green>0</green>
+                        <green>255</green>
                         <blue>0</blue>
                     </color>
                     <color>
@@ -646,6 +653,13 @@
                 <height>31</height>
             </rect>
         </property>
+        <property name="paletteBackgroundColor">
+            <color>
+                <red>0</red>
+                <green>255</green>
+                <blue>255</blue>
+            </color>
+        </property>
         <property name="palette">
             <palette>
                 <active>
@@ -657,7 +671,7 @@
                     <color>
                         <red>0</red>
                         <green>255</green>
-                        <blue>0</blue>
+                        <blue>255</blue>
                     </color>
                     <color>
                         <red>127</red>
@@ -739,7 +753,7 @@
                     <color>
                         <red>0</red>
                         <green>255</green>
-                        <blue>0</blue>
+                        <blue>255</blue>
                     </color>
                     <color>
                         <red>127</red>
@@ -821,7 +835,7 @@
                     <color>
                         <red>0</red>
                         <green>255</green>
-                        <blue>0</blue>
+                        <blue>255</blue>
                     </color>
                     <color>
                         <red>127</red>
@@ -915,6 +929,13 @@
                 <height>31</height>
             </rect>
         </property>
+        <property name="paletteBackgroundColor">
+            <color>
+                <red>255</red>
+                <green>0</green>
+                <blue>255</blue>
+            </color>
+        </property>
         <property name="palette">
             <palette>
                 <active>
@@ -924,7 +945,7 @@
                         <blue>0</blue>
                     </color>
                     <color>
-                        <red>0</red>
+                        <red>255</red>
                         <green>0</green>
                         <blue>255</blue>
                     </color>
@@ -1006,7 +1027,7 @@
                         <blue>128</blue>
                     </color>
                     <color>
-                        <red>0</red>
+                        <red>255</red>
                         <green>0</green>
                         <blue>255</blue>
                     </color>
@@ -1088,7 +1109,7 @@
                         <blue>0</blue>
                     </color>
                     <color>
-                        <red>0</red>
+                        <red>255</red>
                         <green>0</green>
                         <blue>255</blue>
                     </color>

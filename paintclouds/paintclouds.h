@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -55,8 +55,12 @@ class paintclouds : virtual public painter
     mi(green,x,y)=tempg;
     mi(blue,x,y)=tempb;
   }
+  // Make sure you always call this with the same orientation!
   void paint_border(int x1, int y1, int x2, int y2);
-  void paint_border0(int x1, int y1, int x2, int y2);
+  void copy_border(int dx1, int dy1, int dx2, int dy2,
+		   int sx1, int sy1, int sx2, int sy2);
+  void copy_border_backward(int dx1, int dy1, int dx2, int dy2,
+			    int sx1, int sy1, int sx2, int sy2);
   void paint_triangle(int x1, int y1, int x2, int y2, int x3, int y3);
   unsigned char red1, red2, red3, blue1, blue2, blue3, green1, green2, green3;
   unsigned char tempr,tempg,tempb;

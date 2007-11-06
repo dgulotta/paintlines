@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,6 +19,11 @@
  ***************************************************************************/
 
 #include "paintclouds.h"
+
+// a and b should be positive; otherwise bad things may happen!
+inline int midpt(int a, int b) {
+  return (a+b+((a<b)?0:1))/2;
+}
 
 double randomnormal()
 {
@@ -45,8 +50,8 @@ void paintclouds::paint(int sz, symgroup sym)
     drawpixelsymmetric(halfsize,halfsize,red2,green2,blue2);
     drawpixelsymmetric(halfsize,0,red3,green3,blue3);
     paint_border(0,0,halfsize,0);
-    paint_border(0,0,halfsize,halfsize);
-    paint_border(halfsize,halfsize,size,0);
+    paint_border(halfsize,halfsize,0,0);
+    paint_border(size,0,halfsize,halfsize);
     paint_triangle(0,0,size,0,halfsize,halfsize);
     break;
   case SYM_P1_O:
@@ -72,6 +77,21 @@ void paintclouds::paint(int sz, symgroup sym)
     paint_border(0,0,halfsize,0);
     paint_border(size,0,halfsize,halfsize);
     paint_triangle(0,0,size,0,0,size);
+    break;
+  case SYM_P3_O:
+    {
+      int x1=(size+1)/3;
+      drawpixelsymmetric(size,0,red1,green1,blue1);
+      drawpixelsymmetric(x1,x1,red2,green2,blue2);
+      drawpixelsymmetric(size-x1,size-x1,red3,green3,blue3);
+      paint_border(size,0,x1,x1);
+      paint_border(size,0,size-x1,size-x1);
+      paint_border(0,size,x1,x1);
+      paint_border(0,size,size-x1,size-x1);
+      paint_border(x1,x1,size-x1,size-x1);
+      paint_triangle(size,0,size-x1,size-x1,x1,x1);
+      paint_triangle(0,size,x1,x1,size-x1,size-x1);
+    }
     break;
   case SYM_P4_O:
     drawpixelsymmetric(0,0,red1,green1,blue1);
@@ -102,16 +122,30 @@ void paintclouds::paint(int sz, symgroup sym)
     paint_border(halfsize,0,halfsize,halfsize);
     paint_triangle(0,0,halfsize,0,halfsize,halfsize);
     break;
+  case SYM_PG_O:
+    drawpixelsymmetric(0,0,red1,green1,blue1);
+    drawpixelsymmetric(halfsize,size,red2,green2,blue2);
+    drawpixelsymmetric(halfsize,0,red3,green3,blue3);
+    paint_border(halfsize,size,0,0);
+    paint_border(size,0,halfsize,size);
+    paint_border(0,0,halfsize,0);
+    paint_border(halfsize,0,size,0);
+    paint_triangle(0,0,size,0,halfsize,size);
+    break;
   case SYM_PGG_O:
     {
       int y1=(halfsize+1)/2;
       drawpixelsymmetric(-y1,y1,red1,green1,blue1);
       drawpixelsymmetric(y1,y1,red2,green2,blue2);
       drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
-      paint_border(-y1,y1,y1,y1);
-      paint_border(y1,y1,halfsize,halfsize);
+      paint_border(y1,y1,halfsize+y1,y1);
+      copy_border_backward(halfsize+y1,y1,size+y1,y1,
+			   halfsize+y1,y1,y1,y1);
+      paint_border(halfsize,halfsize,y1,y1);
+      copy_border(size,halfsize,size-y1,size-y1,halfsize,halfsize,y1,y1);
       paint_border(size-y1,size-y1,halfsize,halfsize);
-      paint_triangle(-y1,size-y1,y1,y1,size-y1,size-y1);
+      copy_border(size+y1,y1,size,halfsize,size-y1,size-y1,halfsize,halfsize);
+      paint_triangle(size-y1,size-y1,y1,y1,size+y1,y1);
     }
     break;
   case SYM_PM_O:
@@ -132,9 +166,11 @@ void paintclouds::paint(int sz, symgroup sym)
       drawpixelsymmetric(0,y1,red1,green1,blue1);
       drawpixelsymmetric(halfsize-y1,halfsize,red2,green2,blue2);
       drawpixelsymmetric(halfsize-y1,0,red3,green3,blue3);
-      paint_border(0,y1,0,size+y1);
-      paint_border(0,y1,halfsize-y1,halfsize);
-      paint_border(0,y1,halfsize-y1,0);
+      paint_border(0,size+y1,0,y1);
+      paint_border(halfsize-y1,halfsize,halfsize,halfsize+y1);
+      copy_border_backward(0,y1,halfsize-y1,halfsize,
+			   halfsize,halfsize+y1,halfsize-y1,halfsize);
+      paint_border(y1,0,0,y1);
       paint_triangle(0,size+y1,0,y1,halfsize,halfsize+y1);
     }
     break;
@@ -155,8 +191,8 @@ void paintclouds::paint(int sz, symgroup sym)
 
 void paintclouds::paint_border(int x1, int y1, int x2, int y2)
 {
-  int mx=(x1+x2)/2;
-  int my=(y1+y2)/2;
+  int mx=midpt(x1,x2);
+  int my=midpt(y1,y2);
   if(!((mx==x1||mx==x2)&&(my==y1||my==y2))) {
     double dx=x1-x2, dy=y1-y2;
     double norm=sqrt(dx*dx+dy*dy);
@@ -172,20 +208,46 @@ void paintclouds::paint_border(int x1, int y1, int x2, int y2)
   }
 }
 
+void paintclouds::copy_border(int dx1, int dy1, int dx2, int dy2,
+			      int sx1, int sy1, int sx2, int sy2)
+{
+  int dmx=midpt(dx1,dx2);
+  int dmy=midpt(dy1,dy2);
+  if(!((dmx==dx1||dmx==dx2)&&(dmy==dy1||dmy==dy2))) {
+    int smx=midpt(sx1,sx2);
+    int smy=midpt(sy1,sy2);
+    drawpixelsymmetric(dmx,dmy,mi(red,smx,smy),mi(green,smx,smy),
+		       mi(blue,smx,smy));
+  }
+}
+
+void paintclouds::copy_border_backward(int dx1, int dy1, int dx2, int dy2,
+				       int sx1, int sy1, int sx2, int sy2)
+{
+  int dmx=midpt(dx1,dx2);
+  int dmy=midpt(dy1,dy2);
+  if(!((dmx==dx1||dmx==dx2)&&(dmy==dy1||dmy==dy2))) {
+    int smx=midpt(sx2,sx1);
+    int smy=midpt(sy2,sy1);
+    drawpixelsymmetric(dmx,dmy,mi(red,smx,smy),mi(green,smx,smy),
+		       mi(blue,smx,smy));
+  }
+}
+
 void paintclouds::paint_triangle(int x1, int y1, int x2, int y2, int x3,
 				 int y3)
 {
   int area=x1*y2+x2*y3+x3*y1-x1*y3-x2*y1-x3*y2;
-  // points must be in clockwise order or the area will be negative
-  if(area>1) {
-     int m1x=(x2+x3)/2, m1y=(y2+y3)/2, m2x=(x1+x3)/2, m2y=(y1+y3)/2;
-     int m3x=(x1+x2)/2, m3y=(y1+y2)/2;
-     paint_border(m1x,m1y,m2x,m2y);
-     paint_border(m2x,m2y,m3x,m3y);
-     paint_border(m3x,m3y,m1x,m1y);
-     paint_triangle(x1,y1,m3x,m3y,m2x,m2y);
-     paint_triangle(m3x,m3y,x2,y2,m1x,m1y);
-     paint_triangle(m2x,m2y,m1x,m1y,x3,y3);
-     paint_triangle(m1x,m1y,m2x,m2y,m3x,m3y);
+  if(area>1||area<-1) {
+    int m1x=midpt(x2,x3), m1y=midpt(y2,y3);
+    int m2x=midpt(x3,x1), m2y=midpt(y3,y1);
+    int m3x=midpt(x1,x2), m3y=midpt(y1,y2);
+    paint_border(m1x,m1y,m3x,m3y);
+    paint_border(m2x,m2y,m1x,m1y);
+    paint_border(m3x,m3y,m2x,m2y);
+    paint_triangle(x1,y1,m3x,m3y,m2x,m2y);
+    paint_triangle(m3x,m3y,x2,y2,m1x,m1y);
+    paint_triangle(m2x,m2y,m1x,m1y,x3,y3);
+    paint_triangle(m1x,m1y,m3x,m3y,m2x,m2y);
   }
 }
