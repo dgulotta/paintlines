@@ -49,6 +49,18 @@ void paintclouds::paint(int sz, symgroup sym)
     paint_border(halfsize,halfsize,size,0);
     paint_triangle(0,0,size,0,halfsize,halfsize);
     break;
+  case SYM_P1_O:
+    drawpixelsymmetric(0,0,red1,green1,blue1);
+    drawpixelsymmetric(halfsize,0,red2,green2,blue2);
+    drawpixelsymmetric(0,halfsize,red3,green3,blue3);
+    paint_border(0,0,halfsize,0);
+    paint_border(halfsize,0,size,0);
+    paint_border(0,0,0,halfsize);
+    paint_border(0,halfsize,0,size);
+    paint_border(0,size,size,0);
+    paint_triangle(0,0,size,0,0,size);
+    paint_triangle(0,size,size,0,size,size);
+    break;
   case SYM_P2_O:
     drawpixelsymmetric(0,0,((int)red1+red2+red3)/3,
 		       ((int)green1+green2+green3)/3,
@@ -102,6 +114,18 @@ void paintclouds::paint(int sz, symgroup sym)
       paint_triangle(-y1,size-y1,y1,y1,size-y1,size-y1);
     }
     break;
+  case SYM_PM_O:
+    drawpixelsymmetric(0,0,red1,green1,blue1);
+    drawpixelsymmetric(0,halfsize,red2,green2,blue2);
+    drawpixelsymmetric(halfsize,0,red3,green3,blue3);
+    paint_border(0,0,0,halfsize);
+    paint_border(0,halfsize,0,size);
+    paint_border(halfsize,halfsize,halfsize,size+halfsize);
+    paint_border(0,0,halfsize,halfsize);
+    paint_border(halfsize,halfsize,0,size);
+    paint_triangle(0,size,0,0,halfsize,halfsize);
+    paint_triangle(halfsize,halfsize,halfsize,size+halfsize,0,size);
+    break;
   case SYM_PMG_O:
     {
       int y1=(halfsize+1)/2;
@@ -113,6 +137,18 @@ void paintclouds::paint(int sz, symgroup sym)
       paint_border(0,y1,halfsize-y1,0);
       paint_triangle(0,size+y1,0,y1,halfsize,halfsize+y1);
     }
+    break;
+  case SYM_PMM_O:
+    drawpixelsymmetric(0,0,red1,green1,blue1);
+    drawpixelsymmetric(0,halfsize,red2,green2,blue2);
+    drawpixelsymmetric(halfsize,0,red3,green3,blue3);
+    drawpixelsymmetric(halfsize,halfsize,red1,green1,blue1);
+    paint_border(0,0,0,halfsize);
+    paint_border(0,0,halfsize,0);
+    paint_border(0,halfsize,halfsize,halfsize);
+    paint_border(halfsize,0,halfsize,halfsize);
+    paint_triangle(0,0,halfsize,0,0,halfsize);
+    paint_triangle(0,halfsize,halfsize,0,halfsize,halfsize);
     break;
   }
 }
