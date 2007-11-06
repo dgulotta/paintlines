@@ -98,7 +98,7 @@ void paintclouds::paint(int sz, symgroup sym)
     break;
   case SYM_P31M_O:
     {
-      int x1=(size-2)/3;
+      int x1=(size-1)/3;
       drawpixelsymmetric(-1,1,red1,green1,blue1);
       drawpixelsymmetric(1,-1,red1,green1,blue1);
       drawpixelsymmetric(x1,x1,red2,green2,blue2);
@@ -150,6 +150,30 @@ void paintclouds::paint(int sz, symgroup sym)
     paint_border(0,0,halfsize,halfsize);
     paint_border(halfsize,0,halfsize,halfsize);
     paint_triangle(0,0,halfsize,0,halfsize,halfsize);
+    break;
+  case SYM_P6_O:
+    {
+      int x1=(size-1)/3;
+      drawpixelsymmetric(-1,1,red1,green1,blue1);
+      drawpixelsymmetric(x1,x1,red2,green2,blue2);
+      drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
+      paint_border(x1,x1,-1,size+1);
+      copy_border_backward(size+1,-1,x1,x1,x1,x1,-1,size+1);
+      paint_border(-1,size+1,halfsize,halfsize);
+      paint_triangle(-1,size+1,size+1,-1,x1,x1);
+    }
+    break;
+  case SYM_P6M_O:
+    {
+      int x1=(size-2)/3;
+      drawpixelsymmetric(-1,1,red1,green1,blue1);
+      drawpixelsymmetric(x1,x1,red2,green2,blue2);
+      drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
+      paint_border(-1,size+1,x1,x1);
+      paint_border(x1,x1,halfsize,halfsize);
+      paint_border(halfsize,halfsize,-1,size+1);
+      paint_triangle(-1,size+1,x1,x1,halfsize,halfsize);
+    }
     break;
   case SYM_PG_O:
     {
