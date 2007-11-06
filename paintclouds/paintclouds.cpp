@@ -20,9 +20,11 @@
 
 #include "paintclouds.h"
 
-// a and b should be positive; otherwise bad things may happen!
 inline int midpt(int a, int b) {
-  return (a+b+((a<b)?0:1))/2;
+  int c=a+b;
+  if(a<b) c++;
+  if(c<0) c--;
+  return c/2;
 }
 
 double randomnormal()
@@ -80,17 +82,18 @@ void paintclouds::paint(int sz, symgroup sym)
     break;
   case SYM_P3_O:
     {
-      int x1=(size+1)/3;
-      drawpixelsymmetric(size,0,red1,green1,blue1);
+      int x1=size/3-1;
+      drawpixelsymmetric(-1,1,red1,green1,blue1);
+      drawpixelsymmetric(1,-1,red1,green1,blue1);
       drawpixelsymmetric(x1,x1,red2,green2,blue2);
       drawpixelsymmetric(size-x1,size-x1,red3,green3,blue3);
-      paint_border(size,0,x1,x1);
-      paint_border(size,0,size-x1,size-x1);
-      paint_border(0,size,x1,x1);
-      paint_border(0,size,size-x1,size-x1);
-      paint_border(x1,x1,size-x1,size-x1);
-      paint_triangle(size,0,size-x1,size-x1,x1,x1);
-      paint_triangle(0,size,x1,x1,size-x1,size-x1);
+      paint_border(x1,x1,-1,size+1);
+      paint_border(size+1,-1,size-x1,size-x1);
+      paint_border(size-x1,size-x1,x1,x1);
+      copy_border(x1,x1,size+1,-1,x1,x1,-1,size+1);
+      copy_border(-1,size+1,size-x1,size-x1,size+1,-1,size-x1,size-x1);
+      paint_triangle(size+1,-1,size-x1,size-x1,x1,x1);
+      paint_triangle(size-x1,size-x1,x1,x1,-1,size+1);
     }
     break;
   case SYM_P4_O:
