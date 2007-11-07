@@ -176,6 +176,9 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
   case SYM_P3:
   case SYM_P31M:
   case SYM_P6:
+    /* I think the other randomizer is more interesting.
+     * Maybe eventually multiple randomizers per symmetry group
+     * will be supported.
    for(k=0;k<xtiles;k++)
       for(l=0;l<ytiles;l++) {
 	int z=rand();
@@ -234,6 +237,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	}
       }
    break;
+    */
   case SYM_P3M1:
   case SYM_P6M:
 #define PAINTER_RANDOMIZE_P3M1_LOOP \
