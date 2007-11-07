@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -136,6 +136,8 @@ void StripesForm::Draw()
 	case SYM_P4:
 	case SYM_P4G:
 	case SYM_P4M:
+	case SYM_P6:
+	case SYM_P6M:
 	case SYM_PGG:
 	case SYM_PMG:
 	case SYM_PMM:

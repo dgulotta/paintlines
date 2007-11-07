@@ -24,166 +24,26 @@
 #define PAINTER_COPY_RGB r[index2]=red[index];g[index2]=green[index];\
 b[index2]=blue[index];
 
-#define PAINTER_INDEX_ONE(i,j) index=mod(i,size)+size*mod(j,size)
-#define PAINTER_INDEX_TWO(i,j) \
-ii=(i); \
-jj=(j); \
-(this->*f)(ii,jj); \
-index2=mod(ii+size*k,width)+width*mod(jj+size*l,height);
+#define PAINTER_NEW_COPY_RGB pt.copy(r,red); pt.copy(g,green); pt.copy(b,blue);
 
-void painter::rot0(int &i, int &j) {
+void painter_transform::set_point(int x, int y) {
+  from_index=mod(fxx*x+fxy*y+fx1,size)+size*mod(fyx*x+fyy*y+fy1,size);
+  to_index=mod(txx*x+txy*y+tx1,width)+width*mod(tyx*x+tyy*y+ty1,height);
 }
 
-void painter::rot60(int &i, int &j) {
-  j+=i;
-  i-=j;
-}
-
-void painter::rot120(int &i, int &j) {
-  i=-(i+j);
-  j=-(i+j);
-}
-
-void painter::rot180(int &i, int &j) {
-  i=-i;
-  j=-j;
-}
-
-void painter::rot240(int &i, int &j) {
-  j=-(i+j);
-  i=-(i+j);
-}
-
-void painter::rot300(int &i, int &j) {
-  i+=j;
-  j-=i;
-}
-
-void painter::trans1_3(int &i, int &j) {
-  i+=(size+1)/3;
-  j+=(size+1)/3;
-}
-
-void painter::transrot120(int &i, int &j) {
-  int inew=-(i+j+(2*size+1)/3);
-  j=i+(size+1)/3;
-  i=inew;
-}
-
-void painter::transrot240(int &i, int &j) {
-  int inew=j+(size+1)/3;
-  j=-(i+j+(2*size+1)/3);
-  i=inew;
-}
-
-void painter::randomize_p3m1_helper
-(vector<unsigned char> &r, vector<unsigned char> &g, vector<unsigned char> &b,
- int a, int z, int i, int j, void (painter::*f)(int &, int &))
-{
-  int index, index2, ii, jj;
-  switch(a) {
-  case 0:
-    PAINTER_INDEX_TWO(i,j);
-    if(z&1) {
-      PAINTER_INDEX_ONE(i,j);
-    }
-    else {
-      PAINTER_INDEX_ONE(-j,i+j);
-    }
-    PAINTER_COPY_RGB;
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-  case 1:
-    PAINTER_INDEX_ONE(i,j);
-    PAINTER_INDEX_TWO(i,j);
-    PAINTER_COPY_RGB;
-    PAINTER_INDEX_ONE((size+1)/3-i,(size+1)/3-j);
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-  case 2:
-    PAINTER_INDEX_ONE(-j,i+j);
-    PAINTER_INDEX_TWO(i,j);
-    PAINTER_COPY_RGB;
-    PAINTER_INDEX_ONE(j-(size+1)/3,(2*size+1)/3-(i+j));
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-  case 3:
-    PAINTER_INDEX_ONE((size+1)/3-i,(size+1)/3-j);
-    PAINTER_INDEX_TWO(i,j);
-    PAINTER_COPY_RGB;
-    PAINTER_INDEX_ONE(i,j);
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-  case 4:
-    PAINTER_INDEX_TWO(i,j);
-    if(z&1) {
-      PAINTER_INDEX_ONE((size+1)/3-i,(size+1)/3-j);
-    }
-    else {
-      PAINTER_INDEX_ONE((size+1)/3+j,(size+1)/3-(i+j));
-    }
-    PAINTER_COPY_RGB;
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-  case 5:
-    PAINTER_INDEX_ONE((size+1)/3+j,(size+1)/3-(i+j));
-    PAINTER_INDEX_TWO(i,j);
-    PAINTER_COPY_RGB;
-   PAINTER_INDEX_ONE(i+j-(size+1)/3,(2*size+1)/3-i);
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-  case 6:
-    PAINTER_INDEX_ONE(j-(size+1)/3,(2*size+1)/3-(i+j));
-    PAINTER_INDEX_TWO(i,j);
-    PAINTER_COPY_RGB;
-    PAINTER_INDEX_ONE(-j,i+j);
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-  case 7:
-   PAINTER_INDEX_ONE(i+j-(size+1)/3,(2*size+1)/3-i);
-    PAINTER_INDEX_TWO(i,j);
-    PAINTER_COPY_RGB;
-    PAINTER_INDEX_ONE((size+1)/3+j,(size+1)/3-(i+j));
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-  case 8:
-    PAINTER_INDEX_TWO(i,j);
-    if(z&1) {
-      PAINTER_INDEX_ONE(j-(size+1)/3,(2*size+1)/3-(i+j));
-    }
-    else {
-      PAINTER_INDEX_ONE(i+j-(size+1)/3,(2*size+1)/3-i);
-    }
-    PAINTER_COPY_RGB;
-    PAINTER_INDEX_TWO((size+1)/3-i,(size+1)/3-j);
-    PAINTER_COPY_RGB;
-    break;
-    //default:
-    //std::cout << "VERY BAD! " << a << std::endl;
-  }
-}
-
-void painter::randomize(int _xtiles, int _ytiles, vector<unsigned char> &r,
+void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		 vector<unsigned char> &g, vector<unsigned char> &b)
 {
-  xtiles=_xtiles;
-  ytiles=_ytiles;
-  width=xtiles*size;
-  height=ytiles*size;
-  int i,j;
+  int width=xtiles*size;
+  int height=ytiles*size;
+  int i,j, k, l;
   int qsize=halfsize/2, sizeq1=size1+halfsize-qsize, sizesq=size*size;
   int bigsize=width*height;
   r.resize(bigsize);
   g.resize(bigsize);
   b.resize(bigsize);
+  // eventually all groups should use this
+  painter_transform pt(size,xtiles,ytiles);
   switch(sg) {
   case SYM_CMM:
   case SYM_P2:
@@ -376,6 +236,12 @@ void painter::randomize(int _xtiles, int _ytiles, vector<unsigned char> &r,
    break;
   case SYM_P3M1:
   case SYM_P6M:
+#define PAINTER_RANDOMIZE_P3M1_LOOP \
+	  for(i=0;3*i<=size+2;i++) \
+            for(j=0;3*(i+j)<=size+2;j++) { \
+	      pt.set_point(i,j); \
+	      PAINTER_NEW_COPY_RGB; \
+	    }
     {
       int yt=ytiles*3;
       int ntiles=xtiles*yt;
@@ -384,24 +250,110 @@ void painter::randomize(int _xtiles, int _ytiles, vector<unsigned char> &r,
 	types[i]=rand()%3;
       for(k=0;k<xtiles;k++)
 	for(l=0;l<ytiles;l++) {
-	  //int a=3*types[3*l+yt*k]+types[3*l+yt*k+1];
 	  int z=rand();
-	  //std::cout << a;
-	  //if(a%4==0) std::cout << ' ' << (z&1);
-	  //std::cout << std::endl;
-	  for(i=0;3*i<=size+1;i++)
-	    for(j=0;3*(i+j)<=size+1;j++) {
-	      randomize_p3m1_helper(r,g,b,3*types[3*l+yt*k]+types[3*l+yt*k+1],z,i,j,&painter::rot0);
-	      randomize_p3m1_helper(r,g,b,3*types[3*l+yt*k]+types[3*l+yt*mod(k-1,xtiles)+2],z,i,j,&painter::rot60);
-	      randomize_p3m1_helper(r,g,b,3*types[3*l+yt*k]+types[3*l+yt*mod(k-1,xtiles)+1],z,i,j,&painter::rot120);
-	      randomize_p3m1_helper(r,g,b,3*types[3*l+yt*k]+types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],z,i,j,&painter::rot180);
-	      randomize_p3m1_helper(r,g,b,3*types[3*l+yt*k]+types[3*mod(l-1,ytiles)+yt*k+1],z,i,j,&painter::rot240);
-	      randomize_p3m1_helper(r,g,b,3*types[3*l+yt*k]+types[3*mod(l-1,ytiles)+yt*k+2],z,i,j,&painter::rot300);
-	      randomize_p3m1_helper(r,g,b,3*types[3*l+yt*k+1]+types[3*l+yt*k+2],z,i,j,&painter::trans1_3);
-	      randomize_p3m1_helper(r,g,b,3*types[3*l+yt*mod(k-1,xtiles)+1]+types[3*l+yt*mod(k-2,xtiles)+2],z,i,j,&painter::transrot120);
-	      randomize_p3m1_helper(r,g,b,3*types[3*mod(l-1,ytiles)+yt*k+1]+types[3*mod(l-2,ytiles)+yt*k+2],z,i,j,&painter::transrot240);
-	    }
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k],types[3*l+yt*k+1],z&0x1);
+	  pt.set_to_trans(1,0,size*k,0,1,size*l);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k+1],types[3*l+yt*k],z&0x1);
+	  pt.set_to_trans(0,-1,size*k+(size+1)/3,-1,0,size*l+(size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k],types[3*l+yt*mod(k-1,xtiles)+2],z&0x2);
+	  pt.set_to_trans(-1,0,size*k,1,1,size*l);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*mod(k-1,xtiles)+2],types[3*l+yt*k],z&0x2);
+	  pt.set_to_trans(0,1,size*k-(size+1)/3,-1,-1,size*l+(2*size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k],types[3*l+yt*mod(k-1,xtiles)+1],z&0x4);
+	  pt.set_to_trans(-1,-1,size*k,1,0,size*l);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*mod(k-1,xtiles)+1],types[3*l+yt*k],z&0x4);
+	  pt.set_to_trans(1,1,size*k-(2*size+1)/3,0,-1,size*l+(size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],z&0x8);
+	  pt.set_to_trans(0,-1,size*k,-1,0,size*l);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],types[3*l+yt*k],z&0x8);
+	  pt.set_to_trans(1,0,size*k-(size+1)/3,0,1,size*l-(size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*k+1],z&0x10);
+	  pt.set_to_trans(0,1,size*k,-1,-1,size*l);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*mod(l-1,ytiles)+yt*k+1],types[3*l+yt*k],z&0x10);
+	  pt.set_to_trans(-1,0,size*k+(size+1)/3,1,1,size*l-(2*size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*k+2],z&0x20);
+	  pt.set_to_trans(1,1,size*k,0,-1,size*l);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*mod(l-1,ytiles)+yt*k+2],types[3*l+yt*k],z&0x20);
+	  pt.set_to_trans(-1,-1,size*k+(2*size+1)/3,1,0,size*l-(size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k+1],types[3*l+yt*k+2],z&0x40);
+	  pt.set_to_trans(1,0,size*k+(size+1)/3,0,1,size*l+(size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*k+2],types[3*l+yt*k+1],z&0x40);
+	  pt.set_to_trans(0,-1,size*k+(2*size+1)/3,-1,0,size*l+(2*size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*mod(k-1,xtiles)+1],types[3*l+yt*mod(k-2,xtiles)+2],z&0x80);
+	  pt.set_to_trans(-1,-1,size*k-(2*size+1)/3,1,0,size*l+(size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*l+yt*mod(k-2,xtiles)+2],types[3*l+yt*mod(k-1,xtiles)+1],z&0x80);
+	  pt.set_to_trans(1,1,size*k-(4*size+1)/3,0,-1,size*l+(2*size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*mod(l-1,ytiles)+yt*k+1],types[3*mod(l-2,ytiles)+yt*k+2],z&0x100);
+	  pt.set_to_trans(0,1,size*k+(size+1)/3,-1,-1,size*l-(2*size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
+	  randomize_p3m1_choose_from_trans
+	    (pt,types[3*mod(l-2,ytiles)+yt*k+2],types[3*mod(l-1,ytiles)+yt*k+1],z&0x100);
+	  pt.set_to_trans(-1,0,size*k+(2*size+1)/3,1,1,size*l-(4*size+1)/3);
+	  PAINTER_RANDOMIZE_P3M1_LOOP;
 	}
+    }
+  }
+}
+
+void painter::randomize_p3m1_choose_from_trans(painter_transform &pt, int mt,
+					       int nt, int z)
+{
+  //std::cout << mt << ' ' << nt << std::endl;
+  if(mt==0) {
+    if((nt==0&&z)||nt==1) {
+      pt.set_from_trans(1,0,0,0,1,0);
+    }
+    else {
+      pt.set_from_trans(0,-1,0,-1,0,0);
+    }
+  }
+  else if(mt==1) {
+    if((nt==1&&z)||nt==2) {
+      pt.set_from_trans(1,0,(size+1)/3,0,1,(size+1)/3);
+    }
+    else{
+      pt.set_from_trans(0,-1,(size+1)/3,-1,0,(size+1)/3);
+    }
+  }
+  else {
+    if((nt==2&&z)||nt==0) {
+      pt.set_from_trans(1,0,-((size+1)/3),0,1,-((size+1)/3));
+    }
+    else {
+      pt.set_from_trans(0,-1,-((size+1)/3),-1,0,-((size+1)/3));
     }
   }
 }

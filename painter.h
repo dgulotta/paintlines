@@ -46,6 +46,40 @@ enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
 	       SYM_P4M_O, SYM_P6_O, SYM_P6M_O, SYM_PG_O, SYM_PGG_O, SYM_PM_O,
 	       SYM_PMG_O, SYM_PMM_O, SYM_CM_2,SYM_P4M_2};
 
+class painter_transform {
+ public:
+  painter_transform(int _size, int _xtiles, int _ytiles)
+    : size(_size), xtiles(_xtiles), ytiles(_ytiles), width(_xtiles*_size),
+      height(_ytiles*_size) {}
+  void set_to_trans(int xx, int xy, int x1, int yx, int yy, int y1)
+  { txx=xx; txy=xy; tx1=x1; tyx=yx; tyy=yy; ty1=y1; }
+  void set_from_trans(int xx, int xy, int x1, int yx, int yy, int y1)
+  { fxx=xx; fxy=xy; fx1=x1; fyx=yx; fyy=yy; fy1=y1; }
+  void set_point(int x, int y);
+  template <typename T>
+  void copy(T &to, const T &from) { to[to_index]=from[from_index]; }
+ private:
+  int size;
+  int xtiles;
+  int ytiles;
+  int width;
+  int height;
+  int txx;
+  int txy;
+  int tx1;
+  int tyx;
+  int tyy;
+  int ty1;
+  int fxx;
+  int fxy;
+  int fx1;
+  int fyx;
+  int fyy;
+  int fy1;
+  int from_index;
+  int to_index;
+};
+
 class painter
 {
  public:
@@ -61,21 +95,11 @@ class painter
     blue.resize(size*size);
   }
   int get_size() {return size;}
-  void randomize(int _xtiles, int _ytiles, vector<unsigned char> &r,
+  void randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		 vector<unsigned char> &g, vector<unsigned char> &b);
  protected:
-  void rot0(int &i, int &j);
-  void rot60(int &i, int &j);
-  void rot120(int &i, int &j);
-  void rot180(int &i, int &j);
-  void rot240(int &i, int &j);
-  void rot300(int &i, int &j);
-  void trans1_3(int &i, int &j);
-  void transrot120(int &i, int &j);
-  void transrot240(int &i, int &j);
-  void randomize_p3m1_helper
-    (vector<unsigned char> &r, vector<unsigned char> &g,
-     vector<unsigned char> &b, int a, int z, int i, int j, void (painter::*f)(int &, int &));
+  void randomize_p3m1_choose_from_trans(painter_transform &pt, int mt, int nt,
+					int z);
   inline unsigned char & mi(vector<unsigned char> &v,int i, int j) {
     return v[mod(i,size)+size*mod(j,size)];
   }
@@ -165,13 +189,6 @@ class painter
   int halfsize;
   int size1;
   int halfsize1;
-  // used only by randomize:
-  int width;
-  int height;
-  int xtiles;
-  int ytiles;
-  int k;
-  int l;
 };
 
 template <typename T>
@@ -490,6 +507,13 @@ void painter::enumerate(T &t, void (T::*p)(int,int))
     for(i=1;i*3<size;i++)
 	for(j=i;j+2*i<size1;j++)
 	  (t.*p)(i,j);
+    break;
+  case SYM_P6M:
+    for(i=0;3*i<size;i++) {
+      for(j=i;i+2*j<size;j++) {
+	(t.*p)(i,j);
+      }
+    }
     break;
   case SYM_PGG:
     {

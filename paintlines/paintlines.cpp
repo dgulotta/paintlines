@@ -168,7 +168,7 @@ void paintlines::handle_rule(ruletype rt)
     drawflower(i,j,.1,50);
     break;
   case RULE_CLUSTER2:
-    drawcluster2(i,j,size);
+    drawcluster5(i,j,size);
     break;
   case RULE_OPEN_STRING:
     {

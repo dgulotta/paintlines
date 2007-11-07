@@ -136,6 +136,8 @@ void SquigglesForm::Draw()
 	case SYM_P4:
 	case SYM_P4G:
 	case SYM_P4M:
+	case SYM_P6:
+	case SYM_P6M:
 	case SYM_PGG:
 	case SYM_PMG:
 	case SYM_PMM:
