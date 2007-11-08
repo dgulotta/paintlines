@@ -159,12 +159,13 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	}
       }
       int newi, newj;
+      std::cout << "---" << std::endl;
       for(k=0;k<xtiles;k++) {
 	for(l=0;l<ytiles;l++) {
 	  int el=ev[k+l*xtiles], er=ev[(k+1)%xtiles+l*xtiles]^0x3;
-	  int et=eh[k+l*xtiles], eb=eh[k+((l+1)%ytiles)*xtiles]^0x3;
+	  int et=eh[k+l*xtiles]^0x3, eb=eh[k+((l+1)%ytiles)*xtiles];
 	  //std::cout << el << ' ' << et << ' ' << er << ' ' << eb << std::endl;
-	  if(el==et) {
+	  if((el^et)==3) {
 	    /* Although the tiling group doesn't eliminate this case, there
 	     * isn't really a tile for it.  So we cheat and smash two tiles
 	     * together.
@@ -191,7 +192,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		PAINTER_COPY_RGB;
 	      }
 	  }
-	  else if(el==eb) {
+	  else if((el^eb)==3) {
 	    const painter_transformation &flip=((rand()&1)?pt_ident:pt_hflip);
 	    for(j=0;j<size;j++) {
 	      for(i=0;i+j<size;i++) {
@@ -233,36 +234,33 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	    }
 	  }
 	  else {
-	    const painter_transformation &flipl=(((el^et)==0x1||(el^eb)==0x2)?pt_ident:pt_hflip);
-	    const painter_transformation &flipt=(((et^el)==0x1||(et^er)==0x2)?pt_ident:pt_hflip);
-	    const painter_transformation &flipr=(((er^eb)==0x1||(er^et)==0x2)?pt_ident:pt_hflip);
-	    const painter_transformation &flipb=(((eb^er)==0x1||(er^et)==0x2)?pt_ident:pt_hflip);
+	    const painter_transformation &flip=(((el^et)==0x1||(el^eb)==0x2)?pt_ident:pt_hflip);
 	    for(i=0;i<halfsize;i++) {
 	      for(j=i;i+j<size;j++) {
 		newi=i;
 		newj=j;
-		flipl(newi,newj);
+		flip(newi,newj);
 		pt_cmm_list[el](newi,newj);
 		int index=mod(newi,size)+size*mod(newj,size);
 		int index2=i+k*size+width*(j+l*size);
 		PAINTER_COPY_RGB;
 		newi=i;
 		newj=j;
-		flipt(newi,newj);
+		flip(newi,newj);
 		pt_cmm_list[et](newi,newj);
 		index=mod(newi,size)+size*mod(newj,size);
 		index2=j+k*size+width*(i+l*size);
 		PAINTER_COPY_RGB;
 		newi=i;
 		newj=j;
-		flipr(newi,newj);
+		flip(newi,newj);
 		pt_cmm_list[er](newi,newj);
 		index=mod(newi,size)+size*mod(newj,size);
 		index2=(size1-i)+k*size+width*((size1-j)+l*size);
 		PAINTER_COPY_RGB;
 		newi=i;
 		newj=j;
-		flipb(newi,newj);
+		flip(newi,newj);
 		pt_cmm_list[eb](newi,newj);
 		index=mod(newi,size)+size*mod(newj,size);
 		index2=(size1-j)+k*size+width*((size1-i)+l*size);
