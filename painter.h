@@ -46,15 +46,25 @@ enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
 	       SYM_P4M_O, SYM_P6_O, SYM_P6M_O, SYM_PG_O, SYM_PGG_O, SYM_PM_O,
 	       SYM_PMG_O, SYM_PMM_O, SYM_CM_2,SYM_P4M_2};
 
+struct painter_transformation {
+  void operator () (int &i, int &j) const;
+  int xx;
+  int xy;
+  int x1;
+  int yx;
+  int yy;
+  int y1;
+};
+
 class painter_transform {
  public:
   painter_transform(int _size, int _xtiles, int _ytiles)
     : size(_size), xtiles(_xtiles), ytiles(_ytiles), width(_xtiles*_size),
       height(_ytiles*_size) {}
   void set_to_trans(int xx, int xy, int x1, int yx, int yy, int y1)
-  { txx=xx; txy=xy; tx1=x1; tyx=yx; tyy=yy; ty1=y1; }
+  { to.xx=xx; to.xy=xy; to.x1=x1; to.yx=yx; to.yy=yy; to.y1=y1; }
   void set_from_trans(int xx, int xy, int x1, int yx, int yy, int y1)
-  { fxx=xx; fxy=xy; fx1=x1; fyx=yx; fyy=yy; fy1=y1; }
+  { from.xx=xx; from.xy=xy; from.x1=x1; from.yx=yx; from.yy=yy; from.y1=y1; }
   void set_point(int x, int y);
   template <typename T>
   void copy(T &to, const T &from) { to[to_index]=from[from_index]; }
@@ -64,18 +74,8 @@ class painter_transform {
   int ytiles;
   int width;
   int height;
-  int txx;
-  int txy;
-  int tx1;
-  int tyx;
-  int tyy;
-  int ty1;
-  int fxx;
-  int fxy;
-  int fx1;
-  int fyx;
-  int fyy;
-  int fy1;
+  painter_transformation to;
+  painter_transformation from;
   int from_index;
   int to_index;
 };

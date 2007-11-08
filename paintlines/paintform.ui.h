@@ -134,6 +134,7 @@ void PaintForm::Draw()
 	PaintFrame->draw(size,SpinColors->value(),sg);
 	switch(sg) {
 	case SYM_CMM:
+	case SYM_P1:
 	case SYM_P2:
 	case SYM_P4:
 	case SYM_P4G:

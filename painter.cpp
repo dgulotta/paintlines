@@ -26,11 +26,32 @@ b[index2]=blue[index];
 
 #define PAINTER_NEW_COPY_RGB pt.copy(r,red); pt.copy(g,green); pt.copy(b,blue);
 
-void painter_transform::set_point(int x, int y) {
-  from_index=mod(fxx*x+fxy*y+fx1,size)+size*mod(fyx*x+fyy*y+fy1,size);
-  to_index=mod(txx*x+txy*y+tx1,width)+width*mod(tyx*x+tyy*y+ty1,height);
+void painter_transformation::operator () (int &x, int &y) const
+{
+  int xnew=xx*x+xy*y+x1;
+  y=yx*x+yy*y+y1;
+  x=xnew;
 }
 
+const painter_transformation pt_cmm_list[4] = 
+  { { 1,0,0,0,1,0 }, { 0,1,0,1,0,0 }, { 0,-1,-1,-1,0,-1 }, {-1,0,-1,0,-1,-1}};
+
+const painter_transformation pt_ident = {1,0,0,0,1,0};
+const painter_transformation pt_hflip = {-1,0,-1,0,1,0};
+
+void painter_transform::set_point(int x, int y) {
+  int xnew=x, ynew=y;
+  from(xnew,ynew);
+  from_index=mod(xnew,size)+size*mod(ynew,size);
+  xnew=x;
+  ynew=y;
+  to(xnew,ynew);
+  to_index=mod(xnew,width)+width*mod(ynew,height);
+}
+
+/* This function is approaching a near-IOCCC level of unreadability.
+ * I really should clean it up someday.
+ */
 void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		 vector<unsigned char> &g, vector<unsigned char> &b)
 {
@@ -45,6 +66,214 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
   // eventually all groups should use this
   painter_transform pt(size,xtiles,ytiles);
   switch(sg) {
+  case SYM_P1:
+    // this is still buggy, unfortunately
+    {
+      vector<int> ev(xtiles*ytiles,0xF), eh(xtiles*ytiles,0xF), *es, *ec;
+      int ip, jp, z;
+      k=0;
+      l=0;
+      es=&ev;
+      while(l<ytiles) {
+	i=k;
+	j=l;
+	z=(~0x4)&(rand()|~0x1);
+	do {
+	  ip=(i+1)%xtiles;
+	  jp=(j+1)%ytiles;
+	  if(!(ev[ip+xtiles*j]&0x4)) {
+	    j=jp;
+	    eh[i+xtiles*j]&=z;
+	    ec=&eh;
+	  }
+	  else if((!(eh[i+xtiles*jp]&0x4))||rand()&1) {
+	    i=ip;
+	    ev[i+xtiles*j]&=z;
+	    ec=&ev;
+	  }
+	  else {
+	    j=jp;
+	    eh[i+xtiles*j]&=z;
+	    ec=&eh;
+	  }
+	} while(i!=k||j!=l||ec!=es);
+	(*es)[k+xtiles*l]&=z;
+	while(!((*es)[k+xtiles*l]&0x4)) {
+	  k++;
+	  if(k>=xtiles) {
+	    k=0;
+	    l++;
+	  }
+	  if(l>=ytiles) {
+	    if(es==&ev) {
+	      l=0;
+	      es=&eh;
+	    }
+	    else break;
+	  }
+	}
+      }
+      k=0;
+      l=0;
+      es=&ev;
+      while(l<ytiles) {
+	i=k;
+	j=l;
+	z=(~0x8)&(rand()|~0x2);
+	do { 
+	  ip=(i+1)%xtiles;
+	  jp=(j+1)%ytiles;
+	  if(!((ev[ip+xtiles*j]&0x8)||(eh[i+xtiles*jp]&0x8))) {
+	    exit(0);
+	  }
+	  if(!(ev[ip+xtiles*j]&0x8)) {
+	    j=jp;
+	    eh[i+xtiles*j]&=z;
+	    ec=&eh;
+	  }
+	  else if((!(eh[i+xtiles*jp]&0x8))||rand()&1) {
+	    i=ip;
+	    ev[i+xtiles*j]&=z;
+	    ec=&ev;
+	  }
+	  else {
+	    j=jp;
+	    eh[i+xtiles*j]&=z;
+	    ec=&eh;
+	  }
+	} while(i!=k||j!=l||ec!=es);
+	(*es)[k+xtiles*l]&=z;
+	while(!((*es)[k+xtiles*l]&0x8)) {
+	  k++;
+	  if(k>=xtiles) {
+	    k=0;
+	    l++;
+	  }
+	  if(l>=ytiles) {
+	    if(es==&ev) {
+	      l=0;
+	      es=&eh;
+	    }
+	    else break;
+	  }
+	}
+      }
+      int newi, newj;
+      for(k=0;k<xtiles;k++) {
+	for(l=0;l<ytiles;l++) {
+	  int el=ev[k+l*xtiles], er=ev[(k+1)%xtiles+l*xtiles]^0x3;
+	  int et=eh[k+l*xtiles], eb=eh[k+((l+1)%ytiles)*xtiles]^0x3;
+	  //std::cout << el << ' ' << et << ' ' << er << ' ' << eb << std::endl;
+	  if(el==et) {
+	    /* Although the tiling group doesn't eliminate this case, there
+	     * isn't really a tile for it.  So we cheat and smash two tiles
+	     * together.
+	     *
+	     * We can't use painter_transform for this one because it
+	     * doesn't know about projective transformations.
+	     */
+	    const painter_transformation &flip=((rand()&1)?pt_ident:pt_hflip);
+	    for(j=0;j<size;j++)
+	      for(i=0;i<=j;i++) {
+		newj=j-i;
+		newi=((i+j-size1)*halfsize)/(size-j+i)+halfsize1;
+		pt_cmm_list[el](newi,newj);
+		flip(newi,newj);
+		int index=mod(newi,size)+size*mod(newj,size);
+		int index2=i+k*size+width*(j+l*size);
+		PAINTER_COPY_RGB;
+		newj=size1-j+i;
+		newi=((i+j-size1)*halfsize)/(size-j+i)+halfsize1;
+		pt_cmm_list[el](newi,newj);
+		flip(newi,newj);
+		index=mod(newi,size)+size*mod(newj,size);
+		index2=j+k*size+width*(i+l*size);
+		PAINTER_COPY_RGB;
+	      }
+	  }
+	  else if(el==eb) {
+	    const painter_transformation &flip=((rand()&1)?pt_ident:pt_hflip);
+	    for(j=0;j<size;j++) {
+	      for(i=0;i+j<size;i++) {
+		newj=i+j;
+		newi=((i-j)*halfsize)/(i+j+1)+halfsize1;
+		flip(newi,newj);
+		pt_cmm_list[el](newi,newj);
+		int index=mod(newi,size)+size*mod(newj,size);
+		int index2=i+k*size+width*(j+l*size);
+		PAINTER_COPY_RGB;
+		newj=size1-i-j;
+		newi=((i-j)*halfsize)/(i+j+1)+halfsize1;
+		flip(newi,newj);
+		pt_cmm_list[el](newi,newj);
+		index=mod(newi,size)+size*mod(newj,size);
+		index2=(size1-j)+k*size+width*(size1-i+l*size);
+		PAINTER_COPY_RGB;
+	      }
+	    }
+	  }
+	  else if(el==er) {
+	    const painter_transformation &flip=(rand()&1?pt_ident:pt_hflip);
+	    for(i=0;i<halfsize;i++) {
+	      for(j=i;i+j<size;j++) {
+		newi=i;
+		newj=j;
+		flip(newi,newj);
+		pt_cmm_list[el](newi,newj);
+		int index=mod(newi,size)+size*mod(newj,size);
+		int index2=i+k*size+width*(j+l*size);
+		PAINTER_COPY_RGB;
+		index2=j+k*size+width*(i+l*size);
+		PAINTER_COPY_RGB;
+		index2=(size1-i)+k*size+width*(size1-j+l*size);
+		PAINTER_COPY_RGB;
+		index2=(size1-j)+k*size+width*(size1-i+l*size);
+		PAINTER_COPY_RGB;
+	      }
+	    }
+	  }
+	  else {
+	    const painter_transformation &flipl=(((el^et)==0x1||(el^eb)==0x2)?pt_ident:pt_hflip);
+	    const painter_transformation &flipt=(((et^el)==0x1||(et^er)==0x2)?pt_ident:pt_hflip);
+	    const painter_transformation &flipr=(((er^eb)==0x1||(er^et)==0x2)?pt_ident:pt_hflip);
+	    const painter_transformation &flipb=(((eb^er)==0x1||(er^et)==0x2)?pt_ident:pt_hflip);
+	    for(i=0;i<halfsize;i++) {
+	      for(j=i;i+j<size;j++) {
+		newi=i;
+		newj=j;
+		flipl(newi,newj);
+		pt_cmm_list[el](newi,newj);
+		int index=mod(newi,size)+size*mod(newj,size);
+		int index2=i+k*size+width*(j+l*size);
+		PAINTER_COPY_RGB;
+		newi=i;
+		newj=j;
+		flipt(newi,newj);
+		pt_cmm_list[et](newi,newj);
+		index=mod(newi,size)+size*mod(newj,size);
+		index2=j+k*size+width*(i+l*size);
+		PAINTER_COPY_RGB;
+		newi=i;
+		newj=j;
+		flipr(newi,newj);
+		pt_cmm_list[er](newi,newj);
+		index=mod(newi,size)+size*mod(newj,size);
+		index2=(size1-i)+k*size+width*((size1-j)+l*size);
+		PAINTER_COPY_RGB;
+		newi=i;
+		newj=j;
+		flipb(newi,newj);
+		pt_cmm_list[eb](newi,newj);
+		index=mod(newi,size)+size*mod(newj,size);
+		index2=(size1-j)+k*size+width*((size1-i)+l*size);
+		PAINTER_COPY_RGB;
+	      }
+	    }
+	  }
+	}
+      }
+    }
+    break;
   case SYM_CMM:
   case SYM_P2:
     for(k=0;k<xtiles;k++)
