@@ -177,14 +177,15 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	    for(j=0;j<size;j++)
 	      for(i=0;i<=j;i++) {
 		newj=j-i;
-		newi=((i+j-size1)*halfsize)/(size-j+i)+halfsize1;
+		if(newj==size1) continue;
+		newi=((i+j-size1)*halfsize)/(size1-j+i)+halfsize1;
 		pt_cmm_list[el](newi,newj);
 		flip(newi,newj);
 		int index=mod(newi,size)+size*mod(newj,size);
 		int index2=i+k*size+width*(j+l*size);
 		PAINTER_COPY_RGB;
 		newj=size1-j+i;
-		newi=((i+j-size1)*halfsize)/(size-j+i)+halfsize1;
+		newi=((i+j-size1)*halfsize)/(size1-j+i)+halfsize1;
 		pt_cmm_list[el](newi,newj);
 		flip(newi,newj);
 		index=mod(newi,size)+size*mod(newj,size);
@@ -197,14 +198,15 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	    for(j=0;j<size;j++) {
 	      for(i=0;i+j<size;i++) {
 		newj=i+j;
-		newi=((i-j)*halfsize)/(i+j+1)+halfsize1;
+		if(newj==0) continue;
+		newi=((i-j)*halfsize)/(i+j)+halfsize1;
 		flip(newi,newj);
 		pt_cmm_list[el](newi,newj);
 		int index=mod(newi,size)+size*mod(newj,size);
 		int index2=i+k*size+width*(j+l*size);
 		PAINTER_COPY_RGB;
 		newj=size1-i-j;
-		newi=((i-j)*halfsize)/(i+j+1)+halfsize1;
+		newi=((i-j)*halfsize)/(i+j)+halfsize1;
 		flip(newi,newj);
 		pt_cmm_list[el](newi,newj);
 		index=mod(newi,size)+size*mod(newj,size);
