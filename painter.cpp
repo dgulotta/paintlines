@@ -26,6 +26,16 @@ b[index2]=blue[index];
 
 #define PAINTER_NEW_COPY_RGB pt.copy(r,red); pt.copy(g,green); pt.copy(b,blue);
 
+inline int gcd(int x, int y) {
+  int t;
+  while(y) {
+    t=x%y;
+    x=y;
+    y=t;
+  }
+  return x;
+}
+
 void painter_transformation::operator () (int &x, int &y) const
 {
   int xnew=xx*x+xy*y+x1;
@@ -67,7 +77,8 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
   painter_transform pt(size,xtiles,ytiles);
   switch(sg) {
   case SYM_P1:
-    // this is still buggy, unfortunately
+  case SYM_CM:
+  case SYM_PM:
     {
       vector<int> ev(xtiles*ytiles,0xF), eh(xtiles*ytiles,0xF), *es, *ec;
       int ip, jp, z;
@@ -275,6 +286,69 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	    }
 	  }
 	}
+      }
+    }
+    break;
+  case SYM_PG:
+    {
+      int xt2=xtiles*2;
+      int yt2=ytiles*2;
+      int d=gcd(xt2,yt2);
+      int m=(xt2*yt2)/d;
+      vector<int> v(xt2*yt2,0x3);
+      int z;
+      for(k=0;k<d;k+=2) {
+	z=~(rand()&0x1);
+	for(l=0;l<m;l++) {
+	  v[(k+l)%xt2+(l%yt2)*xt2]&=z;
+	  z^=0x1;
+	}
+      }
+      for(k=1;k<d;k+=2) {
+	z=~(rand()&0x1);
+	for(l=0;l<m;l++) {
+	  v[mod(k-l,xt2)+(l%yt2)*xt2]&=z;
+	  z^=0x1;
+	}
+      }
+      int dk, dl;
+      for(k=0,l=0;l<yt2;) {
+	z=rand();
+	dk=1-2*((l^v[k+l*xt2])&1);
+	dl=1-2*((k^v[k+l*xt2])&1);
+	while(v[k+l*xt2]&0x2) {
+	  v[k+l*xt2]&=~0x2;
+	  if((v[k+l*xt2]^v[mod(k+dk,xt2)+l*xt2])&0x1) {
+	    pt.set_to_trans(0,dk,k*halfsize,-dl,0,(l+dl)*halfsize);
+	    dk*=-1;
+	    l=mod(l+dl,yt2);
+	  }
+	  else {
+	    pt.set_to_trans(dk,0,k*halfsize,0,dl,l*halfsize);
+	    dl*=-1;
+	    k=mod(k+dk,xt2);
+	  }
+	  if(z&1) {
+	    pt.set_from_trans(1,0,0,0,1,0);
+	  }
+	  else {
+	    pt.set_from_trans(1,0,0,0,-1,halfsize1);
+	  }
+	  for(j=(-halfsize-1)/2;j<=(halfsize)/2;j++) {
+	    for(i=-1-j;i-j<=halfsize;i++) {
+	      pt.set_point(i,j);
+	      PAINTER_NEW_COPY_RGB;
+	    }
+	  }
+	}
+	do {
+	  k++;
+	  if(k>=xt2) {
+	    k=0;
+	    l++;
+	  }
+	  if(l>yt2) break;
+	} while(!(v[k+l*xt2]&0x2));
       }
     }
     break;

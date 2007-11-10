@@ -132,26 +132,7 @@ void PaintForm::Draw()
 	PaintFrame->set_rules(pr);
 	symgroup sg=(symgroup)ComboSymmetry->currentItem();
 	PaintFrame->draw(size,SpinColors->value(),sg);
-	switch(sg) {
-	case SYM_CMM:
-	case SYM_P1:
-	case SYM_P2:
-	case SYM_P4:
-	case SYM_P4G:
-	case SYM_P4M:
-	case SYM_PGG:
-	case SYM_PMG:
-	case SYM_PMM:
-	case SYM_P3:
-	case SYM_P31M:
-	case SYM_P3M1:
-	case SYM_P6:
-	case SYM_P6M:
-	    ButtonRandomize->setEnabled(true);
-	    break;
-	default:
-	    ButtonRandomize->setEnabled(false);
-	}
+	ButtonRandomize->setEnabled(true);
 	ButtonRestore->setEnabled(false);
     }
 }
