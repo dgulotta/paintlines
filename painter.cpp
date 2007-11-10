@@ -48,6 +48,7 @@ const painter_transformation pt_cmm_list[4] =
 
 const painter_transformation pt_ident = {1,0,0,0,1,0};
 const painter_transformation pt_hflip = {-1,0,-1,0,1,0};
+const painter_transformation pt_vflip = {1,0,1,0,-1,-1};
 
 void painter_transform::set_point(int x, int y) {
   int xnew=x, ynew=y;
@@ -77,7 +78,6 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
   painter_transform pt(size,xtiles,ytiles);
   switch(sg) {
   case SYM_P1:
-  case SYM_CM:
   case SYM_PM:
     {
       vector<int> ev(xtiles*ytiles,0xF), eh(xtiles*ytiles,0xF), *es, *ec;
@@ -284,6 +284,83 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		PAINTER_COPY_RGB;
 	      }
 	    }
+	  }
+	}
+      }
+    }
+    break;
+  case SYM_CM:
+    {
+      vector<int> ev(xtiles*ytiles,0x5), eh(xtiles*ytiles,0x5), *es, *ec;
+      int ip, jp, z;
+      k=0;
+      l=0;
+      es=&ev;
+      while(l<ytiles) {
+	i=k;
+	j=l;
+	z=(~0x4)&(rand()|~0x1);
+	do {
+	  ip=(i+1)%xtiles;
+	  jp=(j+1)%ytiles;
+	  if(!(ev[ip+xtiles*j]&0x4)) {
+	    j=jp;
+	    eh[i+xtiles*j]&=z;
+	    ec=&eh;
+	  }
+	  else if((!(eh[i+xtiles*jp]&0x4))||rand()&1) {
+	    i=ip;
+	    ev[i+xtiles*j]&=z;
+	    ec=&ev;
+	  }
+	  else {
+	    j=jp;
+	    eh[i+xtiles*j]&=z;
+	    ec=&eh;
+	  }
+	} while(i!=k||j!=l||ec!=es);
+	(*es)[k+xtiles*l]&=z;
+	while(!((*es)[k+xtiles*l]&0x4)) {
+	  k++;
+	  if(k>=xtiles) {
+	    k=0;
+	    l++;
+	  }
+	  if(l>=ytiles) {
+	    if(es==&ev) {
+	      l=0;
+	      es=&eh;
+	    }
+	    else break;
+	  }
+	}
+      }
+      int newi, newj;
+      for(k=0;k<xtiles;k++) {
+	for(l=0;l<ytiles;l++) {
+	  int el=ev[k+l*xtiles], er=ev[(k+1)%xtiles+l*xtiles]^0x1;
+	  int et=eh[k+l*xtiles]^0x1, eb=eh[k+((l+1)%ytiles)*xtiles];
+	  if(el==er) {
+	    for(i=0;i<size;i++)
+	      for(j=0;i+j<size;j++) {
+		int index=el?(size1-j+size*(size1-i)):(i+size*j);
+		int index2=i+k*size+width*(j+l*size);
+		PAINTER_COPY_RGB;
+		index2=size1-j+k*size+width*(size1-i+l*size);
+		PAINTER_COPY_RGB;
+	      }
+	  }
+	  else {
+	    for(i=0;i<size;i++)
+	      for(j=0;j<size;j++) {
+		newi=i;
+		newj=j;
+		if(et) pt_hflip(newi,newj);
+		if(el) pt_vflip(newi,newj);
+		int index=mod(newi,size)+size*mod(newj,size);
+		int index2=i+k*size+width*(j+l*size);
+		PAINTER_COPY_RGB;
+	      }
 	  }
 	}
       }

@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005-2006 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -127,25 +127,7 @@ void SquigglesForm::Draw()
   }
   else {
     symgroup sg=symgroup(ComboSymmetry->currentItem());
-    switch(sg) {
-	case SYM_CMM:
-	case SYM_P2:
-	case SYM_P3:
-	case SYM_P31M:
-	case SYM_P3M1:
-	case SYM_P4:
-	case SYM_P4G:
-	case SYM_P4M:
-	case SYM_P6:
-	case SYM_P6M:
-	case SYM_PGG:
-	case SYM_PMG:
-	case SYM_PMM:
-	    ButtonRandomize->setEnabled(true);
-	    break;
-	default:
-	    ButtonRandomize->setEnabled(false);
-	}
+    ButtonRandomize->setEnabled(true);
     StripesFrame->set_alpha(alpha);
     StripesFrame->set_ncolors(SpinColors->value());
     StripesFrame->draw(size,sg);
