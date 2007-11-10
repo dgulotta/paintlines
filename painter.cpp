@@ -79,36 +79,77 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
   switch(sg) {
   case SYM_P1:
   case SYM_PM:
+  case SYM_CM:
     {
-      vector<int> ev(xtiles*ytiles,0xF), eh(xtiles*ytiles,0xF), *es, *ec;
-      int ip, jp, z;
+      vector<int> ev(xtiles*ytiles,0xF), eh(xtiles*ytiles,0xF), *es;
+      int z;
+      bool back;
+      for(l=0;l<ytiles;l++) {
+	for(k=0;k<xtiles;k++) {
+	  if(rand()&1) {
+	    ev[k+xtiles*l]|=0x10;
+	    eh[k+xtiles*l]|=0x10;
+	    ev[(k+1)%xtiles+xtiles*l]|=0x20;
+	    eh[k%xtiles+xtiles*((l+1)%ytiles)]|=0x20;
+	  }
+	}
+      }
       k=0;
       l=0;
       es=&ev;
       while(l<ytiles) {
-	i=k;
-	j=l;
 	z=(~0x4)&(rand()|~0x1);
 	do {
-	  ip=(i+1)%xtiles;
-	  jp=(j+1)%ytiles;
-	  if(!(ev[ip+xtiles*j]&0x4)) {
-	    j=jp;
-	    eh[i+xtiles*j]&=z;
-	    ec=&eh;
-	  }
-	  else if((!(eh[i+xtiles*jp]&0x4))||rand()&1) {
-	    i=ip;
-	    ev[i+xtiles*j]&=z;
-	    ec=&ev;
+	  (*es)[k+xtiles*l]&=z;
+	  if(es==&ev) {
+	    if(back) {
+	      if(ev[k+xtiles*l]&0x20) {
+		back=true;
+	      }
+	      else {
+		l=(l+1)%ytiles;
+		back=false;
+		z^=0x1;
+	      }
+	      k=mod(k-1,xtiles);
+	    }
+	    else {
+	      if(ev[k+xtiles*l]&0x10) {
+		l=(l+1)%ytiles;
+		back=false;
+	      }
+	      else {
+		back=true;
+		z^=0x1;
+	      }
+	    }
+	    es=&eh;
 	  }
 	  else {
-	    j=jp;
-	    eh[i+xtiles*j]&=z;
-	    ec=&eh;
+	    if(back) {
+	      if(eh[k+xtiles*l]&0x20) {
+		back=true;
+	      }
+	      else {
+		k=(k+1)%xtiles;
+		back=false;
+		z^=0x1;
+	      }
+	      l=mod(l-1,ytiles);
+	    }
+	    else {
+	      if(eh[k+xtiles*l]&0x10) {
+		k=(k+1)%xtiles;
+		back=false;
+	      }
+	      else {
+		back=true;
+		z^=0x1;
+	      }
+	    }
+	    es=&ev;
 	  }
-	} while(i!=k||j!=l||ec!=es);
-	(*es)[k+xtiles*l]&=z;
+	} while((*es)[k+xtiles*l]&0x4);
 	while(!((*es)[k+xtiles*l]&0x4)) {
 	  k++;
 	  if(k>=xtiles) {
@@ -127,33 +168,62 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
       k=0;
       l=0;
       es=&ev;
+      int *oe, oz;
       while(l<ytiles) {
-	i=k;
-	j=l;
-	z=(~0x8)&(rand()|~0x2);
-	do { 
-	  ip=(i+1)%xtiles;
-	  jp=(j+1)%ytiles;
-	  if(!((ev[ip+xtiles*j]&0x8)||(eh[i+xtiles*jp]&0x8))) {
-	    exit(0);
-	  }
-	  if(!(ev[ip+xtiles*j]&0x8)) {
-	    j=jp;
-	    eh[i+xtiles*j]&=z;
-	    ec=&eh;
-	  }
-	  else if((!(eh[i+xtiles*jp]&0x8))||rand()&1) {
-	    i=ip;
-	    ev[i+xtiles*j]&=z;
-	    ec=&ev;
+	z=(~0x38)&(rand()|~0x2);
+	do {
+	  oe=&((*es)[k+xtiles*l]);
+	  oz=z;
+	  if(es==&ev) {
+	    if(back) {
+	      if(ev[k+xtiles*l]&0x20) {
+		l=(l+1)%ytiles;
+		back=false;
+		z^=0x2;
+	      }
+	      else {
+		back=true;
+	      }
+	      k=mod(k-1,xtiles);
+	    }
+	    else {
+	      if(ev[k+xtiles*l]&0x10) {
+		back=true;
+		z^=0x2;
+	      }
+	      else {
+		l=(l+1)%ytiles;
+		back=false;
+	      }
+	    }
+	    es=&eh;
 	  }
 	  else {
-	    j=jp;
-	    eh[i+xtiles*j]&=z;
-	    ec=&eh;
+	    if(back) {
+	      if(eh[k+xtiles*l]&0x20) {
+		k=(k+1)%xtiles;
+		back=false;
+		z^=0x2;
+	      }
+	      else {
+		back=true;
+	      }
+	      l=mod(l-1,ytiles);
+	    }
+	    else {
+	      if(eh[k+xtiles*l]&0x10) {
+		back=true;
+		z^=0x2;
+	      }
+	      else {
+		k=(k+1)%xtiles;
+		back=false;
+	      }
+	    }
+	    es=&ev;
 	  }
-	} while(i!=k||j!=l||ec!=es);
-	(*es)[k+xtiles*l]&=z;
+	  (*oe)&=oz;
+	} while((*es)[k+xtiles*l]&0x8);
 	while(!((*es)[k+xtiles*l]&0x8)) {
 	  k++;
 	  if(k>=xtiles) {
@@ -175,62 +245,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	  int el=ev[k+l*xtiles], er=ev[(k+1)%xtiles+l*xtiles]^0x3;
 	  int et=eh[k+l*xtiles]^0x3, eb=eh[k+((l+1)%ytiles)*xtiles];
 	  //std::cout << el << ' ' << et << ' ' << er << ' ' << eb << std::endl;
-	  if((el^et)==3) {
-	    /* Although the tiling group doesn't eliminate this case, there
-	     * isn't really a tile for it.  So we cheat and smash two tiles
-	     * together.
-	     *
-	     * We can't use painter_transform for this one because it
-	     * doesn't know about projective transformations.
-	     */
-	    bool z=rand()&1;
-	    for(i=0;i<halfsize;i++)
-	      for(j=i;i+j<size;j++) {
-		newj=j-i;
-		newi=2*i;
-		if(z) pt_hflip(newi,newj);
-		pt_cmm_list[el](newi,newj);
-		int index=mod(newi,size)+size*mod(newj,size);
-		int index2=i+k*size+width*(j+l*size);
-		PAINTER_COPY_RGB;
-		index2=(size1-j)+k*size+width*(size1-i+l*size);
-		PAINTER_COPY_RGB;
-		newj=j+i;
-		newi=2*i;
-		if(z) pt_hflip(newi,newj);
-		pt_cmm_list[el](newi,newj);
-		index=mod(newi,size)+size*mod(newj,size);
-		index2=(size1-i)+k*size+width*(j+l*size);
-		PAINTER_COPY_RGB;
-		index2=(size1-j)+k*size+width*(i+l*size);
-		PAINTER_COPY_RGB;
-	      }
-	  }
-	  else if((el^eb)==3) {
-	    bool z=rand()&1;
-	    for(i=0;i<halfsize;i++)
-	      for(j=i;i+j<size;j++) {
-		newj=j+i;
-		newi=2*i;
-		if(z) pt_hflip(newi,newj);
-		pt_cmm_list[el](newi,newj);
-		int index=mod(newi,size)+size*mod(newj,size);
-		int index2=i+k*size+width*(j+l*size);
-		PAINTER_COPY_RGB;
-		index2=j+k*size+width*(i+l*size);
-		PAINTER_COPY_RGB;
-		newj=j-i;
-		newi=2*i;
-		if(z) pt_hflip(newi,newj);
-		pt_cmm_list[el](newi,newj);
-		index=mod(newi,size)+size*mod(newj,size);
-		index2=(size1-i)+k*size+width*(j+l*size);
-		PAINTER_COPY_RGB;
-		index2=j+k*size+width*(size1-i+l*size);
-		PAINTER_COPY_RGB;
-	      }
-	  }
-	  else if(el==er) {
+	  if(el==er) {
 	    const painter_transformation &flip=(rand()&1?pt_ident:pt_hflip);
 	    for(i=0;i<halfsize;i++) {
 	      for(j=i;i+j<size;j++) {
@@ -284,83 +299,6 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		PAINTER_COPY_RGB;
 	      }
 	    }
-	  }
-	}
-      }
-    }
-    break;
-  case SYM_CM:
-    {
-      vector<int> ev(xtiles*ytiles,0x5), eh(xtiles*ytiles,0x5), *es, *ec;
-      int ip, jp, z;
-      k=0;
-      l=0;
-      es=&ev;
-      while(l<ytiles) {
-	i=k;
-	j=l;
-	z=(~0x4)&(rand()|~0x1);
-	do {
-	  ip=(i+1)%xtiles;
-	  jp=(j+1)%ytiles;
-	  if(!(ev[ip+xtiles*j]&0x4)) {
-	    j=jp;
-	    eh[i+xtiles*j]&=z;
-	    ec=&eh;
-	  }
-	  else if((!(eh[i+xtiles*jp]&0x4))||rand()&1) {
-	    i=ip;
-	    ev[i+xtiles*j]&=z;
-	    ec=&ev;
-	  }
-	  else {
-	    j=jp;
-	    eh[i+xtiles*j]&=z;
-	    ec=&eh;
-	  }
-	} while(i!=k||j!=l||ec!=es);
-	(*es)[k+xtiles*l]&=z;
-	while(!((*es)[k+xtiles*l]&0x4)) {
-	  k++;
-	  if(k>=xtiles) {
-	    k=0;
-	    l++;
-	  }
-	  if(l>=ytiles) {
-	    if(es==&ev) {
-	      l=0;
-	      es=&eh;
-	    }
-	    else break;
-	  }
-	}
-      }
-      int newi, newj;
-      for(k=0;k<xtiles;k++) {
-	for(l=0;l<ytiles;l++) {
-	  int el=ev[k+l*xtiles], er=ev[(k+1)%xtiles+l*xtiles]^0x1;
-	  int et=eh[k+l*xtiles]^0x1, eb=eh[k+((l+1)%ytiles)*xtiles];
-	  if(el==er) {
-	    for(i=0;i<size;i++)
-	      for(j=0;i+j<size;j++) {
-		int index=el?(size1-j+size*(size1-i)):(i+size*j);
-		int index2=i+k*size+width*(j+l*size);
-		PAINTER_COPY_RGB;
-		index2=size1-j+k*size+width*(size1-i+l*size);
-		PAINTER_COPY_RGB;
-	      }
-	  }
-	  else {
-	    for(i=0;i<size;i++)
-	      for(j=0;j<size;j++) {
-		newi=i;
-		newj=j;
-		if(et) pt_hflip(newi,newj);
-		if(el) pt_vflip(newi,newj);
-		int index=mod(newi,size)+size*mod(newj,size);
-		int index2=i+k*size+width*(j+l*size);
-		PAINTER_COPY_RGB;
-	      }
 	  }
 	}
       }
