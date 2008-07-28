@@ -295,8 +295,8 @@ void HyperbolicLinesForm::init()
   cmm_1=3;
   cmm_2=2;
   p2_1=3;
-  p4_1=3;
-  p4_2=3;
+  p4_1=5;
+  p4_2=4;
   p4_3=4;
   p4g_1=5;
   p4g_2=2;
