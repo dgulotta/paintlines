@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -79,11 +79,12 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
   switch(sg) {
   case SYM_P1:
   case SYM_PM:
+  case SYM_PG:
   case SYM_CM:
     {
       vector<int> ev(xtiles*ytiles,0xF), eh(xtiles*ytiles,0xF), *es;
       int z;
-      bool back;
+      bool back=true;
       for(l=0;l<ytiles;l++) {
 	for(k=0;k<xtiles;k++) {
 	  if(rand()&1) {
@@ -304,71 +305,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
       }
     }
     break;
-  case SYM_PG:
-    {
-      int xt2=xtiles*2;
-      int yt2=ytiles*2;
-      int d=gcd(xt2,yt2);
-      int m=(xt2*yt2)/d;
-      vector<int> v(xt2*yt2,0x3);
-      int z;
-      for(k=0;k<d;k+=2) {
-	z=~(rand()&0x1);
-	for(l=0;l<m;l++) {
-	  v[(k+l)%xt2+(l%yt2)*xt2]&=z;
-	  z^=0x1;
-	}
-      }
-      for(k=1;k<d;k+=2) {
-	z=~(rand()&0x1);
-	for(l=0;l<m;l++) {
-	  v[mod(k-l,xt2)+(l%yt2)*xt2]&=z;
-	  z^=0x1;
-	}
-      }
-      int dk, dl;
-      for(k=0,l=0;l<yt2;) {
-	z=rand();
-	dk=1-2*((l^v[k+l*xt2])&1);
-	dl=1-2*((k^v[k+l*xt2])&1);
-	while(v[k+l*xt2]&0x2) {
-	  v[k+l*xt2]&=~0x2;
-	  if((v[k+l*xt2]^v[mod(k+dk,xt2)+l*xt2])&0x1) {
-	    pt.set_to_trans(0,dk,k*halfsize,-dl,0,(l+dl)*halfsize);
-	    dk*=-1;
-	    l=mod(l+dl,yt2);
-	  }
-	  else {
-	    pt.set_to_trans(dk,0,k*halfsize,0,dl,l*halfsize);
-	    dl*=-1;
-	    k=mod(k+dk,xt2);
-	  }
-	  if(z&1) {
-	    pt.set_from_trans(1,0,0,0,1,0);
-	  }
-	  else {
-	    pt.set_from_trans(1,0,0,0,-1,halfsize1);
-	  }
-	  for(j=(-halfsize-1)/2;j<=(halfsize)/2;j++) {
-	    for(i=-1-j;i-j<=halfsize;i++) {
-	      pt.set_point(i,j);
-	      PAINTER_NEW_COPY_RGB;
-	    }
-	  }
-	}
-	do {
-	  k++;
-	  if(k>=xt2) {
-	    k=0;
-	    l++;
-	  }
-	  if(l>yt2) break;
-	} while(!(v[k+l*xt2]&0x2));
-      }
-    }
-    break;
   case SYM_CMM:
-  case SYM_P2:
     for(k=0;k<xtiles;k++)
       for(l=0;l<ytiles;l++) {
 	int z=rand();
@@ -389,47 +326,91 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	  }
       }
     break;
-  case SYM_PMG:
-    for(k=0;k<xtiles;k++)
-      for(l=0;l<ytiles;l++) {
-	int z=rand();
-	for(i=0;i<halfsize;i++)
-	  for(j=0;j<halfsize;j++) {
-	    int index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*j,sizesq);
-	    int index2=i+k*size+width*(j+l*size);
-	    PAINTER_COPY_RGB;
-	    index=mod(((z&2)?(i+qsize):(sizeq1-i))+size*j,sizesq);
-	    index2=size1-i+k*size+width*(j+l*size);
-	    PAINTER_COPY_RGB;
-	    index=mod(((z&4)?(i+qsize):(sizeq1-i))+size*j,sizesq);
-	    index2=i+k*size+width*(size1-j+l*size);
-	    PAINTER_COPY_RGB;
-	    index=mod(((z&8)?(i+qsize):(sizeq1-i))+size*j,sizesq);
-	    index2=size1-i+k*size+width*(size1-j+l*size);
-	    PAINTER_COPY_RGB;
-	  }
+  case SYM_P2:
+  case SYM_PMM:
+  case SYM_P4M:
+    {
+      int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
+      vector<int> z(t2);
+      int whichtrans;
+      for(k=0;k<t2;k++) {
+	z[k]=rand()&1;
       }
+#define PAINTER_RANDOMIZE_P2_LOOP \
+	  for(i=0;i<=qsize;i++) \
+	    for(j=-i;j<=i;j++) { \
+	      pt.set_point(i,j); \
+	      PAINTER_NEW_COPY_RGB; \
+	    }
+      for(k=0;k<xt2;k++) {
+	for(l=0;l<yt2;l++) {
+	    pt.set_to_trans(1,0,halfsize*k,0,1,halfsize*l);
+	    randomize_p2_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[((k+1)%xt2)*yt2+l]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(0,1,halfsize*k,1,0,halfsize*l);
+	    randomize_p2_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+((l+1)%yt2)]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(-1,0,halfsize*k,0,-1,halfsize*l);
+	    randomize_p2_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[mod(k-1,xt2)*yt2+l]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(0,-1,halfsize*k,-1,0,halfsize*l);
+	    randomize_p2_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+mod(l-1,yt2)]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	}
+      }
+    }
+    break;
+  case SYM_PMG:
+    {
+      int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
+      vector<int> z(t2);
+      int whichtrans;
+      for(k=0;k<t2;k++) {
+	z[k]=rand()&1;
+      }
+      for(k=0;k<xt2;k++) {
+	for(l=0;l<yt2;l++) {
+	    pt.set_to_trans(1,0,halfsize*k,0,1,halfsize*l);
+	    randomize_pmg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[((k+1)%xt2)*yt2+l]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(0,1,halfsize*k,1,0,halfsize*l);
+	    randomize_pmg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+((l+1)%yt2)]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(-1,0,halfsize*k,0,-1,halfsize*l);
+	    randomize_pmg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[mod(k-1,xt2)*yt2+l]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(0,-1,halfsize*k,-1,0,halfsize*l);
+	    randomize_pmg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+mod(l-1,yt2)]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	}
+      }
+    }
     break;
   case SYM_PGG:
-     for(k=0;k<xtiles;k++)
-      for(l=0;l<ytiles;l++) {
-	int z=rand();
-	for(i=0;i<halfsize;i++)
-	  for(j=0;j<halfsize;j++) {
-	    int index=mod(((z&1)?(i+qsize):(sizeq1-i))+size*(j+qsize),sizesq);
-	    int index2=i+k*size+width*(j+l*size);
-	    PAINTER_COPY_RGB;
-	    index=mod(((z&2)?(i+qsize):(sizeq1-i))+size*(j+qsize),sizesq);
-	    index2=size1-i+k*size+width*(j+l*size);
-	    PAINTER_COPY_RGB;
-	    index=mod(((z&4)?(i+qsize):(sizeq1-i))+size*(j+qsize),sizesq);
-	    index2=i+k*size+width*(size1-j+l*size);
-	    PAINTER_COPY_RGB;
-	    index=mod(((z&8)?(i+qsize):(sizeq1-i))+size*(j+qsize),sizesq);
-	    index2=size1-i+k*size+width*(size1-j+l*size);
-	    PAINTER_COPY_RGB;
-	  }
+       {
+      int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
+      vector<int> z(t2);
+      int whichtrans;
+      for(k=0;k<t2;k++) {
+	z[k]=rand()&1;
       }
+      for(k=0;k<xt2;k++) {
+	for(l=0;l<yt2;l++) {
+	    pt.set_to_trans(1,0,halfsize*k,0,1,halfsize*l);
+	    randomize_pgg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[((k+1)%xt2)*yt2+l]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(0,1,halfsize*k,1,0,halfsize*l);
+	    randomize_pgg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+((l+1)%yt2)]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(-1,0,halfsize*k,0,-1,halfsize*l);
+	    randomize_pgg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[mod(k-1,xt2)*yt2+l]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	    pt.set_to_trans(0,-1,halfsize*k,-1,0,halfsize*l);
+	    randomize_pgg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+mod(l-1,yt2)]);
+	    PAINTER_RANDOMIZE_P2_LOOP;
+	}
+      }
+    }
     break;
   case SYM_P4:
   case SYM_P4G:
@@ -464,37 +445,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	    PAINTER_COPY_RGB;
 	  }
       }
-    break;
-  case SYM_PMM:
-  case SYM_P4M:
-    for(k=0;k<xtiles;k++)
-      for(l=0;l<ytiles;l++) {
-	int z=rand();
-	for(i=0;i<halfsize;i++) {
-	  int end=halfsize+i;
-	  for(j=halfsize1-i;j<=end;j++) {
-	    int index=(z&1)?(i+size*j):
-	      mod((halfsize1-j)+size*(halfsize1-i),sizesq);
-	    int index2=i+k*size+width*(j+l*size);
-	    PAINTER_COPY_RGB;
-	    index=(z&1)?((size1-i)+size*j):
-	      mod((halfsize1-j)+size*(i-halfsize),sizesq);
-	    index2=(size1-i)+k*size+width*(j+l*size);
-	    PAINTER_COPY_RGB;
-	    index=(z&2)?(i+size*j):
-	      mod((halfsize1-j)+size*(halfsize1-i),sizesq);
-	    index2=mod((halfsize1-j)+k*size,width)+width*
-	      (mod((halfsize1-i)+l*size,height));
-	    PAINTER_COPY_RGB;
-	    index=(z&2)?((size1-i)+size*j):
-	      mod((halfsize1-j)+size*(i-halfsize),sizesq);
-	    index2=mod((halfsize1-j)+k*size,width)+width*
-	      (mod((i-halfsize)+l*size,height));
-	    PAINTER_COPY_RGB;
-	  }
-	}
-      }
-    break;
+    break; 
   case SYM_P3:
   case SYM_P31M:
   case SYM_P6:
@@ -651,6 +602,98 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	  PAINTER_RANDOMIZE_P3M1_LOOP;
 	}
     }
+  }
+}
+
+void painter::randomize_p2_choose_from_trans(painter_transform &pt, int n)
+{
+  switch(n) {
+  case 0:
+    pt.set_from_trans(1,0,0,0,1,0);
+    break;
+  case 1:
+    pt.set_from_trans(0,1,0,1,0,0);
+    break;
+  case 2:
+    pt.set_from_trans(0,1,halfsize,1,0,halfsize);
+    break;
+  case 3:
+    pt.set_from_trans(1,0,halfsize,0,1,halfsize);
+    break;
+  case 4:
+    pt.set_from_trans(1,0,halfsize,0,1,0);
+    break;
+  case 5:
+    pt.set_from_trans(0,1,halfsize,1,0,0);
+    break;
+  case 6:
+    pt.set_from_trans(0,1,0,1,0,halfsize);
+    break;
+  case 7:
+    pt.set_from_trans(1,0,0,0,1,halfsize);
+    break;
+  }
+}
+
+void painter::randomize_pmg_choose_from_trans(painter_transform &pt, int n)
+{
+  int qsize=halfsize/2;
+  switch(n) {
+  case 0:
+    pt.set_from_trans(1,0,qsize,0,1,0);
+    break;
+  case 1:
+    pt.set_from_trans(0,1,qsize,1,0,0);
+    break;
+  case 2:
+    pt.set_from_trans(0,1,halfsize+qsize,1,0,halfsize);
+    break;
+  case 3:
+    pt.set_from_trans(1,0,halfsize+qsize,0,1,halfsize);
+    break;
+  case 4:
+    pt.set_from_trans(1,0,halfsize+qsize,0,1,0);
+    break;
+  case 5:
+    pt.set_from_trans(0,1,halfsize+qsize,1,0,0);
+    break;
+  case 6:
+    pt.set_from_trans(0,1,qsize,1,0,halfsize);
+    break;
+  case 7:
+    pt.set_from_trans(1,0,qsize,0,1,halfsize);
+    break;
+  }
+}
+
+void painter::randomize_pgg_choose_from_trans(painter_transform &pt, int n)
+{
+  int qsize=halfsize/2;
+  switch(n) {
+  case 0:
+    pt.set_from_trans(1,0,qsize,0,1,qsize);
+    break;
+  case 1:
+    pt.set_from_trans(0,1,qsize,1,0,qsize);
+    break;
+  case 2:
+    pt.set_from_trans(0,1,halfsize+qsize,1,0,halfsize+qsize);
+    break;
+  case 3:
+    pt.set_from_trans(1,0,halfsize+qsize,0,1,halfsize+qsize);
+    break;
+  case 4:
+    pt.set_from_trans(1,0,halfsize+qsize,0,1,qsize);
+    break;
+  case 5:
+    pt.set_from_trans(0,1,halfsize+qsize,1,0,qsize);
+    break;
+  case 6:
+    pt.set_from_trans(0,1,qsize,1,0,halfsize+qsize);
+    break;
+  case 7:
+    pt.set_from_trans(1,0,qsize,0,1,halfsize+qsize);
+    break;
   }
 }
 

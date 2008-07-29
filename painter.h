@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2003-2007 by Daniel Gulotta                             *
+ *   Copyright (C) 2003-2008 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -100,6 +100,9 @@ class painter
  protected:
   void randomize_p3m1_choose_from_trans(painter_transform &pt, int mt, int nt,
 					int z);
+  void randomize_p2_choose_from_trans(painter_transform &pt, int n);
+  void randomize_pmg_choose_from_trans(painter_transform &pt, int n);
+  void randomize_pgg_choose_from_trans(painter_transform &pt, int n);
   inline unsigned char & mi(vector<unsigned char> &v,int i, int j) {
     return v[mod(i,size)+size*mod(j,size)];
   }
