@@ -76,7 +76,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
   b.resize(bigsize);
   // eventually all groups should use this
   painter_transform pt(size,xtiles,ytiles);
-  switch(sg) {
+  switch(((int)sg)%17) {
   case SYM_P1:
   case SYM_PM:
   case SYM_PG:

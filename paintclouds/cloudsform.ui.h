@@ -129,20 +129,7 @@ void CloudsForm::Draw()
     CloudsFrame->set_color2(c.red(),c.green(),c.blue());
     c=ButtonColor3->paletteBackgroundColor();
     CloudsFrame->set_color3(c.red(),c.green(),c.blue());
-    switch(sg) {
-	case SYM_CMM_O:
-	case SYM_P2_O:
-	case SYM_P4_O:
-	case SYM_P4G_O:
-	case SYM_P4M_O:
-	case SYM_PGG_O:
-	case SYM_PMG_O:
-	case SYM_PMM_O:
-	    ButtonRandomize->setEnabled(true);
-	    break;
-	default:
-	    ButtonRandomize->setEnabled(false);
-	}
+    ButtonRandomize->setEnabled(true);
     CloudsFrame->draw(size,sg);
     //CloudsFrame->draw(size,sg,255,255,0,0,255,255,255,0,255);
   }

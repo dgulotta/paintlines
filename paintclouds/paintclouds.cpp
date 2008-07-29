@@ -239,6 +239,7 @@ void paintclouds::paint(int sz, symgroup sym)
     paint_border(0,0,halfsize,0);
     paint_border(0,halfsize,halfsize,halfsize);
     paint_border(halfsize,0,halfsize,halfsize);
+    paint_border(0,halfsize,halfsize,0);
     paint_triangle(0,0,halfsize,0,0,halfsize);
     paint_triangle(0,halfsize,halfsize,0,halfsize,halfsize);
     break;
