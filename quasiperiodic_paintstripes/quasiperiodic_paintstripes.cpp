@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   dgulotta@alum.mit.edu                                                 *
  *   Portions copyright (C)  1996, 1997, 1998, 1999, 2000 James Theiler,   *
  *   Brian Gough                                                           *
  *                                                                         *

@@ -413,6 +413,70 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
     }
     break;
   case SYM_P4:
+    {
+      int ntiles=xtiles*ytiles;
+      vector<int> z(ntiles);
+      for(k=0;k<ntiles;k++)
+	z[k]=rand();
+#define PAINTER_RANDOMIZE_P4_LOOP \
+	  for(i=0;i<qsize;i++) \
+	    for(j=i;i+j<halfsize;j++) { \
+	      pt.set_point(i,j); \
+	      PAINTER_NEW_COPY_RGB; \
+	    }
+      for(k=0;k<xtiles;k++)
+	for(l=0;l<ytiles;l++) {
+	  pt.set_to_trans(1,0,size*k,0,1,size*l);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x4);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(0,1,size*k,1,0,size*l);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x8);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(0,1,size*k,-1,0,size*l-1);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x10);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(1,0,size*k,0,-1,size*l-1);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x20);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(-1,0,size*k-1,0,-1,size*l-1);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x40);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(0,-1,size*k-1,-1,0,size*l-1);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x80);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(0,-1,size*k-1,1,0,size*l);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x100);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(-1,0,size*k-1,0,1,size*l);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x200);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(1,0,size*k+halfsize,0,1,size*l+halfsize);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+((l+1)%ytiles)]&0x80);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(0,1,size*k+halfsize,1,0,size*l+halfsize);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+((l+1)%ytiles)]&0x40);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(0,1,size*k+halfsize,-1,0,size*l+halfsize1);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+l]&0x200);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(1,0,size*k+halfsize,0,-1,size*l+halfsize1);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+l]&0x100);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(-1,0,size*k+halfsize1,0,-1,size*l+halfsize1);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*k+l]&0x8);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(0,-1,size*k+halfsize1,-1,0,size*l+halfsize1);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*k+l]&0x4);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(0,-1,size*k+halfsize1,1,0,size*l+halfsize);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*k+((l+1)%ytiles)]&0x20);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	  pt.set_to_trans(-1,0,size*k+halfsize1,0,1,size*l+halfsize);
+	  randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*k+((l+1)%ytiles)]&0x10);
+	  PAINTER_RANDOMIZE_P4_LOOP;
+	}
+    }
+    break;
   case SYM_P4G:
     for(k=0;k<xtiles;k++)
       for(l=0;l<ytiles;l++) {
@@ -725,4 +789,18 @@ void painter::randomize_p3m1_choose_from_trans(painter_transform &pt, int mt,
       pt.set_from_trans(0,-1,-((size+1)/3),-1,0,-((size+1)/3));
     }
   }
+}
+
+ void painter::randomize_p4_choose_from_trans(painter_transform &pt, bool a, bool b)
+{
+  if(a)
+    if(b)
+      pt.set_from_trans(1,0,0,0,1,0);
+    else
+      pt.set_from_trans(0,1,0,1,0,0);
+  else
+    if(b)
+      pt.set_from_trans(0,-1,halfsize1,-1,0,halfsize1);
+    else
+      pt.set_from_trans(-1,0,halfsize1,0,-1,halfsize1);
 }
