@@ -38,7 +38,7 @@ void PaintForm::fileSave()
 
 void PaintForm::fileSaveAs()
 {
-    QString s=QFileDialog::getSaveFileName();
+    QString s=Q3FileDialog::getSaveFileName();
     if(!s.isEmpty()) PaintFrame->save(s,"PNG");
 }
 

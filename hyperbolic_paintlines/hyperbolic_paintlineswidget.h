@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,9 +18,14 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#ifndef _HYPERBOLIC_PAINTLINESWIDGET_H
+#define _HYPERBOLIC_PAINTLINESWIDGET_H
+
 #include "hyperbolic_paintlines.h"
 #include <qwidget.h>
 #include <qpixmap.h>
+//Added by qt3to4:
+#include <QPaintEvent>
 
 class hyperbolic_paintlineswidget : public QWidget,
 				    public hyperbolic_paintlines
@@ -36,3 +41,5 @@ protected:
 private:
     QPixmap mypixmap;
 };
+
+#endif

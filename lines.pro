@@ -4,5 +4,8 @@ LANGUAGE	= C++
 SUBDIRS = paintlines \
           paintclouds \
           paintstripes \
-	  hyperbolic_paintlines
+	  paintsquiggles \
+	  hyperbolic_paintlines \
 	  quasiperiodic_paintstripes
+
+QT += QT3_SUPPORT

@@ -18,7 +18,7 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qmessagebox.h>
 
 void SquigglesForm::fileNew()
@@ -41,7 +41,7 @@ void SquigglesForm::fileSave()
 
 void SquigglesForm::fileSaveAs()
 {
-  QString s=QFileDialog::getSaveFileName();
+  QString s=Q3FileDialog::getSaveFileName();
   if(!s.isEmpty()) StripesFrame->save(s,"PNG");
 }
 

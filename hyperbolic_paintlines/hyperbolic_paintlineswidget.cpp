@@ -22,6 +22,8 @@
 #include <qpainter.h>
 #include <qcolor.h>
 #include <qimage.h>
+//Added by qt3to4:
+#include <QPaintEvent>
 
 hyperbolic_paintlineswidget::hyperbolic_paintlineswidget
 (QWidget *parent,const char *name)
@@ -43,7 +45,7 @@ void hyperbolic_paintlineswidget::draw
 				    hyperbolic_painter::blue[i]));
   mypixmap.convertFromImage(myimage);
   resize(sz,sz);
-  paintEvent(NULL);
+  update();
 }
 
 bool hyperbolic_paintlineswidget::save(const QString &filename,
@@ -63,7 +65,7 @@ void hyperbolic_paintlineswidget::restore()
 			      hyperbolic_painter::blue[i]));
     mypixmap.convertFromImage(myimage);
     resize(hyperbolic_painter::size,hyperbolic_painter::size);
-    paintEvent(NULL);
+    update();
 }
 
 void hyperbolic_paintlineswidget::paintEvent(QPaintEvent *)

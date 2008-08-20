@@ -12,21 +12,16 @@ SOURCES	+= ../hyperbolic_painter.cpp \
 	hyperbolic_paintlineswidget.cpp \
 	main.cpp
 
-FORMS	= hyperboliclinesform.ui
-
-IMAGES	= images/filenew \
-	images/fileopen \
-	images/filesave \
-	images/print \
-	images/undo \
-	images/redo \
-	images/editcut \
-	images/editcopy \
-	images/editpaste \
-	images/searchfind
+#The following line was changed from FORMS to FORMS3 by qt3to4
+FORMS3	= hyperboliclinesform.ui
 
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 }
+#The following line was inserted by qt3to4
+QT +=  qt3support 
+#The following line was inserted by qt3to4
+CONFIG += uic3
+

@@ -1,9 +1,9 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on release
+CONFIG	+= qt warn_on release link_pkgconfig
 
-LIBS	+= -lfftw3
+PKGCONFIG += fftw3
 
 HEADERS	+= paintstripes.h \
 	paintstripeswidget.h \
@@ -16,7 +16,8 @@ SOURCES	+= paintstripes.cpp \
 	../painterwidget.cpp \
 	main.cpp
 
-FORMS	= stripesform.ui
+#The following line was changed from FORMS to FORMS3 by qt3to4
+FORMS3	= stripesform.ui
 
 unix {
   UI_DIR = .ui
@@ -25,4 +26,9 @@ unix {
 }
 
 
+
+#The following line was inserted by qt3to4
+QT +=  qt3support 
+#The following line was inserted by qt3to4
+CONFIG += uic3
 

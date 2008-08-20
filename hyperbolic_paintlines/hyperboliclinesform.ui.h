@@ -20,7 +20,7 @@
 
 #include <qapplication.h>
 #include <qmessagebox.h>
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <memory>
 #include "../hyperbolic_painter.h"
 
@@ -28,7 +28,7 @@ using namespace std;
 
 void HyperbolicLinesForm::fileSaveAs()
 {
- QString s=QFileDialog::getSaveFileName();
+ QString s=Q3FileDialog::getSaveFileName();
  if(!s.isEmpty()) HyperbolicPaintFrame->save(s,"PNG");
 }
 

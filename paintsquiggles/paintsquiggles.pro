@@ -16,7 +16,8 @@ SOURCES	+= paintsquiggles.cpp \
 	../painterwidget.cpp \
 	main.cpp
 
-FORMS	= squigglesform.ui
+#The following line was changed from FORMS to FORMS3 by qt3to4
+FORMS3	= squigglesform.ui
 
 unix {
   UI_DIR = .ui
@@ -25,4 +26,9 @@ unix {
 }
 
 
+
+#The following line was inserted by qt3to4
+QT +=  qt3support 
+#The following line was inserted by qt3to4
+CONFIG += uic3
 

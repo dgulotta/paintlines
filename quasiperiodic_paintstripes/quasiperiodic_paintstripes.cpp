@@ -82,8 +82,6 @@ void quasiperiodic_paintstripes::paint(int sz, symgroup sym)
   fill(blue);
 }
 
-#include <stdio.h>
-
 void quasiperiodic_paintstripes::fill(vector<unsigned char> &arr)
 {
   double mag[2],  n(0.);

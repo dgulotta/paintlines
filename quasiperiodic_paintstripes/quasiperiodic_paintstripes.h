@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,8 +18,8 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _PAINTSTRIPES_H
-#define _PAINTSTRIPES_H
+#ifndef _QUASIPERIODIC_PAINTSTRIPES_H
+#define _QUASIPERIODIC_PAINTSTRIPES_H
 
 #include "../painter.h"
 #include <fftw3.h>
@@ -41,7 +41,6 @@ class quasiperiodic_paintstripes : virtual public painter
   void set_alpha(double alpha) {levy_alpha=alpha;}
  private:
   void fill(vector<unsigned char> &r);
-  double (quasiperiodic_paintstripes::*norm)(int,int);
   fftw_plan fftplan;
   double *array;
   int fftsize;

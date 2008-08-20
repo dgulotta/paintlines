@@ -18,7 +18,7 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <qfiledialog.h>
+#include <q3filedialog.h>
 #include <qmessagebox.h>
 #include <qcolordialog.h>
 
@@ -42,7 +42,7 @@ void CloudsForm::fileSave()
 
 void CloudsForm::fileSaveAs()
 {
-  QString s=QFileDialog::getSaveFileName();
+  QString s=Q3FileDialog::getSaveFileName();
   if(!s.isEmpty()) CloudsFrame->save(s,"PNG");
 }
 
@@ -156,7 +156,8 @@ void CloudsForm::SetColor1()
   QColor c=QColorDialog::getColor(ButtonColor1->paletteBackgroundColor(),this);
   if(c.isValid()) {
     ButtonColor1->setPaletteBackgroundColor(c);
-    ButtonColor1->setDown(false);
+    //ButtonColor1->setDown(false);
+    ButtonColor1->update();
   }
 }
 
