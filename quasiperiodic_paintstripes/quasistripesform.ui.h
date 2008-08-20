@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -126,36 +126,16 @@ void QuasiStripesForm::Draw()
     QMessageBox::information(this,"Paintstripes","Alpha must be in (0,2].");
   }
   else {
-    symgroup sg=symgroup(ComboSymmetry->currentItem());
-    switch(sg) {
-	case SYM_CMM:
-	case SYM_P2:
-	case SYM_P4:
-	case SYM_P4G:
-	case SYM_P4M:
-	case SYM_PGG:
-	case SYM_PMG:
-	case SYM_PMM:
-	    ButtonRandomize->setEnabled(true);
-	    break;
-	default:
-	    ButtonRandomize->setEnabled(false);
-	}
     StripesFrame->set_alpha(alpha);
-    StripesFrame->draw(size,sg);
+    StripesFrame->draw(size);
   }
 }
 
 void QuasiStripesForm::Randomize()
 {
-    StripesFrame->painterwidget::randomize(SpinXTile->value(),
-					   SpinYTile->value());
-    ButtonRestore->setEnabled(true);
 }
 
 
 void QuasiStripesForm::Restore()
 {
-    StripesFrame->restore();
-    ButtonRestore->setEnabled(false);
 }

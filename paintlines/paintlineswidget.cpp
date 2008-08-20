@@ -29,5 +29,5 @@ void paintlineswidget::draw(int sz, int n, symgroup sg)
 {
   set_ncolors(n);
   paintlines::paint(sz,sg);
-  painterwidget::paint(sz,sg);
+  basic_painterwidget::paint();
 }

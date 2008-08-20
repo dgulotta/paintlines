@@ -19,32 +19,14 @@
  ***************************************************************************/
 
 #include "painterwidget.h"
-#include <qpainter.h>
-#include <qcolor.h>
-#include <qimage.h>
-//Added by qt3to4:
+#include <QPainter>
+#include <QColor>
+#include <QImage>
 #include <QPaintEvent>
 
 painterwidget::painterwidget(QWidget *parent,const char *name)
-    :QWidget(parent,name)	
+    : basic_painterwidget(parent,name)	
 {
-}
-
-void painterwidget::paint(int sz, symgroup sg)
-{
-  QImage myimage(sz,sz,32);
-  int i, sz2=sz*sz;
-  for(i=0;i<sz2;i++)
-    myimage.setPixel(i/sz,i%sz,qRgb(painter::red[i],painter::green[i],
-				    painter::blue[i]));
-  mypixmap.convertFromImage(myimage);
-  resize(sz,sz);
-  update();
-}
-
-bool painterwidget::save(const QString &filename,const char *format)
-{
-    return mypixmap.save(filename,format);
 }
 
 void painterwidget::randomize(int xtiles, int ytiles)
@@ -72,10 +54,4 @@ void painterwidget::restore()
     mypixmap.convertFromImage(myimage);
     resize(painter::size,painter::size);
     update();
-}
-
-void painterwidget::paintEvent(QPaintEvent *)
-{
-    QPainter p(this);
-    p.drawPixmap(0,0,mypixmap);
 }

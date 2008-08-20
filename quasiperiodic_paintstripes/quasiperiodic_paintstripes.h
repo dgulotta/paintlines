@@ -28,7 +28,7 @@ double random_levy_1d_power_alpha(double alpha, double scale);
 
 void random_levy_2d(double *d,double alpha,double scale);
 
-class quasiperiodic_paintstripes : virtual public painter
+class quasiperiodic_paintstripes : virtual public basic_painter
 {
  public:
   quasiperiodic_paintstripes() : fftplan(NULL), array(NULL),
@@ -37,7 +37,7 @@ class quasiperiodic_paintstripes : virtual public painter
     if(fftplan) fftw_destroy_plan(fftplan);
     if(array) fftw_free((void *)array);
   }
-  void paint(int sz, symgroup sym);
+  void paint(int sz);
   void set_alpha(double alpha) {levy_alpha=alpha;}
  private:
   void fill(vector<unsigned char> &r);

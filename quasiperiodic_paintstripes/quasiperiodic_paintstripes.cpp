@@ -61,7 +61,7 @@ void random_levy_2d(double *d,double alpha,double scale)
   }
 }
 
-void quasiperiodic_paintstripes::paint(int sz, symgroup sym)
+void quasiperiodic_paintstripes::paint(int sz)
 {
   int newfftsize=sqrt(sz);
   if(newfftsize!=fftsize) {
@@ -75,8 +75,8 @@ void quasiperiodic_paintstripes::paint(int sz, symgroup sym)
     int sizes[4]={fftsize,fftsize,fftsize,fftsize};
     fftplan=fftw_plan_dft_c2r(4,sizes,(fftw_complex*)array,array,FFTW_MEASURE);
   }
-  painter::paint(sz,sym);
-  dq=M_PI/halfsize;
+  basic_painter::paint(sz);
+  dq=2.*M_PI/size;
   fill(red);
   fill(green);
   fill(blue);

@@ -21,12 +21,12 @@
 #include "quasiperiodic_paintstripeswidget.h"
 
 quasiperiodic_paintstripeswidget::quasiperiodic_paintstripeswidget(QWidget *parent,const char *name)
-    :painterwidget(parent,name)	
+    :basic_painterwidget(parent,name)	
 {
 }
 
-void quasiperiodic_paintstripeswidget::draw(int sz, symgroup sg)
+void quasiperiodic_paintstripeswidget::draw(int sz)
 {
-  quasiperiodic_paintstripes::paint(sz,sg);
-  painterwidget::paint(sz,sg);
+  quasiperiodic_paintstripes::paint(sz);
+  basic_painterwidget::paint();
 }

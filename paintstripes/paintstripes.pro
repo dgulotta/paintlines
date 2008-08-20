@@ -8,7 +8,9 @@ PKGCONFIG += fftw3
 HEADERS	+= paintstripes.h \
 	paintstripeswidget.h \
 	../painter.h \
-	../painterwidget.h
+	../painterwidget.h \
+	../basic_painter.h \
+	../basic_painterwidget.h
 
 SOURCES	+= paintstripes.cpp \
 	paintstripeswidget.cpp \

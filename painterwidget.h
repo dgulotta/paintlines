@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,25 +21,20 @@
 #ifndef _PAINTERWIDGET_H
 #define _PAINTERWIDGET_H
 
-#include "painter.h"
 #include <qwidget.h>
 #include <qpixmap.h>
-//Added by qt3to4:
 #include <QPaintEvent>
 
-class painterwidget : public QWidget, virtual public painter
+#include "painter.h"
+#include "basic_painterwidget.h"
+
+class painterwidget : public basic_painterwidget, virtual public painter
 {
     Q_OBJECT
 public:
     painterwidget(QWidget *parent=0,const char *name=0);
-    void paint(int sz, symgroup sg);
-    bool save(const QString &filename, const char *format);
     void randomize(int xtiles, int ytiles);
     void restore();
-protected:
-    void paintEvent(QPaintEvent *);
-private:
-    QPixmap mypixmap;
 };
 
 #endif

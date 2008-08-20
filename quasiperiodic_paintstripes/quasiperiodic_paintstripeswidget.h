@@ -24,12 +24,12 @@
 #include "quasiperiodic_paintstripes.h"
 #include "../painterwidget.h"
 
-class quasiperiodic_paintstripeswidget : public painterwidget, public quasiperiodic_paintstripes
+class quasiperiodic_paintstripeswidget : public basic_painterwidget, public quasiperiodic_paintstripes
 {
     Q_OBJECT
 public:
     quasiperiodic_paintstripeswidget(QWidget *parent=0,const char *name=0);
-    void draw(int sz, symgroup sg);
+    void draw(int sz);
 };
 
 #endif

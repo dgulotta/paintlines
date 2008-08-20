@@ -6,7 +6,9 @@ CONFIG	+= qt warn_on release
 HEADERS	+= paintlines.h \
 	paintlineswidget.h \
 	../painter.h \
-	../painterwidget.h
+	../painterwidget.h \
+	../basic_painter.h \
+	../basic_painterwidget.h
 
 SOURCES	+= paintlines.cpp \
 	main.cpp \
@@ -16,8 +18,6 @@ SOURCES	+= paintlines.cpp \
 
 #The following line was changed from FORMS to FORMS3 by qt3to4
 FORMS3	= paintform.ui
-
-QT += QT3_SUPPORT
 
 unix {
   UI_DIR = .ui

@@ -1,19 +1,17 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on release
+CONFIG	+= qt warn_on release link_pkgconfig
 
-LIBS	+= -lfftw3
+PKGCONFIG += fftw3
 
 HEADERS	+= quasiperiodic_paintstripes.h \
 	quasiperiodic_paintstripeswidget.h \
-	../painter.h \
-	../painterwidget.h
+	../basic_painter.h \
+	../basic_painterwidget.h
 
 SOURCES	+= quasiperiodic_paintstripes.cpp \
 	quasiperiodic_paintstripeswidget.cpp \
-	../painter.cpp \
-	../painterwidget.cpp \
 	main.cpp
 
 #The following line was changed from FORMS to FORMS3 by qt3to4

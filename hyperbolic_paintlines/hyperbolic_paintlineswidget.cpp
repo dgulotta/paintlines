@@ -34,29 +34,5 @@ void hyperbolic_paintlineswidget::draw
   set_ncolors(n);
   pt=p;
   hyperbolic_paintlines::paint(sz,sym);
-  QImage myimage(sz,sz,32);
-  int i, sz2=sz*sz;
-  for(i=0;i<sz2;i++)
-    myimage.setPixel(i/sz,i%sz,qRgb(hyperbolic_painter::red[i],
-				    hyperbolic_painter::green[i],
-				    hyperbolic_painter::blue[i]));
-  mypixmap.convertFromImage(myimage);
-  resize(sz,sz);
-  update();
+  basic_painterwidget::paint();
 }
-
-/*
-void hyperbolic_paintlineswidget::restore()
-{
-    QImage myimage(hyperbolic_painter::size,hyperbolic_painter::size,32);
-    int i, size2=hyperbolic_painter::size*hyperbolic_painter::size;
-    for(i=0;i<size2;i++)
-	myimage.setPixel(i/hyperbolic_painter::size,i%hyperbolic_painter::size,
-			 qRgb(hyperbolic_painter::red[i],
-			      hyperbolic_painter::green[i],
-			      hyperbolic_painter::blue[i]));
-    mypixmap.convertFromImage(myimage);
-    resize(hyperbolic_painter::size,hyperbolic_painter::size);
-    update();
-}
-*/

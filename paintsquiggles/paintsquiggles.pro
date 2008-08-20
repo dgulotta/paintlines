@@ -1,14 +1,16 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on release
+CONFIG	+= qt warn_on release link_pkgconfig
 
-LIBS	+= -lfftw3
+PKGCONFIG += fftw3
 
 HEADERS	+= paintsquiggles.h \
 	paintsquiggleswidget.h \
 	../painter.h \
-	../painterwidget.h
+	../painterwidget.h \
+	../basic_painter.h \
+	../basic_painterwidget.h
 
 SOURCES	+= paintsquiggles.cpp \
 	paintsquiggleswidget.cpp \

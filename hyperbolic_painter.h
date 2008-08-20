@@ -324,7 +324,7 @@ void hyperbolic_symmetry_group::symmetrize
   }
 }
 
-class hyperbolic_painter : public basic_painter
+class hyperbolic_painter : public virtual basic_painter
 {
  public:
   hyperbolic_painter() : pt(POINCARE) {};

@@ -23,6 +23,9 @@
 
 #include <vector>
 #include <cmath>
+
+#include "basic_painter.h"
+
 using std::vector;
 using std::cos;
 
@@ -80,19 +83,20 @@ class painter_transform {
   int to_index;
 };
 
-class painter
+class painter : virtual public basic_painter
 {
  public:
-  painter() : sg(SYM_P1), size(0), halfsize(0), size1(-1), halfsize1(-1) {}
+  painter() : sg(SYM_P1), halfsize(0), size1(-1), halfsize1(-1) {}
   void paint(int sz, symgroup sym) {
-    size=sz;
+    basic_painter::paint(sz);
+    //size=sz;
     size1=size-1;
     halfsize=size/2;
     halfsize1=halfsize-1;
     sg=sym;
-    red.resize(size*size);
-    green.resize(size*size);
-    blue.resize(size*size);
+    //red.resize(size*size);
+    //green.resize(size*size);
+    //blue.resize(size*size);
   }
   int get_size() {return size;}
   void randomize(int xtiles, int ytiles, vector<unsigned char> &r,
@@ -185,11 +189,11 @@ class painter
   void symmetrize_cm_2(T &t, void (T::*p)(int,int), int x, int y);
   template<typename T>
   void symmetrize_p4m_2(T &t, void (T::*p)(int,int), int x, int y);
-  vector<unsigned char> red;
-  vector<unsigned char> green;
-  vector<unsigned char> blue;
+  //vector<unsigned char> red;
+  //vector<unsigned char> green;
+  //vector<unsigned char> blue;
   symgroup sg;
-  int size;
+  //int size;
   int halfsize;
   int size1;
   int halfsize1;

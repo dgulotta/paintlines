@@ -6,7 +6,9 @@ CONFIG  += qt warn_on release
 HEADERS += paintclouds.h \
         paintcloudswidget.h \
         ../painter.h \
-        ../painterwidget.h
+        ../painterwidget.h \
+	../basic_painter.h \
+	../basic_painterwidget.h
 
 SOURCES += paintclouds.cpp \
         paintcloudswidget.cpp \
@@ -16,8 +18,6 @@ SOURCES += paintclouds.cpp \
 
 #The following line was changed from FORMS to FORMS3 by qt3to4
 FORMS3   = cloudsform.ui
-
-QT += QT3_SUPPORT
 
 unix {
   UI_DIR = .ui

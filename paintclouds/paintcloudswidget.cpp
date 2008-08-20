@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -29,5 +29,5 @@ void paintcloudswidget::draw
 (int sz, symgroup sg)
 {
   paintclouds::paint(sz,sg);
-  painterwidget::paint(sz,sg);
+  basic_painterwidget::paint();
 }
