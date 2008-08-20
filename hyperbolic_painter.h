@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,6 +23,8 @@
 
 #include <vector>
 #include <cmath>
+#include "basic_painter.h"
+
 using namespace std;
 
 struct hyperbolic_coord
@@ -322,28 +324,29 @@ void hyperbolic_symmetry_group::symmetrize
   }
 }
 
-class hyperbolic_painter
+class hyperbolic_painter : public basic_painter
 {
  public:
-  hyperbolic_painter() : size(0), pt(POINCARE) {};
+  hyperbolic_painter() : pt(POINCARE) {};
   void paint(int sz, hyperbolic_symmetry_group &sym) {
-    size=sz;
+    basic_painter::paint(sz);
+    //size=sz;
     pixel_width=2./size;
     sg=&sym;
-    red.resize(size*size);
-    green.resize(size*size);
-    blue.resize(size*size);
+    //red.resize(size*size);
+    //green.resize(size*size);
+    //blue.resize(size*size);
   }
   void set_projtype(projtype _pt) {pt=_pt;}
   screen_coord toscreen(const planar_coord &p) {
     return screen_coord(size*(p.x+1.)/2.,size*(p.y+1.)/2.);
   }
  protected:
-  int size;
+  //int size;
   double pixel_width;
-  vector<unsigned char> red;
-  vector<unsigned char> green;
-  vector<unsigned char> blue;
+  //vector<unsigned char> red;
+  //vector<unsigned char> green;
+  //vector<unsigned char> blue;
   hyperbolic_symmetry_group *sg;
   projtype pt;
 };

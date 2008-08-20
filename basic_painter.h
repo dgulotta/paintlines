@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   Copyright (C) 2008 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,19 +18,27 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _HYPERBOLIC_PAINTLINESWIDGET_H
-#define _HYPERBOLIC_PAINTLINESWIDGET_H
+#ifndef _BASIC_PAINTER_H
+#define _BASIC_PAINTER_H
 
-#include "../basic_painterwidget.h"
-#include "hyperbolic_paintlines.h"
+#include <vector>
+using std::vector;
 
-class hyperbolic_paintlineswidget : public basic_painterwidget,
-				    public hyperbolic_paintlines
+class basic_painter
 {
-    Q_OBJECT
-public:
-    hyperbolic_paintlineswidget(QWidget *parent=0,const char *name=0);
-    void draw(int sz, int n, hyperbolic_symmetry_group sym, projtype p);
+ public:
+  basic_painter() : size(0) {}
+  void paint(int sz) {
+    size=sz;
+    red.resize(size*size);
+    green.resize(size*size);
+    blue.resize(size*size);
+  }
+ protected:
+  int size;
+  vector<unsigned char> red;
+  vector<unsigned char> green;
+  vector<unsigned char> blue;
 };
 
 #endif

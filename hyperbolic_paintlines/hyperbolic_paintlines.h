@@ -26,7 +26,7 @@
 hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 			    const hyperbolic_coord &c2, double var);
 
-class hyperbolic_paintlines : public hyperbolic_painter
+class hyperbolic_paintlines : virtual public hyperbolic_painter
 {
  public:
   hyperbolic_paintlines() : radius(4.99), brightness(5.), ncolors(0) {}

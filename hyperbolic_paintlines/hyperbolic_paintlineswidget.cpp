@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.ed                                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,16 +18,13 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <QColor>
+#include <QImage>
 #include "hyperbolic_paintlineswidget.h"
-#include <qpainter.h>
-#include <qcolor.h>
-#include <qimage.h>
-//Added by qt3to4:
-#include <QPaintEvent>
 
 hyperbolic_paintlineswidget::hyperbolic_paintlineswidget
 (QWidget *parent,const char *name)
-    :QWidget(parent,name)	
+    : basic_painterwidget(parent,name)	
 {
 }
 
@@ -36,7 +33,7 @@ void hyperbolic_paintlineswidget::draw
 {
   set_ncolors(n);
   pt=p;
-  paint(sz,sym);
+  hyperbolic_paintlines::paint(sz,sym);
   QImage myimage(sz,sz,32);
   int i, sz2=sz*sz;
   for(i=0;i<sz2;i++)
@@ -48,12 +45,7 @@ void hyperbolic_paintlineswidget::draw
   update();
 }
 
-bool hyperbolic_paintlineswidget::save(const QString &filename,
-				       const char *format)
-{
-    return mypixmap.save(filename,format);
-}
-
+/*
 void hyperbolic_paintlineswidget::restore()
 {
     QImage myimage(hyperbolic_painter::size,hyperbolic_painter::size,32);
@@ -67,9 +59,4 @@ void hyperbolic_paintlineswidget::restore()
     resize(hyperbolic_painter::size,hyperbolic_painter::size);
     update();
 }
-
-void hyperbolic_paintlineswidget::paintEvent(QPaintEvent *)
-{
-    QPainter p(this);
-    p.drawPixmap(0,0,mypixmap);
-}
+*/

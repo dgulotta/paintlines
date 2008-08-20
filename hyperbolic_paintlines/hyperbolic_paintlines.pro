@@ -3,7 +3,9 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on release
 
-HEADERS	+= ../hyperbolic_painter.h \
+HEADERS	+= ../basic_painter.h \
+	../basic_painterwidget.h \
+	../hyperbolic_painter.h \
 	hyperbolic_paintlines.h \
 	hyperbolic_paintlineswidget.h
 

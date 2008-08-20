@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   Copyright (C) 2008 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,19 +18,42 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _HYPERBOLIC_PAINTLINESWIDGET_H
-#define _HYPERBOLIC_PAINTLINESWIDGET_H
+#ifndef _BASIC_PAINTERWIDGET_H
+#define _BASIC_PAINTERWIDGET_H
 
-#include "../basic_painterwidget.h"
-#include "hyperbolic_paintlines.h"
+#include <QPainter>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QWidget>
 
-class hyperbolic_paintlineswidget : public basic_painterwidget,
-				    public hyperbolic_paintlines
+#include "basic_painter.h"
+
+class basic_painterwidget : public QWidget, virtual public basic_painter
 {
     Q_OBJECT
 public:
-    hyperbolic_paintlineswidget(QWidget *parent=0,const char *name=0);
-    void draw(int sz, int n, hyperbolic_symmetry_group sym, projtype p);
+    basic_painterwidget(QWidget *parent=0,const char *name=0)
+      : QWidget(parent,name) {}
+    void paint(int sz) {
+      QImage myimage(sz,sz,32);
+      int i, sz2=sz*sz;
+      for(i=0;i<sz2;i++)
+	myimage.setPixel(i/sz,i%sz,qRgb(basic_painter::red[i],
+					basic_painter::green[i],
+					basic_painter::blue[i]));
+      mypixmap.convertFromImage(myimage);
+      resize(sz,sz);
+      update();
+    }
+    bool save(const QString &filename, const char *format) {
+      return mypixmap.save(filename,format);
+    }
+protected:
+    void paintEvent(QPaintEvent *) {
+      QPainter p(this);
+      p.drawPixmap(0,0,mypixmap);
+    }
+    QPixmap mypixmap;
 };
 
 #endif
