@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
- *   dgulotta@alum.mit.ed                                                  *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,8 +23,8 @@
 #include "hyperbolic_paintlineswidget.h"
 
 hyperbolic_paintlineswidget::hyperbolic_paintlineswidget
-(QWidget *parent,const char *name)
-    : basic_painterwidget(parent,name)	
+(QWidget *parent)
+    : basic_painterwidget(parent)	
 {
 }
 

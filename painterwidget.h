@@ -32,9 +32,9 @@ class painterwidget : public basic_painterwidget, virtual public painter
 {
     Q_OBJECT
 public:
-    painterwidget(QWidget *parent=0,const char *name=0);
+    painterwidget(QWidget *parent=0);
     void randomize(int xtiles, int ytiles);
-    void restore();
+    void restore() { basic_painterwidget::paint(); }
 };
 
 #endif

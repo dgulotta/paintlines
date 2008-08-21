@@ -29,7 +29,7 @@ class hyperbolic_paintlineswidget : public basic_painterwidget,
 {
     Q_OBJECT
 public:
-    hyperbolic_paintlineswidget(QWidget *parent=0,const char *name=0);
+    hyperbolic_paintlineswidget(QWidget *parent=0);
     void draw(int sz, int n, hyperbolic_symmetry_group sym, projtype p);
 };
 

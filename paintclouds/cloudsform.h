@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   Copyright (C) 2008 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,15 +18,45 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "paintsquiggleswidget.h"
+#ifndef _CLOUDSFORM_H
+#define _CLOUDSFORM_H
 
-paintsquiggleswidget::paintsquiggleswidget(QWidget *parent)
-    :painterwidget(parent)	
-{
-}
+#include <QMainWindow>
 
-void paintsquiggleswidget::draw(int sz, symgroup sg)
+class QGridLayout;
+class QComboBox;
+class QSpinBox;
+class QPushButton;
+class paintcloudswidget;
+
+class CloudsForm : public QMainWindow
 {
-  paintsquiggles::paint(sz,sg);
-  basic_painterwidget::paint();
-}
+  Q_OBJECT
+public:
+  CloudsForm();
+protected:
+  //void closeEvent(QCloseEvent *event);
+private slots:
+  bool saveAs();
+  void draw();
+  void randomize();
+  void restore();
+private:
+  QMenuBar *menu;
+  QMenu *menuFile;
+  QAction *actionSaveAs;
+  QAction *actionExit;
+  QComboBox *comboSymmetry;
+  QSpinBox *spinSize;
+  QPushButton *buttonDraw;
+  QSpinBox *spinXTiles;
+  QSpinBox *spinYTiles;
+  QPushButton *buttonRandomize;
+  QPushButton *buttonRestore;
+  QWidget *color1;
+  QWidget *color2;
+  QWidget *color3;
+  paintcloudswidget *clouds;
+};
+
+#endif

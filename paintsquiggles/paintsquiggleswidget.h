@@ -28,7 +28,7 @@ class paintsquiggleswidget : public painterwidget, public paintsquiggles
 {
     Q_OBJECT
 public:
-    paintsquiggleswidget(QWidget *parent=0,const char *name=0);
+    paintsquiggleswidget(QWidget *parent=0);
     void draw(int sz, symgroup sg);
 };
 

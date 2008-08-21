@@ -28,7 +28,7 @@ class paintstripeswidget : public painterwidget, public paintstripes
 {
     Q_OBJECT
 public:
-    paintstripeswidget(QWidget *parent=0,const char *name=0);
+    paintstripeswidget(QWidget *parent=0);
     void draw(int sz, symgroup sg);
 };
 

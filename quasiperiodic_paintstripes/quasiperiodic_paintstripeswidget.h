@@ -28,7 +28,7 @@ class quasiperiodic_paintstripeswidget : public basic_painterwidget, public quas
 {
     Q_OBJECT
 public:
-    quasiperiodic_paintstripeswidget(QWidget *parent=0,const char *name=0);
+    quasiperiodic_paintstripeswidget(QWidget *parent=0);
     void draw(int sz);
 };
 

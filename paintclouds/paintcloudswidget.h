@@ -28,7 +28,7 @@ class paintcloudswidget : public painterwidget, public paintclouds
 {
     Q_OBJECT
 public:
-    paintcloudswidget(QWidget *parent=0,const char *name=0);
+    paintcloudswidget(QWidget *parent=0);
     void draw(int sz, symgroup sg);
 };
 

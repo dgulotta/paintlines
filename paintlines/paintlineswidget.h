@@ -28,7 +28,7 @@ class paintlineswidget : public painterwidget, public paintlines
 {
     Q_OBJECT
 public:
-    paintlineswidget(QWidget *parent=0,const char *name=0);
+    paintlineswidget(QWidget *parent=0);
     void draw(int sz, int n, symgroup sg);
 };
 

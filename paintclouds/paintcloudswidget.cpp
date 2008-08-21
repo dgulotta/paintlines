@@ -20,8 +20,8 @@
 
 #include "paintcloudswidget.h"
 
-paintcloudswidget::paintcloudswidget(QWidget *parent, const char *name)
-  : painterwidget(parent,name)
+paintcloudswidget::paintcloudswidget(QWidget *parent)
+  : painterwidget(parent)
 {
 }
 

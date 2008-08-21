@@ -24,8 +24,8 @@
 #include <QImage>
 #include <QPaintEvent>
 
-painterwidget::painterwidget(QWidget *parent,const char *name)
-    : basic_painterwidget(parent,name)	
+painterwidget::painterwidget(QWidget *parent)
+    : basic_painterwidget(parent)	
 {
 }
 
@@ -34,24 +34,11 @@ void painterwidget::randomize(int xtiles, int ytiles)
   vector<unsigned char> r,g,b;
   int width=xtiles*painter::size, height=ytiles*painter::size, i, j;
   painter::randomize(xtiles,ytiles,r,g,b);
-  QImage myimage(width,height,32);
+  QImage myimage(width,height,QImage::Format_RGB32);
   for(i=0;i<width;i++)
     for(j=0;j<height;j++)
       myimage.setPixel(i,j,qRgb(r[i+width*j],g[i+width*j],b[i+width*j]));
-  mypixmap.convertFromImage(myimage);
+  mypixmap=QPixmap::fromImage(myimage);
   resize(width,height);
   update();
-}
-
-void painterwidget::restore()
-{
-    QImage myimage(painter::size,painter::size,32);
-    int i, size2=painter::size*painter::size;
-    for(i=0;i<size2;i++)
-	myimage.setPixel(i/painter::size,i%painter::size,
-			 qRgb(painter::red[i],painter::green[i],
-			      painter::blue[i]));
-    mypixmap.convertFromImage(myimage);
-    resize(painter::size,painter::size);
-    update();
 }

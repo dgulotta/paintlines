@@ -20,8 +20,8 @@
 
 #include "quasiperiodic_paintstripeswidget.h"
 
-quasiperiodic_paintstripeswidget::quasiperiodic_paintstripeswidget(QWidget *parent,const char *name)
-    :basic_painterwidget(parent,name)	
+quasiperiodic_paintstripeswidget::quasiperiodic_paintstripeswidget(QWidget *parent)
+    :basic_painterwidget(parent)	
 {
 }
 

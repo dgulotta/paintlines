@@ -32,17 +32,18 @@ class basic_painterwidget : public QWidget, virtual public basic_painter
 {
     Q_OBJECT
 public:
-    basic_painterwidget(QWidget *parent=0,const char *name=0)
-      : QWidget(parent,name) {}
+    basic_painterwidget(QWidget *parent=0)
+      : QWidget(parent) {}
     void paint() {
-      QImage myimage(basic_painter::size,basic_painter::size,32);
+      QImage myimage(basic_painter::size,basic_painter::size,
+		     QImage::Format_RGB32);
       int i, sz2=basic_painter::size*basic_painter::size;
       for(i=0;i<sz2;i++)
 	myimage.setPixel(i/basic_painter::size,i%basic_painter::size,
 			 qRgb(basic_painter::red[i],
 			      basic_painter::green[i],
 			      basic_painter::blue[i]));
-      mypixmap.convertFromImage(myimage);
+      mypixmap=QPixmap::fromImage(myimage);
       resize(basic_painter::size,basic_painter::size);
       update();
     }

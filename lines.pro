@@ -8,4 +8,3 @@ SUBDIRS = paintlines \
 	  hyperbolic_paintlines \
 	  quasiperiodic_paintstripes
 
-QT += QT3_SUPPORT

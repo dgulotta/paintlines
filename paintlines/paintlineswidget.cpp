@@ -20,8 +20,8 @@
 
 #include "paintlineswidget.h"
 
-paintlineswidget::paintlineswidget(QWidget *parent,const char *name)
-    :painterwidget(parent,name)	
+paintlineswidget::paintlineswidget(QWidget *parent)
+    :painterwidget(parent)	
 {
 }
 
