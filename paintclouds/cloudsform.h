@@ -22,12 +22,31 @@
 #define _CLOUDSFORM_H
 
 #include <QMainWindow>
+#include <QWidget>
+#include <QColor>
+#include <QPalette>
 
 class QGridLayout;
 class QComboBox;
 class QSpinBox;
 class QPushButton;
+class QMouseEvent;
 class paintcloudswidget;
+
+class ColorButton : public QWidget
+{
+  Q_OBJECT
+public:
+  ColorButton(QWidget *parent=0) : QWidget(parent) {
+    setAutoFillBackground(true);
+  }
+  ColorButton(QColor col, QWidget *parent=0) : QWidget(parent) {
+    setPalette(QPalette(col));
+    setAutoFillBackground(true);
+  }
+protected:
+  virtual void mousePressEvent(QMouseEvent *event);
+};
 
 class CloudsForm : public QMainWindow
 {
@@ -53,9 +72,9 @@ private:
   QSpinBox *spinYTiles;
   QPushButton *buttonRandomize;
   QPushButton *buttonRestore;
-  QWidget *color1;
-  QWidget *color2;
-  QWidget *color3;
+  ColorButton *color1;
+  ColorButton *color2;
+  ColorButton *color3;
   paintcloudswidget *clouds;
 };
 

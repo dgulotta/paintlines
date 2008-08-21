@@ -23,6 +23,14 @@
 #include "cloudsform.h"
 #include "paintcloudswidget.h"
 
+void ColorButton::mousePressEvent(QMouseEvent *event)
+{
+  QColor col=QColorDialog::getColor(palette().color(QPalette::Window));
+  if(col.isValid()) {
+    setPalette(col);
+  }
+}
+
 CloudsForm::CloudsForm()
 {
   menu = new QMenuBar;
@@ -60,19 +68,13 @@ CloudsForm::CloudsForm()
   sideLayout->addWidget(spinSize);
   QGridLayout *colorLayout = new QGridLayout;
   colorLayout->addWidget(new QLabel(tr("Color 1")),0,0);
-  color1 = new QWidget;
-  color1->setPalette(QPalette(qRgb(255,255,0)));
-  color1->setAutoFillBackground(true);
+  color1 = new ColorButton(qRgb(255,255,0));
   colorLayout->addWidget(color1,0,1);
   colorLayout->addWidget(new QLabel(tr("Color 2")),1,0);
-  color2 = new QWidget;
-  color2->setPalette(QPalette(qRgb(255,0,255)));
-  color2->setAutoFillBackground(true);
+  color2 = new ColorButton(qRgb(255,0,255));
   colorLayout->addWidget(color2,1,1);
   colorLayout->addWidget(new QLabel(tr("Color 3")),2,0);
-  color3 = new QWidget;
-  color3->setPalette(QPalette(qRgb(0,255,255)));
-  color3->setAutoFillBackground(true);
+  color3 = new ColorButton(qRgb(0,255,255));
   colorLayout->addWidget(color3,2,1);
   sideLayout->addLayout(colorLayout);
   buttonDraw = new QPushButton(tr("Draw"));
