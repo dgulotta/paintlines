@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -245,7 +245,7 @@ hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3, flip_type
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3)
+hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3, flip_type f)
 {
   double cos1=cos(a1);
   double sin1=sin(a1);
@@ -330,7 +330,7 @@ hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2)
+hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2, flip_type f)
 {
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->tiles.resize(1);
@@ -343,7 +343,7 @@ hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2)
   s->tiles[0].edge2=hyperbolic_coord(co,si,0.);
   s->tiles[0].edge3=hyperbolic_coord(-z,0,r);
   s->make_tiles(hyperbolic_rotation_origin(n1),hyperbolic_rotation_origin(-n1),
-    hyperbolic_rotation_180(hyperbolic_coord(r,0,z)));
+    hyperbolic_rotation_180(hyperbolic_coord(-r,0,z)));
   return s;
 }
 

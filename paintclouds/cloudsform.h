@@ -53,8 +53,6 @@ class CloudsForm : public QMainWindow
   Q_OBJECT
 public:
   CloudsForm();
-protected:
-  //void closeEvent(QCloseEvent *event);
 private slots:
   bool saveAs();
   void draw();

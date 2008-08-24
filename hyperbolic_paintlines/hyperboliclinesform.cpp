@@ -147,12 +147,14 @@ HyperbolicLinesForm::HyperbolicLinesForm()
   sideLayout->addWidget(spinColors);
   buttonDraw=new QPushButton(tr("Draw"));
   sideLayout->addWidget(buttonDraw);
+  sideLayout->addStretch(1);
   mainLayout->addLayout(sideLayout);
   lines = new hyperbolic_paintlineswidget;
   mainLayout->addWidget(lines,1);
   QWidget *w = new QWidget;
   w->setLayout(mainLayout);
   setCentralWidget(w);
+  resize(800,600);
   connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
   connect(actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
   connect(actionExit,SIGNAL(triggered()),this,SLOT(close()));

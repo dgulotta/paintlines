@@ -106,6 +106,7 @@ CloudsForm::CloudsForm()
   QWidget *w = new QWidget;
   w->setLayout(mainLayout);
   setCentralWidget(w);
+  resize(800,600);
   connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
   connect(buttonRandomize,SIGNAL(clicked()),this,SLOT(randomize()));
   connect(buttonRestore,SIGNAL(clicked()),this,SLOT(restore()));

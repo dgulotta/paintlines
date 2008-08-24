@@ -257,11 +257,11 @@ struct hyperbolic_tile
 class hyperbolic_symmetry_group;
 
 hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3);
+hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3, flip_type f=FLIP_ALL);
 hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3, flip_type f=FLIP_ALL);
 hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
 						    double a3, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
+hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2, flip_type f=FLIP_ALL);
 hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2, flip_type f=FLIP_ALL);
 hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2, flip_type f=FLIP_ALL);
 hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2, flip_type f=FLIP_ALL);
@@ -269,11 +269,11 @@ hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2, flip_t
 class hyperbolic_symmetry_group
 {
   friend hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3);
+  friend hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3, flip_type f);
   friend hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3, flip_type f);
   friend hyperbolic_symmetry_group * hyperbolic_mirror_2_180
     (double a1, double a2,double a3, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2);
+  friend hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2, flip_type f);
   friend hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2, flip_type f);
   friend hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2, flip_type f);
   friend hyperbolic_symmetry_group * hyperbolic_glide_mirror
