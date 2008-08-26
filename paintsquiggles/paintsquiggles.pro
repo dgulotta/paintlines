@@ -10,27 +10,19 @@ HEADERS	+= paintsquiggles.h \
 	../painter.h \
 	../painterwidget.h \
 	../basic_painter.h \
-	../basic_painterwidget.h
+	../basic_painterwidget.h \
+	squigglesform.h
 
 SOURCES	+= paintsquiggles.cpp \
 	paintsquiggleswidget.cpp \
 	../painter.cpp \
 	../painterwidget.cpp \
-	main.cpp
-
-#The following line was changed from FORMS to FORMS3 by qt3to4
-FORMS3	= squigglesform.ui
+	main.cpp \
+	squigglesform.cpp
 
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 }
-
-
-
-#The following line was inserted by qt3to4
-QT +=  qt3support 
-#The following line was inserted by qt3to4
-CONFIG += uic3
 
