@@ -8,25 +8,17 @@ PKGCONFIG += fftw3
 HEADERS	+= quasiperiodic_paintstripes.h \
 	quasiperiodic_paintstripeswidget.h \
 	../basic_painter.h \
-	../basic_painterwidget.h
+	../basic_painterwidget.h \
+	quasistripesform.h
 
 SOURCES	+= quasiperiodic_paintstripes.cpp \
 	quasiperiodic_paintstripeswidget.cpp \
-	main.cpp
-
-#The following line was changed from FORMS to FORMS3 by qt3to4
-FORMS3	= quasistripesform.ui
+	main.cpp \
+	quasistripesform.cpp
 
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 }
-
-
-
-#The following line was inserted by qt3to4
-QT +=  qt3support 
-#The following line was inserted by qt3to4
-CONFIG += uic3
 

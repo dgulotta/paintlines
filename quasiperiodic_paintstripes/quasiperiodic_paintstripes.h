@@ -37,7 +37,7 @@ class quasiperiodic_paintstripes : virtual public basic_painter
     if(fftplan) fftw_destroy_plan(fftplan);
     if(array) fftw_free((void *)array);
   }
-  void paint(int sz);
+  void paint(int sz, int fftsz);
   void set_alpha(double alpha) {levy_alpha=alpha;}
  private:
   void fill(vector<unsigned char> &r);

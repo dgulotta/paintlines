@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,8 +25,8 @@ quasiperiodic_paintstripeswidget::quasiperiodic_paintstripeswidget(QWidget *pare
 {
 }
 
-void quasiperiodic_paintstripeswidget::draw(int sz)
+void quasiperiodic_paintstripeswidget::draw(int sz, int fftsz)
 {
-  quasiperiodic_paintstripes::paint(sz);
+  quasiperiodic_paintstripes::paint(sz, fftsz);
   basic_painterwidget::paint();
 }

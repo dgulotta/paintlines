@@ -18,41 +18,34 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _STRIPESFORM_H
-#define _STRIPESFORM_H
+#ifndef _QUASISTRIPESFORM_H
+#define _QUASISTRIPESFORM_H
 
 #include <QMainWindow>
 
-class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
-class paintstripeswidget;
+class quasiperiodic_paintstripeswidget;
 
-class StripesForm : public QMainWindow
+class QuasiStripesForm : public QMainWindow
 {
   Q_OBJECT
 public:
-  StripesForm();
+  QuasiStripesForm();
 private slots:
   bool saveAs();
   void draw();
-  void randomize();
-  void restore();
 private:
   QMenuBar *menu;
   QMenu *menuFile;
   QAction *actionSaveAs;
   QAction *actionExit;
-  QComboBox *comboSymmetry;
   QSpinBox *spinSize;
+  QSpinBox *spinQuasiSize;
   QDoubleSpinBox *spinAlpha;
   QPushButton *buttonDraw;
-  QSpinBox *spinXTiles;
-  QSpinBox *spinYTiles;
-  QPushButton *buttonRandomize;
-  QPushButton *buttonRestore;
-  paintstripeswidget *stripes;
+  quasiperiodic_paintstripeswidget *stripes;
 };
 
 #endif

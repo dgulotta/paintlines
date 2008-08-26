@@ -61,12 +61,11 @@ void random_levy_2d(double *d,double alpha,double scale)
   }
 }
 
-void quasiperiodic_paintstripes::paint(int sz)
+void quasiperiodic_paintstripes::paint(int sz, int fftsz)
 {
-  int newfftsize=sqrt(sz);
-  if(newfftsize!=fftsize) {
-    fftsize=newfftsize;
-    halfsize2=newfftsize/2+1;
+  if(fftsz!=fftsize) {
+    fftsize=fftsz;
+    halfsize2=fftsz/2+1;
     fftsize2=2*halfsize2;
     if(array) fftw_free(array);
     array=(double *)fftw_malloc(sizeof(double)*fftsize*fftsize*fftsize*
@@ -106,7 +105,7 @@ void quasiperiodic_paintstripes::fill(vector<unsigned char> &arr)
       b=mod((px[1]*i+py[1]*j)/2.,fftsize);
       c=mod((px[2]*i+py[2]*j)/2.,fftsize);
       d=mod((px[3]*i+py[3]*j)/2.,fftsize);
-      arr[i+j*size]=colorchop(128.+6000.*levy_alpha*array[a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+c*fftsize2+d]/(size*size));
+      arr[i+j*size]=colorchop(128.+6000.*levy_alpha*array[a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+c*fftsize2+d]/(fftsize*fftsize*fftsize*fftsize));
       /*
       arr[i+j*size]=255.99/
 	(1.+.0005*pow(fabs(array[a*fftsize*fftsize*fftsize2+b*fftsize*
