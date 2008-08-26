@@ -44,7 +44,7 @@ public:
 			      basic_painter::green[i],
 			      basic_painter::blue[i]));
       mypixmap=QPixmap::fromImage(myimage);
-      resize(basic_painter::size,basic_painter::size);
+      setMinimumSize(basic_painter::size,basic_painter::size);
       update();
     }
     bool save(const QString &filename, const char *format) {

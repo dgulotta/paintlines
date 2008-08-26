@@ -39,6 +39,6 @@ void painterwidget::randomize(int xtiles, int ytiles)
     for(j=0;j<height;j++)
       myimage.setPixel(i,j,qRgb(r[i+width*j],g[i+width*j],b[i+width*j]));
   mypixmap=QPixmap::fromImage(myimage);
-  resize(width,height);
+  setMinimumSize(width,height);
   update();
 }

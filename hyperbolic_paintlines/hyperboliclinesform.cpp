@@ -153,7 +153,10 @@ HyperbolicLinesForm::HyperbolicLinesForm()
   mainLayout->addWidget(lines,1);
   QWidget *w = new QWidget;
   w->setLayout(mainLayout);
-  setCentralWidget(w);
+  QScrollArea *a = new QScrollArea;
+  a->setWidgetResizable(true);
+  a->setWidget(w);
+  setCentralWidget(a);
   resize(800,600);
   connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
   connect(actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));

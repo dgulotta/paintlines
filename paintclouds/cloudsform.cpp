@@ -79,7 +79,6 @@ CloudsForm::CloudsForm()
   sideLayout->addLayout(colorLayout);
   buttonDraw = new QPushButton(tr("Draw"));
   sideLayout->addWidget(buttonDraw);
-  sideLayout->addStretch(1);
   sideLayout->addWidget(new QLabel(tr("Tiles")));
   QHBoxLayout *tilesLayout = new QHBoxLayout;
   tilesLayout->addWidget(new QLabel(tr("X")));
@@ -99,13 +98,18 @@ CloudsForm::CloudsForm()
   buttonRestore = new QPushButton(tr("Restore Original"));
   buttonRestore->setEnabled(false);
   sideLayout->addWidget(buttonRestore);
+  sideLayout->addStretch(1);
   mainLayout->addLayout(sideLayout);
   clouds = new paintcloudswidget;
   //mainLayout->addWidget(clouds,1,Qt::AlignLeft|Qt::AlignTop);
-  mainLayout->addWidget(clouds,1);
+  mainLayout->addWidget(clouds);
+  mainLayout->addStretch(1);
   QWidget *w = new QWidget;
   w->setLayout(mainLayout);
-  setCentralWidget(w);
+  QScrollArea *a = new QScrollArea;
+  a->setWidgetResizable(true);
+  a->setWidget(w);
+  setCentralWidget(a);
   resize(800,600);
   connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
   connect(buttonRandomize,SIGNAL(clicked()),this,SLOT(randomize()));
