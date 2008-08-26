@@ -10,16 +10,15 @@ HEADERS	+= paintstripes.h \
 	../painter.h \
 	../painterwidget.h \
 	../basic_painter.h \
-	../basic_painterwidget.h
+	../basic_painterwidget.h \
+	stripesform.h
 
 SOURCES	+= paintstripes.cpp \
 	paintstripeswidget.cpp \
 	../painter.cpp \
 	../painterwidget.cpp \
-	main.cpp
-
-#The following line was changed from FORMS to FORMS3 by qt3to4
-FORMS3	= stripesform.ui
+	main.cpp \
+	stripesform.cpp
 
 unix {
   UI_DIR = .ui
@@ -27,10 +26,4 @@ unix {
   OBJECTS_DIR = .obj
 }
 
-
-
-#The following line was inserted by qt3to4
-QT +=  qt3support 
-#The following line was inserted by qt3to4
-CONFIG += uic3
 
