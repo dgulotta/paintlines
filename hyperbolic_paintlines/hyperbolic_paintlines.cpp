@@ -132,7 +132,7 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
 void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
 {
   planar_coord pc=(*proj)(hc);
-  double d=hc.z+1.;
+  double d=(hc.z+1.)/2.;
   int r=int(radius/d)+1;
   d=d*d/brightness;
   int i,j;
