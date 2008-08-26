@@ -270,7 +270,7 @@ hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3, fl
 	       hyperbolic_rotation_180
 	       (normalize(hyperbolic_coord(r3*cos1+r2,r3*sin1,z2+z3))),
 	       hyperbolic_rotation_180
-	       (hyperbolic_coord(r4*cos1,r4*sin1,sqrt((z3+1.)/2.))));
+		(hyperbolic_coord(r4*cos1,r4*sin1,sqrt((z3+1.)/2.))),f);
   return s;
 }
 
@@ -343,7 +343,7 @@ hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2, flip_type f)
   s->tiles[0].edge2=hyperbolic_coord(co,si,0.);
   s->tiles[0].edge3=hyperbolic_coord(-z,0,r);
   s->make_tiles(hyperbolic_rotation_origin(n1),hyperbolic_rotation_origin(-n1),
-    hyperbolic_rotation_180(hyperbolic_coord(-r,0,z)));
+		hyperbolic_rotation_180(hyperbolic_coord(-r,0,z)),f);
   return s;
 }
 
