@@ -33,7 +33,7 @@ void ColorButton::mousePressEvent(QMouseEvent *event)
 
 CloudsForm::CloudsForm()
 {
-  menu = new QMenuBar;
+  menu = menuBar();
   menuFile = menu->addMenu(tr("&File"));
   actionSaveAs = menuFile->addAction(tr("&Save As"));
   actionExit = menuFile->addAction(tr("E&xit"));

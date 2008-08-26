@@ -83,7 +83,7 @@ HyperbolicLinesForm::HyperbolicLinesForm()
   : oldsymm(0)
 {
   int i,j;
-  menu = new QMenuBar;
+  menu = menuBar();
   menuFile = menu->addMenu(tr("&File"));
   actionSaveAs = menuFile->addAction(tr("&Save As"));
   actionExit = menuFile->addAction(tr("E&xit"));
