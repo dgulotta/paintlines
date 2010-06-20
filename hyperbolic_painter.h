@@ -23,6 +23,7 @@
 
 #include <vector>
 #include <cmath>
+#include <cstdlib>
 #include "basic_painter.h"
 
 using namespace std;

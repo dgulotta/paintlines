@@ -21,6 +21,7 @@
 #include "hyperbolic_paintlines.h"
 
 #include <iostream>
+#include <cstdlib>
 using namespace std;
 
 hyperbolic_coord random_mid(const hyperbolic_coord &c1,

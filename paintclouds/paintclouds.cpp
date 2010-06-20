@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "paintclouds.h"
+#include <cstdlib>
 
 inline int midpt(int a, int b) {
   int c=a+b;

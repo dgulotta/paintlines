@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "hyperbolic_painter.h"
+#include <cstdlib>
 
 #define ZMAX 20
 #define EPSILON 1.e-4

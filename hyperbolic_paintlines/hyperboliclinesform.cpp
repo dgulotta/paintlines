@@ -19,9 +19,12 @@
  ***************************************************************************/
 
 #include <QtGui>
+#include <memory>
 
 #include "hyperboliclinesform.h"
 #include "hyperbolic_paintlineswidget.h"
+
+using std::auto_ptr;
 
 static const char *angle1str = "Angle 1";
 static const char *angle2str = "Angle 2";

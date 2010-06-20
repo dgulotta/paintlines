@@ -20,6 +20,7 @@
 
 #include "painter.h"
 #include <iostream>
+#include <cstdlib>
 
 #define PAINTER_COPY_RGB r[index2]=red[index];g[index2]=green[index];\
 b[index2]=blue[index];
