@@ -59,38 +59,9 @@ void randomcauchy(double &x, double &y, double var)
   y+=r*sin(z);
 }
 
-void paintlines::paint(int sz, symgroup sym)
-{
-  painter::paint(sz,sym);
-  drawfunc=get_sym_func<paintlines>();
-  switch(sym) {
-  case SYM_P3:
-  case SYM_P3M1:
-  case SYM_P31M:
-  case SYM_P6:
-  case SYM_P6M:
-    randomnormal=&randomnormal_hexagonal;
-    break;
-  default:
-    randomnormal=&randomnormal_orthogonal;
-  }
-  last.resize(size*size);
-  alpha.resize(size*size);
-  int z;
-  double d1, d2;
-  t=ncolors;
-  fill(red.begin(),red.end(),0);
-  fill(green.begin(),green.end(),0);
-  fill(blue.begin(),blue.end(),0);
-  fill(last.begin(),last.end(),-1);
-  red_brushes.resize(ncolors);
-  green_brushes.resize(ncolors);
-  blue_brushes.resize(ncolors);
-  pastel.resize(ncolors);
-  unsigned char temp;
-  while(t--) {
-    z=rand();
-    temp=z&255;
+void paintlines::generate_color(int t) {
+    int z=rand();
+    int temp=z&255;
     z>>=8;
     switch(z%6) {
     case 0:
@@ -123,6 +94,46 @@ void paintlines::paint(int sz, symgroup sym)
       green_brushes[t]=0;
       blue_brushes[t]=temp;
     }
+}
+
+void paintlines::generate_color_bw(int t) {
+	int z = rand()%255;
+	red_brushes[t]=z;
+	green_brushes[t]=z;
+	blue_brushes[t]=z;
+}
+
+void paintlines::paint(int sz, symgroup sym)
+{
+  painter::paint(sz,sym);
+  drawfunc=get_sym_func<paintlines>();
+  switch(sym) {
+  case SYM_P3:
+  case SYM_P3M1:
+  case SYM_P31M:
+  case SYM_P6:
+  case SYM_P6M:
+    randomnormal=&randomnormal_hexagonal;
+    break;
+  default:
+    randomnormal=&randomnormal_orthogonal;
+  }
+  last.resize(size*size);
+  alpha.resize(size*size);
+  int z;
+  double d1, d2;
+  t=ncolors;
+  fill(red.begin(),red.end(),0);
+  fill(green.begin(),green.end(),0);
+  fill(blue.begin(),blue.end(),0);
+  fill(last.begin(),last.end(),-1);
+  red_brushes.resize(ncolors);
+  green_brushes.resize(ncolors);
+  blue_brushes.resize(ncolors);
+  pastel.resize(ncolors);
+  unsigned char temp;
+  while(t--) {
+  	generate_color(t);
     vector<paintrule>::iterator it=
 	    lower_bound(rules.begin(),rules.end(),rand()%rules.back().weight+1);
     pastel[t]=it->pastel;
