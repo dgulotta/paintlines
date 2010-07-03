@@ -22,7 +22,7 @@
 #include <cstdlib>
 
 #define ZMAX 20
-#define EPSILON 1.e-4
+#define EPSILON 1.e-2
 
 hyperbolic_coord normalize(const hyperbolic_coord &c)
 {

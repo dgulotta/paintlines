@@ -198,7 +198,7 @@ void HyperbolicLinesForm::draw()
     break;
   case 6:
     candraw=true;
-    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_mirror_2_180((M_PI/3.)/spinAngle[0]->value(),(M_PI/3.)/spinAngle[0]->value(),(M_PI/3.)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
+    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_glide_180((2*M_PI/3.)/spinAngle[0]->value(),(2*M_PI/3.)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   case 7:
     candraw=true;
