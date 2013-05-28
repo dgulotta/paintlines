@@ -1,0 +1,29 @@
+TEMPLATE	= app
+LANGUAGE	= C++
+
+CONFIG	+= qt warn_on release link_pkgconfig
+
+PKGCONFIG += fftw3
+
+HEADERS	+= paintstripes.h \
+	paintstripeswidget.h \
+	../painter.h \
+	../painterwidget.h \
+	../basic_painter.h \
+	../basic_painterwidget.h \
+	stripesform.h
+
+SOURCES	+= paintstripes.cpp \
+	paintstripeswidget.cpp \
+	../painter.cpp \
+	../painterwidget.cpp \
+	main.cpp \
+	stripesform.cpp
+
+unix {
+  UI_DIR = .ui
+  MOC_DIR = .moc
+  OBJECTS_DIR = .obj
+}
+
+
