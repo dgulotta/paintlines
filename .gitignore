@@ -15,3 +15,12 @@
 # Qt files
 .moc
 .obj
+Makefile
+
+# Executables
+/hyperbolic_paintlines/hyperbolic_paintlines
+/quasiperiodic_paintstripes/quasiperiodic_paintstripes
+/paintclouds/paintclouds
+/paintlines/paintlines
+/paintsquiggles/paintsquiggles
+/paintstripes/paintstripes

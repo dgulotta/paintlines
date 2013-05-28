@@ -18,47 +18,45 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _CLOUDSFORM_H
-#define _CLOUDSFORM_H
+#ifndef _BASICFORM_H
+#define _BASICFORM_H
 
-#include <QWidget>
-#include <QColor>
-#include <QPalette>
+#include <QMainWindow>
 
-#include "../basicform.h"
+class QBoxLayout;
+class QComboBox;
+class QSpinBox;
+class QPushButton;
+class painterwidget;
 
-class QMouseEvent;
-class paintcloudswidget;
-
-class ColorButton : public QWidget
+class BasicForm : public QMainWindow
 {
   Q_OBJECT
 public:
-  ColorButton(QWidget *parent=0) : QWidget(parent) {
-    setAutoFillBackground(true);
-  }
-  ColorButton(QColor col, QWidget *parent=0) : QWidget(parent) {
-    setPalette(QPalette(col));
-    setAutoFillBackground(true);
-  }
+  BasicForm();
+  virtual ~BasicForm();
+protected slots:
+  bool saveAs();
+  void draw();
+  void randomize();
+  void restore();
+  void init();
 protected:
-  virtual void mousePressEvent(QMouseEvent *event);
-};
-
-class CloudsForm : public BasicForm
-{
-  Q_OBJECT
-public:
-  CloudsForm();
-  virtual ~CloudsForm();
-private:
-  virtual void addWidgets(QBoxLayout *sideLayout);
-  virtual painterwidget * createPainterWidget();
-  virtual void draw(int sz, int sym_index);
-  ColorButton *color1;
-  ColorButton *color2;
-  ColorButton *color3;
-  paintcloudswidget *clouds;
+  virtual void addWidgets(QBoxLayout *sideLayout) = 0;
+  virtual painterwidget * createPainterWidget() = 0;
+  virtual void draw(int sz, int sym_index) = 0;
+  QMenuBar *menu;
+  QMenu *menuFile;
+  QAction *actionSaveAs;
+  QAction *actionExit;
+  QComboBox *comboSymmetry;
+  QSpinBox *spinSize;
+  QPushButton *buttonDraw;
+  QSpinBox *spinXTiles;
+  QSpinBox *spinYTiles;
+  QPushButton *buttonRandomize;
+  QPushButton *buttonRestore;
+  painterwidget *painter;
 };
 
 #endif
