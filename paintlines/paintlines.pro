@@ -8,24 +8,20 @@ HEADERS	+= paintlines.h \
 	../painter.h \
 	../painterwidget.h \
 	../basic_painter.h \
-	../basic_painterwidget.h
+	../basic_painterwidget.h \
+	linesform.h \
+	../basicform.h
 
 SOURCES	+= paintlines.cpp \
 	main.cpp \
 	paintlineswidget.cpp \
 	../painter.cpp \
-	../painterwidget.cpp
+	../painterwidget.cpp \
+	linesform.cpp \
+	../basicform.cpp
 
-#The following line was changed from FORMS to FORMS3 by qt3to4
-FORMS3	= paintform.ui
 
 unix {
-  UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 }
-#The following line was inserted by qt3to4
-QT +=  qt3support 
-#The following line was inserted by qt3to4
-CONFIG += uic3
-
