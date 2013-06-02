@@ -11,12 +11,14 @@ HEADERS	+= paintstripes.h \
 	../painterwidget.h \
 	../basic_painter.h \
 	../basic_painterwidget.h \
+	../basicform.h \
 	stripesform.h
 
 SOURCES	+= paintstripes.cpp \
 	paintstripeswidget.cpp \
 	../painter.cpp \
 	../painterwidget.cpp \
+	../basicform.cpp \
 	main.cpp \
 	stripesform.cpp
 

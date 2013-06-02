@@ -11,12 +11,14 @@ HEADERS	+= paintsquiggles.h \
 	../painterwidget.h \
 	../basic_painter.h \
 	../basic_painterwidget.h \
+	../basicform.h \
 	squigglesform.h
 
 SOURCES	+= paintsquiggles.cpp \
 	paintsquiggleswidget.cpp \
 	../painter.cpp \
 	../painterwidget.cpp \
+	../basicform.cpp \
 	main.cpp \
 	squigglesform.cpp
 

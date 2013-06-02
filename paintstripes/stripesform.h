@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Daniel Gulotta                                  *
+ *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,7 +21,7 @@
 #ifndef _STRIPESFORM_H
 #define _STRIPESFORM_H
 
-#include <QMainWindow>
+#include "../basicform.h"
 
 class QComboBox;
 class QSpinBox;
@@ -29,29 +29,14 @@ class QDoubleSpinBox;
 class QPushButton;
 class paintstripeswidget;
 
-class StripesForm : public QMainWindow
+class StripesForm : public BasicForm
 {
   Q_OBJECT
-public:
-  StripesForm();
-private slots:
-  bool saveAs();
-  void draw();
-  void randomize();
-  void restore();
-private:
-  QMenuBar *menu;
-  QMenu *menuFile;
-  QAction *actionSaveAs;
-  QAction *actionExit;
-  QComboBox *comboSymmetry;
-  QSpinBox *spinSize;
+protected:
+  virtual void addWidgets(QBoxLayout *sideLayout);
+  virtual painterwidget * createPainterWidget();
+  virtual void draw(int sz, int sym_index);
   QDoubleSpinBox *spinAlpha;
-  QPushButton *buttonDraw;
-  QSpinBox *spinXTiles;
-  QSpinBox *spinYTiles;
-  QPushButton *buttonRandomize;
-  QPushButton *buttonRestore;
   paintstripeswidget *stripes;
 };
 
