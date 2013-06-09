@@ -300,7 +300,7 @@ private:
 template <typename F>
 function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(const F &f)
 {
-	return function<void(const hyperbolic_coord &)>([&](const hyperbolic_coord &hc) {
+	return [&](const hyperbolic_coord &hc) {
 		vector<hyperbolic_tile>::iterator it=tiles.begin();
 		while(it!=tiles.end()&&(it->edge1*hc<0||it->edge2*hc<0||it->edge3*hc<0)) {
 			it++;
@@ -323,7 +323,7 @@ function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(c
 				}
 			}
 		}
- 	});
+ 	};
 }
 
 class hyperbolic_painter : public virtual basic_painter

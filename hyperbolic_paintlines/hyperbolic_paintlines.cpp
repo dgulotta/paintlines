@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005-2007, 2013 by Daniel Gulotta                       *
- *   dgulotta@alum.mit.edu                                                      *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,6 +23,7 @@
 #include <iostream>
 #include <cstdlib>
 using namespace std;
+using namespace std::placeholders;
 
 hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 			    const hyperbolic_coord &c2, double var)
@@ -63,7 +64,7 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
     drawdot=&hyperbolic_paintlines::drawdot_klein;
     dist=1.+.005/size;
   }
-  drawdot_symmetric=sym.symmetrize([&,drawdot](const hyperbolic_coord &hc) {(this->*drawdot)(hc);});
+  drawdot_symmetric=sym.symmetrize(bind(drawdot,this,_1));
   t=ncolors;
   while(t--) {
     k=rand();
