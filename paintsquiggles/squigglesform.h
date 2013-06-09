@@ -38,6 +38,8 @@ protected:
   virtual void draw(int sz, int sym_index);
   QSpinBox *spinColors;
   QDoubleSpinBox *spinAlpha;
+  QDoubleSpinBox *spinThickness;
+  QDoubleSpinBox *spinSharpness;
   paintsquiggleswidget *squiggles;
 };
 

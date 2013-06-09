@@ -37,6 +37,14 @@ void SquigglesForm::addWidgets(QBoxLayout *sideLayout)
   spinAlpha->setMaximum(2.);
   spinAlpha->setValue(2.);
   sideLayout->addWidget(spinAlpha);
+  sideLayout->addWidget(new QLabel(tr("Thickness")));
+  spinThickness = new QDoubleSpinBox;
+  spinThickness->setValue(1.);
+  sideLayout->addWidget(spinThickness);
+  sideLayout->addWidget(new QLabel(tr("Sharpness")));
+  spinSharpness = new QDoubleSpinBox;
+  spinSharpness->setValue(2.);
+  sideLayout->addWidget(spinSharpness);
 }
 
 void SquigglesForm::draw(int sz, int sym_index)
@@ -44,6 +52,8 @@ void SquigglesForm::draw(int sz, int sym_index)
 	symgroup sg=symgroup(sym_index);
 	squiggles->set_alpha(spinAlpha->value());
 	squiggles->set_ncolors(spinColors->value());
+	squiggles->set_thickness(spinThickness->value());
+	squiggles->set_sharpness(spinSharpness->value());
 	squiggles->draw(sz,sg);
 }
 

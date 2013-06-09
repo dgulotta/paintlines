@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005, 2013 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -31,7 +31,7 @@ void random_levy_2d(double *d,double alpha,double scale);
 class paintsquiggles : virtual public painter
 {
  public:
-  paintsquiggles() : fftplan(NULL), array(NULL), size2(2), levy_alpha(1.0) {}
+  paintsquiggles() : fftplan(NULL), array(NULL), size2(2), levy_alpha(1.0), thickness(1.), sharpness(2.) {}
   ~paintsquiggles() {
     if(fftplan) fftw_destroy_plan(fftplan);
     if(array) fftw_free((void *)array);
@@ -39,6 +39,8 @@ class paintsquiggles : virtual public painter
   void paint(int sz, symgroup sym);
   void set_alpha(double alpha) {levy_alpha=alpha;}
   void set_ncolors(int n) {n_colors=n;}
+  void set_thickness(double t) {thickness=t;}
+  void set_sharpness(double s) {sharpness=s;}
  private:
   void accumulate(int x, int y) {
     sum+=array[mod(x,size)+mod(y,size)*size2];
@@ -66,6 +68,8 @@ class paintsquiggles : virtual public painter
   double sum;
   double dq;
   double levy_alpha;
+  double thickness;
+  double sharpness;
 };
 
 #endif

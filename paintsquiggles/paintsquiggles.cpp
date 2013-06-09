@@ -148,7 +148,7 @@ void paintsquiggles::fill()
   for(i=0;i<size;i++)
     for(j=0;j<size;j++) {
       height=array[i+size2*j]/norm;
-      alpha=1./(height*height/100.+1.);
+      alpha=1./(pow(abs(height)/(10.*thickness),sharpness)+1.);
       red[i+size*j]=((1-alpha)*red[i+size*j]+alpha*redbrush);
       green[i+size*j]=((1-alpha)*green[i+size*j]+alpha*greenbrush);
       blue[i+size*j]=((1-alpha)*blue[i+size*j]+alpha*bluebrush);
