@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005, 2013 by Daniel Gulotta                            *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -33,6 +33,7 @@ class hyperbolic_paintlines : virtual public hyperbolic_painter
   void paint(int sz, hyperbolic_symmetry_group &sym);
   void set_ncolors(int n) {ncolors=n;}
  private:
+  function<void(const hyperbolic_coord &)> drawdot_symmetric;
   void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
   planar_coord (*proj)(const hyperbolic_coord &);
   void drawdot_poincare(const hyperbolic_coord &pc);

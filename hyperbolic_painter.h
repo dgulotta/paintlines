@@ -24,6 +24,7 @@
 #include <vector>
 #include <cmath>
 #include <cstdlib>
+#include <functional>
 #include "basic_painter.h"
 
 using namespace std;
@@ -280,9 +281,8 @@ class hyperbolic_symmetry_group
   friend hyperbolic_symmetry_group * hyperbolic_glide_mirror
     (double a1, double a2, flip_type f);
 public:
-  template <typename T>
-  void symmetrize(T &t,void (T::*p)(const hyperbolic_coord &),
-			  const hyperbolic_coord &hc);
+  template<typename F>
+  function<void(const hyperbolic_coord &)> symmetrize(const F &f);
   hyperbolic_coord random_symmetry(const hyperbolic_coord &c) {
     double i=double(rand())/RAND_MAX;
     return tiles[pow(tiles.size(),i)].t(c);
@@ -297,32 +297,33 @@ private:
   bool alternating;
 };
 
-template <typename T>
-void hyperbolic_symmetry_group::symmetrize
-(T &t,void (T::*p)(const hyperbolic_coord &),const hyperbolic_coord &hc)
+template <typename F>
+function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(const F &f)
 {
-  vector<hyperbolic_tile>::iterator it=tiles.begin();
-  while(it!=tiles.end()&&(it->edge1*hc<0||it->edge2*hc<0||it->edge3*hc<0)) {
-    it++;
-  }
-  if(it!=tiles.end()) {
-    hyperbolic_coord c=(it->t).inverse(hc);
-    if(alternating) {
-      bool b=flipped[it-tiles.begin()];
-      vector<bool>::iterator it2=flipped.begin();
-      for(it=tiles.begin();it!=tiles.end();it++,it2++) {
-	if(b==*it2) (t.*p)((it->t)(c));
-      }
-    }
-    else {
-      // the following two lines are useful for debugging
-      //(t.*p)(c);
-      //(t.*p)(tiles[1].t(c));
-      for(it=tiles.begin();it!=tiles.end();it++) {
-	(t.*p)((it->t)(c));
-      }
-    }
-  }
+	return function<void(const hyperbolic_coord &)>([&](const hyperbolic_coord &hc) {
+		vector<hyperbolic_tile>::iterator it=tiles.begin();
+		while(it!=tiles.end()&&(it->edge1*hc<0||it->edge2*hc<0||it->edge3*hc<0)) {
+			it++;
+		}
+		if(it!=tiles.end()) {
+			hyperbolic_coord c=(it->t).inverse(hc);
+			if(alternating) {
+				bool b=flipped[it-tiles.begin()];
+				vector<bool>::iterator it2=flipped.begin();
+				for(it=tiles.begin();it!=tiles.end();it++,it2++) {
+					if(b==*it2) f((it->t)(c));
+				}
+			}
+			else {
+				// the following two lines are useful for debugging
+				//(t.*p)(c);
+				//(t.*p)(tiles[1].t(c));
+				for(it=tiles.begin();it!=tiles.end();it++) {
+					f((it->t)(c));
+				}
+			}
+		}
+ 	});
 }
 
 class hyperbolic_painter : public virtual basic_painter

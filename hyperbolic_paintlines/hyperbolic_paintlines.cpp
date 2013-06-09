@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005-2007, 2013 by Daniel Gulotta                       *
+ *   dgulotta@alum.mit.edu                                                      *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -51,6 +51,7 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
   unsigned char temp;
   int k;
   double dist;
+  void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
   switch(pt) {
   case POINCARE:
     proj=&poincare_projection;
@@ -62,6 +63,7 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
     drawdot=&hyperbolic_paintlines::drawdot_klein;
     dist=1.+.005/size;
   }
+  drawdot_symmetric=sym.symmetrize([&,drawdot](const hyperbolic_coord &hc) {(this->*drawdot)(hc);});
   t=ncolors;
   while(t--) {
     k=rand();
@@ -199,7 +201,7 @@ void hyperbolic_paintlines::drawsmoothline
   if(end1*end2>min) {
     hyperbolic_coord mid=random_mid(end1,end2,var);
     drawsmoothline(end1,mid,var/3.,min);
-    sg->symmetrize(*this,drawdot,mid);
+    drawdot_symmetric(mid);
     drawsmoothline(mid,end2,var/3.,min);
   }
 }
