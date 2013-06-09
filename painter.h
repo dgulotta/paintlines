@@ -28,8 +28,9 @@
 #include "basic_painter.h"
 
 using std::vector;
-using std::cos;
 using std::function;
+using std::bind;
+using namespace std::placeholders;
 
 inline int mod(int x, int y) 
 {
@@ -167,7 +168,7 @@ class painter : virtual public basic_painter
 template<typename F>
 function<void(int,int)> painter::symmetrize(const F &f) {
 	auto p = symfuncs[(int)sg];
-	return function<void(int,int)>([=](int x, int y) { (this->*p)(function<void(int,int)>(f),x,y); });
+	return bind(p,this,function<void(int,int)>(f),_1,_2);
 }
 
 template<typename F>

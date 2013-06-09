@@ -36,7 +36,7 @@ double randomnormal()
 void paintclouds::paint(int sz, symgroup sym)
 {
   painter::paint(sz,sym);
-  drawfunc=symmetrize([=](int x,int y) {drawpixel(x,y);});
+  drawfunc=symmetrize(bind(&paintclouds::drawpixel,this,_1,_2));
   switch(sym) {
   case SYM_CM_O:
     drawpixelsymmetric(0,0,red1,green1,blue1);
