@@ -106,7 +106,7 @@ void paintlines::generate_color_bw(int t) {
 void paintlines::paint(int sz, symgroup sym)
 {
   painter::paint(sz,sym);
-  drawfunc=get_sym_func<paintlines>();
+  drawfunc=symmetrize([=](int x,int y) {drawpixel(x,y);});
   switch(sym) {
   case SYM_P3:
   case SYM_P3M1:

@@ -39,11 +39,6 @@ class paintstripes : virtual public painter
   void paint(int sz, symgroup sym);
   void set_alpha(double alpha) {levy_alpha=alpha;}
  private:
-  void symmetrize(int x, int y) {
-    sum=0.;
-    painter::symmetrize(*this,&paintstripes::accumulate,x,y);
-    painter::symmetrize(*this,&paintstripes::set,x,y);
-  }
   void accumulate(int x, int y) {
     sum+=array[mod(x,size)+mod(y,size)*size2];
   }

@@ -22,8 +22,11 @@ SOURCES	+= paintstripes.cpp \
 	main.cpp \
 	stripesform.cpp
 
+*-g++* {
+    QMAKE_CXXFLAGS += --std=c++11
+}
+
 unix {
-  UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
 }

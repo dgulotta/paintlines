@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
+ *   Copyright (C) 2005, 2013 by Daniel Gulotta                            *
  *   dgulotta@mit.edu                                                      *
  *   Portions copyright (C)  1996, 1997, 1998, 1999, 2000 James Theiler,   *
  *   Brian Gough                                                           *
@@ -130,7 +130,13 @@ void paintsquiggles::fill()
     for(j=0;j<size;j++)
       random_levy_2d(array+2*i+j*size2,levy_alpha,(this->*norm)(i,j));
   fftw_execute(fftplan);
-  enumerate(*this,&paintsquiggles::symmetrize);
+  function<void(int,int)> accum(symmetrize([&](int x, int y) {accumulate(x,y);}));
+  function<void(int,int)> st(symmetrize([&](int x, int y) {set(x,y);}));
+  enumerate([&](int x,int y) {
+  	sum=0.;
+	accum(x,y);
+	st(x,y);
+  });
   double norm(0.);
   for(i=0;i<size;i++)
     for(j=0;j<size;j++) {

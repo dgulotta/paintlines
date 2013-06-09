@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -40,11 +40,6 @@ class paintsquiggles : virtual public painter
   void set_alpha(double alpha) {levy_alpha=alpha;}
   void set_ncolors(int n) {n_colors=n;}
  private:
-  void symmetrize(int x, int y) {
-    sum=0.;
-    painter::symmetrize(*this,&paintsquiggles::accumulate,x,y);
-    painter::symmetrize(*this,&paintsquiggles::set,x,y);
-  }
   void accumulate(int x, int y) {
     sum+=array[mod(x,size)+mod(y,size)*size2];
   }

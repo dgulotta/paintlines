@@ -20,6 +20,10 @@ SOURCES += paintclouds.cpp \
 	cloudsform.cpp \
 	../basicform.cpp
 
+*-g++* {
+    QMAKE_CXXFLAGS += --std=c++11
+}
+
 unix {
   UI_DIR = .ui
   MOC_DIR = .moc

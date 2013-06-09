@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2007 by Daniel Gulotta                             *
+ *   Copyright (C) 2005-2007, 2013 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -41,14 +41,13 @@ class paintclouds : virtual public painter
   void set_color3(unsigned char r, unsigned char g, unsigned char b)
     {red3=r;green3=g;blue3=b;}
  private:
-  void (painter::*drawfunc)(paintclouds &,void (paintclouds::*)(int,int),
-			    int,int);
+  function<void(int,int)> drawfunc;
   inline void drawpixelsymmetric(int x, int y, unsigned char r,
 				 unsigned char g, unsigned char b) {
     tempr=r;
     tempg=g;
     tempb=b;
-    (((painter *)this)->*drawfunc)(*this,&paintclouds::drawpixel,x,y);
+    drawfunc(x,y);
   }
   void drawpixel(int x, int y) {
     mi(red,x,y)=tempr;

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2003-2005 by Daniel Gulotta                             *
+ *   Copyright (C) 2003-2005, 2013 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -71,12 +71,11 @@ class paintlines : virtual public painter
   int t;
   int ncolors;
   unsigned char tempalpha;
-  void (painter::*drawfunc)(paintlines &,void (paintlines::*)(int,int),
-			    int,int);
+  function<void(int,int)> drawfunc;
   void drawpixel(int x, int y);
   inline void drawpixelsymmetric(int x, int y, unsigned char myalpha) {
     tempalpha=myalpha;
-    (((painter *)this)->*drawfunc)(*this,&paintlines::drawpixel,x,y);
+    drawfunc(x,y);
   }
   void generate_color(int t);
   void generate_color_bw(int t);

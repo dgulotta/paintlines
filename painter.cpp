@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   Copyright (C) 2005-2008, 2013 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -59,6 +59,321 @@ void painter_transform::set_point(int x, int y) {
   ynew=y;
   to(xnew,ynew);
   to_index=mod(xnew,width)+width*mod(ynew,height);
+}
+
+void (painter::*(painter::symfuncs[36]))(const function<void(int,int)> &f, int x, int y) = {
+	&painter::symmetrize_cm,
+	&painter::symmetrize_cmm,
+	&painter::symmetrize_p1,
+	&painter::symmetrize_p2,
+	&painter::symmetrize_p3,
+	&painter::symmetrize_p31m,
+	&painter::symmetrize_p3m1,
+	&painter::symmetrize_p4,
+	&painter::symmetrize_p4g,
+	&painter::symmetrize_p4m,
+	&painter::symmetrize_p6,
+	&painter::symmetrize_p6m,
+	&painter::symmetrize_pg,
+	&painter::symmetrize_pgg,
+	&painter::symmetrize_pm,
+	&painter::symmetrize_pmg,
+	&painter::symmetrize_pmm,
+	&painter::symmetrize_cm_o,
+	&painter::symmetrize_cmm_o,
+	&painter::symmetrize_p1_o,
+	&painter::symmetrize_p2_o,
+	&painter::symmetrize_p3_o,
+	&painter::symmetrize_p31m_o,
+	&painter::symmetrize_p3m1_o,
+	&painter::symmetrize_p4_o,
+	&painter::symmetrize_p4g_o,
+	&painter::symmetrize_p4m_o,
+	&painter::symmetrize_p6_o,
+	&painter::symmetrize_p6m_o,
+	&painter::symmetrize_pg_o,
+	&painter::symmetrize_pgg_o,
+	&painter::symmetrize_pm_o,
+	&painter::symmetrize_pmg_o,
+	&painter::symmetrize_pmm_o,
+	&painter::symmetrize_cm_2,
+	&painter::symmetrize_p4m_2
+};
+
+void painter::symmetrize_p1(const function<void(int,int)> &f, int x, int y)
+{
+  f(x,y);
+}
+
+void painter::symmetrize_p2(const function<void(int,int)> &f, int x, int y)
+{
+  f(x,y);
+  f(size1-x,size1-y);
+}
+
+void painter::symmetrize_pm(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x,y);
+}
+
+void painter::symmetrize_cm(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(y,x);
+}
+
+void painter::symmetrize_pg(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(x+halfsize,size1-y);
+}
+
+void painter::symmetrize_p4(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(y,size1-x);
+  f(size1-x,size1-y);
+  f(size1-y,x);
+}
+
+void painter::symmetrize_pmm(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x,y);
+  f(x,size1-y);
+  f(size1-x,size1-y);
+}
+
+void painter::symmetrize_cmm(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(y,x);
+  f(size1-y,size1-x);
+  f(size1-x,size1-y);
+}
+
+void painter::symmetrize_pmg(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x,y);
+  f(x+halfsize,size1-y);
+  f(halfsize1-x,size1-y);
+}
+
+void painter::symmetrize_pgg(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x,y+halfsize);
+  f(x+halfsize,size1-y);
+  f(halfsize1-x,halfsize1-y);
+}
+
+void painter::symmetrize_p4g(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(y,size1-x);
+  f(size1-x,size1-y);
+  f(size1-y,x);
+  f(halfsize1-y,halfsize1-x);
+  f(x+halfsize,halfsize1-y);
+  f(y+halfsize,x+halfsize);
+  f(halfsize1-x,y+halfsize);
+}
+
+void painter::symmetrize_p4m(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x,y);
+  f(x,size1-y);
+  f(size1-x,size1-y);
+  f(y,x);
+  f(size1-y,x);
+  f(y,size1-x);
+  f(size1-y,size1-x);
+}
+
+void painter::symmetrize_p3(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x-y,x);
+  f(y,size1-x-y);
+}
+
+void painter::symmetrize_p31m(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x-y,x);
+  f(y,size1-x-y);
+  f(size1-y,size1-x);
+  f(size1-x,x+y);
+  f(x+y,size1-y);
+}
+
+void painter::symmetrize_p3m1(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x-y,x);
+  f(y,size1-x-y);
+  f(y,x);
+  f(x,size1-x-y);
+  f(size1-x-y,y);
+}
+
+void painter::symmetrize_p6(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x-y,x);
+  f(y,size1-x-y);
+  f(size1-x,size1-y);
+  f(x+y,size1-x);
+  f(size1-y,x+y);
+}
+
+void painter::symmetrize_p6m(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x-y,x);
+  f(y,size1-x-y);
+  f(size1-x,size1-y);
+  f(x+y,size1-x);
+  f(size1-y,x+y);
+  f(y,x);
+  f(size1-x-y,y);
+  f(x,size1-x-y);
+  f(size1-y,size1-x);
+  f(x+y,size1-y);
+  f(size1-x,x+y);
+}
+
+void painter::symmetrize_p1_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+}
+
+void painter::symmetrize_p2_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x,size-y);
+}
+
+void painter::symmetrize_pm_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x,y);
+}
+
+void painter::symmetrize_cm_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(y,x);
+}
+
+void painter::symmetrize_pg_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(x+halfsize,size-y);
+}
+
+void painter::symmetrize_p4_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(y,size-x);
+  f(size-x,size-y);
+  f(size-y,x);
+}
+
+void painter::symmetrize_pmm_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x,y);
+  f(x,size-y);
+  f(size-x,size-y);
+}
+
+void painter::symmetrize_cmm_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(y,x);
+  f(size-y,size-x);
+  f(size-x,size-y);
+}
+
+void painter::symmetrize_pmg_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x,y);
+  f(x+halfsize,size-y);
+  f(halfsize-x,size-y);
+}
+
+void painter::symmetrize_pgg_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x,y+halfsize);
+  f(x+halfsize,size-y);
+  f(halfsize-x,halfsize-y);
+}
+
+void painter::symmetrize_p4g_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(y,size-x);
+  f(size-x,size-y);
+  f(size-y,x);
+  f(halfsize-y,halfsize-x);
+  f(x+halfsize,halfsize-y);
+  f(y+halfsize,x+halfsize);
+  f(halfsize-x,y+halfsize);
+}
+
+void painter::symmetrize_p4m_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x,y);
+  f(x,size-y);
+  f(size-x,size-y);
+  f(y,x);
+  f(size-y,x);
+  f(y,size-x);
+  f(size-y,size-x);
+}
+
+void painter::symmetrize_p3_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x-y,x);
+  f(y,size-x-y);
+}
+
+void painter::symmetrize_p31m_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x-y,x);
+  f(y,size-x-y);
+  f(size-y,size-x);
+  f(size-x,x+y);
+  f(x+y,size-y);
+}
+
+void painter::symmetrize_p3m1_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x-y,x);
+  f(y,size-x-y);
+  f(y,x);
+  f(x,size-x-y);
+  f(size-x-y,y);
+}
+
+void painter::symmetrize_p6_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x-y,x);
+  f(y,size-x-y);
+  f(size-x,size-y);
+  f(x+y,size-x);
+  f(size-y,x+y);
+}
+
+void painter::symmetrize_p6m_o(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size-x-y,x);
+  f(y,size-x-y);
+  f(size-x,size-y);
+  f(x+y,size-x);
+  f(size-y,x+y);
+  f(y,x);
+  f(size-x-y,y);
+  f(x,size-x-y);
+  f(size-y,size-x);
+  f(x+y,size-y);
+  f(size-x,x+y);
+}
+
+void painter::symmetrize_cm_2(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-y,size1-x);
+}
+
+void painter::symmetrize_p4m_2(const function<void(int,int)> &f, int x, int y) {
+  f(x,y);
+  f(size1-x,y);
+  f(x,size1-y);
+  f(size1-x,size1-y);
+  f(halfsize1-y,halfsize1-x);
+  f(y+halfsize,halfsize1-x);
+  f(halfsize1-y,x+halfsize);
+  f(y+halfsize,x+halfsize);
 }
 
 /* This function is approaching a near-IOCCC level of unreadability.

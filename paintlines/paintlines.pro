@@ -20,6 +20,9 @@ SOURCES	+= paintlines.cpp \
 	linesform.cpp \
 	../basicform.cpp
 
+*-g++* {
+    QMAKE_CXXFLAGS += --std=c++11
+}
 
 unix {
   MOC_DIR = .moc

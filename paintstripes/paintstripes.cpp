@@ -90,7 +90,13 @@ void paintstripes::fill(vector<unsigned char> &arr)
     for(j=0;j<size;j++)
       random_levy_2d(array+2*i+j*size2,levy_alpha,(this->*norm)(i,j));
   fftw_execute(fftplan);
-  enumerate(*this,&paintstripes::symmetrize);
+  function<void(int,int)> accum(symmetrize([&](int x, int y) {accumulate(x,y);}));
+  function<void(int,int)> st(symmetrize([&](int x, int y) {set(x,y);}));
+  enumerate([&](int x,int y) {
+  	sum=0.;
+	accum(x,y);
+	st(x,y);
+  });
   double norm(0.);
   for(i=0;i<size;i++)
     for(j=0;j<size;j++) {

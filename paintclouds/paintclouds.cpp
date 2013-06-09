@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   Copyright (C) 2005-2008, 2013 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -36,7 +36,7 @@ double randomnormal()
 void paintclouds::paint(int sz, symgroup sym)
 {
   painter::paint(sz,sym);
-  drawfunc=get_sym_func<paintclouds>();
+  drawfunc=symmetrize([=](int x,int y) {drawpixel(x,y);});
   switch(sym) {
   case SYM_CM_O:
     drawpixelsymmetric(0,0,red1,green1,blue1);
