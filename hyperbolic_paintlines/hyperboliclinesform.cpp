@@ -99,14 +99,14 @@ HyperbolicLinesForm::HyperbolicLinesForm()
   sideLayout->addWidget(comboModel);
   sideLayout->addWidget(new QLabel(tr("Symmetry type")));
   comboSymmetry = new QComboBox;
-  comboSymmetry->addItem(tr("CM-like"));
-  comboSymmetry->addItem(tr("CMM-like"));
-  comboSymmetry->addItem(tr("P2-like"));
-  comboSymmetry->addItem(tr("P4-like"));
-  comboSymmetry->addItem(tr("P4G-like"));
-  comboSymmetry->addItem(tr("P4M-like"));
-  comboSymmetry->addItem(tr("PGG-like"));
-  comboSymmetry->addItem(tr("PMG-like"));
+  comboSymmetry->addItem(tr("CM-like (*ax)"));
+  comboSymmetry->addItem(tr("CMM-like (2*ab)"));
+  comboSymmetry->addItem(tr("P2-like (a222)"));
+  comboSymmetry->addItem(tr("P4-like (ab2)"));
+  comboSymmetry->addItem(tr("P4G-like (a*b)"));
+  comboSymmetry->addItem(tr("P4M-like (*abc)"));
+  comboSymmetry->addItem(tr("PGG-like (a2x)"));
+  comboSymmetry->addItem(tr("PMG-like (22*a)"));
   sideLayout->addWidget(comboSymmetry);
   QGridLayout *angleLayout = new QGridLayout;
   for(j=0;j<8;j++)
