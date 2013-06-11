@@ -174,35 +174,35 @@ void HyperbolicLinesForm::draw()
   switch(comboSymmetry->currentIndex()) {
   case 0:
     candraw=true;
-    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_glide_mirror((M_PI/3.)/spinAngle[0]->value(),(M_PI/3.)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
+    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_symmetry_group::group_sax((M_PI/3.)/spinAngle[0]->value(),(M_PI/3.)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   case 1:
     candraw=(spinAngle[0]->value()>2||spinAngle[1]->value()>2);
-    if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_2mirror_180(spinAngle[0]->value(),M_PI_2/spinAngle[1]->value(),M_PI_2/spinAngle[1]->value(),(flip_type)comboSubset->currentIndex()));
+    if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_symmetry_group::group_2sab(spinAngle[0]->value(),M_PI_2/spinAngle[1]->value(),M_PI_2/spinAngle[1]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   case 2:
     candraw=true;
-    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_3_180((2.*M_PI/3)/spinAngle[0]->value(),(2.*M_PI/3)/spinAngle[0]->value(),(2.*M_PI/3)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
+    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_symmetry_group::group_a222((2.*M_PI/3)/spinAngle[0]->value(),(2.*M_PI/3)/spinAngle[0]->value(),(2.*M_PI/3)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   case 3:
     candraw=(spinAngle[0]->value()-2)*(spinAngle[1]->value()-2)>4;
-    if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_180_rotation(spinAngle[0]->value(),spinAngle[1]->value(),(flip_type)comboSubset->currentIndex()));
+    if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_symmetry_group::group_ab2(spinAngle[0]->value(),spinAngle[1]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   case 4:
     candraw=(spinAngle[0]->value()-2)*(spinAngle[1]->value()-1)>2;
-    if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_mirror_rotation(spinAngle[0]->value(),spinAngle[1]->value(),(flip_type)comboSubset->currentIndex()));
+    if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_symmetry_group::group_asb(spinAngle[0]->value(),spinAngle[1]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   case 5:
     candraw=spinAngle[0]->value()*spinAngle[1]->value()+spinAngle[0]->value()+spinAngle[2]->value()+spinAngle[1]->value()+spinAngle[2]->value()<spinAngle[0]->value()*spinAngle[1]->value()*spinAngle[2]->value();
-    if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_3mirror(spinAngle[0]->value(),spinAngle[1]->value(),spinAngle[2]->value(),(flip_type)comboSubset->currentIndex()));
+    if(candraw) sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_symmetry_group::group_sabc(spinAngle[0]->value(),spinAngle[1]->value(),spinAngle[2]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   case 6:
     candraw=true;
-    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_glide_180((2*M_PI/3.)/spinAngle[0]->value(),(2*M_PI/3.)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
+    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_symmetry_group::group_a2x((2*M_PI/3.)/spinAngle[0]->value(),(2*M_PI/3.)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   case 7:
     candraw=true;
-    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_mirror_2_180((M_PI/3.)/spinAngle[0]->value(),(M_PI/3.)/spinAngle[0]->value(),(M_PI/3.)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
+    sg=auto_ptr<hyperbolic_symmetry_group>(hyperbolic_symmetry_group::group_22sa((M_PI/3.)/spinAngle[0]->value(),(M_PI/3.)/spinAngle[0]->value(),(M_PI/3.)/spinAngle[0]->value(),(flip_type)comboSubset->currentIndex()));
     break;
   }
   if(candraw) {

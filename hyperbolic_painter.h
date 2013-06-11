@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   Copyright (C) 2005-2008, 2013 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -159,19 +159,13 @@ enum projtype {POINCARE, KLEIN};
 
 class hyperbolic_transformation
 {
-  friend inline hyperbolic_transformation identity();
-  friend inline hyperbolic_transformation inverse
-    (const hyperbolic_transformation &t);
-  friend hyperbolic_transformation hyperbolic_reflection
-    (const hyperbolic_coord &c);
-  friend hyperbolic_transformation hyperbolic_rotation_180
-    (const hyperbolic_coord &c);
-  friend hyperbolic_transformation hyperbolic_rotation_origin(int n);
-  friend hyperbolic_transformation hyperbolic_rotation
-    (int n, hyperbolic_coord &c);
-  friend hyperbolic_transformation hyperbolic_glide_reflection
-    (double a, double z);
  public:
+  static const hyperbolic_transformation identity;
+  static hyperbolic_transformation reflection(const hyperbolic_coord &c);
+  static hyperbolic_transformation rotation_180(const hyperbolic_coord &c);
+  static hyperbolic_transformation rotation_origin(int n);
+  static hyperbolic_transformation rotation(int n, const hyperbolic_coord &c);
+  static hyperbolic_transformation glide_reflection(const hyperbolic_coord &c, double r);
   hyperbolic_transformation() {}
   hyperbolic_transformation(double _xx, double _xy, double _xz, double _yx,
 			    double _yy, double _yz, double _zx, double _zy,
@@ -207,20 +201,12 @@ class hyperbolic_transformation
     ans.z=-xz*c.x-yz*c.y+zz*c.z;
     return ans;
   }
+  inline hyperbolic_transformation inverse() const {
+  	return hyperbolic_transformation(xx,yx,-zx,xy,yy,-zy,-xz,-yz,zz);
+  }
   double xx, xy, xz, yx, yy, yz, zx, zy, zz;
   // it would probably be faster to use opengl for this
 };
-
-inline hyperbolic_transformation identity()
-{
-  return hyperbolic_transformation(1.,0.,0.,0.,1.,0.,0.,0.,1.);
-}
-
-inline hyperbolic_transformation inverse(const hyperbolic_transformation &t)
-{
-  return hyperbolic_transformation(t.xx,t.yx,-t.zx,t.xy,t.yy,-t.zy,-t.xz,-t.yz,
-				   t.zz);
-}
 
 inline hyperbolic_transformation operator *
 (const hyperbolic_transformation &t1, const hyperbolic_transformation &t2)
@@ -238,14 +224,6 @@ inline hyperbolic_transformation operator *
   return ans;
 }
 
-hyperbolic_transformation hyperbolic_reflection(const hyperbolic_coord &c);
-hyperbolic_transformation hyperbolic_rotation_180(const hyperbolic_coord &c);
-hyperbolic_transformation hyperbolic_rotation_origin(int n);
-hyperbolic_transformation hyperbolic_rotation
-(int n, const hyperbolic_coord &c);
-hyperbolic_transformation hyperbolic_glide_reflection
-(const hyperbolic_coord &c, double r);
-
 enum flip_type { FLIP_ALL, FLIP_ALTERNATING, FLIP_RANDOM };
 
 struct hyperbolic_tile
@@ -256,31 +234,17 @@ struct hyperbolic_tile
   hyperbolic_coord edge3;
 };
 
-class hyperbolic_symmetry_group;
-
-hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_mirror_2_180(double a1, double a2,
-						    double a3, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2, flip_type f=FLIP_ALL);
-hyperbolic_symmetry_group * hyperbolic_glide_mirror(double a1, double a2, flip_type f=FLIP_ALL);
-
 class hyperbolic_symmetry_group
 {
-  friend hyperbolic_symmetry_group * hyperbolic_3mirror(int n1, int n2, int n3, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_3_180(double a1, double a2, double a3, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_2mirror_180(int n1, double a2, double a3, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_mirror_2_180
-    (double a1, double a2,double a3, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_180_rotation(int n1, int n2, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_mirror_rotation(int n1, int n2, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_glide_180(double a1, double a2, flip_type f);
-  friend hyperbolic_symmetry_group * hyperbolic_glide_mirror
-    (double a1, double a2, flip_type f);
 public:
+  static hyperbolic_symmetry_group * group_sabc(int n1, int n2, int n3, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_a222(double a1, double a2, double a3, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_2sab(int n1, double a2, double a3, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_22sa(double a1, double a2, double a3, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_ab2(int n1, int n2, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_asb(int n1, int n2, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_a2x(double a1, double a2, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_sax(double a1, double a2, flip_type f=FLIP_ALL);
   template<typename F>
   function<void(const hyperbolic_coord &)> symmetrize(const F &f);
   hyperbolic_coord random_symmetry(const hyperbolic_coord &c) {
