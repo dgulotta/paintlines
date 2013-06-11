@@ -238,13 +238,13 @@ class hyperbolic_symmetry_group
 {
 public:
   static hyperbolic_symmetry_group * group_sabc(int n1, int n2, int n3, flip_type f=FLIP_ALL);
-  static hyperbolic_symmetry_group * group_a222(double a1, double a2, double a3, flip_type f=FLIP_ALL);
-  static hyperbolic_symmetry_group * group_2sab(int n1, double a2, double a3, flip_type f=FLIP_ALL);
-  static hyperbolic_symmetry_group * group_22sa(double a1, double a2, double a3, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_a222(int a, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_2sab(int a, int b, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_22sa(int a, flip_type f=FLIP_ALL);
   static hyperbolic_symmetry_group * group_ab2(int n1, int n2, flip_type f=FLIP_ALL);
   static hyperbolic_symmetry_group * group_asb(int n1, int n2, flip_type f=FLIP_ALL);
-  static hyperbolic_symmetry_group * group_a2x(double a1, double a2, flip_type f=FLIP_ALL);
-  static hyperbolic_symmetry_group * group_sax(double a1, double a2, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_a2x(int a, flip_type f=FLIP_ALL);
+  static hyperbolic_symmetry_group * group_sax(int a, flip_type f=FLIP_ALL);
   template<typename F>
   function<void(const hyperbolic_coord &)> symmetrize(const F &f);
   hyperbolic_coord random_symmetry(const hyperbolic_coord &c) {

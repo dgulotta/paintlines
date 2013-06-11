@@ -215,6 +215,8 @@ void hyperbolic_symmetry_group::make_tiles
 
 hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sabc(int n1, int n2, int n3, flip_type f)
 {
+  if(n1*n2+n1*n3+n2*n3>=n1*n2*n3)
+	return nullptr;
   double cos1=cos(M_PI/n1);
   double sin1=sin(M_PI/n1);
   double cos2=cos(M_PI/n2);
@@ -238,8 +240,11 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sabc(int n1, int n2
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_a222(double a1, double a2, double a3, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_a222(int a, flip_type f)
 {
+  if(a<=2)
+	return nullptr;
+  double a1=2*M_PI/(3*a), a2=a1, a3=a1;
   double cos1=cos(a1);
   double sin1=sin(a1);
   double cos2=cos(a2);
@@ -267,10 +272,13 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_a222(double a1, dou
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_2sab(int n1, double a2, double a3, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_2sab(int a, int b, flip_type f)
 {
-  double cos1=cos(M_PI/n1);
-  double sin1=sin(M_PI/n1);
+  if(a+b>=a*b)
+    return nullptr;
+  double a2=M_PI_2/b, a3=a2;
+  double cos1=cos(M_PI/a);
+  double sin1=sin(M_PI/a);
   double cos2=cos(a2);
   double sin2=sin(a2);
   double cos3=cos(a3);
@@ -293,9 +301,9 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_2sab(int n1, double
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_22sa
-	(double a1, double a2, double a3, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_22sa(int a, flip_type f)
 {
+  double a1=M_PI/(3*a), a2=a1, a3=a1;
   double cos1=cos(a1);
   double sin1=sin(a1);
   double cos2=cos(a2);
@@ -320,45 +328,52 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_22sa
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_ab2(int n1, int n2, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_ab2(int a, int b, flip_type f)
 {
+  if(2*(a+b)>=a*b)
+	return nullptr;
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->tiles.resize(1);
   s->tiles[0].t=hyperbolic_transformation::identity;
-  double co=cos(M_PI/n1);
-  double si=sin(M_PI/n1);
-  double z=cos(M_PI/n2)/si;
+  double co=cos(M_PI/a);
+  double si=sin(M_PI/a);
+  double z=cos(M_PI/b)/si;
   double r=sqrt(z*z-1.);
   s->tiles[0].edge1=hyperbolic_coord(co,-si,0.);
   s->tiles[0].edge2=hyperbolic_coord(co,si,0.);
   s->tiles[0].edge3=hyperbolic_coord(-z,0,r);
-  s->make_tiles(hyperbolic_transformation::rotation_origin(n1),
-  	hyperbolic_transformation::rotation_origin(-n1),
+  s->make_tiles(hyperbolic_transformation::rotation_origin(a),
+ 	hyperbolic_transformation::rotation_origin(-a),
 	hyperbolic_transformation::rotation_180(hyperbolic_coord(-r,0,z)),f);
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_asb(int n1, int n2, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_asb(int a, int b, flip_type f)
 {
+  if(a+2*b>=a*b)
+	return nullptr;
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->tiles.resize(1);
   s->tiles[0].t=hyperbolic_transformation::identity;
-  double co=cos(M_PI/n1);
-  double si=sin(M_PI/n1);
-  double z=cos(M_PI_2/n2)/si;
+  double co=cos(M_PI/a);
+  double si=sin(M_PI/a);
+  double z=cos(M_PI_2/b)/si;
   s->tiles[0].edge1=hyperbolic_coord(co,-si,0);
   s->tiles[0].edge2=hyperbolic_coord(co,si,0);
   s->tiles[0].edge3=hyperbolic_coord(-z,0,sqrt(z*z-1.));
-  s->make_tiles(hyperbolic_transformation::rotation_origin(n1),
-  	hyperbolic_transformation::rotation_origin(-n1),
+  s->make_tiles(hyperbolic_transformation::rotation_origin(a),
+ 	hyperbolic_transformation::rotation_origin(-a),
 	hyperbolic_transformation::reflection(s->tiles[0].edge3),f);
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_a2x(double a1, double a2, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_a2x(int a, flip_type f)
 {
+  if(a<=2)
+	return nullptr;
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->tiles.resize(1);
+  double a1=2*M_PI/(3*a), a2=a1;
   double cos1=cos(a1);
   double sin1=sin(a1);
   double cos2=cos(a2);
@@ -379,10 +394,11 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_a2x(double a1, doub
   return s;
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sax(double a1, double a2, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sax(int a, flip_type f)
 {
   hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
   s->tiles.resize(1);
+  double a1=M_PI/(3*a), a2=a1;
   double cos1=cos(a1);
   double sin1=sin(a1);
   double cos2=cos(a2);
