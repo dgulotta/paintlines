@@ -163,7 +163,7 @@ class hyperbolic_transformation
   static const hyperbolic_transformation identity;
   static hyperbolic_transformation reflection(const hyperbolic_coord &c);
   static hyperbolic_transformation rotation_180(const hyperbolic_coord &c);
-  static hyperbolic_transformation rotation_origin(int n);
+  static hyperbolic_transformation rotation_origin(double a);
   static hyperbolic_transformation rotation(int n, const hyperbolic_coord &c);
   static hyperbolic_transformation glide_reflection(const hyperbolic_coord &c, double r);
   hyperbolic_transformation() {}
