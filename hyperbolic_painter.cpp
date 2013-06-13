@@ -257,7 +257,7 @@ hyperbolic_symmetry_group::hyperbolic_symmetry_group(const vector<generator> &g,
 			hyperbolic_transformation t = it->right_multiply(queue[i]);
 			hyperbolic_coord p=t.inverse(pt);
 			//if(p.z>ZMAX) continue;
-			//if(any_of(generators.begin(),generators.end(),[&](generator &g) { return abs(t.transpose(g.edge).z)>ZMAX;})) continue;
+			//if(any_of(generators.begin(),generators.end(),[&](generator &g) { return abs(t(g.edge).z)>ZMAX;})) continue;
 			if(abs(t.zz)>ZMAX) continue;
 			if(it->inside(p)) continue;
 			if(!all_of(generators.begin(),it,bind(&generator::inside,_1,p))) continue;
@@ -447,5 +447,28 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sax(int a, flip_typ
 		t.reflection1_gen(),
 		t.glide2_gen(),
 		t.glide3_gen()
+	},t.interior_point(),f);
+}
+
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_asbc(int a, int b, int c, flip_type f)
+{
+	if(a*b+a*c+2*b*c>=2*a*b*c)
+		return nullptr;
+	hyperbolic_triangle t(M_PI/a,M_PI_2/b,M_PI_2/c);
+	hyperbolic_transformation r1 = t.reflection1();
+	hyperbolic_transformation r2 = t.reflection2();
+	hyperbolic_transformation r3 = t.reflection3();
+	hyperbolic_transformation r4 = r3*r1*r3;
+	hyperbolic_transformation r5 = r3*r2*r3;
+	hyperbolic_coord e1 = t.edge1();
+	hyperbolic_coord e2 = t.edge2();
+	hyperbolic_coord e4 = r3(e1);
+	hyperbolic_coord e5 = r3(e2);
+	hyperbolic_coord p = t.interior_point();
+	return new hyperbolic_symmetry_group({
+		generator(r1,e1),
+		generator(r4,e4),
+		generator(r3*r2,e2),
+		generator(r3*r5,e5)
 	},t.interior_point(),f);
 }

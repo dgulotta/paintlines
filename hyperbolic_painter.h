@@ -278,6 +278,7 @@ public:
 	static hyperbolic_symmetry_group * group_asb(int n1, int n2, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_a2x(int a, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_sax(int a, flip_type f=FLIP_ALL);
+	static hyperbolic_symmetry_group * group_asbc(int a, int b, int c, flip_type f=FLIP_ALL);
 private:
 	vector<generator> generators;
 	vector<hyperbolic_transformation> transformations;

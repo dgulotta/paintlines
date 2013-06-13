@@ -57,7 +57,7 @@ private:
   QSpinBox *spinColors;
   QPushButton *buttonDraw;
   hyperbolic_paintlineswidget *lines;
-  int angles[8][3];
+  int angles[9][3];
   int oldsymm;
 };
 
