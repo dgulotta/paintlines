@@ -19,10 +19,8 @@
  ***************************************************************************/
 
 #include "hyperbolic_painter.h"
+#include "randgen.h"
 #include <cstdlib>
-
-#define ZMAX 20
-#define EPSILON 1.e-2
 
 hyperbolic_coord normalize(const hyperbolic_coord &c)
 {
@@ -123,12 +121,6 @@ hyperbolic_transformation hyperbolic_transformation::glide_reflection(const hype
   return t;					       
 }
 
-double det(const hyperbolic_transformation &t)
-{
-  return t.xx*t.yy*t.zz+t.xy*t.yz*t.zx+t.xz*t.zy*t.yx
-    -t.xx*t.yz*t.zy-t.xz*t.zx*t.yy-t.xy*t.yx*t.zz;
-};
-
 planar_coord poincare_projection(const hyperbolic_coord &hc)
 {
   return planar_coord(hc.x/(1+hc.z),hc.y/(1+hc.z));
@@ -166,7 +158,9 @@ public:
 	hyperbolic_coord mid2() { return normalize(hyperbolic_coord(x1+x3,y1+y3,z1+z3)); }
 	
 	hyperbolic_coord mid3() { return normalize(hyperbolic_coord(x1+x2,y1+y2,z1+z2)); }
-	
+
+	hyperbolic_coord interior_point() { return normalize(hyperbolic_coord(x1+x2+x3,y1+y2+y3,z1+z2+z3)); }
+
 	hyperbolic_transformation reflection1() { 
 		return hyperbolic_transformation::reflection(edge1());
 	}
@@ -190,6 +184,30 @@ public:
 	hyperbolic_transformation rot180_3() {
 		return hyperbolic_transformation::rotation_180(mid3());
 	}
+
+	generator reflection1_gen() {
+		return generator(reflection1(),edge1());
+	}
+
+	generator reflection2_gen() {
+		return generator(reflection2(),edge2());
+	}
+
+	generator reflection3_gen() {
+		return generator(reflection3(),edge3());
+	}
+
+	generator rot180_1_gen() {
+		return generator(rot180_1(),edge1());
+	}
+
+	generator rot180_2_gen() {
+		return generator(rot180_2(),edge2());
+	}
+
+	generator rot180_3_gen() {
+		return generator(rot180_3(),edge3());
+	}
 protected:
 	double a1, a2, a3, sin1, cos1, sin2, cos2, sin3, cos3;
 	double x1, y1, z1, x2, y2, z2, x3, y3, z3;
@@ -200,205 +218,234 @@ class hyperbolic_triangle_isoceles : public hyperbolic_triangle {
 public:
 	hyperbolic_triangle_isoceles(double _a1, double _a2) : hyperbolic_triangle(_a1,_a2,_a2) {}
 	hyperbolic_transformation rotation() { return hyperbolic_transformation::rotation_origin(a1); }
+
+	generator rotation2_gen() {
+		return generator(rotation(),edge2());
+	}
+
+	generator rotation3_gen() {
+		return generator(rotation().inverse(),edge3());
+	}
+
 	hyperbolic_transformation glide_reflection() {
 		hyperbolic_coord m2 = mid2(), m3 = mid3();
-		hyperbolic_coord l = cross(m2,m3);
+		hyperbolic_coord l = cross(m3,m2);
 		double r = sqrt(-l*l);
 		l/=r;
 		return hyperbolic_transformation::glide_reflection(l,r);
 	}
+
+	generator glide2_gen() {
+		return generator(glide_reflection(),edge2());
+	}
+
+	generator glide3_gen() {
+		return generator(glide_reflection().inverse(),edge3());
+	}
 };
 
-void hyperbolic_symmetry_group::make_tiles
-(const hyperbolic_transformation &t1, const hyperbolic_transformation &t2,
- const hyperbolic_transformation &t3, flip_type f)
+hyperbolic_symmetry_group::hyperbolic_symmetry_group(const vector<generator> &g, const hyperbolic_coord &pt,flip_type f)
+	: generators(g)
 {
-  alternating=(f!=FLIP_ALL);
-  if(alternating) flipped.push_back(true);
-  bool flip1=(det(t1)*t1.zz<0);
-  bool flip2=(det(t2)*t2.zz<0);
-  bool flip3=(det(t3)*t3.zz<0);
-  int i;
-  vector<hyperbolic_tile>::iterator it2;
-  hyperbolic_tile t;
-  hyperbolic_transformation tt1, tt2, tt3;
-  for(i=0;i<tiles.size();i++) {
-    tt1=tiles[i].t*t1*tiles[i].t.inverse();
-    t.edge1=tt1(tiles[i].edge1);
-    t.edge2=tt1(tiles[i].edge2);
-    t.edge3=tt1(tiles[i].edge3);
-    if(fabs(t.edge1.z)<ZMAX&&fabs(t.edge2.z)<ZMAX&&fabs(t.edge3.z)<ZMAX) {
-      t.t=tt1*(tiles[i].t);
-      for(it2=tiles.begin();it2!=tiles.end();it2++) {
-	if(fabs(t.t.xx-it2->t.xx)<EPSILON&&fabs(t.t.xy-it2->t.xy)<EPSILON&&
-	   fabs(t.t.xz-it2->t.xz)<EPSILON&&fabs(t.t.yx-it2->t.yx)<EPSILON&&
-	   fabs(t.t.yy-it2->t.yy)<EPSILON&&fabs(t.t.yz-it2->t.yz)<EPSILON&&
-	   fabs(t.t.zx-it2->t.zx)<EPSILON&&fabs(t.t.zy-it2->t.zy)<EPSILON&&
-	   fabs(t.t.zz-it2->t.zz)<EPSILON) break;
-      }
-      if(it2==tiles.end()) {
-	tiles.push_back(t);
-	if(f==FLIP_ALTERNATING) flipped.push_back(flip1?!flipped[i]:flipped[i]);
-	else if(f==FLIP_RANDOM) flipped.push_back(rand()&1==1);
-      }
-    }
-    tt2=tiles[i].t*t2*tiles[i].t.inverse();
-    t.edge1=tt2(tiles[i].edge1);
-    t.edge2=tt2(tiles[i].edge2);
-    t.edge3=tt2(tiles[i].edge3);
-    if(fabs(t.edge1.z)<ZMAX&&fabs(t.edge2.z)<ZMAX&&fabs(t.edge3.z)<ZMAX) {
-      t.t=tt2*(tiles[i].t);
-      for(it2=tiles.begin();it2!=tiles.end();it2++) {
-	if(fabs(t.t.xx-it2->t.xx)<EPSILON&&fabs(t.t.xy-it2->t.xy)<EPSILON&&
-	   fabs(t.t.xz-it2->t.xz)<EPSILON&&fabs(t.t.yx-it2->t.yx)<EPSILON&&
-	   fabs(t.t.yy-it2->t.yy)<EPSILON&&fabs(t.t.yz-it2->t.yz)<EPSILON&&
-	   fabs(t.t.zx-it2->t.zx)<EPSILON&&fabs(t.t.zy-it2->t.zy)<EPSILON&&
-	   fabs(t.t.zz-it2->t.zz)<EPSILON) break;
-      }
-      if(it2==tiles.end()) {
-	tiles.push_back(t);
-	if(f==FLIP_ALTERNATING) flipped.push_back(flip2?!flipped[i]:flipped[i]);
-	else if(f==FLIP_RANDOM) flipped.push_back(rand()&1==1);
-      }
-    }
-    tt3=tiles[i].t*t3*tiles[i].t.inverse();
-    t.edge1=tt3(tiles[i].edge1);
-    t.edge2=tt3(tiles[i].edge2);
-    t.edge3=tt3(tiles[i].edge3);
-    if(fabs(t.edge1.z)<ZMAX&&fabs(t.edge2.z)<ZMAX&&fabs(t.edge3.z)<ZMAX) {
-      t.t=tt3*(tiles[i].t);
-      for(it2=tiles.begin();it2!=tiles.end();it2++) {
-	if(fabs(t.t.xx-it2->t.xx)<EPSILON&&fabs(t.t.xy-it2->t.xy)<EPSILON&&
-	   fabs(t.t.xz-it2->t.xz)<EPSILON&&fabs(t.t.yx-it2->t.yx)<EPSILON&&
-	   fabs(t.t.yy-it2->t.yy)<EPSILON&&fabs(t.t.yz-it2->t.yz)<EPSILON&&
-	   fabs(t.t.zx-it2->t.zx)<EPSILON&&fabs(t.t.zy-it2->t.zy)<EPSILON&&
-	   fabs(t.t.zz-it2->t.zz)<EPSILON) break;
-      }
-      if(it2==tiles.end()) {
-	tiles.push_back(t);
-	if(f==FLIP_ALTERNATING) flipped.push_back(flip3?!flipped[i]:flipped[i]);
-	else if(f==FLIP_RANDOM) flipped.push_back(rand()&1==1);
-      }
-    }
-  }
+	hyperbolic_transformation trans;
+	hyperbolic_coord edge;
+	vector<hyperbolic_transformation> queue;
+	queue.push_back(hyperbolic_transformation::identity);
+	transformations.push_back(hyperbolic_transformation::identity);
+	for(int i=0;i<queue.size();i++) {
+		for(auto it = generators.begin();it!=generators.end();++it) {
+			hyperbolic_transformation t = it->right_multiply(queue[i]);
+			hyperbolic_coord p=t.inverse(pt);
+			//if(p.z>ZMAX) continue;
+			//if(any_of(generators.begin(),generators.end(),[&](generator &g) { return abs(t.transpose(g.edge).z)>ZMAX;})) continue;
+			if(abs(t.zz)>ZMAX) continue;
+			if(it->inside(p)) continue;
+			if(!all_of(generators.begin(),it,bind(&generator::inside,_1,p))) continue;
+			queue.push_back(t);
+			if(f==FLIP_ALL||
+				(f==FLIP_ALTERNATING&&!t.is_flip())||
+				(f==FLIP_RANDOM&&random_bool()))
+				transformations.push_back(t);
+			else
+				flips.push_back(t);
+		}
+	}
+	switch(f) {
+	case FLIP_ALL:
+		fdfunc=&hyperbolic_symmetry_group::fundamental_domain;
+		break;
+	case FLIP_ALTERNATING:
+		fdfunc=&hyperbolic_symmetry_group::fundamental_domain_alternating;
+		break;
+	case FLIP_RANDOM:
+		fdfunc=&hyperbolic_symmetry_group::fundamental_domain_random;
+	}
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sabc(int n1, int n2, int n3, flip_type f)
+hyperbolic_coord hyperbolic_symmetry_group::random_symmetry(const hyperbolic_coord &c) {
+	double i=random_uniform();
+	return transformations[pow(transformations.size(),i)](c);
+}
+
+tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain(const hyperbolic_coord &hc) {
+	hyperbolic_coord c = hc;
+	hyperbolic_transformation trans;
+	hyperbolic_coord edge;
+	bool any=true;
+	while(any) {
+		any=false;
+		for(auto &t: generators) {
+			if(!t.inside(c)) {
+				c=t(c);
+				any=true;
+				break;
+			}
+		}
+	}
+	return make_tuple(c,false);
+}
+
+tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_alternating(const hyperbolic_coord &hc) {
+	hyperbolic_coord c = hc;
+	hyperbolic_transformation trans;
+	hyperbolic_coord edge;
+	bool any=true;
+	bool flip=false;
+	while(any) {
+		any=false;
+		for(auto &t: generators) {
+			if(!t.inside(c)) {
+				c=t(c);
+				flip^=t.is_flip;
+				any=true;
+				break;
+			}
+		}
+	}
+	return make_tuple(c,flip);
+}
+
+tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_random(const hyperbolic_coord &hc) {
+	hyperbolic_coord c = hc;
+	hyperbolic_transformation trans;
+	hyperbolic_coord edge;
+	bool any=true;
+	long index=0;
+	while(any) {
+		any=false;
+		int i=0;
+		for(auto &t: generators) {
+			++i;
+			if(!t.inside(c)) {
+				c=t(c);
+				index=index*(generators.size()+1)+i;
+				any=true;
+				break;
+			}
+		}
+	}
+	const auto &it = random_flips.find(index);
+	if(it!=random_flips.end())
+		return make_tuple(c,it->second);
+	else {
+		bool b = random_bool();
+		random_flips.emplace(index,b);
+		return make_tuple(c,b);
+	}
+}
+
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sabc(int a, int b, int c, flip_type f)
 {
-  if(n1*n2+n1*n3+n2*n3>=n1*n2*n3)
-	return nullptr;
-  hyperbolic_triangle t(M_PI/n1,M_PI/n2,M_PI/n3);
-  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
-  s->tiles.resize(1);
-  s->tiles[0].t=hyperbolic_transformation::identity;
-  s->tiles[0].edge1=t.edge3();
-  s->tiles[0].edge2=t.edge2();
-  s->tiles[0].edge3=t.edge1();
-  s->make_tiles(t.reflection3(),t.reflection2(),t.reflection1(),f);
-  return s;
+	if(a*b+a*c+b*c>=a*b*c)
+		return nullptr;
+	hyperbolic_triangle t(M_PI/a,M_PI/b,M_PI/c);
+	return new hyperbolic_symmetry_group({
+		t.reflection1_gen(),
+		t.reflection2_gen(),
+		t.reflection3_gen()
+	},t.interior_point(),f);
 }
 
 hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_a222(int a, flip_type f)
 {
-  if(a<=2)
-	return nullptr;
-  double q = 2*M_PI/(3*a);
-  hyperbolic_triangle t(q,q,q);
-  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
-  s->tiles.resize(1);
-  s->tiles[0].t=hyperbolic_transformation::identity;
-  s->tiles[0].edge1=t.edge3();
-  s->tiles[0].edge2=t.edge2();
-  s->tiles[0].edge3=t.edge1();
-  s->make_tiles(t.rot180_3(),t.rot180_2(),t.rot180_1(),f);
-  return s;
+	if(a<=2)
+		return nullptr;
+	double q = 2*M_PI/(3*a);
+	hyperbolic_triangle t(q,q,q);
+	return new hyperbolic_symmetry_group({
+		t.rot180_1_gen(),
+		t.rot180_2_gen(),
+		t.rot180_3_gen()
+	},t.interior_point(),f);
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_2sab(int a, int b, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_2sab(int a, int b, flip_type f) 
 {
-  if(a+b>=a*b)
-    return nullptr;
-  hyperbolic_triangle_isoceles t(M_PI/a,M_PI_2/b);
-  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
-  s->tiles.resize(1);
-  s->tiles[0].t=hyperbolic_transformation::identity;
-  s->tiles[0].edge1=t.edge3();
-  s->tiles[0].edge2=t.edge2();
-  s->tiles[0].edge3=t.edge1();
-  s->make_tiles(t.reflection3(),t.reflection2(),t.rot180_1(),f);
-  return s;
+	if(a+b>=a*b)
+		return nullptr;
+	hyperbolic_triangle_isoceles t(M_PI/a,M_PI_2/b);
+	return new hyperbolic_symmetry_group({
+		t.rot180_1_gen(),
+		t.reflection2_gen(),
+		t.reflection3_gen()
+	},t.interior_point(),f);
 }
 
 hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_22sa(int a, flip_type f)
 {
-  double q=M_PI/(3*a);
-  hyperbolic_triangle t(q,q,q);
-  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
-  s->tiles.resize(1);
-  s->tiles[0].t=hyperbolic_transformation::identity;
-  s->tiles[0].edge1=t.edge3();
-  s->tiles[0].edge2=t.edge2();
-  s->tiles[0].edge3=t.edge1();
-  s->make_tiles(t.rot180_3(),t.rot180_2(),t.reflection1(),f);
-  return s;
+	double q=M_PI/(3*a);
+	hyperbolic_triangle t(q,q,q);
+	return new hyperbolic_symmetry_group({
+		t.reflection1_gen(),
+		t.rot180_2_gen(),
+		t.rot180_3_gen()
+	},t.interior_point(),f);
 }
 
 hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_ab2(int a, int b, flip_type f)
 {
-  if(2*(a+b)>=a*b)
-	return nullptr;
-  hyperbolic_triangle_isoceles t(2*M_PI/a,M_PI/b);
-  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
-  s->tiles.resize(1);
-  s->tiles[0].t=hyperbolic_transformation::identity;
-  s->tiles[0].edge1=t.edge3();
-  s->tiles[0].edge2=t.edge2();
-  s->tiles[0].edge3=t.edge1();
-  s->make_tiles(t.rotation(),t.rotation().inverse(),t.rot180_1(),f);
-  return s;
+	if(2*(a+b)>=a*b)
+		return nullptr;
+	hyperbolic_triangle_isoceles t(2*M_PI/a,M_PI/b);
+	return new hyperbolic_symmetry_group({
+		t.rot180_1_gen(),
+		t.rotation2_gen(),
+		t.rotation3_gen()
+	},t.interior_point(),f);
 }
 
 hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_asb(int a, int b, flip_type f)
 {
-  if(a+2*b>=a*b)
-	return nullptr;
-  hyperbolic_triangle_isoceles t(2*M_PI/a,M_PI_2/b);
-  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
-  s->tiles.resize(1);
-  s->tiles[0].t=hyperbolic_transformation::identity;
-  s->tiles[0].edge1=t.edge3();
-  s->tiles[0].edge2=t.edge2();
-  s->tiles[0].edge3=t.edge1();
-  s->make_tiles(t.rotation(),t.rotation().inverse(),t.reflection1(),f);
-  return s;
+	if(a+2*b>=a*b)
+		return nullptr;
+	hyperbolic_triangle_isoceles t(2*M_PI/a,M_PI_2/b);
+	return new hyperbolic_symmetry_group({
+		t.reflection1_gen(),
+		t.rotation2_gen(),
+		t.rotation3_gen()
+	},t.interior_point(),f);
 }
 
 hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_a2x(int a, flip_type f)
 {
-  if(a<=2)
-	return nullptr;
-  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
-  s->tiles.resize(1);
-  double q=2*M_PI/(3*a);
-  hyperbolic_triangle_isoceles t(q,q);
-  s->tiles[0].t=hyperbolic_transformation::identity;
-  s->tiles[0].edge1=t.edge3();
-  s->tiles[0].edge2=t.edge2();
-  s->tiles[0].edge3=t.edge1();
-  s->make_tiles(t.glide_reflection(),t.glide_reflection().inverse(),t.rot180_1(),f);
-  return s;
+	if(a<=2)
+		return nullptr;
+	double q=2*M_PI/(3*a);
+	hyperbolic_triangle_isoceles t(q,q);
+	return new hyperbolic_symmetry_group({
+		t.rot180_1_gen(),
+		t.glide2_gen(),
+		t.glide3_gen()
+	},t.interior_point(),f);
 }
 
 hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sax(int a, flip_type f)
 {
-  double q=M_PI/(3*a);
-  hyperbolic_triangle_isoceles t(q,q);
-  hyperbolic_symmetry_group *s=new hyperbolic_symmetry_group;
-  s->tiles.resize(1);
-  s->tiles[0].t=hyperbolic_transformation::identity;
-  s->tiles[0].edge1=t.edge3();
-  s->tiles[0].edge2=t.edge2();
-  s->tiles[0].edge3=t.edge1();
-  s->make_tiles(t.glide_reflection(),t.glide_reflection().inverse(),t.reflection1(),f);
-  return s;
+	double q=M_PI/(3*a);
+	hyperbolic_triangle_isoceles t(q,q);
+	return new hyperbolic_symmetry_group({
+		t.reflection1_gen(),
+		t.glide2_gen(),
+		t.glide3_gen()
+	},t.interior_point(),f);
 }

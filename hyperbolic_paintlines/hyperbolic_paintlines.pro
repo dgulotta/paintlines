@@ -8,13 +8,15 @@ HEADERS	+= ../basic_painter.h \
 	../hyperbolic_painter.h \
 	hyperbolic_paintlines.h \
 	hyperbolic_paintlineswidget.h \
-	hyperboliclinesform.h
+	hyperboliclinesform.h \
+	../randgen.h
 
 SOURCES	+= ../hyperbolic_painter.cpp \
 	hyperbolic_paintlines.cpp \
 	hyperbolic_paintlineswidget.cpp \
 	main.cpp \
-	hyperboliclinesform.cpp
+	hyperboliclinesform.cpp \
+	../randgen.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11
