@@ -89,18 +89,18 @@ hyperbolic_transformation hyperbolic_transformation::rotation_origin(double a)
   return t;
 }
 
-hyperbolic_transformation hyperbolic_transformation::rotation(int n, const hyperbolic_coord &c)
+hyperbolic_transformation hyperbolic_transformation::rotation(double a, const hyperbolic_coord &c)
 {
-  double cosine=cos(2.*M_PI/n), sine=sin(2.*M_PI/n);
+  double cosine=cos(a), sine=sin(a);
   hyperbolic_transformation t;
-  t.xx=cosine+(1-cosine)*c.x*c.x;
-  t.xy=(1-cosine)*c.x*c.y+sine*c.z;
-  t.xz=(cosine-1)*c.x*c.z+sine*c.y;
-  t.yx=(1-cosine)*c.y*c.x-sine*c.z;
-  t.yy=cosine+(1-cosine)*c.y*c.y;
-  t.yz=(cosine-1)*c.y*c.z-sine*c.x;
-  t.zx=(cosine-1)*c.z*c.x-sine*c.y;
-  t.zy=(cosine-1)*c.z*c.y+sine*c.x;
+  t.xx=cosine+(cosine-1)*c.x*c.x;
+  t.xy=(cosine-1)*c.x*c.y-sine*c.z;
+  t.xz=(1-cosine)*c.x*c.z+sine*c.y;
+  t.yx=(cosine-1)*c.y*c.x+sine*c.z;
+  t.yy=cosine+(cosine-1)*c.y*c.y;
+  t.yz=(1-cosine)*c.y*c.z-sine*c.x;
+  t.zx=(cosine-1)*c.z*c.x+sine*c.y;
+  t.zy=(cosine-1)*c.z*c.y-sine*c.x;
   t.zz=cosine+(1-cosine)*c.z*c.z;
   return t;
 }
@@ -269,13 +269,35 @@ public:
 
 	hyperbolic_coord interior_point() { return hyperbolic_coord(0,0,1); }
 
-	generator reflection1_gen() { return generator(hyperbolic_transformation::reflection(e1),e1); }
-	generator reflection2_gen() { return generator(hyperbolic_transformation::reflection(e2),e2); }
+	hyperbolic_transformation reflection1() { return hyperbolic_transformation::reflection(e1); } 
+	hyperbolic_transformation reflection2() { return hyperbolic_transformation::reflection(e2); }
+
+	hyperbolic_transformation rot180_4() {
+		hyperbolic_coord p = normalize(cross(e4,e1)), q = normalize(cross(e3,e4));
+		return hyperbolic_transformation::rotation_180(normalize(p+q));
+	}
+
+	generator reflection1_gen() { return generator(reflection1(),e1); }
+	generator reflection2_gen() { return generator(reflection2(),e2); }
 	generator reflection3_gen() { return generator(hyperbolic_transformation::reflection(e3),e3); }
 	generator reflection4_gen() { return generator(hyperbolic_transformation::reflection(e4),e4); }
+	generator rot180_4_gen() { return generator(rot180_4(),e4); }
 protected:
 	double a1, a2, a3, a4;
 	hyperbolic_coord e1, e2, e3, e4;
+};
+
+class hyperbolic_quadrilateral_kite : public hyperbolic_quadrilateral {
+public:
+	hyperbolic_quadrilateral_kite(double _a1, double _a2, double _a3) : hyperbolic_quadrilateral(_a1,_a2,_a3,_a2) {}
+
+	hyperbolic_transformation rotation1() {
+		hyperbolic_coord p = normalize(cross(e2,e1));
+		return hyperbolic_transformation::rotation(a1,p);
+	}
+
+	generator rotation1_gen() { return generator(rotation1(),e1); }
+	generator rotation2_gen() { return generator(rotation1().inverse(),e2); }
 };
 
 hyperbolic_symmetry_group::hyperbolic_symmetry_group(const vector<generator> &g, const hyperbolic_coord &pt,flip_type f)
@@ -488,22 +510,14 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_asbc(int a, int b, 
 {
 	if(a*b+a*c+2*b*c>=2*a*b*c)
 		return nullptr;
-	hyperbolic_triangle t(M_PI/a,M_PI_2/b,M_PI_2/c);
-	hyperbolic_transformation r1 = t.reflection1();
-	hyperbolic_transformation r2 = t.reflection2();
-	hyperbolic_transformation r3 = t.reflection3();
-	hyperbolic_transformation r4 = r3*r1*r3;
-	hyperbolic_transformation r5 = r3*r2*r3;
-	hyperbolic_coord e1 = t.edge1();
-	hyperbolic_coord e2 = t.edge2();
-	hyperbolic_coord e4 = r3(e1);
-	hyperbolic_coord e5 = r3(e2);
+	hyperbolic_quadrilateral_kite t(2*M_PI/a,M_PI_2/b,M_PI/c);
 	hyperbolic_coord p = t.interior_point();
+	generator g1 = t.rotation1_gen(), g2 = t.rotation2_gen(), g3 = t.reflection3_gen(), g4 = t.reflection4_gen();
 	return new hyperbolic_symmetry_group({
-		generator(r1,e1),
-		generator(r4,e4),
-		generator(r3*r2,e2),
-		generator(r3*r5,e5)
+		t.rotation1_gen(),
+		t.rotation2_gen(),
+		t.reflection3_gen(),
+		t.reflection4_gen()
 	},t.interior_point(),f);
 }
 
@@ -517,5 +531,18 @@ hyperbolic_symmetry_group *hyperbolic_symmetry_group::group_sabcd(int a, int b, 
 		q.reflection2_gen(),
 		q.reflection3_gen(),
 		q.reflection4_gen()
+	},q.interior_point(),f);
+}
+
+hyperbolic_symmetry_group *hyperbolic_symmetry_group::group_a2sb(int a, int b, flip_type f)
+{
+	if(a+2*b>=2*a*b)
+		return nullptr;
+	hyperbolic_quadrilateral_kite q(2*M_PI/a,M_PI/(3*b),M_PI/(3*b));
+	return new hyperbolic_symmetry_group({
+		q.rotation1_gen(),
+		q.rotation2_gen(),
+		q.reflection3_gen(),
+		q.rot180_4_gen()
 	},q.interior_point(),f);
 }

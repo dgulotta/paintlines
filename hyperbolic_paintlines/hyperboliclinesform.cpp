@@ -35,16 +35,17 @@ static const char *anglerot = "Rotation angle";
 static const char *angleother = "Other angles";
 
 static const char *anglestrings[][3] = {
-  { anglesum, NULL, NULL },
-  { anglemirror, angleother, NULL },
-  { anglesum, NULL, NULL },
-  { angle1str, angle2str, NULL },
-  { anglerot, angleother, NULL },
+  { anglesum, nullptr, nullptr },
+  { anglemirror, angleother, nullptr },
+  { anglesum, nullptr, nullptr },
+  { angle1str, angle2str, nullptr },
+  { anglerot, angleother, nullptr },
   { angle1str, angle2str, angle3str },
-  { anglesum, NULL, NULL },
-  { anglesum, NULL, NULL },
+  { anglesum, nullptr, nullptr },
+  { anglesum, nullptr, nullptr },
+  { anglerot, angle2str, angle3str },
   { angle1str, angle2str, angle3str },
-  { angle1str, angle2str, angle3str }
+  { anglerot, anglesum, nullptr },
 };
 
 static const char *twopiover = "2 * Pi /";
@@ -52,16 +53,17 @@ static const char *piover = "Pi /";
 static const char *halfpiover = "Pi / 2 *";
 
 static const char *pistrings[][3] = {
-  { piover, NULL, NULL },
-  { piover, halfpiover, NULL },
-  { twopiover, NULL, NULL },
-  { piover, piover, NULL },
-  { twopiover, halfpiover, NULL },
+  { piover, nullptr, nullptr },
+  { piover, halfpiover, nullptr },
+  { twopiover, nullptr, nullptr },
+  { piover, piover, nullptr },
+  { twopiover, halfpiover, nullptr },
   { piover, piover, piover },
-  { twopiover, NULL, NULL },
-  { piover, NULL, NULL },
+  { twopiover, nullptr, nullptr },
+  { piover, nullptr, nullptr },
+  { twopiover, piover, piover },
   { piover, piover, piover },
-  { piover, piover, piover }
+  { twopiover, piover, nullptr },
 };
 
 static const int minangles[][3] = {
@@ -75,6 +77,7 @@ static const int minangles[][3] = {
   { 2, 0, 0 },
   { 2, 2, 2 },
   { 2, 2, 2 },
+  { 2, 1, 0 },
 };
 
 static const int initangles[][3] = {
@@ -87,7 +90,8 @@ static const int initangles[][3] = {
   {3,0,0},
   {2,0,0},
   {3,2,2},
-  {3,2,2}
+  {3,2,2},
+  {3,1,0},
 };
 
 HyperbolicLinesForm::HyperbolicLinesForm()
@@ -117,9 +121,10 @@ HyperbolicLinesForm::HyperbolicLinesForm()
   comboSymmetry->addItem(tr("PMG-like (22*a)"));
   comboSymmetry->addItem(tr("(a*bc)"));
   comboSymmetry->addItem(tr("(*abc2)"));
+  comboSymmetry->addItem(tr("(a2*b)"));
   sideLayout->addWidget(comboSymmetry);
   QGridLayout *angleLayout = new QGridLayout;
-  for(j=0;j<10;j++)
+  for(j=0;j<11;j++)
     for(i=0;i<3;i++)
       angles[j][i]=initangles[j][i];
   for(i=0;i<3;i++) {
@@ -127,7 +132,7 @@ HyperbolicLinesForm::HyperbolicLinesForm()
     labelPi[i]=new QLabel(pistrings[0][i]);
     spinAngle[i]=new QSpinBox;
     spinAngle[i]->setValue(angles[0][i]);
-    spinAngle[i]->setEnabled(pistrings[0][i]!=NULL);
+    spinAngle[i]->setEnabled(pistrings[0][i]!=nullptr);
     spinAngle[i]->setMinimum(minangles[0][i]);
   }
   angleLayout->addWidget(labelAngle[0],0,0,1,2);
@@ -211,7 +216,10 @@ void HyperbolicLinesForm::draw()
 	break;
    case 9:
 	sg=hyperbolic_symmetry_group::group_sabcd(spinAngle[0]->value(),spinAngle[1]->value(),spinAngle[2]->value(),2,ft);
-	break; }
+	break;
+   case 10:
+	sg=hyperbolic_symmetry_group::group_a2sb(spinAngle[0]->value(),spinAngle[1]->value(),ft);
+  }
   if(sg) {
     lines->draw(spinSize->value(),spinColors->value(),*sg,(projtype)comboModel->currentIndex());
 	delete sg;
@@ -224,7 +232,7 @@ void HyperbolicLinesForm::symmetryChanged(int n)
   int i;
   for(i=0;i<3;i++) {
     angles[oldsymm][i]=spinAngle[i]->value();
-    spinAngle[i]->setEnabled(pistrings[n][i]!=NULL);
+    spinAngle[i]->setEnabled(pistrings[n][i]!=nullptr);
     spinAngle[i]->setMinimum(minangles[n][i]);
     spinAngle[i]->setValue(angles[n][i]);
     labelAngle[i]->setText(anglestrings[n][i]);
