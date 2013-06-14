@@ -43,6 +43,7 @@ static const char *anglestrings[][3] = {
   { angle1str, angle2str, angle3str },
   { anglesum, NULL, NULL },
   { anglesum, NULL, NULL },
+  { angle1str, angle2str, angle3str },
   { angle1str, angle2str, angle3str }
 };
 
@@ -59,6 +60,7 @@ static const char *pistrings[][3] = {
   { piover, piover, piover },
   { twopiover, NULL, NULL },
   { piover, NULL, NULL },
+  { piover, piover, piover },
   { piover, piover, piover }
 };
 
@@ -72,6 +74,7 @@ static const int minangles[][3] = {
   { 3, 0, 0 },
   { 2, 0, 0 },
   { 2, 2, 2 },
+  { 2, 2, 2 },
 };
 
 static const int initangles[][3] = {
@@ -83,6 +86,7 @@ static const int initangles[][3] = {
   {5,4,2},
   {3,0,0},
   {2,0,0},
+  {3,2,2},
   {3,2,2}
 };
 
@@ -112,9 +116,10 @@ HyperbolicLinesForm::HyperbolicLinesForm()
   comboSymmetry->addItem(tr("PGG-like (a2x)"));
   comboSymmetry->addItem(tr("PMG-like (22*a)"));
   comboSymmetry->addItem(tr("(a*bc)"));
+  comboSymmetry->addItem(tr("(*abc2)"));
   sideLayout->addWidget(comboSymmetry);
   QGridLayout *angleLayout = new QGridLayout;
-  for(j=0;j<9;j++)
+  for(j=0;j<10;j++)
     for(i=0;i<3;i++)
       angles[j][i]=initangles[j][i];
   for(i=0;i<3;i++) {
@@ -204,7 +209,9 @@ void HyperbolicLinesForm::draw()
   case 8:
 	sg=hyperbolic_symmetry_group::group_asbc(spinAngle[0]->value(),spinAngle[1]->value(),spinAngle[2]->value(),ft);
 	break;
-  }
+   case 9:
+	sg=hyperbolic_symmetry_group::group_sabcd(spinAngle[0]->value(),spinAngle[1]->value(),spinAngle[2]->value(),2,ft);
+	break; }
   if(sg) {
     lines->draw(spinSize->value(),spinColors->value(),*sg,(projtype)comboModel->currentIndex());
 	delete sg;

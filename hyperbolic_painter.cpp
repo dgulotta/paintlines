@@ -244,6 +244,40 @@ public:
 	}
 };
 
+/*
+ * Once we choose the angles of the quadrilateral, there is one degree
+ * of freedom left over.  We need to make an arbitrary choice, so
+ * we choose the quadrilateral that has an inscribed circle.
+ */
+class hyperbolic_quadrilateral {
+public:
+	hyperbolic_quadrilateral(double _a1, double _a2, double _a3, double _a4)
+		: a1(_a1), a2(_a2), a3(_a3), a4(_a4)
+	{
+		double c1 = cos(a1/2), c2 = cos(a2/2), c3 = cos(a3/2), c4=cos(a4/2);
+		double z = 2*sqrt((c1*c2+c3*c4)*(c1*c3+c2*c4)*(c1*c4+c2*c3)/
+			((c1+c2+c3-c4)*(c1+c2-c3+c4)*(c1-c2+c3+c4)*(-c1+c2+c3+c4)));
+		c1/=z; c2/=z; c3/=z; c4/=z;
+		double r = sqrt(z*z-1);
+		double c1d=1-2*c1*c1, c2d=1-2*c2*c2, c3d=1-2*c3*c3, c4d=1-2*c4*c4;
+		double s1d=2*c1*sqrt(1-c1*c1), s2d=2*c2*sqrt(1-c2*c2), s3d=2*c3*sqrt(1-c3*c3), s4d=2*c4*sqrt(1-c4*c4);
+		e1 = hyperbolic_coord(z,0,r);
+		e2 = hyperbolic_coord(z*c1d,z*s1d,r);
+		e3 = hyperbolic_coord(e2.x*c2d-e2.y*s2d,e2.x*s2d+e2.y*c2d,r);
+		e4 = hyperbolic_coord(z*c4d,-z*s4d,r);
+	}
+
+	hyperbolic_coord interior_point() { return hyperbolic_coord(0,0,1); }
+
+	generator reflection1_gen() { return generator(hyperbolic_transformation::reflection(e1),e1); }
+	generator reflection2_gen() { return generator(hyperbolic_transformation::reflection(e2),e2); }
+	generator reflection3_gen() { return generator(hyperbolic_transformation::reflection(e3),e3); }
+	generator reflection4_gen() { return generator(hyperbolic_transformation::reflection(e4),e4); }
+protected:
+	double a1, a2, a3, a4;
+	hyperbolic_coord e1, e2, e3, e4;
+};
+
 hyperbolic_symmetry_group::hyperbolic_symmetry_group(const vector<generator> &g, const hyperbolic_coord &pt,flip_type f)
 	: generators(g)
 {
@@ -471,4 +505,17 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_asbc(int a, int b, 
 		generator(r3*r2,e2),
 		generator(r3*r5,e5)
 	},t.interior_point(),f);
+}
+
+hyperbolic_symmetry_group *hyperbolic_symmetry_group::group_sabcd(int a, int b, int c, int d, flip_type f)
+{
+	if(a*b*c+a*b*d+a*c*d+b*c*d>=2*a*b*c*d)
+		return nullptr;
+	hyperbolic_quadrilateral q(M_PI/a,M_PI/b,M_PI/c,M_PI/d);
+	return new hyperbolic_symmetry_group({
+		q.reflection1_gen(),
+		q.reflection2_gen(),
+		q.reflection3_gen(),
+		q.reflection4_gen()
+	},q.interior_point(),f);
 }
