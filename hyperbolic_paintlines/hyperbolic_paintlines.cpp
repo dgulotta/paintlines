@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "hyperbolic_paintlines.h"
+#include "../randgen.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -31,9 +32,9 @@ hyperbolic_coord random_mid(const hyperbolic_coord &c1,
   hyperbolic_coord mid(normalize(c1+c2));
   hyperbolic_coord diff(normalize(c1-c2));
   hyperbolic_coord norm(cross(mid,diff));
-  double z=1.-var*log((double)rand()/RAND_MAX);
+  double z=1.+random_exponential(var);
   double r=sqrt(z*z-1.);
-  double q=(2.*M_PI*rand())/RAND_MAX;
+  double q=random_angle();
   return normalize(z*mid+r*cos(q)*diff+r*sin(q)*norm);
 }
 
@@ -49,8 +50,6 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
   fill(green.begin(),green.end(),0);
   fill(blue.begin(),blue.end(),0);
   fill(last.begin(),last.end(),-1);
-  unsigned char temp;
-  int k;
   double dist;
   void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
   switch(pt) {
@@ -67,50 +66,46 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
   drawdot_symmetric=sym.symmetrize(bind(drawdot,this,_1));
   t=ncolors;
   while(t--) {
-    k=rand();
-    temp=k&255;
-    k>>=8;
-    switch(k%6) {
+    switch(random_int(6)) {
     case 0:
       red_brushes[t]=255;
-      green_brushes[t]=temp;
+      green_brushes[t]=random_int(256);
       blue_brushes[t]=0;
       break;
     case 1:
       red_brushes[t]=0;
       green_brushes[t]=255;
-      blue_brushes[t]=temp;
+      blue_brushes[t]=random_int(256);
       break;
     case 2:
-      red_brushes[t]=temp;
+      red_brushes[t]=random_int(256);
       green_brushes[t]=0;
       blue_brushes[t]=255;
       break;
     case 3:
-      red_brushes[t]=temp;
+      red_brushes[t]=random_int(256);
       green_brushes[t]=255;
       blue_brushes[t]=0;
       break;
     case 4:
       red_brushes[t]=0;
-      green_brushes[t]=temp;
+      green_brushes[t]=random_int(256);
       blue_brushes[t]=255;
       break;
     default:
       red_brushes[t]=255;
       green_brushes[t]=0;
-      blue_brushes[t]=temp;
+      blue_brushes[t]=random_int(256);
     }
     hyperbolic_coord c;
     hyperbolic_coord c2;
     do {
-      double z=1.-log((double)rand()/RAND_MAX);
+      double z=1.+random_exponential(1);
       double r=sqrt(z*z-1.);
-      double q=(2.*M_PI*rand())/RAND_MAX;
+      double q=random_angle();
       c=hyperbolic_coord(r*cos(q),r*sin(q),z);
       c2=sg->random_symmetry(c);
     } while(c.z>=25.||c2.z>=25.);
-    k/=6;
     drawsmoothline(c,normalize(c2),.02,dist);
   }
   int x, y, i;

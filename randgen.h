@@ -29,4 +29,8 @@ bool random_bool();
 
 double random_uniform();
 
+double random_angle();
+
+double random_exponential(double mean);
+
 #endif

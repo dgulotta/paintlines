@@ -45,3 +45,13 @@ double random_uniform()
 {
 	return uniform_real_distribution<double>(0,1)(rnd);
 }
+
+double random_angle()
+{
+	return 2.*M_PI*random_uniform();
+}
+
+double random_exponential(double mean)
+{
+	return mean*exponential_distribution<double>(1)(rnd);
+}
