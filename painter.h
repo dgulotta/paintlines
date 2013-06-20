@@ -113,8 +113,6 @@ class painter : virtual public basic_painter
  protected:
   void randomize_p3m1_choose_from_trans(painter_transform &pt, int mt, int nt,
 					int z);
-  void randomize_pmg_choose_from_trans(painter_transform &pt, int n);
-  void randomize_pgg_choose_from_trans(painter_transform &pt, int n);
   void randomize_p4_choose_from_trans(painter_transform &pt, bool a, bool b);
   inline unsigned char & mi(vector<unsigned char> &v,int i, int j) {
     return v[mod(i,size)+size*mod(j,size)];

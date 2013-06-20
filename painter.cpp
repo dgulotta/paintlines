@@ -449,7 +449,8 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 			}
 	};
 	vector<tuple<int,int>> points;
-	switch(((int)sg)%17) {
+	symgroup sg_basic = (symgroup)((int)sg%17);
+	switch(sg_basic) {
 		case SYM_P1:
 		case SYM_PM:
 		case SYM_PG:
@@ -692,21 +693,25 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		case SYM_P2:
 		case SYM_PMM:
 		case SYM_P4M:
+		case SYM_PMG:
+		case SYM_PGG:
 		{
 			points = triangle(0,0,qsize,qsize,qsize,-qsize);
 			int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
 			vector<int> z(t2);
 			for(k=0;k<t2;k++)
 				z[k]=random_int(2);
+			int xoff = (sg_basic==SYM_PMG||sg_basic==SYM_PGG)?halfsize/2:0;
+			int yoff = (sg_basic==SYM_PGG)?halfsize/2:0;
 			painter_transformation from_trans[8] = {
-				{1,0,0,0,1,0},
-				{0,1,0,1,0,0},
-				{0,1,halfsize,1,0,halfsize},
-				{1,0,halfsize,0,1,halfsize},
-				{1,0,halfsize,0,1,0},
-				{0,1,halfsize,1,0,0},
-				{0,1,0,1,0,halfsize},
-				{1,0,0,0,1,halfsize}};
+				{1,0,xoff,0,1,yoff},
+				{0,1,xoff,1,0,yoff},
+				{0,1,xoff+halfsize,1,0,yoff+halfsize},
+				{1,0,xoff+halfsize,0,1,yoff+halfsize},
+				{1,0,xoff+halfsize,0,1,yoff},
+				{0,1,xoff+halfsize,1,0,yoff},
+				{0,1,xoff,1,0,yoff+halfsize},
+				{1,0,xoff,0,1,yoff+halfsize}};
 			for(k=0;k<xt2;k++)
 				for(l=0;l<yt2;l++) {
 					copy(points,from_trans[4*((l^k)&1)+2*z[k*yt2+l]+z[((k+1)%xt2)*yt2+l]],
@@ -719,58 +724,6 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 						painter_transformation(0,-1,halfsize*k,-1,0,halfsize*l));
 				}
 		} break;
-		case SYM_PMG:
-			{
-				int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
-				vector<int> z(t2);
-				int whichtrans;
-				for(k=0;k<t2;k++) {
-					z[k]=rand()&1;
-				}
-				for(k=0;k<xt2;k++) {
-					for(l=0;l<yt2;l++) {
-						pt.set_to_trans(1,0,halfsize*k,0,1,halfsize*l);
-						randomize_pmg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[((k+1)%xt2)*yt2+l]);
-						PAINTER_RANDOMIZE_P2_LOOP();
-						pt.set_to_trans(0,1,halfsize*k,1,0,halfsize*l);
-						randomize_pmg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+((l+1)%yt2)]);
-						PAINTER_RANDOMIZE_P2_LOOP();
-						pt.set_to_trans(-1,0,halfsize*k,0,-1,halfsize*l);
-						randomize_pmg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[mod(k-1,xt2)*yt2+l]);
-						PAINTER_RANDOMIZE_P2_LOOP();
-						pt.set_to_trans(0,-1,halfsize*k,-1,0,halfsize*l);
-						randomize_pmg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+mod(l-1,yt2)]);
-						PAINTER_RANDOMIZE_P2_LOOP();
-					}
-				}
-			}
-			break;
-		case SYM_PGG:
-			{
-				int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
-				vector<int> z(t2);
-				int whichtrans;
-				for(k=0;k<t2;k++) {
-					z[k]=rand()&1;
-				}
-				for(k=0;k<xt2;k++) {
-					for(l=0;l<yt2;l++) {
-						pt.set_to_trans(1,0,halfsize*k,0,1,halfsize*l);
-						randomize_pgg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[((k+1)%xt2)*yt2+l]);
-						PAINTER_RANDOMIZE_P2_LOOP();
-						pt.set_to_trans(0,1,halfsize*k,1,0,halfsize*l);
-						randomize_pgg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+((l+1)%yt2)]);
-						PAINTER_RANDOMIZE_P2_LOOP();
-						pt.set_to_trans(-1,0,halfsize*k,0,-1,halfsize*l);
-						randomize_pgg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[mod(k-1,xt2)*yt2+l]);
-						PAINTER_RANDOMIZE_P2_LOOP();
-						pt.set_to_trans(0,-1,halfsize*k,-1,0,halfsize*l);
-						randomize_pgg_choose_from_trans(pt,4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+mod(l-1,yt2)]);
-						PAINTER_RANDOMIZE_P2_LOOP();
-					}
-				}
-			}
-			break;
 		case SYM_P4:
 			{
 				int ntiles=xtiles*ytiles;
@@ -1027,68 +980,6 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 						PAINTER_RANDOMIZE_P3M1_LOOP();
 					}
 			}
-	}
-}
-
-void painter::randomize_pmg_choose_from_trans(painter_transform &pt, int n)
-{
-	int qsize=halfsize/2;
-	switch(n) {
-		case 0:
-			pt.set_from_trans(1,0,qsize,0,1,0);
-			break;
-		case 1:
-			pt.set_from_trans(0,1,qsize,1,0,0);
-			break;
-		case 2:
-			pt.set_from_trans(0,1,halfsize+qsize,1,0,halfsize);
-			break;
-		case 3:
-			pt.set_from_trans(1,0,halfsize+qsize,0,1,halfsize);
-			break;
-		case 4:
-			pt.set_from_trans(1,0,halfsize+qsize,0,1,0);
-			break;
-		case 5:
-			pt.set_from_trans(0,1,halfsize+qsize,1,0,0);
-			break;
-		case 6:
-			pt.set_from_trans(0,1,qsize,1,0,halfsize);
-			break;
-		case 7:
-			pt.set_from_trans(1,0,qsize,0,1,halfsize);
-			break;
-	}
-}
-
-void painter::randomize_pgg_choose_from_trans(painter_transform &pt, int n)
-{
-	int qsize=halfsize/2;
-	switch(n) {
-		case 0:
-			pt.set_from_trans(1,0,qsize,0,1,qsize);
-			break;
-		case 1:
-			pt.set_from_trans(0,1,qsize,1,0,qsize);
-			break;
-		case 2:
-			pt.set_from_trans(0,1,halfsize+qsize,1,0,halfsize+qsize);
-			break;
-		case 3:
-			pt.set_from_trans(1,0,halfsize+qsize,0,1,halfsize+qsize);
-			break;
-		case 4:
-			pt.set_from_trans(1,0,halfsize+qsize,0,1,qsize);
-			break;
-		case 5:
-			pt.set_from_trans(0,1,halfsize+qsize,1,0,qsize);
-			break;
-		case 6:
-			pt.set_from_trans(0,1,qsize,1,0,halfsize+qsize);
-			break;
-		case 7:
-			pt.set_from_trans(1,0,qsize,0,1,halfsize+qsize);
-			break;
 	}
 }
 
