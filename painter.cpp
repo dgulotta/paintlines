@@ -854,124 +854,70 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 			 */
 		case SYM_P3M1:
 		case SYM_P6M:
-			{
-				auto PAINTER_RANDOMIZE_P3M1_LOOP = [&]() {
-					for(i=0;3*i<=size+2;i++)
-						for(j=0;3*(i+j)<=size+2;j++) {
-							pt.set_point(i,j);
-							PAINTER_NEW_COPY_RGB();
-						}
-				};
-				int yt=ytiles*3;
-				int ntiles=xtiles*yt;
-				vector<unsigned char>types(ntiles);
-				for(i=0;i<ntiles;i++)
-					types[i]=rand()%3;
-				for(k=0;k<xtiles;k++)
-					for(l=0;l<ytiles;l++) {
-						int z=rand();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k],types[3*l+yt*k+1],z&0x1);
-						pt.set_to_trans(1,0,size*k,0,1,size*l);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k+1],types[3*l+yt*k],z&0x1);
-						pt.set_to_trans(0,-1,size*k+(size+1)/3,-1,0,size*l+(size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k],types[3*l+yt*mod(k-1,xtiles)+2],z&0x2);
-						pt.set_to_trans(-1,0,size*k,1,1,size*l);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*mod(k-1,xtiles)+2],types[3*l+yt*k],z&0x2);
-						pt.set_to_trans(0,1,size*k-(size+1)/3,-1,-1,size*l+(2*size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k],types[3*l+yt*mod(k-1,xtiles)+1],z&0x4);
-						pt.set_to_trans(-1,-1,size*k,1,0,size*l);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*mod(k-1,xtiles)+1],types[3*l+yt*k],z&0x4);
-						pt.set_to_trans(1,1,size*k-(2*size+1)/3,0,-1,size*l+(size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],z&0x8);
-						pt.set_to_trans(0,-1,size*k,-1,0,size*l);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],types[3*l+yt*k],z&0x8);
-						pt.set_to_trans(1,0,size*k-(size+1)/3,0,1,size*l-(size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*k+1],z&0x10);
-						pt.set_to_trans(0,1,size*k,-1,-1,size*l);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*mod(l-1,ytiles)+yt*k+1],types[3*l+yt*k],z&0x10);
-						pt.set_to_trans(-1,0,size*k+(size+1)/3,1,1,size*l-(2*size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*k+2],z&0x20);
-						pt.set_to_trans(1,1,size*k,0,-1,size*l);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*mod(l-1,ytiles)+yt*k+2],types[3*l+yt*k],z&0x20);
-						pt.set_to_trans(-1,-1,size*k+(2*size+1)/3,1,0,size*l-(size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k+1],types[3*l+yt*k+2],z&0x40);
-						pt.set_to_trans(1,0,size*k+(size+1)/3,0,1,size*l+(size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*k+2],types[3*l+yt*k+1],z&0x40);
-						pt.set_to_trans(0,-1,size*k+(2*size+1)/3,-1,0,size*l+(2*size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*mod(k-1,xtiles)+1],types[3*l+yt*mod(k-2,xtiles)+2],z&0x80);
-						pt.set_to_trans(-1,-1,size*k-(2*size+1)/3,1,0,size*l+(size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*l+yt*mod(k-2,xtiles)+2],types[3*l+yt*mod(k-1,xtiles)+1],z&0x80);
-						pt.set_to_trans(1,1,size*k-(4*size+1)/3,0,-1,size*l+(2*size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*mod(l-1,ytiles)+yt*k+1],types[3*mod(l-2,ytiles)+yt*k+2],z&0x100);
-						pt.set_to_trans(0,1,size*k+(size+1)/3,-1,-1,size*l-(2*size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
-						randomize_p3m1_choose_from_trans
-							(pt,types[3*mod(l-2,ytiles)+yt*k+2],types[3*mod(l-1,ytiles)+yt*k+1],z&0x100);
-						pt.set_to_trans(-1,0,size*k+(2*size+1)/3,1,1,size*l-(4*size+1)/3);
-						PAINTER_RANDOMIZE_P3M1_LOOP();
+		{
+			points = triangle(0,0,0,size+2,size+2,0,3);
+			int yt=ytiles*3;
+			int ntiles=xtiles*yt;
+			vector<unsigned char>types(ntiles);
+			for(i=0;i<ntiles;i++)
+				types[i]=random_int(3);
+			auto from_trans = [&](int mt,int nt, int z) {
+				if(mt==0)
+					if((nt==0&&z)||nt==1)
+						return painter_transformation(1,0,0,0,1,0);
+					else
+						return painter_transformation(0,-1,0,-1,0,0);
+				else if(mt==1)
+					if((nt==1&&z)||nt==2)
+						return painter_transformation(1,0,(size+1)/3,0,1,(size+1)/3);
+					else
+						return painter_transformation(0,-1,(size+1)/3,-1,0,(size+1)/3);
+				else
+					if((nt==2&&z)||nt==0)
+						return painter_transformation(1,0,-((size+1)/3),0,1,-((size+1)/3));
+					else
+						return painter_transformation(0,-1,-((size+1)/3),-1,0,-((size+1)/3));
+			};
+			for(k=0;k<xtiles;k++)
+				for(l=0;l<ytiles;l++) {
+					int z=random_int(0x200);
+					copy(points,from_trans(types[3*l+yt*k],types[3*l+yt*k+1],z&0x1),
+						painter_transformation(1,0,size*k,0,1,size*l));
+					copy(points,from_trans(types[3*l+yt*k+1],types[3*l+yt*k],z&0x1),
+						painter_transformation(0,-1,size*k+(size+1)/3,-1,0,size*l+(size+1)/3));
+					copy(points,from_trans(types[3*l+yt*k],types[3*l+yt*mod(k-1,xtiles)+2],z&0x2),
+						painter_transformation(-1,0,size*k,1,1,size*l));
+					copy(points,from_trans(types[3*l+yt*mod(k-1,xtiles)+2],types[3*l+yt*k],z&0x2),
+						painter_transformation(0,1,size*k-(size+1)/3,-1,-1,size*l+(2*size+1)/3));
+					copy(points,from_trans(types[3*l+yt*k],types[3*l+yt*mod(k-1,xtiles)+1],z&0x4),
+						painter_transformation(-1,-1,size*k,1,0,size*l));
+					copy(points,from_trans(types[3*l+yt*mod(k-1,xtiles)+1],types[3*l+yt*k],z&0x4),
+						painter_transformation(1,1,size*k-(2*size+1)/3,0,-1,size*l+(size+1)/3));
+					copy(points,from_trans(types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],z&0x8),
+						painter_transformation(0,-1,size*k,-1,0,size*l));
+					copy(points,from_trans(types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],types[3*l+yt*k],z&0x8),
+						painter_transformation(1,0,size*k-(size+1)/3,0,1,size*l-(size+1)/3));
+					copy(points,from_trans(types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*k+1],z&0x10),
+						painter_transformation(0,1,size*k,-1,-1,size*l));
+					copy(points,from_trans(types[3*mod(l-1,ytiles)+yt*k+1],types[3*l+yt*k],z&0x10),
+						painter_transformation(-1,0,size*k+(size+1)/3,1,1,size*l-(2*size+1)/3));
+					copy(points,from_trans(types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*k+2],z&0x20),
+						painter_transformation(1,1,size*k,0,-1,size*l));
+					copy(points,from_trans(types[3*mod(l-1,ytiles)+yt*k+2],types[3*l+yt*k],z&0x20),
+						painter_transformation(-1,-1,size*k+(2*size+1)/3,1,0,size*l-(size+1)/3));
+					copy(points,from_trans(types[3*l+yt*k+1],types[3*l+yt*k+2],z&0x40),
+						painter_transformation(1,0,size*k+(size+1)/3,0,1,size*l+(size+1)/3));
+					copy(points,from_trans(types[3*l+yt*k+2],types[3*l+yt*k+1],z&0x40),
+						painter_transformation(0,-1,size*k+(2*size+1)/3,-1,0,size*l+(2*size+1)/3));
+					copy(points,from_trans(types[3*l+yt*mod(k-1,xtiles)+1],types[3*l+yt*mod(k-2,xtiles)+2],z&0x80),
+						painter_transformation(-1,-1,size*k-(2*size+1)/3,1,0,size*l+(size+1)/3));
+					copy(points,from_trans(types[3*l+yt*mod(k-2,xtiles)+2],types[3*l+yt*mod(k-1,xtiles)+1],z&0x80),
+						painter_transformation(1,1,size*k-(4*size+1)/3,0,-1,size*l+(2*size+1)/3));
+					copy(points,from_trans(types[3*mod(l-1,ytiles)+yt*k+1],types[3*mod(l-2,ytiles)+yt*k+2],z&0x100),
+						painter_transformation(0,1,size*k+(size+1)/3,-1,-1,size*l-(2*size+1)/3));
+					copy(points,from_trans(types[3*mod(l-2,ytiles)+yt*k+2],types[3*mod(l-1,ytiles)+yt*k+1],z&0x100),
+						painter_transformation(-1,0,size*k+(2*size+1)/3,1,1,size*l-(4*size+1)/3));
 					}
-			}
-	}
-}
-
-void painter::randomize_p3m1_choose_from_trans(painter_transform &pt, int mt,
-		int nt, int z)
-{
-	if(mt==0) {
-		if((nt==0&&z)||nt==1) {
-			pt.set_from_trans(1,0,0,0,1,0);
-		}
-		else {
-			pt.set_from_trans(0,-1,0,-1,0,0);
-		}
-	}
-	else if(mt==1) {
-		if((nt==1&&z)||nt==2) {
-			pt.set_from_trans(1,0,(size+1)/3,0,1,(size+1)/3);
-		}
-		else{
-			pt.set_from_trans(0,-1,(size+1)/3,-1,0,(size+1)/3);
-		}
-	}
-	else {
-		if((nt==2&&z)||nt==0) {
-			pt.set_from_trans(1,0,-((size+1)/3),0,1,-((size+1)/3));
-		}
-		else {
-			pt.set_from_trans(0,-1,-((size+1)/3),-1,0,-((size+1)/3));
 		}
 	}
 }

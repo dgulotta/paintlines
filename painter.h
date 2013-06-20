@@ -116,9 +116,6 @@ class painter : virtual public basic_painter
   void randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		 vector<unsigned char> &g, vector<unsigned char> &b);
  protected:
-  void randomize_p3m1_choose_from_trans(painter_transform &pt, int mt, int nt,
-					int z);
-  void randomize_p4_choose_from_trans(painter_transform &pt, bool a, bool b);
   inline unsigned char & mi(vector<unsigned char> &v,int i, int j) {
     return v[mod(i,size)+size*mod(j,size)];
   }
