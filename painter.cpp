@@ -27,9 +27,6 @@
 
 using namespace std;
 
-#define PAINTER_COPY_RGB r[index2]=red[index];g[index2]=green[index];\
-								   b[index2]=blue[index];
-
 inline int gcd(int x, int y) {
 	int t;
 	while(y) {
@@ -47,23 +44,21 @@ void painter_transformation::operator () (int &x, int &y) const
 	x=xnew;
 }
 
-const painter_transformation pt_cmm_list[4] = 
-{ { 1,0,0,0,1,0 }, { 0,1,0,1,0,0 }, { 0,-1,-1,-1,0,-1 }, {-1,0,-1,0,-1,-1}};
+const painter_transformation pt_p1_list[8] = {
+	{ 1,0,0,0,1,0 },
+	{ 0,1,0,1,0,0 },
+	{ 0,-1,-1,-1,0,-1 },
+	{-1,0,-1,0,-1,-1 },
+	{-1,0,-1,0,1,0 },
+	{ 0,1,0,-1,0,-1 },
+	{ 0,-1,-1,1,0,0 },
+	{ 1,0,0,0,-1,-1 },
+};
 
 const painter_transformation pt_ident = {1,0,0,0,1,0};
 const painter_transformation pt_hflip = {-1,0,-1,0,1,0};
 const painter_transformation pt_vflip = {1,0,1,0,-1,-1};
 const painter_transformation pt_dflip = {0,1,0,1,0,0};
-
-void painter_transform::set_point(int x, int y) {
-	int xnew=x, ynew=y;
-	from(xnew,ynew);
-	from_index=mod(xnew,size)+size*mod(ynew,size);
-	xnew=x;
-	ynew=y;
-	to(xnew,ynew);
-	to_index=mod(xnew,width)+width*mod(ynew,height);
-}
 
 void (painter::*(painter::symfuncs[36]))(const function<void(int,int)> &f, int x, int y) = {
 	&painter::symmetrize_cm,
@@ -391,14 +386,14 @@ vector<tuple<int,int>> rectangle(int xmin, int ymin, int xmax, int ymax) {
 
 vector<tuple<int,int>> triangle(int x1, int y1, int x2, int y2, int x3, int y3, int scale=1) {
 	vector<tuple<int,int>> v;
-	int xmin=divide(min({x1,x2,x3}),scale), ymin=divide(min({y1,y2,y3}),scale);
-	int xmax=-divide(-max({x1,x2,x3}),scale), ymax=-divide(-max({y1,y2,y3}),scale);
-	int x,y;
+	long xmin=divide(min({x1,x2,x3}),scale), ymin=divide(min({y1,y2,y3}),scale);
+	long xmax=-divide(-max({x1,x2,x3}),scale), ymax=-divide(-max({y1,y2,y3}),scale);
+	long x,y;
 	for(x=xmin;x<=xmax;x++)
 		for(y=ymin;y<=ymax;y++) {
-			int a1 = scale*x*(y2-y3)+x2*(y3-scale*y)+x3*(scale*y-y2);
-			int a2 = x1*(scale*y-y3)+scale*x*(y3-y1)+x3*(y1-scale*y);
-			int a3 = x1*(y2-scale*y)+x2*(scale*y-y1)+scale*x*(y1-y2);
+			long a1 = scale*x*(y2-y3)+x2*(y3-scale*y)+x3*(scale*y-y2);
+			long a2 = x1*(scale*y-y3)+scale*x*(y3-y1)+x3*(y1-scale*y);
+			long a3 = x1*(y2-scale*y)+x2*(scale*y-y1)+scale*x*(y1-y2);
 			if(a1*a2>=0&&a1*a3>=0&&a2*a3>=0)
 				v.push_back(make_tuple(x,y));
 		}
@@ -419,7 +414,6 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	r.resize(bigsize);
 	g.resize(bigsize);
 	b.resize(bigsize);
-	painter_transform pt(size,xtiles,ytiles);
 	auto target_pixel = [&](int x, int y) {
 		int index = mod(x,width)+width*mod(y,height);
 		return tie(r[index],g[index],b[index]);
@@ -434,11 +428,6 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 			target_pixel(xt,yt)=pixel(xf,yf);
 		}
 
-	};
-	auto PAINTER_NEW_COPY_RGB = [&]() {
-		pt.copy(r,red);
-		pt.copy(g,green);
-		pt.copy(b,blue);
 	};
 	vector<tuple<int,int>> points;
 	symgroup sg_basic = (symgroup)((int)sg%17);
@@ -607,67 +596,27 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 					}
 				}
 				int newi, newj;
-				for(k=0;k<xtiles;k++) {
+				points = triangle(-1,-1,-1,2*size-1,size-1,size-1,2);
+				for(k=0;k<xtiles;k++)
 					for(l=0;l<ytiles;l++) {
 						int el=ev[k+l*xtiles], er=ev[(k+1)%xtiles+l*xtiles]^0x3;
 						int et=eh[k+l*xtiles]^0x3, eb=eh[k+((l+1)%ytiles)*xtiles];
+						int flip;
 						if(el==er) {
-							const painter_transformation &flip=(rand()&1?pt_ident:pt_hflip);
-							for(i=0;i<halfsize;i++) {
-								for(j=i;i+j<size;j++) {
-									newi=i;
-									newj=j;
-									flip(newi,newj);
-									pt_cmm_list[el](newi,newj);
-									int index=mod(newi,size)+size*mod(newj,size);
-									int index2=i+k*size+width*(j+l*size);
-									PAINTER_COPY_RGB;
-									index2=j+k*size+width*(i+l*size);
-									PAINTER_COPY_RGB;
-									index2=(size1-i)+k*size+width*(size1-j+l*size);
-									PAINTER_COPY_RGB;
-									index2=(size1-j)+k*size+width*(size1-i+l*size);
-									PAINTER_COPY_RGB;
-								}
-							}
+							flip=4*random_int(2);
+							copy(points,pt_p1_list[el^flip],painter_transformation(1,0,k*size,0,1,l*size));
+							copy(points,pt_p1_list[el^flip],painter_transformation(0,1,k*size,1,0,l*size));
+							copy(points,pt_p1_list[el^flip],painter_transformation(-1,0,(k+1)*size-1,0,-1,(l+1)*size-1));
+							copy(points,pt_p1_list[el^flip],painter_transformation(0,-1,(k+1)*size-1,-1,0,(l+1)*size-1));
 						}
 						else {
-							const painter_transformation &flip=(((el^et)==0x1||(el^eb)==0x2)?pt_ident:pt_hflip);
-							for(i=0;i<halfsize;i++) {
-								for(j=i;i+j<size;j++) {
-									newi=i;
-									newj=j;
-									flip(newi,newj);
-									pt_cmm_list[el](newi,newj);
-									int index=mod(newi,size)+size*mod(newj,size);
-									int index2=i+k*size+width*(j+l*size);
-									PAINTER_COPY_RGB;
-									newi=i;
-									newj=j;
-									flip(newi,newj);
-									pt_cmm_list[et](newi,newj);
-									index=mod(newi,size)+size*mod(newj,size);
-									index2=j+k*size+width*(i+l*size);
-									PAINTER_COPY_RGB;
-									newi=i;
-									newj=j;
-									flip(newi,newj);
-									pt_cmm_list[er](newi,newj);
-									index=mod(newi,size)+size*mod(newj,size);
-									index2=(size1-i)+k*size+width*((size1-j)+l*size);
-									PAINTER_COPY_RGB;
-									newi=i;
-									newj=j;
-									flip(newi,newj);
-									pt_cmm_list[eb](newi,newj);
-									index=mod(newi,size)+size*mod(newj,size);
-									index2=(size1-j)+k*size+width*((size1-i)+l*size);
-									PAINTER_COPY_RGB;
-								}
-							}
+							flip=((el^et)==0x1||(el^eb)==0x2)?0:4;
+							copy(points,pt_p1_list[el^flip],painter_transformation(1,0,k*size,0,1,l*size));
+							copy(points,pt_p1_list[et^flip],painter_transformation(0,1,k*size,1,0,l*size));
+							copy(points,pt_p1_list[er^flip],painter_transformation(-1,0,(k+1)*size-1,0,-1,(l+1)*size-1));
+							copy(points,pt_p1_list[eb^flip],painter_transformation(0,-1,(k+1)*size-1,-1,0,(l+1)*size-1));
 						}
 					}
-				}
 			}
 			break;
 		case SYM_CMM:

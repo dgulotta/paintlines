@@ -70,30 +70,6 @@ struct painter_transformation {
 	int y1;
 };
 
-class painter_transform {
- public:
-  painter_transform(int _size, int _xtiles, int _ytiles)
-    : size(_size), xtiles(_xtiles), ytiles(_ytiles), width(_xtiles*_size),
-      height(_ytiles*_size) {}
-  void set_to_trans(int xx, int xy, int x1, int yx, int yy, int y1)
-  { to.xx=xx; to.xy=xy; to.x1=x1; to.yx=yx; to.yy=yy; to.y1=y1; }
-  void set_from_trans(int xx, int xy, int x1, int yx, int yy, int y1)
-  { from.xx=xx; from.xy=xy; from.x1=x1; from.yx=yx; from.yy=yy; from.y1=y1; }
-  void set_point(int x, int y);
-  template <typename T>
-  void copy(T &to, const T &from) { to[to_index]=from[from_index]; }
- private:
-  int size;
-  int xtiles;
-  int ytiles;
-  int width;
-  int height;
-  painter_transformation to;
-  painter_transformation from;
-  int from_index;
-  int to_index;
-};
-
 class painter : virtual public basic_painter
 {
  public:
