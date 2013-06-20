@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 #include "paintclouds.h"
-#include <cstdlib>
+#include "../randgen.h"
 
 inline int midpt(int a, int b) {
   int c=a+b;
@@ -28,9 +28,12 @@ inline int midpt(int a, int b) {
   return c/2;
 }
 
-double randomnormal()
+// I don't think this corresponds to any well-known distribution.
+// I think I used to be using a normal distribution here, but
+// decided that fatter tails made nicer pictures.
+double clouds_random()
 {
-  return log(double(rand())/RAND_MAX)*cos((M_PI*rand())/RAND_MAX);
+	return random_exponential(1.)*cos(random_angle());
 }
 
 void paintclouds::paint(int sz, symgroup sym)
@@ -256,11 +259,11 @@ void paintclouds::paint_border(int x1, int y1, int x2, int y2)
     double norm=sqrt(dx*dx+dy*dy);
     drawpixelsymmetric
       (mx,my,colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+norm*
-		       randomnormal()+.5),
+		       clouds_random()+.5),
        colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+norm*
-		 randomnormal()+.5),
+		 clouds_random()+.5),
        colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+norm*
-		 randomnormal()+.5));
+		 clouds_random()+.5));
     paint_border(x1,y1,mx,my);
     paint_border(mx,my,x2,y2);
   }

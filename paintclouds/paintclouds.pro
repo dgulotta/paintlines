@@ -10,7 +10,8 @@ HEADERS += paintclouds.h \
 	../basic_painter.h \
 	../basic_painterwidget.h \
 	cloudsform.h \
-	../basicform.h
+	../basicform.h \
+	../randgen.h
 
 SOURCES += paintclouds.cpp \
 	paintcloudswidget.cpp \
@@ -18,7 +19,8 @@ SOURCES += paintclouds.cpp \
 	../painterwidget.cpp \
 	main.cpp \
 	cloudsform.cpp \
-	../basicform.cpp
+	../basicform.cpp \
+	../randgen.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11
