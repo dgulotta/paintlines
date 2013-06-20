@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Daniel Gulotta                                  *
+ *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,23 +22,30 @@
 #define _BASIC_PAINTER_H
 
 #include <vector>
+#include <tuple>
+using std::tie;
+using std::tuple;
 using std::vector;
 
 class basic_painter
 {
- public:
-  basic_painter() : size(0) {}
-  void paint(int sz) {
-    size=sz;
-    red.resize(size*size);
-    green.resize(size*size);
-    blue.resize(size*size);
-  }
- protected:
-  int size;
-  vector<unsigned char> red;
-  vector<unsigned char> green;
-  vector<unsigned char> blue;
+	public:
+		basic_painter() : size(0) {}
+		void paint(int sz) {
+			size=sz;
+			red.resize(size*size);
+			green.resize(size*size);
+			blue.resize(size*size);
+		}
+		tuple<unsigned char &,unsigned char &,unsigned char &> pixel(int x, int y) {
+			int index=x+y*size;
+			return tie(red[index],green[index],blue[index]);
+		}
+	protected:
+		int size;
+		vector<unsigned char> red;
+		vector<unsigned char> green;
+		vector<unsigned char> blue;
 };
 
 #endif

@@ -53,13 +53,16 @@ enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
 	       SYM_PMG_O, SYM_PMM_O, SYM_CM_2,SYM_P4M_2};
 
 struct painter_transformation {
-  void operator () (int &i, int &j) const;
-  int xx;
-  int xy;
-  int x1;
-  int yx;
-  int yy;
-  int y1;
+	painter_transformation() {}
+	painter_transformation(int _xx, int _xy, int _x1, int _yx, int _yy, int _y1)
+		: xx(_xx), xy(_xy), x1(_x1), yx(_yx), yy(_yy), y1(_y1) {}
+	void operator () (int &i, int &j) const;
+	int xx;
+	int xy;
+	int x1;
+	int yx;
+	int yy;
+	int y1;
 };
 
 class painter_transform {
@@ -102,12 +105,14 @@ class painter : virtual public basic_painter
     //blue.resize(size*size);
   }
   int get_size() {return size;}
+  tuple<unsigned char &,unsigned char &,unsigned char &> pixel(int x, int y) {
+  	return basic_painter::pixel(mod(x,size),mod(y,size));
+  }
   void randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		 vector<unsigned char> &g, vector<unsigned char> &b);
  protected:
   void randomize_p3m1_choose_from_trans(painter_transform &pt, int mt, int nt,
 					int z);
-  void randomize_p2_choose_from_trans(painter_transform &pt, int n);
   void randomize_pmg_choose_from_trans(painter_transform &pt, int n);
   void randomize_pgg_choose_from_trans(painter_transform &pt, int n);
   void randomize_p4_choose_from_trans(painter_transform &pt, bool a, bool b);

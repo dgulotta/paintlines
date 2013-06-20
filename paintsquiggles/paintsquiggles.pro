@@ -12,7 +12,8 @@ HEADERS	+= paintsquiggles.h \
 	../basic_painter.h \
 	../basic_painterwidget.h \
 	../basicform.h \
-	squigglesform.h
+	squigglesform.h \
+	../randgen.h
 
 SOURCES	+= paintsquiggles.cpp \
 	paintsquiggleswidget.cpp \
@@ -20,7 +21,8 @@ SOURCES	+= paintsquiggles.cpp \
 	../painterwidget.cpp \
 	../basicform.cpp \
 	main.cpp \
-	squigglesform.cpp
+	squigglesform.cpp \
+	../randgen.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11

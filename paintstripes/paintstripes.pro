@@ -12,7 +12,8 @@ HEADERS	+= paintstripes.h \
 	../basic_painter.h \
 	../basic_painterwidget.h \
 	../basicform.h \
-	stripesform.h
+	stripesform.h \
+	../randgen.h
 
 SOURCES	+= paintstripes.cpp \
 	paintstripeswidget.cpp \
@@ -20,7 +21,8 @@ SOURCES	+= paintstripes.cpp \
 	../painterwidget.cpp \
 	../basicform.cpp \
 	main.cpp \
-	stripesform.cpp
+	stripesform.cpp \
+	../randgen.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11

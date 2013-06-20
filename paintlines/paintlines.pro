@@ -10,7 +10,8 @@ HEADERS	+= paintlines.h \
 	../basic_painter.h \
 	../basic_painterwidget.h \
 	linesform.h \
-	../basicform.h
+	../basicform.h \
+	../randgen.h
 
 SOURCES	+= paintlines.cpp \
 	main.cpp \
@@ -18,7 +19,8 @@ SOURCES	+= paintlines.cpp \
 	../painter.cpp \
 	../painterwidget.cpp \
 	linesform.cpp \
-	../basicform.cpp
+	../basicform.cpp \
+	../randgen.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11
