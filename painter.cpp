@@ -53,6 +53,7 @@ const painter_transformation pt_cmm_list[4] =
 const painter_transformation pt_ident = {1,0,0,0,1,0};
 const painter_transformation pt_hflip = {-1,0,-1,0,1,0};
 const painter_transformation pt_vflip = {1,0,1,0,-1,-1};
+const painter_transformation pt_dflip = {0,1,0,1,0,0};
 
 void painter_transform::set_point(int x, int y) {
 	int xnew=x, ynew=y;
@@ -388,22 +389,20 @@ vector<tuple<int,int>> rectangle(int xmin, int ymin, int xmax, int ymax) {
 	return v;
 }
 
-vector<tuple<int,int>> triangle(int x1, int y1, int x2, int y2, int x3, int y3) {
+vector<tuple<int,int>> triangle(int x1, int y1, int x2, int y2, int x3, int y3, int scale=1) {
 	vector<tuple<int,int>> v;
-	int xmin=min({x1,x2,x3}), ymin=min({y1,y2,y3});
-	int xmax=max({x1,x2,x3}), ymax=max({y1,y2,y3});
+	int xmin=divide(min({x1,x2,x3}),scale), ymin=divide(min({y1,y2,y3}),scale);
+	int xmax=-divide(-max({x1,x2,x3}),scale), ymax=-divide(-max({y1,y2,y3}),scale);
 	int x,y;
 	for(x=xmin;x<=xmax;x++)
 		for(y=ymin;y<=ymax;y++) {
-			int a = x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2);
-			int a1 = x*(y2-y3)+x2*(y3-y)+x3*(y-y2);
-			int a2 = x1*(y-y3)+x*(y3-y1)+x3*(y1-y);
-			int a3 = x1*(y2-y)+x2*(y-y1)+x*(y1-y2);
+			int a1 = scale*x*(y2-y3)+x2*(y3-scale*y)+x3*(scale*y-y2);
+			int a2 = x1*(scale*y-y3)+scale*x*(y3-y1)+x3*(y1-scale*y);
+			int a3 = x1*(y2-scale*y)+x2*(scale*y-y1)+scale*x*(y1-y2);
 			if(a1*a2>=0&&a1*a3>=0&&a2*a3>=0)
 				v.push_back(make_tuple(x,y));
 		}
 	return v;
-
 }
 
 /* This function is approaching a near-IOCCC level of unreadability.
@@ -440,13 +439,6 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		pt.copy(r,red);
 		pt.copy(g,green);
 		pt.copy(b,blue);
-	};
-	auto PAINTER_RANDOMIZE_P2_LOOP = [&]() {
-		for(i=0;i<=qsize;i++)
-			for(j=-i;j<=i;j++) {
-				pt.set_point(i,j);
-				PAINTER_NEW_COPY_RGB();
-			}
 	};
 	vector<tuple<int,int>> points;
 	symgroup sg_basic = (symgroup)((int)sg%17);
@@ -725,104 +717,76 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 				}
 		} break;
 		case SYM_P4:
-			{
-				int ntiles=xtiles*ytiles;
-				vector<int> z(ntiles);
-				for(k=0;k<ntiles;k++)
-					z[k]=rand();
-				auto PAINTER_RANDOMIZE_P4_LOOP = [&]() {
-					for(i=0;i<qsize;i++)
-						for(j=i;i+j<halfsize;j++) {
-							pt.set_point(i,j);
-							PAINTER_NEW_COPY_RGB();
-						}
-				};
-				for(k=0;k<xtiles;k++)
-					for(l=0;l<ytiles;l++) {
-						pt.set_to_trans(1,0,size*k,0,1,size*l);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x4);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(0,1,size*k,1,0,size*l);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x8);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(0,1,size*k,-1,0,size*l-1);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x10);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(1,0,size*k,0,-1,size*l-1);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x20);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(-1,0,size*k-1,0,-1,size*l-1);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x40);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(0,-1,size*k-1,-1,0,size*l-1);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x80);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(0,-1,size*k-1,1,0,size*l);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x100);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(-1,0,size*k-1,0,1,size*l);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x200);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(1,0,size*k+halfsize,0,1,size*l+halfsize);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+((l+1)%ytiles)]&0x80);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(0,1,size*k+halfsize,1,0,size*l+halfsize);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+((l+1)%ytiles)]&0x40);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(0,1,size*k+halfsize,-1,0,size*l+halfsize1);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+l]&0x200);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(1,0,size*k+halfsize,0,-1,size*l+halfsize1);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+l]&0x100);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(-1,0,size*k+halfsize1,0,-1,size*l+halfsize1);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*k+l]&0x8);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(0,-1,size*k+halfsize1,-1,0,size*l+halfsize1);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*k+l]&0x4);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(0,-1,size*k+halfsize1,1,0,size*l+halfsize);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*k+((l+1)%ytiles)]&0x20);
-						PAINTER_RANDOMIZE_P4_LOOP();
-						pt.set_to_trans(-1,0,size*k+halfsize1,0,1,size*l+halfsize);
-						randomize_p4_choose_from_trans(pt,z[ytiles*k+l]&0x2,z[ytiles*k+((l+1)%ytiles)]&0x10);
-						PAINTER_RANDOMIZE_P4_LOOP();
-					}
-			}
-			break;
-		case SYM_P4G:
+		{
+			points=triangle(0,0,0,size-1,halfsize-1,halfsize-1,2);
+			int ntiles=xtiles*ytiles;
+			vector<int> z(ntiles);
+			for(k=0;k<ntiles;k++)
+				z[k]=random_int(0x400);
+			auto from_trans = [&](bool a, bool b) {
+				if(a)
+					if(b)
+						return painter_transformation(1,0,0,0,1,0);
+					else
+						return painter_transformation(0,1,0,1,0,0);
+				else
+					if(b)
+						return painter_transformation(0,-1,halfsize1,-1,0,halfsize1);
+					else
+						return painter_transformation(-1,0,halfsize1,0,-1,halfsize1);
+			};
 			for(k=0;k<xtiles;k++)
 				for(l=0;l<ytiles;l++) {
-					int z=rand();
-					for(i=0;i<halfsize;i++)
-						for(j=0;j<=i;j++) {
-							int index=(z&0x1)?(i+size*j):(j+size*i);
-							int index2=i+k*size+width*(j+l*size);
-							PAINTER_COPY_RGB;
-							index=(z&0x2)?(i+size*j):(j+size*i);
-							index2=j+k*size+width*(i+l*size);
-							PAINTER_COPY_RGB;
-							index=(z&0x4)?(i+size*j):(j+size*i);
-							index2=size1-i+k*size+width*(j+l*size);
-							PAINTER_COPY_RGB;
-							index=(z&0x8)?(i+size*j):(j+size*i);
-							index2=j+k*size+width*(size1-i+l*size);
-							PAINTER_COPY_RGB;
-							index=(z&0x10)?(i+size*j):(j+size*i);
-							index2=size1-i+k*size+width*(size1-j+l*size);
-							PAINTER_COPY_RGB;
-							index=(z&0x20)?(i+size*j):(j+size*i);
-							index2=size1-j+k*size+width*(size1-i+l*size);
-							PAINTER_COPY_RGB;
-							index=(z&0x40)?(i+size*j):(j+size*i);
-							index2=i+k*size+width*(size1-j+l*size);
-							PAINTER_COPY_RGB;
-							index=(z&0x80)?(i+size*j):(j+size*i);
-							index2=size1-j+k*size+width*(i+l*size);
-							PAINTER_COPY_RGB;
-						}
+					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x4),
+						painter_transformation(1,0,size*k,0,1,size*l));
+					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x8),
+						painter_transformation(0,1,size*k,1,0,size*l));
+					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x10),
+						painter_transformation(0,1,size*k,-1,0,size*l-1));
+					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x20),
+						painter_transformation(1,0,size*k,0,-1,size*l-1));
+					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x40),
+						painter_transformation(-1,0,size*k-1,0,-1,size*l-1));
+					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x80),
+						painter_transformation(0,-1,size*k-1,-1,0,size*l-1));
+					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x100),
+						painter_transformation(0,-1,size*k-1,1,0,size*l));
+					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x200),
+						painter_transformation(-1,0,size*k-1,0,1,size*l));
+					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+((l+1)%ytiles)]&0x80),
+						painter_transformation(1,0,size*k+halfsize,0,1,size*l+halfsize));
+					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+((l+1)%ytiles)]&0x40),
+						painter_transformation(0,1,size*k+halfsize,1,0,size*l+halfsize));
+					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+l]&0x200),
+						painter_transformation(0,1,size*k+halfsize,-1,0,size*l+halfsize1));
+					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+l]&0x100),
+						painter_transformation(1,0,size*k+halfsize,0,-1,size*l+halfsize1));
+					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*k+l]&0x8),
+						painter_transformation(-1,0,size*k+halfsize1,0,-1,size*l+halfsize1));
+					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*k+l]&0x4),
+						painter_transformation(0,-1,size*k+halfsize1,-1,0,size*l+halfsize1));
+					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*k+((l+1)%ytiles)]&0x20),
+						painter_transformation(0,-1,size*k+halfsize1,1,0,size*l+halfsize));
+					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*k+((l+1)%ytiles)]&0x10),
+						painter_transformation(-1,0,size*k+halfsize1,0,1,size*l+halfsize));
 				}
-			break; 
+		} break;
+		case SYM_P4G:
+		{
+			points=triangle(0,0,halfsize-1,0,halfsize-1,halfsize-1);
+			auto random_trans = [&]() { return random_bool()?pt_dflip:pt_ident; };
+			for(k=0;k<xtiles;k++)
+				for(l=0;l<ytiles;l++) {
+					copy(points,random_trans(),painter_transformation(1,0,k*size,0,1,l*size));
+					copy(points,random_trans(),painter_transformation(0,1,k*size,1,0,l*size));
+					copy(points,random_trans(),painter_transformation(-1,0,k*size-1,0,1,l*size));
+					copy(points,random_trans(),painter_transformation(0,-1,k*size-1,1,0,l*size));
+					copy(points,random_trans(),painter_transformation(1,0,k*size,0,-1,l*size-1));
+					copy(points,random_trans(),painter_transformation(0,1,k*size,-1,0,l*size-1));
+					copy(points,random_trans(),painter_transformation(-1,0,k*size-1,0,-1,l*size-1));
+					copy(points,random_trans(),painter_transformation(0,-1,k*size-1,-1,0,l*size-1));
+				}
+		} break; 
 		case SYM_P3:
 		case SYM_P31M:
 		case SYM_P6:
@@ -1010,18 +974,4 @@ void painter::randomize_p3m1_choose_from_trans(painter_transform &pt, int mt,
 			pt.set_from_trans(0,-1,-((size+1)/3),-1,0,-((size+1)/3));
 		}
 	}
-}
-
-void painter::randomize_p4_choose_from_trans(painter_transform &pt, bool a, bool b)
-{
-	if(a)
-		if(b)
-			pt.set_from_trans(1,0,0,0,1,0);
-		else
-			pt.set_from_trans(0,1,0,1,0,0);
-	else
-		if(b)
-			pt.set_from_trans(0,-1,halfsize1,-1,0,halfsize1);
-		else
-			pt.set_from_trans(-1,0,halfsize1,0,-1,halfsize1);
 }

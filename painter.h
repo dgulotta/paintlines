@@ -38,6 +38,11 @@ inline int mod(int x, int y)
   return (ans<0)?(ans+y):ans;
 }
 
+inline int divide(int x, int y)
+{
+	return (x>0)?(x/y):(-(-x)/y);
+}
+
 inline unsigned char colorchop(double x)
 {
   if(x<0.) return 0;
