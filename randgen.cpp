@@ -55,3 +55,19 @@ double random_exponential(double mean)
 {
 	return mean*exponential_distribution<double>(1)(rnd);
 }
+
+double random_cauchy(double width)
+{
+	return cauchy_distribution<double>(0,width)(rnd);
+}
+
+double random_normal(double stdev)
+{
+	return normal_distribution<double>(0,stdev)(rnd);
+}
+
+double random_sechsquare(double width)
+{
+	double a = random_uniform();
+	return width*log(a/(1-a));
+}

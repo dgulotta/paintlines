@@ -58,6 +58,7 @@ private:
   ColorButton *color1;
   ColorButton *color2;
   ColorButton *color3;
+  QComboBox *comboRandom;
   paintcloudswidget *clouds;
 };
 

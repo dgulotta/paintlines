@@ -45,6 +45,13 @@ painterwidget * CloudsForm::createPainterWidget() {
 }
 
 void CloudsForm::addWidgets(QBoxLayout *sideLayout) {
+  sideLayout->addWidget(new QLabel(tr("Random distribution")));
+  comboRandom = new QComboBox;
+  comboRandom->addItem(tr("Cauchy"));
+  comboRandom->addItem(tr("Normal"));
+  comboRandom->addItem(tr("Pseudo-Exponential"));
+  comboRandom->addItem(tr("Sech^2"));
+  sideLayout->addWidget(comboRandom);
   QGridLayout *colorLayout = new QGridLayout;
   colorLayout->addWidget(new QLabel(tr("Color 1")),0,0);
   color1 = new ColorButton(qRgb(255,255,0));
@@ -58,6 +65,13 @@ void CloudsForm::addWidgets(QBoxLayout *sideLayout) {
   sideLayout->addLayout(colorLayout);
 }
 
+static double (*(randfuncs[4]))(double) = {
+	&paintclouds::rand_cauchy,
+	&paintclouds::rand_normal,
+	&paintclouds::rand_exp_cos,
+	&paintclouds::rand_sechsquare
+};
+
 void CloudsForm::draw(int sz, int sym_index)
 {
 	symgroup sg=symgroup(comboSymmetry->currentIndex()+int(SYM_CM_O));
@@ -69,5 +83,6 @@ void CloudsForm::draw(int sz, int sym_index)
     clouds->set_color3(c.red(),c.green(),c.blue());
     buttonRandomize->setEnabled(true);
     buttonRestore->setEnabled(false);
+	clouds->set_randfunc(randfuncs[comboRandom->currentIndex()]);
     clouds->draw(spinSize->value(),sg);
 }

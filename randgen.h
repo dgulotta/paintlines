@@ -33,4 +33,10 @@ double random_angle();
 
 double random_exponential(double mean);
 
+double random_cauchy(double width);
+
+double random_normal(double stdev);
+
+double random_sechsquare(double width);
+
 #endif

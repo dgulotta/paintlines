@@ -31,9 +31,23 @@ inline int midpt(int a, int b) {
 // I don't think this corresponds to any well-known distribution.
 // I think I used to be using a normal distribution here, but
 // decided that fatter tails made nicer pictures.
-double clouds_random()
+double paintclouds::rand_exp_cos(double a)
 {
-	return random_exponential(1.)*cos(random_angle());
+	return random_exponential(a)*cos(random_angle());
+}
+
+double paintclouds::rand_cauchy(double a)
+{
+	return .01*random_cauchy(a*a);
+}
+
+double paintclouds::rand_normal(double a)
+{
+	return 1.2*random_normal(a);
+}
+
+double paintclouds::rand_sechsquare(double a) {
+	return .3*random_sechsquare(a);
 }
 
 void paintclouds::paint(int sz, symgroup sym)
@@ -257,13 +271,10 @@ void paintclouds::paint_border(int x1, int y1, int x2, int y2)
   if(!((mx==x1||mx==x2)&&(my==y1||my==y2))) {
     double dx=x1-x2, dy=y1-y2;
     double norm=sqrt(dx*dx+dy*dy);
-    drawpixelsymmetric
-      (mx,my,colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+norm*
-		       clouds_random()+.5),
-       colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+norm*
-		 clouds_random()+.5),
-       colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+norm*
-		 clouds_random()+.5));
+    drawpixelsymmetric(mx,my,
+		colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+randfunc(norm)+.5),
+    	colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+randfunc(norm)+.5),
+    	colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+randfunc(norm)+.5));
     paint_border(x1,y1,mx,my);
     paint_border(mx,my,x2,y2);
   }

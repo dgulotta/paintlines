@@ -23,11 +23,10 @@
 
 #include "../painter.h"
 
-double randomnormal();
-
 class paintclouds : virtual public painter
 {
  public:
+  paintclouds() : randfunc(&paintclouds::rand_exp_cos) {}
   void paint(int size, symgroup sg);
   void set_colors(unsigned char r1, unsigned char g1, unsigned char b1,
 		  unsigned char r2, unsigned char g2, unsigned char b2,
@@ -40,8 +39,14 @@ class paintclouds : virtual public painter
     {red2=r;green2=g;blue2=b;}
   void set_color3(unsigned char r, unsigned char g, unsigned char b)
     {red3=r;green3=g;blue3=b;}
+  void set_randfunc(const function<double(double)> &r) { randfunc=r; }
+  static double rand_exp_cos(double a);
+  static double rand_normal(double a);
+  static double rand_cauchy(double a);
+  static double rand_sechsquare(double a);
  private:
   function<void(int,int)> drawfunc;
+  function<double(double)> randfunc;
   inline void drawpixelsymmetric(int x, int y, unsigned char r,
 				 unsigned char g, unsigned char b) {
     tempr=r;
