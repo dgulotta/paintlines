@@ -107,9 +107,6 @@ class painter : virtual public basic_painter
   void randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		 vector<unsigned char> &g, vector<unsigned char> &b);
  protected:
-  inline unsigned char & mi(vector<unsigned char> &v,int i, int j) {
-    return v[mod(i,size)+size*mod(j,size)];
-  }
   template <typename F>
   function<void(int,int)> symmetrize(const F &f);
   template <typename F>

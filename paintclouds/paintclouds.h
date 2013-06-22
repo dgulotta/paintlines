@@ -21,7 +21,11 @@
 #ifndef _PAINTCLOUDS_H
 #define _PAINTCLOUDS_H
 
+#include <tuple>
 #include "../painter.h"
+
+using std::make_tuple;
+using std::get;
 
 class paintclouds : virtual public painter
 {
@@ -49,15 +53,14 @@ class paintclouds : virtual public painter
   function<double(double)> randfunc;
   inline void drawpixelsymmetric(int x, int y, unsigned char r,
 				 unsigned char g, unsigned char b) {
-    tempr=r;
-    tempg=g;
-    tempb=b;
-    drawfunc(x,y);
+	drawpixelsymmetric(x,y,make_tuple(r,g,b));
+  }
+  void drawpixelsymmetric(int x, int y, const tuple<unsigned char,unsigned char,unsigned char> &rgb) {
+  	temp_color=rgb;
+	drawfunc(x,y);
   }
   void drawpixel(int x, int y) {
-    mi(red,x,y)=tempr;
-    mi(green,x,y)=tempg;
-    mi(blue,x,y)=tempb;
+  	pixel(x,y)=temp_color;
   }
   // Make sure you always call this with the same orientation!
   void paint_border(int x1, int y1, int x2, int y2);
@@ -67,7 +70,7 @@ class paintclouds : virtual public painter
 			    int sx1, int sy1, int sx2, int sy2);
   void paint_triangle(int x1, int y1, int x2, int y2, int x3, int y3);
   unsigned char red1, red2, red3, blue1, blue2, blue3, green1, green2, green3;
-  unsigned char tempr,tempg,tempb;
+  tuple<unsigned char,unsigned char,unsigned char> temp_color;
 };
 
 #endif

@@ -268,13 +268,16 @@ void paintclouds::paint_border(int x1, int y1, int x2, int y2)
 {
   int mx=midpt(x1,x2);
   int my=midpt(y1,y2);
+  short r1,g1,b1,r2,g2,b2;
   if(!((mx==x1||mx==x2)&&(my==y1||my==y2))) {
     double dx=x1-x2, dy=y1-y2;
     double norm=sqrt(dx*dx+dy*dy);
+	tie(r1,g1,b1)=pixel(x1,y1);
+	tie(r2,g2,b2)=pixel(x2,y2);
     drawpixelsymmetric(mx,my,
-		colorchop(double(mi(red,x1,y1)+mi(red,x2,y2))/2.+randfunc(norm)+.5),
-    	colorchop(double(mi(green,x1,y1)+mi(green,x2,y2))/2.+randfunc(norm)+.5),
-    	colorchop(double(mi(blue,x1,y1)+mi(blue,x2,y2))/2.+randfunc(norm)+.5));
+		colorchop((r1+r2)/2.+randfunc(norm)+.5),
+    	colorchop((g1+g2)/2.+randfunc(norm)+.5),
+    	colorchop((b1+b2)/2.+randfunc(norm)+.5));
     paint_border(x1,y1,mx,my);
     paint_border(mx,my,x2,y2);
   }
@@ -288,8 +291,7 @@ void paintclouds::copy_border(int dx1, int dy1, int dx2, int dy2,
   if(!((dmx==dx1||dmx==dx2)&&(dmy==dy1||dmy==dy2))) {
     int smx=midpt(sx1,sx2);
     int smy=midpt(sy1,sy2);
-    drawpixelsymmetric(dmx,dmy,mi(red,smx,smy),mi(green,smx,smy),
-		       mi(blue,smx,smy));
+    drawpixelsymmetric(dmx,dmy,pixel(smx,smy));
     copy_border(dx1,dy1,dmx,dmy,sx1,sy1,smx,smy);
     copy_border(dmx,dmy,dx2,dy2,smx,smy,sx2,sy2);
   }
@@ -303,8 +305,7 @@ void paintclouds::copy_border_backward(int dx1, int dy1, int dx2, int dy2,
   if(!((dmx==dx1||dmx==dx2)&&(dmy==dy1||dmy==dy2))) {
     int smx=midpt(sx2,sx1);
     int smy=midpt(sy2,sy1);
-    drawpixelsymmetric(dmx,dmy,mi(red,smx,smy),mi(green,smx,smy),
-		       mi(blue,smx,smy));
+    drawpixelsymmetric(dmx,dmy,pixel(smx,smy));
     copy_border_backward(dx1,dy1,dmx,dmy,sx1,sy1,smx,smy);
     copy_border_backward(dmx,dmy,dx2,dy2,smx,smy,sx2,sy2);
   }
