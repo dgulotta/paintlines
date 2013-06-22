@@ -21,6 +21,7 @@
 #ifndef _PAINTER_H
 #define _PAINTER_H
 
+#include <algorithm>
 #include <vector>
 #include <cmath>
 #include <functional>
@@ -68,6 +69,20 @@ struct painter_transformation {
 	int yx;
 	int yy;
 	int y1;
+};
+
+template<typename T>
+class wrap_grid
+{
+public:
+	wrap_grid(int w, int h) : v(w*h), width(w), height(h) {}
+	template<typename F>
+	wrap_grid(int w, int h, F f) : wrap_grid(w,h) { generate(v.begin(),v.end(),f); }
+	T & operator () (int x, int y) { return v[mod(x,width)+width*mod(y,height)]; }
+	const T & operator () (int x, int y) const { return v[mod(x,width)+width*mod(y,height)]; }
+private:
+	vector<T> v;
+	int width, height;
 };
 
 class painter : virtual public basic_painter

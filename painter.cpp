@@ -639,9 +639,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		{
 			points = triangle(0,0,qsize,qsize,qsize,-qsize);
 			int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
-			vector<int> z(t2);
-			for(k=0;k<t2;k++)
-				z[k]=random_int(2);
+			wrap_grid<int> z(xt2,yt2,bind(random_int,2));
 			int xoff = (sg_basic==SYM_PMG||sg_basic==SYM_PGG)?halfsize/2:0;
 			int yoff = (sg_basic==SYM_PGG)?halfsize/2:0;
 			painter_transformation from_trans[8] = {
@@ -655,23 +653,20 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 				{1,0,xoff,0,1,yoff+halfsize}};
 			for(k=0;k<xt2;k++)
 				for(l=0;l<yt2;l++) {
-					copy(points,from_trans[4*((l^k)&1)+2*z[k*yt2+l]+z[((k+1)%xt2)*yt2+l]],
+					copy(points,from_trans[4*((l^k)&1)+2*z(k,l)+z(k+1,l)],
 						painter_transformation(1,0,halfsize*k,0,1,halfsize*l));
-					copy(points,from_trans[4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+((l+1)%yt2)]],
+					copy(points,from_trans[4*((l^k)&1)+2*z(k,l)+z(k,l+1)],
 						painter_transformation(0,1,halfsize*k,1,0,halfsize*l));
-					copy(points,from_trans[4*((l^k)&1)+2*z[k*yt2+l]+z[mod(k-1,xt2)*yt2+l]],
+					copy(points,from_trans[4*((l^k)&1)+2*z(k,l)+z(k-1,l)],
 						painter_transformation(-1,0,halfsize*k,0,-1,halfsize*l));
-					copy(points,from_trans[4*((l^k)&1)+2*z[k*yt2+l]+z[k*yt2+mod(l-1,yt2)]],
+					copy(points,from_trans[4*((l^k)&1)+2*z(k,l)+z(k,l-1)],
 						painter_transformation(0,-1,halfsize*k,-1,0,halfsize*l));
 				}
 		} break;
 		case SYM_P4:
 		{
 			points=triangle(0,0,0,size-1,halfsize-1,halfsize-1,2);
-			int ntiles=xtiles*ytiles;
-			vector<int> z(ntiles);
-			for(k=0;k<ntiles;k++)
-				z[k]=random_int(0x400);
+			wrap_grid<int> z(xtiles,ytiles,bind(random_int,0x400));
 			auto from_trans = [&](bool a, bool b) {
 				if(a)
 					if(b)
@@ -686,37 +681,37 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 			};
 			for(k=0;k<xtiles;k++)
 				for(l=0;l<ytiles;l++) {
-					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x4),
+					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x4),
 						painter_transformation(1,0,size*k,0,1,size*l));
-					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x8),
+					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x8),
 						painter_transformation(0,1,size*k,1,0,size*l));
-					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x10),
+					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x10),
 						painter_transformation(0,1,size*k,-1,0,size*l-1));
-					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x20),
+					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x20),
 						painter_transformation(1,0,size*k,0,-1,size*l-1));
-					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x40),
+					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x40),
 						painter_transformation(-1,0,size*k-1,0,-1,size*l-1));
-					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x80),
+					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x80),
 						painter_transformation(0,-1,size*k-1,-1,0,size*l-1));
-					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x100),
+					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x100),
 						painter_transformation(0,-1,size*k-1,1,0,size*l));
-					copy(points,from_trans(z[ytiles*k+l]&0x1,z[ytiles*k+l]&0x200),
+					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x200),
 						painter_transformation(-1,0,size*k-1,0,1,size*l));
-					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+((l+1)%ytiles)]&0x80),
+					copy(points,from_trans(z(k,l)&0x2,z(k+1,l+1)&0x80),
 						painter_transformation(1,0,size*k+halfsize,0,1,size*l+halfsize));
-					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+((l+1)%ytiles)]&0x40),
+					copy(points,from_trans(z(k,l)&0x2,z(k+1,l+1)&0x40),
 						painter_transformation(0,1,size*k+halfsize,1,0,size*l+halfsize));
-					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+l]&0x200),
+					copy(points,from_trans(z(k,l)&0x2,z(k+1,l)&0x200),
 						painter_transformation(0,1,size*k+halfsize,-1,0,size*l+halfsize1));
-					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*((k+1)%xtiles)+l]&0x100),
+					copy(points,from_trans(z(k,l)&0x2,z(k+1,l)&0x100),
 						painter_transformation(1,0,size*k+halfsize,0,-1,size*l+halfsize1));
-					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*k+l]&0x8),
+					copy(points,from_trans(z(k,l)&0x2,z(k,l)&0x8),
 						painter_transformation(-1,0,size*k+halfsize1,0,-1,size*l+halfsize1));
-					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*k+l]&0x4),
+					copy(points,from_trans(z(k,l)&0x2,z(k,l)&0x4),
 						painter_transformation(0,-1,size*k+halfsize1,-1,0,size*l+halfsize1));
-					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*k+((l+1)%ytiles)]&0x20),
+					copy(points,from_trans(z(k,l)&0x2,z(k,l+1)&0x20),
 						painter_transformation(0,-1,size*k+halfsize1,1,0,size*l+halfsize));
-					copy(points,from_trans(z[ytiles*k+l]&0x2,z[ytiles*k+((l+1)%ytiles)]&0x10),
+					copy(points,from_trans(z(k,l)&0x2,z(k,l+1)&0x10),
 						painter_transformation(-1,0,size*k+halfsize1,0,1,size*l+halfsize));
 				}
 		} break;
@@ -805,11 +800,10 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		case SYM_P6M:
 		{
 			points = triangle(0,0,0,size+2,size+2,0,3);
-			int yt=ytiles*3;
-			int ntiles=xtiles*yt;
-			vector<unsigned char>types(ntiles);
-			for(i=0;i<ntiles;i++)
-				types[i]=random_int(3);
+			auto gen = bind(random_int,3);
+			wrap_grid<int> types0(xtiles,ytiles,gen);
+			wrap_grid<int> types1(xtiles,ytiles,gen);
+			wrap_grid<int> types2(xtiles,ytiles,gen);
 			auto from_trans = [&](int mt,int nt, int z) {
 				if(mt==0)
 					if((nt==0&&z)||nt==1)
@@ -830,41 +824,41 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 			for(k=0;k<xtiles;k++)
 				for(l=0;l<ytiles;l++) {
 					int z=random_int(0x200);
-					copy(points,from_trans(types[3*l+yt*k],types[3*l+yt*k+1],z&0x1),
+					copy(points,from_trans(types0(k,l),types1(k,l),z&0x1),
 						painter_transformation(1,0,size*k,0,1,size*l));
-					copy(points,from_trans(types[3*l+yt*k+1],types[3*l+yt*k],z&0x1),
+					copy(points,from_trans(types1(k,l),types0(k,l),z&0x1),
 						painter_transformation(0,-1,size*k+(size+1)/3,-1,0,size*l+(size+1)/3));
-					copy(points,from_trans(types[3*l+yt*k],types[3*l+yt*mod(k-1,xtiles)+2],z&0x2),
+					copy(points,from_trans(types0(k,l),types2(k-1,l),z&0x2),
 						painter_transformation(-1,0,size*k,1,1,size*l));
-					copy(points,from_trans(types[3*l+yt*mod(k-1,xtiles)+2],types[3*l+yt*k],z&0x2),
+					copy(points,from_trans(types2(k-1,l),types0(k,l),z&0x2),
 						painter_transformation(0,1,size*k-(size+1)/3,-1,-1,size*l+(2*size+1)/3));
-					copy(points,from_trans(types[3*l+yt*k],types[3*l+yt*mod(k-1,xtiles)+1],z&0x4),
+					copy(points,from_trans(types0(k,l),types1(k-1,l),z&0x4),
 						painter_transformation(-1,-1,size*k,1,0,size*l));
-					copy(points,from_trans(types[3*l+yt*mod(k-1,xtiles)+1],types[3*l+yt*k],z&0x4),
+					copy(points,from_trans(types1(k-1,l),types0(k,l),z&0x4),
 						painter_transformation(1,1,size*k-(2*size+1)/3,0,-1,size*l+(size+1)/3));
-					copy(points,from_trans(types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],z&0x8),
+					copy(points,from_trans(types0(k,l),types2(k-1,l-1),z&0x8),
 						painter_transformation(0,-1,size*k,-1,0,size*l));
-					copy(points,from_trans(types[3*mod(l-1,ytiles)+yt*mod(k-1,xtiles)+2],types[3*l+yt*k],z&0x8),
+					copy(points,from_trans(types2(k-1,l-1),types0(k,l),z&0x8),
 						painter_transformation(1,0,size*k-(size+1)/3,0,1,size*l-(size+1)/3));
-					copy(points,from_trans(types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*k+1],z&0x10),
+					copy(points,from_trans(types0(k,l),types1(k,l-1),z&0x10),
 						painter_transformation(0,1,size*k,-1,-1,size*l));
-					copy(points,from_trans(types[3*mod(l-1,ytiles)+yt*k+1],types[3*l+yt*k],z&0x10),
+					copy(points,from_trans(types1(k,l-1),types0(k,l),z&0x10),
 						painter_transformation(-1,0,size*k+(size+1)/3,1,1,size*l-(2*size+1)/3));
-					copy(points,from_trans(types[3*l+yt*k],types[3*mod(l-1,ytiles)+yt*k+2],z&0x20),
+					copy(points,from_trans(types0(k,l),types2(k,l-1),z&0x20),
 						painter_transformation(1,1,size*k,0,-1,size*l));
-					copy(points,from_trans(types[3*mod(l-1,ytiles)+yt*k+2],types[3*l+yt*k],z&0x20),
+					copy(points,from_trans(types2(k,l-1),types0(k,l),z&0x20),
 						painter_transformation(-1,-1,size*k+(2*size+1)/3,1,0,size*l-(size+1)/3));
-					copy(points,from_trans(types[3*l+yt*k+1],types[3*l+yt*k+2],z&0x40),
+					copy(points,from_trans(types1(k,l),types2(k,l),z&0x40),
 						painter_transformation(1,0,size*k+(size+1)/3,0,1,size*l+(size+1)/3));
-					copy(points,from_trans(types[3*l+yt*k+2],types[3*l+yt*k+1],z&0x40),
+					copy(points,from_trans(types2(k,l),types1(k,l),z&0x40),
 						painter_transformation(0,-1,size*k+(2*size+1)/3,-1,0,size*l+(2*size+1)/3));
-					copy(points,from_trans(types[3*l+yt*mod(k-1,xtiles)+1],types[3*l+yt*mod(k-2,xtiles)+2],z&0x80),
+					copy(points,from_trans(types1(k-1,l),types2(k-2,l),z&0x80),
 						painter_transformation(-1,-1,size*k-(2*size+1)/3,1,0,size*l+(size+1)/3));
-					copy(points,from_trans(types[3*l+yt*mod(k-2,xtiles)+2],types[3*l+yt*mod(k-1,xtiles)+1],z&0x80),
+					copy(points,from_trans(types2(k-2,l),types1(k-1,l),z&0x80),
 						painter_transformation(1,1,size*k-(4*size+1)/3,0,-1,size*l+(2*size+1)/3));
-					copy(points,from_trans(types[3*mod(l-1,ytiles)+yt*k+1],types[3*mod(l-2,ytiles)+yt*k+2],z&0x100),
+					copy(points,from_trans(types1(k,l-1),types2(k,l-2),z&0x100),
 						painter_transformation(0,1,size*k+(size+1)/3,-1,-1,size*l-(2*size+1)/3));
-					copy(points,from_trans(types[3*mod(l-2,ytiles)+yt*k+2],types[3*mod(l-1,ytiles)+yt*k+1],z&0x100),
+					copy(points,from_trans(types2(k,l-2),types1(k,l-1),z&0x100),
 						painter_transformation(-1,0,size*k+(2*size+1)/3,1,1,size*l-(4*size+1)/3));
 					}
 		}
