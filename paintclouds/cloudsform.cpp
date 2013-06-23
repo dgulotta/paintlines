@@ -74,7 +74,7 @@ static double (*(randfuncs[4]))(double) = {
 
 void CloudsForm::draw(int sz, int sym_index)
 {
-	symgroup sg=symgroup(comboSymmetry->currentIndex()+int(SYM_CM_O));
+	symgroup sg=symgroup(comboSymmetry->currentIndex());
 	QColor c=color1->palette().color(QPalette::Window);
     clouds->set_color1(c.red(),c.green(),c.blue());
     c=color2->palette().color(QPalette::Window);

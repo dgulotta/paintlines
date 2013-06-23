@@ -47,20 +47,20 @@ void painter_transformation::operator () (int &x, int &y) const
 const painter_transformation pt_p1_list[8] = {
 	{ 1,0,0,0,1,0 },
 	{ 0,1,0,1,0,0 },
-	{ 0,-1,-1,-1,0,-1 },
-	{-1,0,-1,0,-1,-1 },
-	{-1,0,-1,0,1,0 },
-	{ 0,1,0,-1,0,-1 },
-	{ 0,-1,-1,1,0,0 },
-	{ 1,0,0,0,-1,-1 },
+	{ 0,-1,0,-1,0,0 },
+	{-1,0,0,0,-1,0 },
+	{-1,0,0,0,1,0 },
+	{ 0,1,0,-1,0,0 },
+	{ 0,-1,0,1,0,0 },
+	{ 1,0,0,0,-1,0 },
 };
 
 const painter_transformation pt_ident = {1,0,0,0,1,0};
-const painter_transformation pt_hflip = {-1,0,-1,0,1,0};
-const painter_transformation pt_vflip = {1,0,1,0,-1,-1};
+const painter_transformation pt_hflip = {-1,0,0,0,1,0};
+const painter_transformation pt_vflip = {1,0,0,0,-1,0};
 const painter_transformation pt_dflip = {0,1,0,1,0,0};
 
-void (painter::*(painter::symfuncs[36]))(const function<void(int,int)> &f, int x, int y) = {
+void (painter::*(painter::symfuncs[17]))(const function<void(int,int)> &f, int x, int y) = {
 	&painter::symmetrize_cm,
 	&painter::symmetrize_cmm,
 	&painter::symmetrize_p1,
@@ -78,41 +78,20 @@ void (painter::*(painter::symfuncs[36]))(const function<void(int,int)> &f, int x
 	&painter::symmetrize_pm,
 	&painter::symmetrize_pmg,
 	&painter::symmetrize_pmm,
-	&painter::symmetrize_cm_o,
-	&painter::symmetrize_cmm_o,
-	&painter::symmetrize_p1_o,
-	&painter::symmetrize_p2_o,
-	&painter::symmetrize_p3_o,
-	&painter::symmetrize_p31m_o,
-	&painter::symmetrize_p3m1_o,
-	&painter::symmetrize_p4_o,
-	&painter::symmetrize_p4g_o,
-	&painter::symmetrize_p4m_o,
-	&painter::symmetrize_p6_o,
-	&painter::symmetrize_p6m_o,
-	&painter::symmetrize_pg_o,
-	&painter::symmetrize_pgg_o,
-	&painter::symmetrize_pm_o,
-	&painter::symmetrize_pmg_o,
-	&painter::symmetrize_pmm_o,
-	&painter::symmetrize_cm_2,
-	&painter::symmetrize_p4m_2
 };
 
-void painter::symmetrize_p1(const function<void(int,int)> &f, int x, int y)
-{
+void painter::symmetrize_p1(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 }
 
-void painter::symmetrize_p2(const function<void(int,int)> &f, int x, int y)
-{
+void painter::symmetrize_p2(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
-	f(size1-x,size1-y);
+	f(size-x,size-y);
 }
 
 void painter::symmetrize_pm(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
-	f(size1-x,y);
+	f(size-x,y);
 }
 
 void painter::symmetrize_cm(const function<void(int,int)> &f, int x, int y) {
@@ -122,174 +101,45 @@ void painter::symmetrize_cm(const function<void(int,int)> &f, int x, int y) {
 
 void painter::symmetrize_pg(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
-	f(x+halfsize,size1-y);
-}
-
-void painter::symmetrize_p4(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(y,size1-x);
-	f(size1-x,size1-y);
-	f(size1-y,x);
-}
-
-void painter::symmetrize_pmm(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x,y);
-	f(x,size1-y);
-	f(size1-x,size1-y);
-}
-
-void painter::symmetrize_cmm(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(y,x);
-	f(size1-y,size1-x);
-	f(size1-x,size1-y);
-}
-
-void painter::symmetrize_pmg(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x,y);
-	f(x+halfsize,size1-y);
-	f(halfsize1-x,size1-y);
-}
-
-void painter::symmetrize_pgg(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x,y+halfsize);
-	f(x+halfsize,size1-y);
-	f(halfsize1-x,halfsize1-y);
-}
-
-void painter::symmetrize_p4g(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(y,size1-x);
-	f(size1-x,size1-y);
-	f(size1-y,x);
-	f(halfsize1-y,halfsize1-x);
-	f(x+halfsize,halfsize1-y);
-	f(y+halfsize,x+halfsize);
-	f(halfsize1-x,y+halfsize);
-}
-
-void painter::symmetrize_p4m(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x,y);
-	f(x,size1-y);
-	f(size1-x,size1-y);
-	f(y,x);
-	f(size1-y,x);
-	f(y,size1-x);
-	f(size1-y,size1-x);
-}
-
-void painter::symmetrize_p3(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x-y,x);
-	f(y,size1-x-y);
-}
-
-void painter::symmetrize_p31m(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x-y,x);
-	f(y,size1-x-y);
-	f(size1-y,size1-x);
-	f(size1-x,x+y);
-	f(x+y,size1-y);
-}
-
-void painter::symmetrize_p3m1(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x-y,x);
-	f(y,size1-x-y);
-	f(y,x);
-	f(x,size1-x-y);
-	f(size1-x-y,y);
-}
-
-void painter::symmetrize_p6(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x-y,x);
-	f(y,size1-x-y);
-	f(size1-x,size1-y);
-	f(x+y,size1-x);
-	f(size1-y,x+y);
-}
-
-void painter::symmetrize_p6m(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x-y,x);
-	f(y,size1-x-y);
-	f(size1-x,size1-y);
-	f(x+y,size1-x);
-	f(size1-y,x+y);
-	f(y,x);
-	f(size1-x-y,y);
-	f(x,size1-x-y);
-	f(size1-y,size1-x);
-	f(x+y,size1-y);
-	f(size1-x,x+y);
-}
-
-void painter::symmetrize_p1_o(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-}
-
-void painter::symmetrize_p2_o(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size-x,size-y);
-}
-
-void painter::symmetrize_pm_o(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size-x,y);
-}
-
-void painter::symmetrize_cm_o(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(y,x);
-}
-
-void painter::symmetrize_pg_o(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
 	f(x+halfsize,size-y);
 }
 
-void painter::symmetrize_p4_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_p4(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(y,size-x);
 	f(size-x,size-y);
 	f(size-y,x);
 }
 
-void painter::symmetrize_pmm_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_pmm(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x,y);
 	f(x,size-y);
 	f(size-x,size-y);
 }
 
-void painter::symmetrize_cmm_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_cmm(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(y,x);
 	f(size-y,size-x);
 	f(size-x,size-y);
 }
 
-void painter::symmetrize_pmg_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_pmg(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x,y);
 	f(x+halfsize,size-y);
 	f(halfsize-x,size-y);
 }
 
-void painter::symmetrize_pgg_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_pgg(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x,y+halfsize);
 	f(x+halfsize,size-y);
 	f(halfsize-x,halfsize-y);
 }
 
-void painter::symmetrize_p4g_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_p4g(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(y,size-x);
 	f(size-x,size-y);
@@ -300,7 +150,7 @@ void painter::symmetrize_p4g_o(const function<void(int,int)> &f, int x, int y) {
 	f(halfsize-x,y+halfsize);
 }
 
-void painter::symmetrize_p4m_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_p4m(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x,y);
 	f(x,size-y);
@@ -311,13 +161,13 @@ void painter::symmetrize_p4m_o(const function<void(int,int)> &f, int x, int y) {
 	f(size-y,size-x);
 }
 
-void painter::symmetrize_p3_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_p3(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x-y,x);
 	f(y,size-x-y);
 }
 
-void painter::symmetrize_p31m_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_p31m(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x-y,x);
 	f(y,size-x-y);
@@ -326,7 +176,7 @@ void painter::symmetrize_p31m_o(const function<void(int,int)> &f, int x, int y) 
 	f(x+y,size-y);
 }
 
-void painter::symmetrize_p3m1_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_p3m1(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x-y,x);
 	f(y,size-x-y);
@@ -335,7 +185,7 @@ void painter::symmetrize_p3m1_o(const function<void(int,int)> &f, int x, int y) 
 	f(size-x-y,y);
 }
 
-void painter::symmetrize_p6_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_p6(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x-y,x);
 	f(y,size-x-y);
@@ -344,7 +194,7 @@ void painter::symmetrize_p6_o(const function<void(int,int)> &f, int x, int y) {
 	f(size-y,x+y);
 }
 
-void painter::symmetrize_p6m_o(const function<void(int,int)> &f, int x, int y) {
+void painter::symmetrize_p6m(const function<void(int,int)> &f, int x, int y) {
 	f(x,y);
 	f(size-x-y,x);
 	f(y,size-x-y);
@@ -357,22 +207,6 @@ void painter::symmetrize_p6m_o(const function<void(int,int)> &f, int x, int y) {
 	f(size-y,size-x);
 	f(x+y,size-y);
 	f(size-x,x+y);
-}
-
-void painter::symmetrize_cm_2(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-y,size1-x);
-}
-
-void painter::symmetrize_p4m_2(const function<void(int,int)> &f, int x, int y) {
-	f(x,y);
-	f(size1-x,y);
-	f(x,size1-y);
-	f(size1-x,size1-y);
-	f(halfsize1-y,halfsize1-x);
-	f(y+halfsize,halfsize1-x);
-	f(halfsize1-y,x+halfsize);
-	f(y+halfsize,x+halfsize);
 }
 
 vector<tuple<int,int>> rectangle(int xmin, int ymin, int xmax, int ymax) {
@@ -409,7 +243,6 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 	int width=xtiles*size;
 	int height=ytiles*size;
 	int i,j, k, l;
-	int qsize=halfsize/2, sizeq1=size1+halfsize-qsize, sizesq=size*size;
 	int bigsize=width*height;
 	r.resize(bigsize);
 	g.resize(bigsize);
@@ -430,8 +263,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 
 	};
 	vector<tuple<int,int>> points;
-	symgroup sg_basic = (symgroup)((int)sg%17);
-	switch(sg_basic) {
+	switch(sg) {
 		case SYM_P1:
 		case SYM_PM:
 		case SYM_PG:
@@ -596,7 +428,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 					}
 				}
 				int newi, newj;
-				points = triangle(-1,-1,-1,2*size-1,size-1,size-1,2);
+				points = triangle(0,0,0,size,halfsize,halfsize);
 				for(k=0;k<xtiles;k++)
 					for(l=0;l<ytiles;l++) {
 						int el=ev[k+l*xtiles], er=ev[(k+1)%xtiles+l*xtiles]^0x3;
@@ -606,29 +438,29 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 							flip=4*random_int(2);
 							copy(points,pt_p1_list[el^flip],painter_transformation(1,0,k*size,0,1,l*size));
 							copy(points,pt_p1_list[el^flip],painter_transformation(0,1,k*size,1,0,l*size));
-							copy(points,pt_p1_list[el^flip],painter_transformation(-1,0,(k+1)*size-1,0,-1,(l+1)*size-1));
-							copy(points,pt_p1_list[el^flip],painter_transformation(0,-1,(k+1)*size-1,-1,0,(l+1)*size-1));
+							copy(points,pt_p1_list[el^flip],painter_transformation(-1,0,(k+1)*size,0,-1,(l+1)*size));
+							copy(points,pt_p1_list[el^flip],painter_transformation(0,-1,(k+1)*size,-1,0,(l+1)*size));
 						}
 						else {
 							flip=((el^et)==0x1||(el^eb)==0x2)?0:4;
 							copy(points,pt_p1_list[el^flip],painter_transformation(1,0,k*size,0,1,l*size));
 							copy(points,pt_p1_list[et^flip],painter_transformation(0,1,k*size,1,0,l*size));
-							copy(points,pt_p1_list[er^flip],painter_transformation(-1,0,(k+1)*size-1,0,-1,(l+1)*size-1));
-							copy(points,pt_p1_list[eb^flip],painter_transformation(0,-1,(k+1)*size-1,-1,0,(l+1)*size-1));
+							copy(points,pt_p1_list[er^flip],painter_transformation(-1,0,(k+1)*size,0,-1,(l+1)*size));
+							copy(points,pt_p1_list[eb^flip],painter_transformation(0,-1,(k+1)*size,-1,0,(l+1)*size));
 						}
 					}
 			}
 			break;
 		case SYM_CMM:
 		{
-			points = rectangle(0,0,halfsize-1,halfsize-1);
+			points = rectangle(0,0,halfsize,halfsize);
 			auto random_trans = [&]() { return random_bool()?pt_hflip:pt_ident; };
 			for(k=0;k<xtiles;k++)
 				for(l=0;l<ytiles;l++) {
 					copy(points,random_trans(),painter_transformation(1,0,k*size,0,1,l*size));
-					copy(points,random_trans(),painter_transformation(-1,0,k*size-1,0,1,l*size));
-					copy(points,random_trans(),painter_transformation(1,0,k*size,0,-1,l*size-1));
-					copy(points,random_trans(),painter_transformation(-1,0,k*size-1,0,-1,l*size-1));
+					copy(points,random_trans(),painter_transformation(-1,0,k*size,0,1,l*size));
+					copy(points,random_trans(),painter_transformation(1,0,k*size,0,-1,l*size));
+					copy(points,random_trans(),painter_transformation(-1,0,k*size,0,-1,l*size));
 			}
 		} break;
 		case SYM_P2:
@@ -637,11 +469,11 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		case SYM_PMG:
 		case SYM_PGG:
 		{
-			points = triangle(0,0,qsize,qsize,qsize,-qsize);
+			points = triangle(0,0,halfsize,halfsize,halfsize,-halfsize,2);
 			int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
 			wrap_grid<int> z(xt2,yt2,bind(random_int,2));
-			int xoff = (sg_basic==SYM_PMG||sg_basic==SYM_PGG)?halfsize/2:0;
-			int yoff = (sg_basic==SYM_PGG)?halfsize/2:0;
+			int xoff = (sg==SYM_PMG||sg==SYM_PGG)?halfsize/2:0;
+			int yoff = (sg==SYM_PGG)?halfsize/2:0;
 			painter_transformation from_trans[8] = {
 				{1,0,xoff,0,1,yoff},
 				{0,1,xoff,1,0,yoff},
@@ -665,7 +497,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		} break;
 		case SYM_P4:
 		{
-			points=triangle(0,0,0,size-1,halfsize-1,halfsize-1,2);
+			points=triangle(0,0,0,size,halfsize,halfsize,2);
 			wrap_grid<int> z(xtiles,ytiles,bind(random_int,0x400));
 			auto from_trans = [&](bool a, bool b) {
 				if(a)
@@ -675,9 +507,9 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 						return painter_transformation(0,1,0,1,0,0);
 				else
 					if(b)
-						return painter_transformation(0,-1,halfsize1,-1,0,halfsize1);
+						return painter_transformation(0,-1,halfsize,-1,0,halfsize);
 					else
-						return painter_transformation(-1,0,halfsize1,0,-1,halfsize1);
+						return painter_transformation(-1,0,halfsize,0,-1,halfsize);
 			};
 			for(k=0;k<xtiles;k++)
 				for(l=0;l<ytiles;l++) {
@@ -686,49 +518,49 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x8),
 						painter_transformation(0,1,size*k,1,0,size*l));
 					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x10),
-						painter_transformation(0,1,size*k,-1,0,size*l-1));
+						painter_transformation(0,1,size*k,-1,0,size*l));
 					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x20),
-						painter_transformation(1,0,size*k,0,-1,size*l-1));
+						painter_transformation(1,0,size*k,0,-1,size*l));
 					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x40),
-						painter_transformation(-1,0,size*k-1,0,-1,size*l-1));
+						painter_transformation(-1,0,size*k,0,-1,size*l));
 					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x80),
-						painter_transformation(0,-1,size*k-1,-1,0,size*l-1));
+						painter_transformation(0,-1,size*k,-1,0,size*l));
 					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x100),
-						painter_transformation(0,-1,size*k-1,1,0,size*l));
+						painter_transformation(0,-1,size*k,1,0,size*l));
 					copy(points,from_trans(z(k,l)&0x1,z(k,l)&0x200),
-						painter_transformation(-1,0,size*k-1,0,1,size*l));
+						painter_transformation(-1,0,size*k,0,1,size*l));
 					copy(points,from_trans(z(k,l)&0x2,z(k+1,l+1)&0x80),
 						painter_transformation(1,0,size*k+halfsize,0,1,size*l+halfsize));
 					copy(points,from_trans(z(k,l)&0x2,z(k+1,l+1)&0x40),
 						painter_transformation(0,1,size*k+halfsize,1,0,size*l+halfsize));
 					copy(points,from_trans(z(k,l)&0x2,z(k+1,l)&0x200),
-						painter_transformation(0,1,size*k+halfsize,-1,0,size*l+halfsize1));
+						painter_transformation(0,1,size*k+halfsize,-1,0,size*l+halfsize));
 					copy(points,from_trans(z(k,l)&0x2,z(k+1,l)&0x100),
-						painter_transformation(1,0,size*k+halfsize,0,-1,size*l+halfsize1));
+						painter_transformation(1,0,size*k+halfsize,0,-1,size*l+halfsize));
 					copy(points,from_trans(z(k,l)&0x2,z(k,l)&0x8),
-						painter_transformation(-1,0,size*k+halfsize1,0,-1,size*l+halfsize1));
+						painter_transformation(-1,0,size*k+halfsize,0,-1,size*l+halfsize));
 					copy(points,from_trans(z(k,l)&0x2,z(k,l)&0x4),
-						painter_transformation(0,-1,size*k+halfsize1,-1,0,size*l+halfsize1));
+						painter_transformation(0,-1,size*k+halfsize,-1,0,size*l+halfsize));
 					copy(points,from_trans(z(k,l)&0x2,z(k,l+1)&0x20),
-						painter_transformation(0,-1,size*k+halfsize1,1,0,size*l+halfsize));
+						painter_transformation(0,-1,size*k+halfsize,1,0,size*l+halfsize));
 					copy(points,from_trans(z(k,l)&0x2,z(k,l+1)&0x10),
-						painter_transformation(-1,0,size*k+halfsize1,0,1,size*l+halfsize));
+						painter_transformation(-1,0,size*k+halfsize,0,1,size*l+halfsize));
 				}
 		} break;
 		case SYM_P4G:
 		{
-			points=triangle(0,0,halfsize-1,0,halfsize-1,halfsize-1);
+			points=triangle(0,0,halfsize,0,halfsize,halfsize);
 			auto random_trans = [&]() { return random_bool()?pt_dflip:pt_ident; };
 			for(k=0;k<xtiles;k++)
 				for(l=0;l<ytiles;l++) {
 					copy(points,random_trans(),painter_transformation(1,0,k*size,0,1,l*size));
 					copy(points,random_trans(),painter_transformation(0,1,k*size,1,0,l*size));
-					copy(points,random_trans(),painter_transformation(-1,0,k*size-1,0,1,l*size));
-					copy(points,random_trans(),painter_transformation(0,-1,k*size-1,1,0,l*size));
-					copy(points,random_trans(),painter_transformation(1,0,k*size,0,-1,l*size-1));
-					copy(points,random_trans(),painter_transformation(0,1,k*size,-1,0,l*size-1));
-					copy(points,random_trans(),painter_transformation(-1,0,k*size-1,0,-1,l*size-1));
-					copy(points,random_trans(),painter_transformation(0,-1,k*size-1,-1,0,l*size-1));
+					copy(points,random_trans(),painter_transformation(-1,0,k*size,0,1,l*size));
+					copy(points,random_trans(),painter_transformation(0,-1,k*size,1,0,l*size));
+					copy(points,random_trans(),painter_transformation(1,0,k*size,0,-1,l*size));
+					copy(points,random_trans(),painter_transformation(0,1,k*size,-1,0,l*size));
+					copy(points,random_trans(),painter_transformation(-1,0,k*size,0,-1,l*size));
+					copy(points,random_trans(),painter_transformation(0,-1,k*size,-1,0,l*size));
 				}
 		} break; 
 		case SYM_P3:
