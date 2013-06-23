@@ -20,9 +20,6 @@
 
 #include "../stripes_common.h"
 #include "paintstripes.h"
-#include <algorithm>
-
-using std::copy;
 
 void paintstripes::paint(int sz, symgroup sym)
 {
@@ -40,7 +37,6 @@ void paintstripes::paint(int sz, symgroup sym)
 	default:
 		norm=&stripes_grid::norm_orthogonal;
   	}
-	int i,j;
 	complex<double> z;
 	grid.generate(norm,levy_alpha);
 	fill(red,grid);

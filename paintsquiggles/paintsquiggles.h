@@ -24,49 +24,21 @@
 #include "../painter.h"
 #include <fftw3.h>
 
-double random_levy_1d_power_alpha(double alpha, double scale);
-
-void random_levy_2d(double *d,double alpha,double scale);
+class stripes_grid;
 
 class paintsquiggles : virtual public painter
 {
  public:
-  paintsquiggles() : fftplan(NULL), array(NULL), size2(2), levy_alpha(1.0), thickness(1.), sharpness(2.) {}
-  ~paintsquiggles() {
-    if(fftplan) fftw_destroy_plan(fftplan);
-    if(array) fftw_free((void *)array);
-  }
+  paintsquiggles() : levy_alpha(1.0), thickness(1.), sharpness(2.) {}
   void paint(int sz, symgroup sym);
   void set_alpha(double alpha) {levy_alpha=alpha;}
   void set_ncolors(int n) {n_colors=n;}
   void set_thickness(double t) {thickness=t;}
   void set_sharpness(double s) {sharpness=s;}
  private:
-  void accumulate(int x, int y) {
-    sum+=array[mod(x,size)+mod(y,size)*size2];
-  }
-  void set(int x, int y) {
-    array[mod(x,size)+mod(y,size)*size2]=sum;
-  }
-  double norm_square(int x, int y) {
-    if(x||y)
-      return 1./(2.-cos(dq*x)-cos(dq*y));
-    else return 0.;
-  }
-  double norm_hexagonal(int x, int y) {
-    if(x||y)
-      return 1./(3.-cos(dq*x)-cos(dq*y)-cos(dq*(x+y)));
-    else return 0;
-  }
-  void fill();
-  double (paintsquiggles::*norm)(int,int);
-  fftw_plan fftplan;
-  double *array;
-  int size2;
+  void fill(const stripes_grid &grid);
   int n_colors;
   unsigned char redbrush, greenbrush, bluebrush;
-  double sum;
-  double dq;
   double levy_alpha;
   double thickness;
   double sharpness;
