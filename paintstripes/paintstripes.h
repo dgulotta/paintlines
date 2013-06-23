@@ -22,46 +22,17 @@
 #define _PAINTSTRIPES_H
 
 #include "../painter.h"
-#include <fftw3.h>
 
-double random_levy_1d_power_alpha(double alpha, double scale);
-
-void random_levy_2d(double *d,double alpha,double scale);
+class stripes_grid;
 
 class paintstripes : virtual public painter
 {
  public:
-  paintstripes() : fftplan(NULL), array(NULL), size2(2), levy_alpha(1.0) {}
-  ~paintstripes() {
-    if(fftplan) fftw_destroy_plan(fftplan);
-    if(array) fftw_free((void *)array);
-  }
+  paintstripes() : levy_alpha(1.0) {}
   void paint(int sz, symgroup sym);
   void set_alpha(double alpha) {levy_alpha=alpha;}
  private:
-  void accumulate(int x, int y) {
-    sum+=array[mod(x,size)+mod(y,size)*size2];
-  }
-  void set(int x, int y) {
-    array[mod(x,size)+mod(y,size)*size2]=sum;
-  }
-  double norm_square(int x, int y) {
-    if(x||y)
-      return 1./(2.-cos(dq*x)-cos(dq*y));
-    else return 0.;
-  }
-  double norm_hexagonal(int x, int y) {
-    if(x||y)
-      return 1./(3.-cos(dq*x)-cos(dq*y)-cos(dq*(x+y)));
-    else return 0;
-  }
-  void fill(vector<unsigned char> &r);
-  double (paintstripes::*norm)(int,int);
-  fftw_plan fftplan;
-  double *array;
-  int size2;
-  double sum;
-  double dq;
+  void fill(vector<unsigned char> &r, const stripes_grid &g);
   double levy_alpha;
 };
 

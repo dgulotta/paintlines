@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2013 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,49 +18,45 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "../stripes_common.h"
-#include "paintstripes.h"
+#ifndef _STRIPES_COMMON_H
+#define _STRIPES_COMMON_H
+
+#include <fftw3.h>
 #include <algorithm>
+#include <cmath>
+#include <complex>
+#include "painter.h"
 
-using std::copy;
+using std::complex;
+using std::fill;
 
-void paintstripes::paint(int sz, symgroup sym)
-{
-	painter::paint(sz,sym);
-	stripes_grid grid(this);
-	double (stripes_grid::*norm)(int,int);
-	switch(sym) {
-	case SYM_P3:
-	case SYM_P31M:
-	case SYM_P3M1:
-	case SYM_P6:
-	case SYM_P6M:
-    	norm=&stripes_grid::norm_hexagonal;
-		break;
-	default:
-		norm=&stripes_grid::norm_orthogonal;
-  	}
-	int i,j;
-	complex<double> z;
-	grid.generate(norm,levy_alpha);
-	fill(red,grid);
-	grid.generate(norm,levy_alpha);
-	fill(blue,grid);
-	grid.generate(norm,levy_alpha);
-	fill(green,grid);
-}
+class stripes_grid {
+public:
+	stripes_grid(painter *p) : paint(p), size(p->get_size()),
+		array((complex<double> *)fftw_malloc(sizeof(complex<double>)*size*size)),
+		plan(fftw_plan_dft_2d(size,size,(fftw_complex *)array,(fftw_complex *)array,FFTW_BACKWARD,FFTW_ESTIMATE)),
+		phase(2*M_PI/size) {}
+	~stripes_grid() {
+		fftw_destroy_plan(plan);
+		fftw_free(array);
+	}
+	complex<double> & operator () (int x, int y) { return array[mod(x,size)+size*mod(y,size)];}
+	const complex<double> operator () (int x, int y) const { return array[mod(x,size)+size*mod(y,size)];}
+	complex<double> get_symmetric(int x, int y) const;
+	void clear() { fill(array,array+size*size,complex<double>(0,0)); }
+	void generate(double (stripes_grid::*normfunc)(int,int), double alpha);
+	double norm_hexagonal(int x, int y);
+	double norm_orthogonal(int x, int y);
+private:
+	painter *paint;
+	int size;
+	complex<double> *array;
+	fftw_plan plan;
+	double phase;
+};
 
-void paintstripes::fill(vector<unsigned char> &arr, const stripes_grid &g)
-{
-	int i,j;
-	double norm(0.);
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++) {
-			double d=g.get_symmetric(i,j).real();
-			norm+=d*d;
-		}
-	norm=sqrt(norm)/(size*64);
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++)
-			arr[i+size*j]=colorchop(128.+g.get_symmetric(i,j).real()/norm);
-}
+double random_levy_1d_power_alpha(double alpha, double scale);
+
+complex<double> random_levy_2d(double alpha, double scale);
+
+#endif
