@@ -452,26 +452,16 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 			}
 			break;
 		case SYM_CMM:
-		{
-			points = rectangle(0,0,halfsize,halfsize);
-			auto random_trans = [&]() { return random_bool()?pt_hflip:pt_ident; };
-			for(k=0;k<xtiles;k++)
-				for(l=0;l<ytiles;l++) {
-					copy(points,random_trans(),painter_transformation(1,0,k*size,0,1,l*size));
-					copy(points,random_trans(),painter_transformation(-1,0,k*size,0,1,l*size));
-					copy(points,random_trans(),painter_transformation(1,0,k*size,0,-1,l*size));
-					copy(points,random_trans(),painter_transformation(-1,0,k*size,0,-1,l*size));
-			}
-		} break;
 		case SYM_P2:
 		case SYM_PMM:
 		case SYM_P4M:
 		case SYM_PMG:
 		case SYM_PGG:
 		{
-			points = triangle(0,0,halfsize,halfsize,halfsize,-halfsize,2);
+			points = triangle(0,0,size,0,halfsize,halfsize,2);
 			int xt2=xtiles*2, yt2=ytiles*2, t2=xt2*yt2;
-			wrap_grid<int> z(xt2,yt2,bind(random_int,2));
+			wrap_grid<int> centers(xt2,yt2,bind(random_int,2));
+			wrap_grid<int> spokes(xt2,yt2,bind(random_int,2));
 			int xoff = (sg==SYM_PMG||sg==SYM_PGG)?halfsize/2:0;
 			int yoff = (sg==SYM_PGG)?halfsize/2:0;
 			painter_transformation from_trans[8] = {
@@ -479,20 +469,28 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 				{0,1,xoff,1,0,yoff},
 				{0,1,xoff+halfsize,1,0,yoff+halfsize},
 				{1,0,xoff+halfsize,0,1,yoff+halfsize},
-				{1,0,xoff+halfsize,0,1,yoff},
-				{0,1,xoff+halfsize,1,0,yoff},
-				{0,1,xoff,1,0,yoff+halfsize},
-				{1,0,xoff,0,1,yoff+halfsize}};
+				{1,0,xoff,0,-1,yoff},
+				{0,1,xoff,-1,0,yoff},
+				{0,1,xoff+halfsize,-1,0,yoff+halfsize},
+				{1,0,xoff+halfsize,0,-1,yoff+halfsize}};
 			for(k=0;k<xt2;k++)
-				for(l=0;l<yt2;l++) {
-					copy(points,from_trans[4*((l^k)&1)+2*z(k,l)+z(k+1,l)],
+				for(l=k%2;l<yt2;l+=2) {
+					copy(points,from_trans[4*spokes(k+1,l+1)+2*centers(k,l)+centers(k+1,l)],
 						painter_transformation(1,0,halfsize*k,0,1,halfsize*l));
-					copy(points,from_trans[4*((l^k)&1)+2*z(k,l)+z(k,l+1)],
+					copy(points,from_trans[4*spokes(k+1,l+1)+2*centers(k,l)+centers(k,l+1)],
 						painter_transformation(0,1,halfsize*k,1,0,halfsize*l));
-					copy(points,from_trans[4*((l^k)&1)+2*z(k,l)+z(k-1,l)],
+					copy(points,from_trans[4*spokes(k,l+1)+2*centers(k,l)+centers(k,l+1)],
+						painter_transformation(0,-1,halfsize*k,1,0,halfsize*l));
+					copy(points,from_trans[4*spokes(k,l+1)+2*centers(k,l)+centers(k-1,l)],
+						painter_transformation(-1,0,halfsize*k,0,1,halfsize*l));
+					copy(points,from_trans[4*spokes(k,l)+2*centers(k,l)+centers(k-1,l)],
 						painter_transformation(-1,0,halfsize*k,0,-1,halfsize*l));
-					copy(points,from_trans[4*((l^k)&1)+2*z(k,l)+z(k,l-1)],
+					copy(points,from_trans[4*spokes(k,l)+2*centers(k,l)+centers(k,l-1)],
 						painter_transformation(0,-1,halfsize*k,-1,0,halfsize*l));
+					copy(points,from_trans[4*spokes(k+1,l)+2*centers(k,l)+centers(k,l-1)],
+						painter_transformation(0,1,halfsize*k,-1,0,halfsize*l));
+					copy(points,from_trans[4*spokes(k+1,l)+2*centers(k,l)+centers(k+1,l)],
+						painter_transformation(1,0,halfsize*k,0,-1,halfsize*l));
 				}
 		} break;
 		case SYM_P4:
