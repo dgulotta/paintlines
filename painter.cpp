@@ -234,9 +234,6 @@ vector<tuple<int,int>> triangle(int x1, int y1, int x2, int y2, int x3, int y3, 
 	return v;
 }
 
-/* This function is approaching a near-IOCCC level of unreadability.
- * I really should clean it up someday.
- */
 void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		vector<unsigned char> &g, vector<unsigned char> &b)
 {
@@ -268,189 +265,54 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 		case SYM_PM:
 		case SYM_PG:
 		case SYM_CM:
-			{
-				vector<int> ev(xtiles*ytiles,0xF), eh(xtiles*ytiles,0xF), *es;
-				int z;
-				bool back=true;
+		{
+			wrap_grid<int> z(xtiles*2,ytiles*2);
+			for(k=0;k<2*xtiles;k++)
+				for(l=0;l<2*ytiles;l++)
+					if (k&l&1)
+						z(k,l)=random_int(2);
+					else if((k|l)&1)
+						z(k,l)=0xF;
+			auto fill = [&](int shift, int flip) {
+				int k, l, ke, le, kc, lc, v;
+				for(k=0;k<xtiles*2;k++)
+					for(l=(k+1)%2;l<ytiles*2;l+=2) {
+						v=random_int(2);
+						ke=k;
+						le=l;
+						kc=k|1;
+						lc=l|1;
+						while(z(ke,le)&(4<<shift)) {
+							z(ke,le)&=~((4|v)<<shift);
+							if(z(kc,lc)^flip) {
+								tie(ke,le)=make_tuple(kc+le-lc,lc+ke-kc);
+								v^=1;
+							}
+							else {
+								tie(ke,le)=make_tuple(kc-le+lc,lc-ke+kc);
+							}
+							tie(kc,lc)=make_tuple(2*ke-kc,2*le-lc);
+						}
+					}
+			};
+			fill(0,0);
+			fill(1,1);
+			points = triangle(0,0,0,size,halfsize,halfsize);
+			for(k=0;k<xtiles;k++)
 				for(l=0;l<ytiles;l++) {
-					for(k=0;k<xtiles;k++) {
-						if(rand()&1) {
-							ev[k+xtiles*l]|=0x10;
-							eh[k+xtiles*l]|=0x10;
-							ev[(k+1)%xtiles+xtiles*l]|=0x20;
-							eh[k%xtiles+xtiles*((l+1)%ytiles)]|=0x20;
-						}
-					}
+					int el=z(2*k,2*l+1), er=z(2*k+2,2*l+1)^0x3;
+					int et=z(2*k+1,2*l)^0x3, eb=z(2*k+1,2*l+2);
+					int flip;
+					if(el==er)
+						flip=4*random_int(2);
+					else
+						flip=((el^et)==0x1||(el^eb)==0x2)?0:4;
+					copy(points,pt_p1_list[el^flip],painter_transformation(1,0,k*size,0,1,l*size));
+					copy(points,pt_p1_list[et^flip],painter_transformation(0,1,k*size,1,0,l*size));
+					copy(points,pt_p1_list[er^flip],painter_transformation(-1,0,(k+1)*size,0,-1,(l+1)*size));
+					copy(points,pt_p1_list[eb^flip],painter_transformation(0,-1,(k+1)*size,-1,0,(l+1)*size));
 				}
-				k=0;
-				l=0;
-				es=&ev;
-				while(l<ytiles) {
-					z=(~0x4)&(rand()|~0x1);
-					do {
-						(*es)[k+xtiles*l]&=z;
-						if(es==&ev) {
-							if(back) {
-								if(ev[k+xtiles*l]&0x20) {
-									back=true;
-								}
-								else {
-									l=(l+1)%ytiles;
-									back=false;
-									z^=0x1;
-								}
-								k=mod(k-1,xtiles);
-							}
-							else {
-								if(ev[k+xtiles*l]&0x10) {
-									l=(l+1)%ytiles;
-									back=false;
-								}
-								else {
-									back=true;
-									z^=0x1;
-								}
-							}
-							es=&eh;
-						}
-						else {
-							if(back) {
-								if(eh[k+xtiles*l]&0x20) {
-									back=true;
-								}
-								else {
-									k=(k+1)%xtiles;
-									back=false;
-									z^=0x1;
-								}
-								l=mod(l-1,ytiles);
-							}
-							else {
-								if(eh[k+xtiles*l]&0x10) {
-									k=(k+1)%xtiles;
-									back=false;
-								}
-								else {
-									back=true;
-									z^=0x1;
-								}
-							}
-							es=&ev;
-						}
-					} while((*es)[k+xtiles*l]&0x4);
-					while(!((*es)[k+xtiles*l]&0x4)) {
-						k++;
-						if(k>=xtiles) {
-							k=0;
-							l++;
-						}
-						if(l>=ytiles) {
-							if(es==&ev) {
-								l=0;
-								es=&eh;
-							}
-							else break;
-						}
-					}
-				}
-				k=0;
-				l=0;
-				es=&ev;
-				int *oe, oz;
-				while(l<ytiles) {
-					z=(~0x38)&(rand()|~0x2);
-					do {
-						oe=&((*es)[k+xtiles*l]);
-						oz=z;
-						if(es==&ev) {
-							if(back) {
-								if(ev[k+xtiles*l]&0x20) {
-									l=(l+1)%ytiles;
-									back=false;
-									z^=0x2;
-								}
-								else {
-									back=true;
-								}
-								k=mod(k-1,xtiles);
-							}
-							else {
-								if(ev[k+xtiles*l]&0x10) {
-									back=true;
-									z^=0x2;
-								}
-								else {
-									l=(l+1)%ytiles;
-									back=false;
-								}
-							}
-							es=&eh;
-						}
-						else {
-							if(back) {
-								if(eh[k+xtiles*l]&0x20) {
-									k=(k+1)%xtiles;
-									back=false;
-									z^=0x2;
-								}
-								else {
-									back=true;
-								}
-								l=mod(l-1,ytiles);
-							}
-							else {
-								if(eh[k+xtiles*l]&0x10) {
-									back=true;
-									z^=0x2;
-								}
-								else {
-									k=(k+1)%xtiles;
-									back=false;
-								}
-							}
-							es=&ev;
-						}
-						(*oe)&=oz;
-					} while((*es)[k+xtiles*l]&0x8);
-					while(!((*es)[k+xtiles*l]&0x8)) {
-						k++;
-						if(k>=xtiles) {
-							k=0;
-							l++;
-						}
-						if(l>=ytiles) {
-							if(es==&ev) {
-								l=0;
-								es=&eh;
-							}
-							else break;
-						}
-					}
-				}
-				int newi, newj;
-				points = triangle(0,0,0,size,halfsize,halfsize);
-				for(k=0;k<xtiles;k++)
-					for(l=0;l<ytiles;l++) {
-						int el=ev[k+l*xtiles], er=ev[(k+1)%xtiles+l*xtiles]^0x3;
-						int et=eh[k+l*xtiles]^0x3, eb=eh[k+((l+1)%ytiles)*xtiles];
-						int flip;
-						if(el==er) {
-							flip=4*random_int(2);
-							copy(points,pt_p1_list[el^flip],painter_transformation(1,0,k*size,0,1,l*size));
-							copy(points,pt_p1_list[el^flip],painter_transformation(0,1,k*size,1,0,l*size));
-							copy(points,pt_p1_list[el^flip],painter_transformation(-1,0,(k+1)*size,0,-1,(l+1)*size));
-							copy(points,pt_p1_list[el^flip],painter_transformation(0,-1,(k+1)*size,-1,0,(l+1)*size));
-						}
-						else {
-							flip=((el^et)==0x1||(el^eb)==0x2)?0:4;
-							copy(points,pt_p1_list[el^flip],painter_transformation(1,0,k*size,0,1,l*size));
-							copy(points,pt_p1_list[et^flip],painter_transformation(0,1,k*size,1,0,l*size));
-							copy(points,pt_p1_list[er^flip],painter_transformation(-1,0,(k+1)*size,0,-1,(l+1)*size));
-							copy(points,pt_p1_list[eb^flip],painter_transformation(0,-1,(k+1)*size,-1,0,(l+1)*size));
-						}
-					}
-			}
-			break;
+		} break;
 		case SYM_CMM:
 		case SYM_P2:
 		case SYM_PMM:
