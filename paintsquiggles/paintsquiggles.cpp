@@ -31,17 +31,17 @@ void paintsquiggles::paint(int sz, symgroup sym)
 {
 	painter::paint(sz,sym);
 	stripes_grid grid(this);
-	double (stripes_grid::*norm)(int,int);
+	function<double(int,int)> norm;
 	switch(sym) {
 	case SYM_P3:
 	case SYM_P31M:
 	case SYM_P3M1:
 	case SYM_P6:
 	case SYM_P6M:
-    	norm=&stripes_grid::norm_hexagonal;
+    	norm=grid.norm_hexagonal();
 		break;
 	default:
-		norm=&stripes_grid::norm_orthogonal;
+		norm=grid.norm_orthogonal();
   	}
 	std::fill(red.begin(),red.end(),0);
 	std::fill(green.begin(),green.end(),0);
@@ -86,15 +86,10 @@ void paintsquiggles::paint(int sz, symgroup sym)
 
 void paintsquiggles::fill(const stripes_grid &grid)
 {
-	int i,j;
-	double norm(0.);
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++) {
-			double d=grid.get_symmetric(i,j).real();
-			norm+=d*d;
-		}
+	double norm=grid.intensity();
 	norm=sqrt(norm)/(size*64);
 	double height, alpha;
+	int i, j;
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++) {
 			height=grid.get_symmetric(i,j).real()/norm;

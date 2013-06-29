@@ -19,43 +19,62 @@
  ***************************************************************************/
 
 #include "../stripes_common.h"
+#include "../randgen.h"
 #include "paintstripes.h"
+
+#include <complex>
+#include <tuple>
+
+using std::tuple;
+using std::make_tuple;
+
+typedef std::complex<double> cpx;
+
+tuple<cpx,cpx,cpx> random_levy_6d(double alpha, double scale) {
+	cpx z1(random_normal(1),random_normal(1));
+	cpx z2(random_normal(1),random_normal(1));
+	cpx z3(random_normal(1),random_normal(1));
+	double r=0;
+	int i;
+	for(i=0;i<6;i++)
+		r+=random_levy_1d_power_alpha(alpha,scale);
+	r = pow(r,1/alpha)/(sqrt(std::norm(z1)+std::norm(z2)+std::norm(z3)));
+	return make_tuple(z1*r,z2*r,z3*r);
+}
 
 void paintstripes::paint(int sz, symgroup sym)
 {
 	painter::paint(sz,sym);
-	stripes_grid grid(this);
-	double (stripes_grid::*norm)(int,int);
+	stripes_grid gridr(this), gridg(this), gridb(this);
+	function<double(int,int)> norm;
 	switch(sym) {
 	case SYM_P3:
 	case SYM_P31M:
 	case SYM_P3M1:
 	case SYM_P6:
 	case SYM_P6M:
-    	norm=&stripes_grid::norm_hexagonal;
+    	norm=gridr.norm_hexagonal();
 		break;
 	default:
-		norm=&stripes_grid::norm_orthogonal;
+		norm=gridr.norm_orthogonal();
   	}
-	complex<double> z;
-	grid.generate(norm,levy_alpha);
-	fill(red,grid);
-	grid.generate(norm,levy_alpha);
-	fill(blue,grid);
-	grid.generate(norm,levy_alpha);
-	fill(green,grid);
+	int i,j;
+	for(i=0;i<size;i++)
+		for(j=0;j<size;j++)
+			tie(gridr(i,j),gridg(i,j),gridb(i,j))=random_levy_6d(levy_alpha,norm(i,j));
+	gridr.transform();
+	gridg.transform();
+	gridb.transform();
+	double s = gridr.intensity()+gridg.intensity()+gridb.intensity();
+	fill(red,gridr,s);
+	fill(blue,gridb,s);
+	fill(green,gridg,s);
 }
 
-void paintstripes::fill(vector<unsigned char> &arr, const stripes_grid &g)
+void paintstripes::fill(vector<unsigned char> &arr, const stripes_grid &g, double intensity)
 {
 	int i,j;
-	double norm(0.);
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++) {
-			double d=g.get_symmetric(i,j).real();
-			norm+=d*d;
-		}
-	norm=sqrt(norm)/(size*64);
+	double norm=sqrt(intensity/3)/(size*64);
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)
 			arr[i+size*j]=colorchop(128.+g.get_symmetric(i,j).real()/norm);

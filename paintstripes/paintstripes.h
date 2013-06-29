@@ -32,7 +32,7 @@ class paintstripes : virtual public painter
   void paint(int sz, symgroup sym);
   void set_alpha(double alpha) {levy_alpha=alpha;}
  private:
-  void fill(vector<unsigned char> &r, const stripes_grid &g);
+  void fill(vector<unsigned char> &r, const stripes_grid &g, double intensity);
   double levy_alpha;
 };
 

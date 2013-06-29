@@ -23,13 +23,13 @@
 
 using std::polar;
 
-void stripes_grid::generate(double (stripes_grid::*normfunc)(int,int), double alpha)
+void stripes_grid::generate(function<double(int,int)> &f, double alpha)
 {
 	clear();
 	int i,j;
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)
-			(*this)(i,j) = random_levy_2d(alpha,(this->*normfunc)(i,j));
+			(*this)(i,j) = random_levy_2d(alpha,f(i,j));
 	fftw_execute(plan);
 }
 
@@ -39,14 +39,31 @@ complex<double> stripes_grid::get_symmetric(int x, int y) const {
 	return sum;
 }
 
-double stripes_grid::norm_hexagonal(int x, int y) {
-	if(x==0&&y==0) x=1;
-	return 1./(3.-cos(phase*x)-cos(phase*y)-cos(phase*(x+y)));
+function<double(int,int)> stripes_grid::norm_hexagonal() {
+	double p=phase;
+	return [p] (int x, int y) {
+		if(x==0&&y==0) x=1;
+		return 1./(3.-cos(p*x)-cos(p*y)-cos(p*(x+y)));
+	};
 }
 
-double stripes_grid::norm_orthogonal(int x, int y) {
-	if(x==0&&y==0) x=1;
-	return 1./(2.-cos(phase*x)-cos(phase*y));
+function<double(int,int)> stripes_grid::norm_orthogonal() {
+	double p=phase;
+	return [p] (int x, int y) {
+		if(x==0&&y==0) x=1;
+		return 1./(2.-cos(p*x)-cos(p*y));
+	};
+}
+
+double stripes_grid::intensity() const {
+	double s=0;
+	int i, j;
+	for(i=0;i<size;i++)
+		for(j=0;j<size;j++) {
+			double d=get_symmetric(i,j).real();
+			s+=d*d;
+		}
+	return s;
 }
 
 double random_levy_1d_power_alpha(double alpha, double scale)
