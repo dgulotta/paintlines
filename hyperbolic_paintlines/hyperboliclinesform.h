@@ -31,6 +31,7 @@ class QComboBox;
 class QSpinBox;
 class QLabel;
 class QPushButton;
+class QDoubleSpinBox;
 class hyperbolic_paintlineswidget;
 
 class HyperbolicLinesForm : public QMainWindow
@@ -56,6 +57,7 @@ private:
   QSpinBox *spinSize;
   QSpinBox *spinColors;
   QPushButton *buttonDraw;
+  QDoubleSpinBox *spinThickness;
   hyperbolic_paintlineswidget *lines;
   int angles[11][3];
   int oldsymm;

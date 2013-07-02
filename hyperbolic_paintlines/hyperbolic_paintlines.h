@@ -32,6 +32,7 @@ class hyperbolic_paintlines : virtual public hyperbolic_painter
   hyperbolic_paintlines() : radius(4.99), brightness(5.), ncolors(0) {}
   void paint(int sz, hyperbolic_symmetry_group &sym);
   void set_ncolors(int n) {ncolors=n;}
+  void set_thickness(double r, double b) { radius=r; brightness=b; }
  private:
   function<void(const hyperbolic_coord &)> drawdot_symmetric;
   void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
