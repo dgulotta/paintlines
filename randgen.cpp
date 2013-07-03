@@ -36,6 +36,11 @@ int random_int(int n)
 	return uniform_int_distribution<int>(0,n-1)(rnd);
 }
 
+int random_range_inclusive(int a, int b)
+{
+	return uniform_int_distribution<int>(a,b)(rnd);
+}
+
 bool random_bool()
 {
 	return random_int(2)!=0;

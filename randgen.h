@@ -25,6 +25,8 @@ void seed();
 
 int random_int(int n);
 
+int random_range_inclusive(int a, int b);
+
 bool random_bool();
 
 double random_uniform();
