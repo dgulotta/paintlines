@@ -282,7 +282,6 @@ private:
 	tuple<hyperbolic_coord,bool> fundamental_domain_alternating(const hyperbolic_coord &hc);
 	tuple<hyperbolic_coord,bool> fundamental_domain_random(const hyperbolic_coord &hc);
 	unordered_map<long,bool> random_flips;
-	flip_type type;
 	decltype(&hyperbolic_symmetry_group::fundamental_domain) fdfunc;
 };
 
@@ -306,26 +305,16 @@ function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(c
 class hyperbolic_painter : public virtual basic_painter
 {
  public:
-  hyperbolic_painter() : pt(POINCARE) {};
+  hyperbolic_painter() : pt(POINCARE), sg(nullptr) {};
   void paint(int sz, hyperbolic_symmetry_group &sym) {
     basic_painter::paint(sz);
-    //size=sz;
-    pixel_width=2./size;
     sg=&sym;
-    //red.resize(size*size);
-    //green.resize(size*size);
-    //blue.resize(size*size);
   }
   void set_projtype(projtype _pt) {pt=_pt;}
   screen_coord toscreen(const planar_coord &p) {
     return screen_coord(size*(p.x+1.)/2.,size*(p.y+1.)/2.);
   }
  protected:
-  //int size;
-  double pixel_width;
-  //vector<unsigned char> red;
-  //vector<unsigned char> green;
-  //vector<unsigned char> blue;
   hyperbolic_symmetry_group *sg;
   projtype pt;
 };

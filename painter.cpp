@@ -239,7 +239,7 @@ void painter::randomize(int xtiles, int ytiles, vector<unsigned char> &r,
 {
 	int width=xtiles*size;
 	int height=ytiles*size;
-	int i,j, k, l;
+	int k, l;
 	int bigsize=width*height;
 	r.resize(bigsize);
 	g.resize(bigsize);

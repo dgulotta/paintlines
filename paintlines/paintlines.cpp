@@ -104,8 +104,6 @@ void paintlines::paint(int sz, symgroup sym)
   }
   last.resize(size*size);
   alpha.resize(size*size);
-  int z;
-  double d1, d2;
   t=ncolors;
   fill(red.begin(),red.end(),0);
   fill(green.begin(),green.end(),0);
@@ -115,7 +113,6 @@ void paintlines::paint(int sz, symgroup sym)
   green_brushes.resize(ncolors);
   blue_brushes.resize(ncolors);
   pastel.resize(ncolors);
-  unsigned char temp;
   while(t--) {
   	generate_color(t);
     vector<paintrule>::iterator it=
@@ -233,7 +230,7 @@ void paintlines::drawcluster(double x, double y, double var, int maxdepth)
 {
   double mx=x,my=y;
   (*randomnormal)(mx,my,var);
-  int z=random_int(maxdepth), i, j;
+  int z=random_int(maxdepth);
   while(z--) {
     drawsmoothline2(x,y,mx,my,var/4.,1.);
     drawcluster(mx,my,var/4.,maxdepth-1);
@@ -354,7 +351,7 @@ void paintlines::drawcluster11(double x, double y, double var, int maxdepth,
 {
   double xx=x, yy=y;
   (*randomnormal)(x,y,var);
-  int z=random_int(maxdepth), i, j;
+  int z=random_int(maxdepth);
   while(z--) {
     drawcluster11(x,y,var/2.,maxdepth-1,dist);
     drawsmoothline2(x,y,xx,yy,var,dist);
@@ -379,7 +376,7 @@ void paintlines::drawcluster12(int x, int y, int d, unsigned char myalpha)
 void paintlines::drawcluster13(double x, double y, double var, int maxdepth)
 {
   (*randomnormal)(x,y,var);
-  int z=random_int(maxdepth), i, j;
+  int z=random_int(maxdepth);
   while(z--) drawcluster13(x,y,var/2.,maxdepth-1);
   int s=sqrt(var);
   drawdotsymmetric(x,y,s,var/1275.);
@@ -388,7 +385,7 @@ void paintlines::drawcluster13(double x, double y, double var, int maxdepth)
 void paintlines::drawcluster14(double x, double y, double var, int maxdepth)
 {
   (*randomnormal)(x,y,var);
-  int z=random_int(maxdepth), i, j;
+  int z=random_int(maxdepth);
   while(z--) drawcluster13(x,y,var/2.,maxdepth-1);
   double s=sqrt(var);
   drawcluster5(x-s/2.,y-s/2.,s);
@@ -416,7 +413,7 @@ void paintlines::drawcluster15(double x, double y, double m, double px,
     drawcluster15(x+px2*t2/m2,y+py2*t2/m2,m2,px2,py2,maxdepth-1);
   }
   else {
-    int s=sqrt(m), i, j;
+    int s=sqrt(m);
     drawdotsymmetric(x,y,s,m/1275.);
   }
 }
@@ -583,7 +580,6 @@ void paintlines::drawsmoothline4(double x1, double y1, double x2, double y2,
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
   (*randomnormal)(mx,my,var);
   var/=2.;
-  int i, j;
   double a=15.*sqrt(var);
   if(a<50.) a=50.;
   int s=sqrt(a);
