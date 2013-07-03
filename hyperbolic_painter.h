@@ -192,13 +192,6 @@ class hyperbolic_transformation
     ans.z=zx*c.x+zy*c.y+zz*c.z;
     return ans;
   }
-  inline hyperbolic_coord transpose(const hyperbolic_coord &c) const {
-    hyperbolic_coord ans;
-    ans.x=xx*c.x+yx*c.y+zx*c.z;
-    ans.y=xy*c.x+yy*c.y+zy*c.z;
-    ans.z=xz*c.x+yz*c.y+zz*c.z;
-    return ans;
-  }
   inline hyperbolic_coord inverse(const hyperbolic_coord &c) const {
     hyperbolic_coord ans;
     ans.x=xx*c.x+yx*c.y-zx*c.z;
