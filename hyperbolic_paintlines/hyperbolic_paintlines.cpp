@@ -22,7 +22,7 @@
 #include "../randgen.h"
 
 #include <iostream>
-#include <cstdlib>
+#include <limits>
 using namespace std;
 using namespace std::placeholders;
 
@@ -117,7 +117,7 @@ void hyperbolic_paintlines::drawdot(const hyperbolic_coord &hc)
 }
 
 void hyperbolic_paintlines::fill_poincare(int t) {
-	vector<unsigned char> mask(size*size,0);
+	vector<float> mask(size*size,std::numeric_limits<float>::infinity());
 	int x,y,i,j;
 	for(x=0;x<size;x++)
 		for(y=0;y<size;y++)
@@ -133,8 +133,8 @@ void hyperbolic_paintlines::fill_poincare(int t) {
 				for(i=-r;i<=r;i++)
 					for(j=-r;j<=r;j++) {
 						int index = (x+i)+(y+j)*size;
-						unsigned char val = 255.99/(1.+pow(d2*(i*i+j*j),sharpness));
-						if(mask[index]<val) mask[index]=val;
+						float val = d2*(i*i+j*j);
+						if(mask[index]>val) mask[index]=val;
 					}
 			}
 	fill_color(mask,t);
@@ -142,7 +142,7 @@ void hyperbolic_paintlines::fill_poincare(int t) {
 
 void hyperbolic_paintlines::fill_klein(int t)
 {
-	vector<unsigned char> mask(size*size,0);
+	vector<float> mask(size*size,std::numeric_limits<float>::infinity());
 	int x,y,i,j;
 	for(x=0;x<size;x++)
 		for(y=0;y<size;y++)
@@ -162,19 +162,20 @@ void hyperbolic_paintlines::fill_klein(int t)
 				for(i=-r;i<=r;i++)
 					for(j=-r;j<=r;j++) {
 						int index = (x+i)+(y+j)*size;
-						unsigned char val = 255.99/(1.+pow(xx*i*i+yy*j*j+xy*i*j,sharpness));
-						if(mask[index]<val) mask[index]=val;
+						float val = xx*i*i+yy*j*j+xy*i*j;
+						if(mask[index]>val) mask[index]=val;
 					}
 			}
 	fill_color(mask,t);
 }
 
-void hyperbolic_paintlines::fill_color(const vector<unsigned char> &mask, int t) {
+void hyperbolic_paintlines::fill_color(const vector<float> &mask, int t) {
 	int r=red_brushes[t], g=green_brushes[t], b=blue_brushes[t], i;
 	for(i=size*size-1;i>=0;i--) {
-		red[i]+=mask[i]*(r-red[i])/255;
-		green[i]+=mask[i]*(g-green[i])/255;
-		blue[i]+=mask[i]*(b-blue[i])/255;
+		unsigned short a = 255.99/(1.+pow(mask[i],sharpness));
+		red[i]+=a*(r-red[i])/255;
+		green[i]+=a*(g-green[i])/255;
+		blue[i]+=a*(b-blue[i])/255;
 	}
 }
 

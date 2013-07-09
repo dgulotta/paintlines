@@ -38,7 +38,7 @@ class hyperbolic_paintlines : virtual public hyperbolic_painter
   void drawdot(const hyperbolic_coord & hc);
   void fill_poincare(int t);
   void fill_klein(int t);
-  void fill_color(const vector<unsigned char> &mask, int t);
+  void fill_color(const vector<float> &mask, int t);
   planar_coord (*proj)(const hyperbolic_coord &);
   void drawsmoothline(const hyperbolic_coord &end1, 
 		      const hyperbolic_coord &end2, double var, double min);
