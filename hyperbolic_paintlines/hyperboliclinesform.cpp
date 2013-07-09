@@ -167,6 +167,10 @@ HyperbolicLinesForm::HyperbolicLinesForm()
   spinThickness = new QDoubleSpinBox;
   spinThickness->setValue(1);
   sideLayout->addWidget(spinThickness);
+  sideLayout->addWidget(new QLabel(tr("Sharpness")));
+  spinSharpness = new QDoubleSpinBox;
+  spinSharpness->setValue(1.5);
+  sideLayout->addWidget(spinSharpness);
   buttonDraw=new QPushButton(tr("Draw"));
   sideLayout->addWidget(buttonDraw);
   sideLayout->addStretch(1);
@@ -226,7 +230,7 @@ void HyperbolicLinesForm::draw()
   }
   if(sg) {
   	double t = spinThickness->value();
-  	lines->set_thickness(5*t,5*t*t);
+  	lines->set_thickness(5*t,5*t*t,spinSharpness->value());
     lines->draw(spinSize->value(),spinColors->value(),*sg,(projtype)comboModel->currentIndex());
 	delete sg;
   }

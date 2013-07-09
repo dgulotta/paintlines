@@ -138,7 +138,7 @@ void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
   screen_coord sc=toscreen(pc);
   for(i=-r;i<=r;i++)
     for(j=-r;j<=r;j++) {
-      drawpixel(sc.x+i,sc.y+j,255.99/(1.+d*(i*i+j*j)));
+      drawpixel(sc.x+i,sc.y+j,255.99/(1.+pow(d*(i*i+j*j),sharpness)));
     }
 }
 
@@ -156,7 +156,7 @@ void hyperbolic_paintlines::drawdot_klein(const hyperbolic_coord &hc)
   screen_coord sc=toscreen(pc);
   for(i=-r;i<=r;i++)
     for(j=-r;j<=r;j++) {
-      drawpixel(sc.x+i,sc.y+j,255.99/(1.+xx*i*i+xy*i*j+yy*j*j));
+      drawpixel(sc.x+i,sc.y+j,255.99/(1.+pow(xx*i*i+xy*i*j+yy*j*j,sharpness)));
     }
 }
 

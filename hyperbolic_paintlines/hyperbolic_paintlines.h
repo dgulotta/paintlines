@@ -29,10 +29,10 @@ hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 class hyperbolic_paintlines : virtual public hyperbolic_painter
 {
  public:
-  hyperbolic_paintlines() : radius(4.99), brightness(5.), ncolors(0) {}
+  hyperbolic_paintlines() : radius(4.99), brightness(5.), sharpness(1.5), ncolors(0) {}
   void paint(int sz, hyperbolic_symmetry_group &sym);
   void set_ncolors(int n) {ncolors=n;}
-  void set_thickness(double r, double b) { radius=r; brightness=b; }
+  void set_thickness(double r, double b, double s) { radius=r; brightness=b; sharpness=s; }
  private:
   function<void(const hyperbolic_coord &)> drawdot_symmetric;
   void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
@@ -44,6 +44,7 @@ class hyperbolic_paintlines : virtual public hyperbolic_painter
 		      const hyperbolic_coord &end2, double var, double min);
   double radius;
   double brightness;
+  double sharpness;
   int ncolors;
   int t;
   vector<unsigned char> red_brushes;
