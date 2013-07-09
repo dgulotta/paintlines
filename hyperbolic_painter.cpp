@@ -131,6 +131,18 @@ planar_coord klein_projection(const hyperbolic_coord &hc)
   return planar_coord(hc.x/hc.z,hc.y/hc.z);
 }
 
+hyperbolic_coord inverse_poincare_projection(const planar_coord &pc)
+{
+	double r = (1-pc.x*pc.x-pc.y*pc.y)/2;
+	return hyperbolic_coord(pc.x/r,pc.y/r,(1-r)/r);
+}
+
+hyperbolic_coord inverse_klein_projection(const planar_coord &pc)
+{
+	double r = sqrt(1-pc.x*pc.x-pc.y*pc.y);
+	return hyperbolic_coord(pc.x/r,pc.y/r,1/r);
+}
+
 class hyperbolic_triangle {
 public:
 	hyperbolic_triangle(double _a1, double _a2, double _a3)

@@ -35,11 +35,11 @@ class hyperbolic_paintlines : virtual public hyperbolic_painter
   void set_thickness(double r, double b, double s) { radius=r; brightness=b; sharpness=s; }
  private:
   function<void(const hyperbolic_coord &)> drawdot_symmetric;
-  void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
+  void drawdot(const hyperbolic_coord & hc);
+  void fill_poincare(int t);
+  void fill_klein(int t);
+  void fill_color(const vector<unsigned char> &mask, int t);
   planar_coord (*proj)(const hyperbolic_coord &);
-  void drawdot_poincare(const hyperbolic_coord &pc);
-  void drawdot_klein(const hyperbolic_coord &pc);
-  void drawpixel(int x, int y, unsigned char myalpha);
   void drawsmoothline(const hyperbolic_coord &end1, 
 		      const hyperbolic_coord &end2, double var, double min);
   double radius;

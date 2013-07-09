@@ -49,19 +49,16 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
   fill(green.begin(),green.end(),0);
   fill(blue.begin(),blue.end(),0);
   double dist;
-  void (hyperbolic_paintlines::*drawdot)(const hyperbolic_coord &);
   switch(pt) {
   case POINCARE:
     proj=&poincare_projection;
-    drawdot=&hyperbolic_paintlines::drawdot_poincare;
     dist=1.+.01/size;
     break;
   case KLEIN:
     proj=&klein_projection;
-    drawdot=&hyperbolic_paintlines::drawdot_klein;
     dist=1.+.005/size;
   }
-  drawdot_symmetric=sym.symmetrize(bind(drawdot,this,_1));
+  drawdot_symmetric=sym.symmetrize(bind(&hyperbolic_paintlines::drawdot,this,_1));
   t=ncolors;
   while(t--) {
     switch(random_int(6)) {
@@ -106,59 +103,79 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
     } while(c.z>=25.||c2.z>=25.);
 	fill(alpha.begin(),alpha.end(),0);
     drawsmoothline(c,normalize(c2),.02,dist);
-	int i;
-	for(i=size*size-1;i>=0;i--) {
-		red[i]+=(alpha[i]/255.)*(red_brushes[t]-red[i]);
-		green[i]+=(alpha[i]/255.)*(green_brushes[t]-green[i]);
-		blue[i]+=(alpha[i]/255.)*(blue_brushes[t]-blue[i]);
-	}
+	if(pt==POINCARE)
+		fill_poincare(t);
+	else
+		fill_klein(t);
   }
 }
 
-void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
+void hyperbolic_paintlines::drawdot(const hyperbolic_coord &hc)
 {
-  planar_coord pc=(*proj)(hc);
-  double d=(hc.z+1.)/2.;
-  int r=int(radius/d)+1;
-  d=d*d/brightness;
-  int i,j;
-  screen_coord sc=toscreen(pc);
-  if(r>sc.x) r=sc.x;
-  if(r>sc.y) r=sc.y;
-  if(r+sc.x>=size) r=size-sc.x-1;
-  if(r+sc.y>=size) r=size-sc.y-1;
-  for(i=-r;i<=r;i++)
-    for(j=-r;j<=r;j++) {
-      drawpixel(sc.x+i,sc.y+j,255.99/(1.+pow(d*(i*i+j*j),sharpness)));
-    }
+	screen_coord sc = toscreen((*proj)(hc));
+	alpha[sc.x+sc.y*size]=255;
 }
 
-void hyperbolic_paintlines::drawdot_klein(const hyperbolic_coord &hc)
-{
-  planar_coord pc=(*proj)(hc);
-  double x2=hc.x*hc.x;
-  double y2=hc.y*hc.y;
-  double z2=(1.+x2+y2)/brightness;
-  double xx=z2*(1.+x2);
-  double yy=z2*(1.+y2);
-  double xy=z2*hc.x*hc.y;
-  int r=int(radius/hc.z)+1;
-  int i,j;
-  screen_coord sc=toscreen(pc);
-  if(r>sc.x) r=sc.x;
-  if(r>sc.y) r=sc.y;
-  if(r+sc.x>=size) r=size-sc.x-1;
-  if(r+sc.y>=size) r=size-sc.y-1;
-  for(i=-r;i<=r;i++)
-    for(j=-r;j<=r;j++) {
-      drawpixel(sc.x+i,sc.y+j,255.99/(1.+pow(xx*i*i+xy*i*j+yy*j*j,sharpness)));
-    }
+void hyperbolic_paintlines::fill_poincare(int t) {
+	vector<unsigned char> mask(size*size,0);
+	int x,y,i,j;
+	for(x=0;x<size;x++)
+		for(y=0;y<size;y++)
+			if(alpha[x+y*size]) {
+				planar_coord pc = fromscreen(screen_coord(x,y));
+				double d = 1/(1-pc.x*pc.x-pc.y*pc.y);
+				int r = int(radius/d)+1;
+				double d2=d*d/brightness;
+				if(r>x) r=x;
+				if(r>y) r=y;
+				if(r+x>=size) r=size-x-1;
+				if(r+y>=size) r=size-y-1;
+				for(i=-r;i<=r;i++)
+					for(j=-r;j<=r;j++) {
+						int index = (x+i)+(y+j)*size;
+						unsigned char val = 255.99/(1.+pow(d2*(i*i+j*j),sharpness));
+						if(mask[index]<val) mask[index]=val;
+					}
+			}
+	fill_color(mask,t);
 }
 
-void hyperbolic_paintlines::drawpixel(int x, int y, unsigned char myalpha)
+void hyperbolic_paintlines::fill_klein(int t)
 {
-	int i=x+y*size;
-	if(myalpha>alpha[i]) alpha[i]=myalpha;
+	vector<unsigned char> mask(size*size,0);
+	int x,y,i,j;
+	for(x=0;x<size;x++)
+		for(y=0;y<size;y++)
+			if(alpha[x+y*size]) {
+				planar_coord pc = fromscreen(screen_coord(x,y));
+				double x2 = pc.x*pc.x, y2 = pc.y*pc.y;
+				double d = 1/(1-pc.x*pc.x-pc.y*pc.y);
+				double d2 = d*d/brightness;
+				double xx = d2*(1-y2)/2;
+				double yy = d2*(1-x2)/2;
+				double xy = d2*pc.x*pc.y;
+				int r = int(2*radius/sqrt(d))+1;
+				if(r>x) r=x;
+				if(r>y) r=y;
+				if(r+x>=size) r=size-x-1;
+				if(r+y>=size) r=size-y-1;
+				for(i=-r;i<=r;i++)
+					for(j=-r;j<=r;j++) {
+						int index = (x+i)+(y+j)*size;
+						unsigned char val = 255.99/(1.+pow(xx*i*i+yy*j*j+xy*i*j,sharpness));
+						if(mask[index]<val) mask[index]=val;
+					}
+			}
+	fill_color(mask,t);
+}
+
+void hyperbolic_paintlines::fill_color(const vector<unsigned char> &mask, int t) {
+	int r=red_brushes[t], g=green_brushes[t], b=blue_brushes[t], i;
+	for(i=size*size-1;i>=0;i--) {
+		red[i]+=mask[i]*(r-red[i])/255;
+		green[i]+=mask[i]*(g-green[i])/255;
+		blue[i]+=mask[i]*(b-blue[i])/255;
+	}
 }
 
 void hyperbolic_paintlines::drawsmoothline
