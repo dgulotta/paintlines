@@ -123,9 +123,10 @@ void hyperbolic_paintlines::fill_poincare(int t) {
 		for(y=0;y<size;y++)
 			if(alpha[x+y*size]) {
 				planar_coord pc = fromscreen(screen_coord(x,y));
-				double d = 1/(1-pc.x*pc.x-pc.y*pc.y);
-				int r = int(radius/d)+1;
-				double d2=d*d/brightness;
+				double z = 1-pc.x*pc.x-pc.y*pc.y;
+				if(z<=0) continue;
+				int r = int(radius*z);
+				double d2=1/(z*z*brightness);
 				if(r>x) r=x;
 				if(r>y) r=y;
 				if(r+x>=size) r=size-x-1;
@@ -149,12 +150,13 @@ void hyperbolic_paintlines::fill_klein(int t)
 			if(alpha[x+y*size]) {
 				planar_coord pc = fromscreen(screen_coord(x,y));
 				double x2 = pc.x*pc.x, y2 = pc.y*pc.y;
-				double d = 1/(1-pc.x*pc.x-pc.y*pc.y);
-				double d2 = d*d/brightness;
+				double z = 1-pc.x*pc.x-pc.y*pc.y;
+				if(z<=0) continue;
+				double d2 = 1/(z*z*brightness);
 				double xx = d2*(1-y2)/2;
 				double yy = d2*(1-x2)/2;
 				double xy = d2*pc.x*pc.y;
-				int r = int(2*radius/sqrt(d))+1;
+				int r = int(2*radius*sqrt(z));
 				if(r>x) r=x;
 				if(r>y) r=y;
 				if(r+x>=size) r=size-x-1;
@@ -172,10 +174,19 @@ void hyperbolic_paintlines::fill_klein(int t)
 void hyperbolic_paintlines::fill_color(const vector<float> &mask, int t) {
 	int r=red_brushes[t], g=green_brushes[t], b=blue_brushes[t], i;
 	for(i=size*size-1;i>=0;i--) {
-		unsigned short a = 255.99/(1.+pow(mask[i],sharpness));
-		red[i]+=a*(r-red[i])/255;
-		green[i]+=a*(g-green[i])/255;
-		blue[i]+=a*(b-blue[i])/255;
+		float f = mask[i];
+		if(isinf(f)) continue;
+		if(f==0) {
+			red[i]=r;
+			green[i]=g;
+			blue[i]=b;
+		}
+		else {
+			unsigned short a = 255.99/(1.+pow(f,sharpness));
+			red[i]+=a*(r-red[i])/255;
+			green[i]+=a*(g-green[i])/255;
+			blue[i]+=a*(b-blue[i])/255;
+		}
 	}
 }
 
