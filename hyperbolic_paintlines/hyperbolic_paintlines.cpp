@@ -123,6 +123,10 @@ void hyperbolic_paintlines::drawdot_poincare(const hyperbolic_coord &hc)
   d=d*d/brightness;
   int i,j;
   screen_coord sc=toscreen(pc);
+  if(r>sc.x) r=sc.x;
+  if(r>sc.y) r=sc.y;
+  if(r+sc.x>=size) r=size-sc.x-1;
+  if(r+sc.y>=size) r=size-sc.y-1;
   for(i=-r;i<=r;i++)
     for(j=-r;j<=r;j++) {
       drawpixel(sc.x+i,sc.y+j,255.99/(1.+pow(d*(i*i+j*j),sharpness)));
