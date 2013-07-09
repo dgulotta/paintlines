@@ -50,7 +50,6 @@ class hyperbolic_paintlines : virtual public hyperbolic_painter
   vector<unsigned char> red_brushes;
   vector<unsigned char> green_brushes;
   vector<unsigned char> blue_brushes;
-  vector<int> last;
   vector<unsigned char> alpha;
   vector<bool> pastel;
 };
