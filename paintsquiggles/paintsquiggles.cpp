@@ -103,7 +103,7 @@ void paintsquiggles::generate(stripes_grid &grid, function<double(int,int)> &f) 
 	int i,j;
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)
-			grid(i,j) = random_levy_2d(levy_alpha,1.);
+			grid(i,j) = random_levy_1d(levy_alpha,1.);
 	grid.transform();
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)

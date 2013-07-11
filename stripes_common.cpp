@@ -56,6 +56,16 @@ double stripes_grid::intensity() const {
 	return s;
 }
 
+double random_levy_1d(double alpha, double scale)
+{
+	double u, v, t, s;
+	u = (random_angle()-M_PI)/2;
+	v = random_exponential(1);
+	t = scale*sin(alpha*u)/pow(cos(u),1/alpha);
+	s = pow(cos((1-alpha)*u)/v,(1-alpha)/alpha);
+	return t*s;
+}
+
 double random_levy_1d_power_alpha(double alpha, double scale)
 {
 	double u, v, t, s;

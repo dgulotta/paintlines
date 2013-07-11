@@ -58,6 +58,8 @@ private:
 	double phase;
 };
 
+double random_levy_1d(double alpha, double scale);
+
 double random_levy_1d_power_alpha(double alpha, double scale);
 
 complex<double> random_levy_2d(double alpha, double scale);
