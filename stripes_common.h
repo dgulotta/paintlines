@@ -45,7 +45,6 @@ public:
 	const complex<double> operator () (int x, int y) const { return array[mod(x,size)+size*mod(y,size)];}
 	complex<double> get_symmetric(int x, int y) const;
 	void clear() { fill(array,array+size*size,complex<double>(0,0)); }
-	void generate(function<double(int,int)> &f, double alpha);
 	function<double(int,int)> norm_hexagonal();
 	function<double(int,int)> norm_orthogonal();
 	void transform() { fftw_execute(plan); }

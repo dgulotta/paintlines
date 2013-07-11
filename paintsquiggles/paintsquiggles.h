@@ -29,17 +29,20 @@ class stripes_grid;
 class paintsquiggles : virtual public painter
 {
  public:
-  paintsquiggles() : levy_alpha(1.0), thickness(1.), sharpness(2.) {}
+  paintsquiggles() : levy_alpha(1.0), exponent(2.), thickness(1.), sharpness(2.) {}
   void paint(int sz, symgroup sym);
   void set_alpha(double alpha) {levy_alpha=alpha;}
+  void set_exponent(double e) {exponent = e;}
   void set_ncolors(int n) {n_colors=n;}
   void set_thickness(double t) {thickness=t;}
   void set_sharpness(double s) {sharpness=s;}
  private:
   void fill(const stripes_grid &grid);
+  void generate(stripes_grid &grid, function<double(int,int)> &f);
   int n_colors;
   unsigned char redbrush, greenbrush, bluebrush;
   double levy_alpha;
+  double exponent;
   double thickness;
   double sharpness;
 };

@@ -23,16 +23,6 @@
 
 using std::polar;
 
-void stripes_grid::generate(function<double(int,int)> &f, double alpha)
-{
-	clear();
-	int i,j;
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++)
-			(*this)(i,j) = random_levy_2d(alpha,f(i,j));
-	fftw_execute(plan);
-}
-
 complex<double> stripes_grid::get_symmetric(int x, int y) const {
 	complex<double> sum(0,0);
 	paint->symmetrize([&](int a, int b) { sum+=(*this)(a,b); })(x,y);

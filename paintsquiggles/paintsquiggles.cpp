@@ -1,8 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2005, 2013 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
- *   Portions copyright (C)  1996, 1997, 1998, 1999, 2000 James Theiler,   *
- *   Brian Gough                                                           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -79,7 +77,7 @@ void paintsquiggles::paint(int sz, symgroup sym)
 				greenbrush=0;
 				bluebrush=random_int(256);
 		}
-		grid.generate(norm,levy_alpha);
+		generate(grid,norm);
 		fill(grid);
 	}
 }
@@ -98,4 +96,17 @@ void paintsquiggles::fill(const stripes_grid &grid)
 			green[i+size*j]=((1-alpha)*green[i+size*j]+alpha*greenbrush);
 			blue[i+size*j]=((1-alpha)*blue[i+size*j]+alpha*bluebrush);
 		}
+}
+
+void paintsquiggles::generate(stripes_grid &grid, function<double(int,int)> &f) {
+	grid.clear();
+	int i,j;
+	for(i=0;i<size;i++)
+		for(j=0;j<size;j++)
+			grid(i,j) = random_levy_2d(levy_alpha,1.);
+	grid.transform();
+	for(i=0;i<size;i++)
+		for(j=0;j<size;j++)
+			grid(i,j) *= pow(f(i,j),exponent/2.);
+	grid.transform();
 }
