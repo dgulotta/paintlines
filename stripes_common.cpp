@@ -33,7 +33,7 @@ function<double(int,int)> stripes_grid::norm_hexagonal() {
 	double p=phase;
 	return [p] (int x, int y) {
 		if(x==0&&y==0) x=1;
-		return 1./(3.-cos(p*x)-cos(p*y)-cos(p*(x+y)));
+		return 1./(3.-cos(p*x)-cos(p*y)-cos(p*(x-y)));
 	};
 }
 
