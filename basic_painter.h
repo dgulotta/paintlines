@@ -27,6 +27,9 @@ using std::tie;
 using std::tuple;
 using std::vector;
 
+typedef tuple<unsigned char,unsigned char,unsigned char> color_tuple;
+typedef tuple<unsigned char &,unsigned char &,unsigned char &> color_tuple_ref;
+
 class basic_painter
 {
 	public:
@@ -37,7 +40,7 @@ class basic_painter
 			green.resize(size*size);
 			blue.resize(size*size);
 		}
-		tuple<unsigned char &,unsigned char &,unsigned char &> pixel(int x, int y) {
+		color_tuple_ref pixel(int x, int y) {
 			int index=x+y*size;
 			return tie(red[index],green[index],blue[index]);
 		}

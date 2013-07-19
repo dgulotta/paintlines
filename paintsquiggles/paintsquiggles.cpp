@@ -44,45 +44,18 @@ void paintsquiggles::paint(int sz, symgroup sym)
 	std::fill(red.begin(),red.end(),0);
 	std::fill(green.begin(),green.end(),0);
 	std::fill(blue.begin(),blue.end(),0);
-	int n(n_colors);
-	while(n--) {
-		switch(random_int(6)) {
-			case 0:
-				redbrush=255;
-				greenbrush=random_int(256);
-				bluebrush=0;
-				break;
-			case 1:
-				redbrush=0;
-				greenbrush=255;
-				bluebrush=random_int(256);
-				break;
-			case 2:
-				redbrush=random_int(256);
-				greenbrush=0;
-				bluebrush=255;
-				break;
-			case 3:
-				redbrush=random_int(256);
-				greenbrush=255;
-				bluebrush=0;
-				break;
-			case 4:
-				redbrush=0;
-				greenbrush=random_int(256);
-				bluebrush=255;
-				break;
-			default:
-				redbrush=255;
-				greenbrush=0;
-				bluebrush=random_int(256);
-		}
+	layers.resize(n_colors);
+	for(layer &l : layers) {
+		l.pixels.resize(size*size);
+		l.color = random_color();
+		l.pastel = false;
 		generate(grid,norm);
-		fill(grid);
+		fill(grid,l.pixels);
 	}
+	merge();
 }
 
-void paintsquiggles::fill(const stripes_grid &grid)
+void paintsquiggles::fill(const stripes_grid &grid,vector<unsigned char> &pix)
 {
 	double norm=grid.intensity();
 	norm=sqrt(norm)/(size*64);
@@ -91,10 +64,7 @@ void paintsquiggles::fill(const stripes_grid &grid)
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++) {
 			height=grid.get_symmetric(i,j).real()/norm;
-			alpha=1./(pow(abs(height)/(10.*thickness),sharpness)+1.);
-			red[i+size*j]=((1-alpha)*red[i+size*j]+alpha*redbrush);
-			green[i+size*j]=((1-alpha)*green[i+size*j]+alpha*greenbrush);
-			blue[i+size*j]=((1-alpha)*blue[i+size*j]+alpha*bluebrush);
+			pix[i+size*j]=255.99/(pow(abs(height)/(10.*thickness),sharpness)+1.);
 		}
 }
 

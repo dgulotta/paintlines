@@ -46,47 +46,6 @@ void randomnormal_orthogonal(double &x, double &y, double var)
   y+=random_normal(v);
 }
 
-void paintlines::generate_color(int t) {
-    switch(random_int(6)) {
-    case 0:
-      red_brushes[t]=255;
-      green_brushes[t]=random_int(256);
-      blue_brushes[t]=0;
-      break;
-    case 1:
-      red_brushes[t]=0;
-      green_brushes[t]=255;
-      blue_brushes[t]=random_int(256);
-      break;
-    case 2:
-      red_brushes[t]=random_int(256);
-      green_brushes[t]=0;
-      blue_brushes[t]=255;
-      break;
-    case 3:
-      red_brushes[t]=random_int(256);
-      green_brushes[t]=255;
-      blue_brushes[t]=0;
-      break;
-    case 4:
-      red_brushes[t]=0;
-      green_brushes[t]=random_int(256);
-      blue_brushes[t]=255;
-      break;
-    default:
-      red_brushes[t]=255;
-      green_brushes[t]=0;
-      blue_brushes[t]=random_int(256);
-    }
-}
-
-void paintlines::generate_color_bw(int t) {
-	int z = random_int(256);
-	red_brushes[t]=z;
-	green_brushes[t]=z;
-	blue_brushes[t]=z;
-}
-
 void paintlines::paint(int sz, symgroup sym)
 {
   painter::paint(sz,sym);
@@ -102,42 +61,17 @@ void paintlines::paint(int sz, symgroup sym)
   default:
     randomnormal=&randomnormal_orthogonal;
   }
-  last.resize(size*size);
-  alpha.resize(size*size);
-  t=ncolors;
-  fill(red.begin(),red.end(),0);
-  fill(green.begin(),green.end(),0);
-  fill(blue.begin(),blue.end(),0);
-  fill(last.begin(),last.end(),-1);
-  red_brushes.resize(ncolors);
-  green_brushes.resize(ncolors);
-  blue_brushes.resize(ncolors);
-  pastel.resize(ncolors);
-  while(t--) {
-  	generate_color(t);
-    vector<paintrule>::iterator it=
-	    lower_bound(rules.begin(),rules.end(),random_int(rules.back().weight)+1);
-    pastel[t]=it->pastel;
+  layers.resize(ncolors);
+  for(layer &l : layers) {
+    auto it=lower_bound(rules.begin(),rules.end(),random_int(rules.back().weight)+1);
+	l.pixels.resize(size*size);
+	fill(l.pixels.begin(),l.pixels.end(),0);	
+	active_grid=&(l.pixels);
+	l.color=random_color();
+    l.pastel=it->pastel;
     handle_rule(it->type);
   }
-  int x, y, i;
-  for(x=0;x<size;x++)
-    for(y=0;y<size;y++) {
-      i=x+y*size;
-      if(last[i]!=-1) {
-        if(pastel[last[i]]) {
-	  double a=alpha[i]/255.;
-	  red[i]+=a*(alpha[i]+(1-a)*red_brushes[last[i]]-red[i]);
-	  green[i]+=a*(alpha[i]+(1-a)*green_brushes[last[i]]-green[i]);
-	  blue[i]+=a*(alpha[i]+(1-a)*blue_brushes[last[i]]-blue[i]);
-        }  
-	else {
-	  red[i]+=(alpha[i]/255.)*(red_brushes[last[i]]-red[i]);
-	  green[i]+=(alpha[i]/255.)*(green_brushes[last[i]]-green[i]);
-	  blue[i]+=(alpha[i]/255.)*(blue_brushes[last[i]]-blue[i]);
-	}
-      }
-    }
+  merge();
 }
 
 void paintlines::handle_rule(ruletype rt)
@@ -176,27 +110,8 @@ void paintlines::handle_rule(ruletype rt)
 
 void paintlines::drawpixel(int x, int y)
 {
-  int i=mod(x,size)+mod(y,size)*size;
-  if(last[i]==t) {
-    if(tempalpha>alpha[i]) alpha[i]=tempalpha;
-  }
-  else {
-    if(last[i]!=-1) {
-      if(pastel[last[i]]) {
-	double a=alpha[i]/255.;
-	red[i]+=a*(alpha[i]+(1-a)*red_brushes[last[i]]-red[i]);
-	green[i]+=a*(alpha[i]+(1-a)*green_brushes[last[i]]-green[i]);
-	blue[i]+=a*(alpha[i]+(1-a)*blue_brushes[last[i]]-blue[i]);
-      }
-      else {
-	red[i]+=(alpha[i]/255.)*(red_brushes[last[i]]-red[i]);
-	green[i]+=(alpha[i]/255.)*(green_brushes[last[i]]-green[i]);
-	blue[i]+=(alpha[i]/255.)*(blue_brushes[last[i]]-blue[i]);
-      }
-    }
-    last[i]=t;
-    alpha[i]=tempalpha;
-  }
+	unsigned char &a = (*active_grid)[mod(x,size)+mod(y,size)*size];
+	if(tempalpha>a) a=tempalpha;
 }
 
 void paintlines::drawdotsymmetric(int x, int y, int radius,double brightness)

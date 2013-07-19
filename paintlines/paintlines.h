@@ -21,7 +21,7 @@
 #ifndef _PAINTLINES_H
 #define _PAINTLINES_H
 
-#include "../painter.h"
+#include "../layer_painter.h"
 
 void randomnormal_orthogonal(double &x, double &y, double var);
 void randomnormal_hexagonal(double &x, double &y, double var);
@@ -38,7 +38,7 @@ struct paintrule
   bool operator < (int n) {return weight<n;}
 };
 
-class paintlines : virtual public painter
+class paintlines : virtual public layer_painter
 {
  public:
   paintlines() : ncolors(0) {}
@@ -60,15 +60,9 @@ class paintlines : virtual public painter
   symgroup get_symgroup() {return sg;}
   void set_ncolors(int n) {ncolors=n;}
  private:
-  vector<unsigned char> red_brushes;
-  vector<unsigned char> green_brushes;
-  vector<unsigned char> blue_brushes;
-  vector<int> last;
-  vector<unsigned char> alpha;
-  vector<bool> pastel;
   vector<paintrule> rules;
   void (*randomnormal)(double &, double &, double);
-  int t;
+  vector<unsigned char> *active_grid;
   int ncolors;
   unsigned char tempalpha;
   function<void(int,int)> drawfunc;
