@@ -20,6 +20,7 @@
 
 #include "../basicform.h"
 #include "paintlines.h"
+#include "../magick.h"
 
 class QCheckBox;
 class QComboBox;
@@ -40,6 +41,8 @@ private:
 class LinesForm : public BasicForm
 {
 	Q_OBJECT
+public:
+	virtual bool saveAs();
 protected:
 	virtual void addWidgets(QBoxLayout *sideLayout);
 	virtual painterwidget * createPainterWidget();

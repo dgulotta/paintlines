@@ -12,7 +12,8 @@ HEADERS	+= paintlines.h \
 	linesform.h \
 	../basicform.h \
 	../randgen.h \
-	../layer_painter.h
+	../layer_painter.h \
+	../magick.h
 
 SOURCES	+= paintlines.cpp \
 	main.cpp \
@@ -22,11 +23,15 @@ SOURCES	+= paintlines.cpp \
 	linesform.cpp \
 	../basicform.cpp \
 	../randgen.cpp \
-	../layer_painter.cpp
+	../layer_painter.cpp \
+	../magick.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11
 }
+
+QMAKE_CXXFLAGS += $$system(GraphicsMagick++-config --cppflags)
+LIBS += $$system(GraphicsMagick++-config --libs)
 
 unix {
   MOC_DIR = .moc

@@ -22,6 +22,7 @@
 
 #include "squigglesform.h"
 #include "paintsquiggleswidget.h"
+#include "../magick.h"
 
 void SquigglesForm::addWidgets(QBoxLayout *sideLayout)
 {
@@ -66,4 +67,21 @@ painterwidget * SquigglesForm::createPainterWidget()
 {
 	squiggles=new paintsquiggleswidget;
 	return squiggles;
+}
+
+bool SquigglesForm::saveAs()
+{
+	QString s=QFileDialog::getSaveFileName();
+	if(!s.isEmpty()) {
+		if(s.toUpper().endsWith(".TIFF")||s.toUpper().endsWith(".TIF")) {
+			return save_multilayer(squiggles->get_size(),squiggles->get_size(),squiggles->get_layers(),s.toStdString());
+		}
+		else {
+			painter->save(s,"PNG");
+			return true;
+		}
+	}
+	else {
+		return false;
+	}
 }

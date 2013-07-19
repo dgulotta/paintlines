@@ -8,7 +8,8 @@ Installation instructions
 Paintlines requires the following software:
 * A C++ compiler that supports C++11
 * Qt 4
-* FFTW 3 (required for paintstripes, paintsquiggles, and quasiperiodic_painstripes programs only)
+* FFTW 3 (required for paintstripes, paintsquiggles, and quasiperiodic_paintstripes programs only)
+* GraphicsMagick (required for paintlines and paintsquiggles programs only)
 
 The following commands will compile and run the 'paintclouds' program.  Other programs can be compiled similarly.
 ```

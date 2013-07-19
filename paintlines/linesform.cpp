@@ -70,3 +70,20 @@ void LinesForm::draw(int sz, int sym_index) {
 	lines->set_rules(rule_list);
 	lines->draw(sz,spinColors->value(),(symgroup)sym_index);
 }
+
+bool LinesForm::saveAs()
+{
+	QString s=QFileDialog::getSaveFileName();
+	if(!s.isEmpty()) {
+		if(s.toUpper().endsWith(".TIFF")||s.toUpper().endsWith(".TIF")) {
+			return save_multilayer(lines->get_size(),lines->get_size(),lines->get_layers(),s.toStdString());
+		}
+		else {
+			painter->save(s,"PNG");
+			return true;
+		}
+	}
+	else {
+		return false;
+	}
+}

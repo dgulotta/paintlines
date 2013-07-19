@@ -15,7 +15,8 @@ HEADERS	+= paintsquiggles.h \
 	squigglesform.h \
 	../randgen.h \
 	../stripes_common.h \
-	../layer_painter.h
+	../layer_painter.h \
+	../magick.h
 
 SOURCES	+= paintsquiggles.cpp \
 	paintsquiggleswidget.cpp \
@@ -26,11 +27,15 @@ SOURCES	+= paintsquiggles.cpp \
 	squigglesform.cpp \
 	../randgen.cpp \
 	../stripes_common.cpp \
-	../layer_painter.cpp
+	../layer_painter.cpp \
+	../magick.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11
 }
+
+QMAKE_CXXFLAGS += $$system(GraphicsMagick++-config --cppflags)
+LIBS += $$system(GraphicsMagick++-config --libs)
 
 unix {
   MOC_DIR = .moc

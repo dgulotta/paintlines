@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2013 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,38 +18,25 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _BASIC_PAINTER_H
-#define _BASIC_PAINTER_H
+#include <Magick++.h>
 
-#include <vector>
-#include <tuple>
-using std::tie;
-using std::tuple;
-using std::vector;
+#include "magick.h"
 
-typedef tuple<unsigned char,unsigned char,unsigned char> color_tuple;
-typedef tuple<unsigned char &,unsigned char &,unsigned char &> color_tuple_ref;
+using namespace Magick;
 
-class basic_painter
-{
-	public:
-		basic_painter() : size(0) {}
-		void paint(int sz) {
-			size=sz;
-			red.resize(size*size);
-			green.resize(size*size);
-			blue.resize(size*size);
+bool save_multilayer(int width, int height, const vector<layer> &layers, const std::string &name) {
+	try {
+		vector<Image> images(layers.size(),Image(Geometry(width,height),Color(0,0,0,255)));
+		int i, x, y, r, g, b;
+		for(i=0;i<layers.size();i++) {
+			tie(r,g,b)=layers[i].color;
+			for(y=0;y<height;y++)
+				for(x=0;x<width;x++)
+					images[i].pixelColor(x,y,Color(r,g,b,255-layers[i].pixels[x+y*width]));
 		}
-		color_tuple_ref pixel(int x, int y) {
-			int index=x+y*size;
-			return tie(red[index],green[index],blue[index]);
-		}
-		int get_size() { return size; }
-	protected:
-		int size;
-		vector<unsigned char> red;
-		vector<unsigned char> green;
-		vector<unsigned char> blue;
-};
-
-#endif
+		writeImages(images.begin(),images.end(),name);
+	} catch(...) {
+		return false;
+	}
+	return true;
+}

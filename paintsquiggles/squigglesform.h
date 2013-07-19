@@ -32,6 +32,8 @@ class paintsquiggleswidget;
 class SquigglesForm : public BasicForm
 {
   Q_OBJECT
+public slots:
+  virtual bool saveAs();
 protected:
   virtual void addWidgets(QBoxLayout *sideLayout);
   virtual painterwidget * createPainterWidget();

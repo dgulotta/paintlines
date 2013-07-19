@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2013 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,38 +18,11 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _BASIC_PAINTER_H
-#define _BASIC_PAINTER_H
+#ifndef _MAGICK_H
+#define _MAGICK_H
 
-#include <vector>
-#include <tuple>
-using std::tie;
-using std::tuple;
-using std::vector;
+#include "layer_painter.h"
 
-typedef tuple<unsigned char,unsigned char,unsigned char> color_tuple;
-typedef tuple<unsigned char &,unsigned char &,unsigned char &> color_tuple_ref;
-
-class basic_painter
-{
-	public:
-		basic_painter() : size(0) {}
-		void paint(int sz) {
-			size=sz;
-			red.resize(size*size);
-			green.resize(size*size);
-			blue.resize(size*size);
-		}
-		color_tuple_ref pixel(int x, int y) {
-			int index=x+y*size;
-			return tie(red[index],green[index],blue[index]);
-		}
-		int get_size() { return size; }
-	protected:
-		int size;
-		vector<unsigned char> red;
-		vector<unsigned char> green;
-		vector<unsigned char> blue;
-};
+bool save_multilayer(int width, int height, const vector<layer> &layers, const std::string &name);
 
 #endif

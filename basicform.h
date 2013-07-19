@@ -36,7 +36,7 @@ public:
   BasicForm();
   virtual ~BasicForm();
 protected slots:
-  bool saveAs();
+  virtual bool saveAs();
   void draw();
   void randomize();
   void restore();
