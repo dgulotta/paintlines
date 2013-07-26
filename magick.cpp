@@ -26,13 +26,21 @@ using namespace Magick;
 
 bool save_multilayer(int width, int height, const vector<layer> &layers, const std::string &name) {
 	try {
-		vector<Image> images(layers.size(),Image(Geometry(width,height),Color(0,0,0,255)));
+		// Graphicsmagick's alpha channel is the inverse of the usual
+		// alpha channel (0 = opaque, 255 = transparent)
+		// Also, it seems that if you create an image with an opaque
+		// default color, Graphicsmagick assumes that the image
+		// doesn't have an alpha channel
+		vector<Image> images(layers.size()+1,Image(Geometry(width,height),Color(0,0,0,255)));
 		int i, x, y, r, g, b;
+		for(y=0;y<height;y++)
+			for(x=0;x<width;x++)
+				images[0].pixelColor(x,y,Color(0,0,0,0));
 		for(i=0;i<layers.size();i++) {
 			tie(r,g,b)=layers[i].color;
 			for(y=0;y<height;y++)
 				for(x=0;x<width;x++)
-					images[i].pixelColor(x,y,Color(r,g,b,255-layers[i].pixels[x+y*width]));
+					images[i+1].pixelColor(x,y,Color(r,g,b,255-layers[i].pixels[x+y*width]));
 		}
 		writeImages(images.begin(),images.end(),name);
 	} catch(...) {
