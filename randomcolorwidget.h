@@ -18,29 +18,26 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _LAYER_PAINTER_H
+#include <QWidget>
+#include <QImage>
+#include <memory>
+#include "basic_painter.h"
 
-#define _LAYER_PAINTER_H
+class QLineEdit;
+class QCheckBox;
 
-#include "painter.h"
-
-struct layer {
-	vector<unsigned char> pixels;
-	color_tuple color;
-	bool pastel;
-};
-
-class layer_painter : virtual public painter {
+class RandomColorWidget : public QWidget {
+	Q_OBJECT
 public:
-	layer_painter() { clear_color_generator(); }
-	void set_color_generator(const function<color_tuple(void)> &f) { generate_color = f; }
-	void clear_color_generator() { generate_color = &layer_painter::random_color;}
-	const vector<layer> & get_layers() { return layers; }
-protected:
-	static color_tuple random_color();
-	function<color_tuple(void)> generate_color;
-	void merge();
-	vector<layer> layers;
+	RandomColorWidget();
+	color_tuple generate();
+	bool load();
+public slots:
+	void chooseImage();
+private:
+	QImage image;
+	QLineEdit * lineImagePath;
+	QCheckBox * checkCopyHue;
+	QCheckBox * checkCopySaturation;
+	QCheckBox * checkCopyLightness;
 };
-
-#endif

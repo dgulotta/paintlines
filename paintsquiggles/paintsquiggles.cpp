@@ -47,7 +47,7 @@ void paintsquiggles::paint(int sz, symgroup sym)
 	layers.resize(n_colors);
 	for(layer &l : layers) {
 		l.pixels.resize(size*size);
-		l.color = random_color();
+		l.color = generate_color();
 		l.pastel = false;
 		generate(grid,norm);
 		fill(grid,l.pixels);

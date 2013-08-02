@@ -16,7 +16,8 @@ HEADERS	+= paintsquiggles.h \
 	../randgen.h \
 	../stripes_common.h \
 	../layer_painter.h \
-	../magick.h
+	../magick.h \
+	../randomcolorwidget.h
 
 SOURCES	+= paintsquiggles.cpp \
 	paintsquiggleswidget.cpp \
@@ -28,7 +29,8 @@ SOURCES	+= paintsquiggles.cpp \
 	../randgen.cpp \
 	../stripes_common.cpp \
 	../layer_painter.cpp \
-	../magick.cpp
+	../magick.cpp \
+	../randomcolorwidget.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11

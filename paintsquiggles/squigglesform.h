@@ -27,6 +27,7 @@ class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
+class RandomColorWidget;
 class paintsquiggleswidget;
 
 class SquigglesForm : public BasicForm
@@ -43,6 +44,7 @@ protected:
   QDoubleSpinBox *spinExponent;
   QDoubleSpinBox *spinThickness;
   QDoubleSpinBox *spinSharpness;
+  RandomColorWidget *colorWidget;
   paintsquiggleswidget *squiggles;
 };
 

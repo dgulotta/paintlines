@@ -23,6 +23,7 @@
 #include "squigglesform.h"
 #include "paintsquiggleswidget.h"
 #include "../magick.h"
+#include "../randomcolorwidget.h"
 
 void SquigglesForm::addWidgets(QBoxLayout *sideLayout)
 {
@@ -50,6 +51,8 @@ void SquigglesForm::addWidgets(QBoxLayout *sideLayout)
   spinSharpness = new QDoubleSpinBox;
   spinSharpness->setValue(2.);
   sideLayout->addWidget(spinSharpness);
+  colorWidget = new RandomColorWidget;
+  sideLayout->addWidget(colorWidget);
 }
 
 void SquigglesForm::draw(int sz, int sym_index)
@@ -60,12 +63,15 @@ void SquigglesForm::draw(int sz, int sym_index)
 	squiggles->set_ncolors(spinColors->value());
 	squiggles->set_thickness(spinThickness->value());
 	squiggles->set_sharpness(spinSharpness->value());
+	if(!colorWidget->load())
+		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
 	squiggles->draw(sz,sg);
 }
 
 painterwidget * SquigglesForm::createPainterWidget()
 {
 	squiggles=new paintsquiggleswidget;
+	squiggles->set_color_generator(bind(&RandomColorWidget::generate,colorWidget));
 	return squiggles;
 }
 
