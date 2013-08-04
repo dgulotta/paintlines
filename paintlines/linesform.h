@@ -20,7 +20,6 @@
 
 #include "../basicform.h"
 #include "paintlines.h"
-#include "../magick.h"
 
 class QCheckBox;
 class QComboBox;

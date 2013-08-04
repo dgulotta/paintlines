@@ -5,6 +5,14 @@ CONFIG	+= qt warn_on release link_pkgconfig
 
 PKGCONFIG += fftw3
 
+packagesExist(GraphicsMagick++) {
+	PKGCONFIG += GraphicsMagick++
+	DEFINES += MULTIPAGE
+} else:packagesExist(Magick++) {
+	PKGCONFIG += Magick++
+	DEFINES += MULTIPAGE
+}
+
 HEADERS	+= paintsquiggles.h \
 	paintsquiggleswidget.h \
 	../painter.h \
@@ -16,7 +24,6 @@ HEADERS	+= paintsquiggles.h \
 	../randgen.h \
 	../stripes_common.h \
 	../layer_painter.h \
-	../magick.h \
 	../randomcolorwidget.h
 
 SOURCES	+= paintsquiggles.cpp \
@@ -29,15 +36,16 @@ SOURCES	+= paintsquiggles.cpp \
 	../randgen.cpp \
 	../stripes_common.cpp \
 	../layer_painter.cpp \
-	../magick.cpp \
 	../randomcolorwidget.cpp
+
+contains(DEFINES,MULTIPAGE) {
+	HEADERS += ../magick.h
+	SOURCES += ../magick.cpp
+}
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11
 }
-
-QMAKE_CXXFLAGS += $$system(GraphicsMagick++-config --cppflags)
-LIBS += $$system(GraphicsMagick++-config --libs)
 
 unix {
   MOC_DIR = .moc

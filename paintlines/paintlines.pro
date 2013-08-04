@@ -1,7 +1,15 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG	+= qt warn_on release
+CONFIG	+= qt warn_on release link_pkgconfig
+
+packagesExist(GraphicsMagick++) {
+	PKGCONFIG += GraphicsMagick++
+	DEFINES += MULTIPAGE
+} else:packagesExist(Magick++) {
+	PKGCONFIG += Magick++
+	DEFINES += MULTIPAGE
+}
 
 HEADERS	+= paintlines.h \
 	paintlineswidget.h \
@@ -12,8 +20,7 @@ HEADERS	+= paintlines.h \
 	linesform.h \
 	../basicform.h \
 	../randgen.h \
-	../layer_painter.h \
-	../magick.h
+	../layer_painter.h
 
 SOURCES	+= paintlines.cpp \
 	main.cpp \
@@ -23,15 +30,16 @@ SOURCES	+= paintlines.cpp \
 	linesform.cpp \
 	../basicform.cpp \
 	../randgen.cpp \
-	../layer_painter.cpp \
-	../magick.cpp
+	../layer_painter.cpp
+
+contains(DEFINES,MULTIPAGE) {
+	HEADERS += ../magick.h
+	SOURCES += ../magick.cpp
+}
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11
 }
-
-QMAKE_CXXFLAGS += $$system(GraphicsMagick++-config --cppflags)
-LIBS += $$system(GraphicsMagick++-config --libs)
 
 unix {
   MOC_DIR = .moc

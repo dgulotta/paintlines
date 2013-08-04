@@ -22,8 +22,10 @@
 
 #include "squigglesform.h"
 #include "paintsquiggleswidget.h"
-#include "../magick.h"
 #include "../randomcolorwidget.h"
+#ifdef MULTIPAGE
+#include "../magick.h"
+#endif
 
 void SquigglesForm::addWidgets(QBoxLayout *sideLayout)
 {
@@ -79,10 +81,13 @@ bool SquigglesForm::saveAs()
 {
 	QString s=QFileDialog::getSaveFileName();
 	if(!s.isEmpty()) {
+#ifdef MULTIPAGE
 		if(s.toUpper().endsWith(".TIFF")||s.toUpper().endsWith(".TIF")) {
 			return save_multilayer(squiggles->get_size(),squiggles->get_size(),squiggles->get_layers(),s.toStdString());
 		}
-		else {
+		else
+#endif
+		{
 			painter->save(s,"PNG");
 			return true;
 		}

@@ -22,6 +22,9 @@
 
 #include "linesform.h"
 #include "paintlineswidget.h"
+#ifdef MULTIPAGE
+#include "../magick.h"
+#endif
 
 PaintRuleWidget::PaintRuleWidget()
 {
@@ -75,10 +78,13 @@ bool LinesForm::saveAs()
 {
 	QString s=QFileDialog::getSaveFileName();
 	if(!s.isEmpty()) {
+#ifdef MULTIPAGE
 		if(s.toUpper().endsWith(".TIFF")||s.toUpper().endsWith(".TIF")) {
 			return save_multilayer(lines->get_size(),lines->get_size(),lines->get_layers(),s.toStdString());
 		}
-		else {
+		else
+#endif
+		{
 			painter->save(s,"PNG");
 			return true;
 		}
