@@ -136,8 +136,7 @@ bool BasicForm::saveAs()
 {
   QString s=QFileDialog::getSaveFileName();
   if(!s.isEmpty()) {
-    painter->save(s,"PNG");
-    return true;
+    return painter->save(s);
   }
   else {
     return false;

@@ -50,6 +50,9 @@ public:
     bool save(const QString &filename, const char *format) {
       return mypixmap.save(filename,format);
     }
+	bool save(const QString &filename) {
+		return mypixmap.save(filename);
+	}
 protected:
     void paintEvent(QPaintEvent *) {
       QPainter p(this);

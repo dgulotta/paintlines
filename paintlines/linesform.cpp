@@ -79,14 +79,15 @@ bool LinesForm::saveAs()
 	QString s=QFileDialog::getSaveFileName();
 	if(!s.isEmpty()) {
 #ifdef MULTIPAGE
-		if(s.toUpper().endsWith(".TIFF")||s.toUpper().endsWith(".TIF")) {
+		if((!buttonRestore->isEnabled())&&
+			(s.toUpper().endsWith(".TIFF")||s.toUpper().endsWith(".TIF"))&&
+			QMessageBox::question(this,"paintlines",tr("Save individiual layers?"),QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
 			return save_multilayer(lines->get_size(),lines->get_size(),lines->get_layers(),s.toStdString());
 		}
 		else
 #endif
 		{
-			painter->save(s,"PNG");
-			return true;
+			return painter->save(s);
 		}
 	}
 	else {
