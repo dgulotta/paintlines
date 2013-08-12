@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "../basicform.h"
+#include "../randomcolorwidget.h"
 #include "paintlines.h"
 
 class QCheckBox;
@@ -48,5 +49,6 @@ protected:
 	virtual void draw(int sz, int sym_index);
 	QSpinBox *spinColors;
 	vector<PaintRuleWidget *> rules;
+	RandomColorWidget *colorWidget;
 	paintlineswidget *lines;
 };

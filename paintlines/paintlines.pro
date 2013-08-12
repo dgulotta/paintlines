@@ -20,7 +20,8 @@ HEADERS	+= paintlines.h \
 	linesform.h \
 	../basicform.h \
 	../randgen.h \
-	../layer_painter.h
+	../layer_painter.h \
+	../randomcolorwidget.h
 
 SOURCES	+= paintlines.cpp \
 	main.cpp \
@@ -30,7 +31,8 @@ SOURCES	+= paintlines.cpp \
 	linesform.cpp \
 	../basicform.cpp \
 	../randgen.cpp \
-	../layer_painter.cpp
+	../layer_painter.cpp \
+	../randomcolorwidget.cpp
 
 contains(DEFINES,MULTIPAGE) {
 	HEADERS += ../magick.h

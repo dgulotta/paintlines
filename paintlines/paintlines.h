@@ -71,8 +71,6 @@ class paintlines : virtual public layer_painter
     tempalpha=myalpha;
     drawfunc(x,y);
   }
-  void generate_color(int t);
-  void generate_color_bw(int t);
   void drawdotsymmetric(int x, int y, int radius, double brightness);
   void drawcluster(double x, double y, double var, int maxdepth);
   void drawcluster2(int x, int y, int d);

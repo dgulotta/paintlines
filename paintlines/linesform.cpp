@@ -58,11 +58,14 @@ void LinesForm::addWidgets(QBoxLayout *sideLayout) {
 		sideLayout->addWidget(w);
 		rules.push_back(w);
 	}
+	colorWidget = new RandomColorWidget;
+	sideLayout->addWidget(colorWidget);
 }
 
 painterwidget * LinesForm::createPainterWidget()
 {
 	lines = new paintlineswidget;
+	lines->set_color_generator(bind(&RandomColorWidget::generate,colorWidget));
 	return lines;
 }
 
@@ -71,6 +74,8 @@ void LinesForm::draw(int sz, int sym_index) {
 	for(int i=0;i<rules.size();i++)
 		rule_list.push_back(rules[i]->rule());
 	lines->set_rules(rule_list);
+	if(!colorWidget->load())
+		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
 	lines->draw(sz,spinColors->value(),(symgroup)sym_index);
 }
 

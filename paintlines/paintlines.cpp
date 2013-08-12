@@ -67,7 +67,7 @@ void paintlines::paint(int sz, symgroup sym)
 	l.pixels.resize(size*size);
 	fill(l.pixels.begin(),l.pixels.end(),0);	
 	active_grid=&(l.pixels);
-	l.color=random_color();
+	l.color=generate_color();
     l.pastel=it->pastel;
     handle_rule(it->type);
   }
