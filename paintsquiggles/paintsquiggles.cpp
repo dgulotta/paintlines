@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <future>
 #include "../randgen.h"
 #include "../stripes_common.h"
 #include "paintsquiggles.h"
@@ -49,21 +50,33 @@ void paintsquiggles::paint(int sz, symgroup sym)
 		l.pixels.resize(size*size);
 		l.color = generate_color();
 		l.pastel = false;
-		generate(grid,norm);
-		fill(grid,l.pixels);
 	}
+	vector<std::future<stripes_grid *>> futures((layers.size()+1)/2);
+	for(int i=0;i<futures.size();i++) {
+		// fftw_malloc is not thread safe, so allocate the grid beforehand
+		stripes_grid *g = new stripes_grid(this);
+		futures[i] = std::async(std::launch::async,[&,i,g]() {
+			generate((*g),norm);
+			fill(*g,layers[2*i].pixels,(stripes_grid::proj_t)&std::real);
+			if(2*i+1<layers.size())
+				fill(*g,layers[2*i+1].pixels,(stripes_grid::proj_t)&std::imag);
+			return g;
+		});
+	}
+	for(auto &f : futures)
+		delete f.get();
 	merge();
 }
 
-void paintsquiggles::fill(const stripes_grid &grid,vector<unsigned char> &pix)
+void paintsquiggles::fill(const stripes_grid &grid,vector<unsigned char> &pix,const function<double(const complex<double> &)> &proj)
 {
-	double norm=grid.intensity();
+	double norm=grid.intensity(proj);
 	norm=sqrt(norm)/(size*64);
 	double height, alpha;
 	int i, j;
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++) {
-			height=grid.get_symmetric(i,j).real()/norm;
+			height=proj(grid.get_symmetric(i,j))/norm;
 			pix[i+size*j]=255.99/(pow(abs(height)/(10.*thickness),sharpness)+1.);
 		}
 }
@@ -73,7 +86,7 @@ void paintsquiggles::generate(stripes_grid &grid, function<double(int,int)> &f) 
 	int i,j;
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)
-			grid(i,j) = random_levy_1d(levy_alpha,1.);
+			grid(i,j) = complex<double>(random_levy_1d(levy_alpha,1.),random_levy_1d(levy_alpha,1.));
 	grid.transform();
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)

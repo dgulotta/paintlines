@@ -23,6 +23,7 @@
 
 #include "../layer_painter.h"
 #include <fftw3.h>
+#include <complex>
 
 class stripes_grid;
 
@@ -37,7 +38,7 @@ class paintsquiggles : virtual public layer_painter
   void set_thickness(double t) {thickness=t;}
   void set_sharpness(double s) {sharpness=s;}
  private:
-  void fill(const stripes_grid &grid, vector<unsigned char> &pix);
+  void fill(const stripes_grid &grid, vector<unsigned char> &pix, const function<double(const std::complex<double> &)> &proj);
   void generate(stripes_grid &grid, function<double(int,int)> &f);
   int n_colors;
   double levy_alpha;

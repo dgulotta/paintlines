@@ -49,7 +49,8 @@ public:
 	function<double(int,int)> norm_orthogonal();
 	void transform() { fftw_execute(plan); }
 	int get_size() const { return size; }
-	double intensity() const;
+	typedef double (*proj_t)(const complex<double> &);
+	double intensity(const function<double(const complex<double> &)> &proj=(proj_t)&std::real) const;
 private:
 	painter *paint;
 	int size;

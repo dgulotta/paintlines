@@ -45,12 +45,12 @@ function<double(int,int)> stripes_grid::norm_orthogonal() {
 	};
 }
 
-double stripes_grid::intensity() const {
+double stripes_grid::intensity(const function<double(const complex<double> &)> &proj) const {
 	double s=0;
 	int i, j;
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++) {
-			double d=get_symmetric(i,j).real();
+			double d=proj(get_symmetric(i,j));
 			s+=d*d;
 		}
 	return s;
