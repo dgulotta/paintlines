@@ -20,6 +20,7 @@
  
 #include "randgen.h"
 #include "stripes_common.h"
+#include <random>
 
 using std::polar;
 
@@ -56,14 +57,11 @@ double stripes_grid::intensity(const function<double(const complex<double> &)> &
 	return s;
 }
 
+static std::default_random_engine rnd;
+
 double random_levy_1d(double alpha, double scale)
 {
-	double u, v, t, s;
-	u = (random_angle()-M_PI)/2;
-	v = random_exponential(1);
-	t = scale*sin(alpha*u)/pow(cos(u),1/alpha);
-	s = pow(cos((1-alpha)*u)/v,(1-alpha)/alpha);
-	return t*s;
+	return random_levy_1d(alpha,scale,rnd);
 }
 
 double random_levy_1d_power_alpha(double alpha, double scale)

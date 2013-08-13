@@ -24,6 +24,7 @@
 #include "../layer_painter.h"
 #include <fftw3.h>
 #include <complex>
+#include <random>
 
 class stripes_grid;
 
@@ -39,7 +40,7 @@ class paintsquiggles : virtual public layer_painter
   void set_sharpness(double s) {sharpness=s;}
  private:
   void fill(const stripes_grid &grid, vector<unsigned char> &pix, const function<double(const std::complex<double> &)> &proj);
-  void generate(stripes_grid &grid, function<double(int,int)> &f);
+  void generate(stripes_grid &grid, function<double(int,int)> &f, std::default_random_engine &rng);
   int n_colors;
   double levy_alpha;
   double exponent;

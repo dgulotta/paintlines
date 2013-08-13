@@ -52,11 +52,14 @@ void paintsquiggles::paint(int sz, symgroup sym)
 		l.pastel = false;
 	}
 	vector<std::future<stripes_grid *>> futures((layers.size()+1)/2);
+	std::random_device rd;
 	for(int i=0;i<futures.size();i++) {
 		// fftw_malloc is not thread safe, so allocate the grid beforehand
 		stripes_grid *g = new stripes_grid(this);
-		futures[i] = std::async(std::launch::async,[&,i,g]() {
-			generate((*g),norm);
+		auto seed = rd();
+		futures[i] = std::async(std::launch::async,[&,i,g,seed]() {
+			std::default_random_engine rng(seed);
+			generate((*g),norm,rng);
 			fill(*g,layers[2*i].pixels,(stripes_grid::proj_t)&std::real);
 			if(2*i+1<layers.size())
 				fill(*g,layers[2*i+1].pixels,(stripes_grid::proj_t)&std::imag);
@@ -81,12 +84,12 @@ void paintsquiggles::fill(const stripes_grid &grid,vector<unsigned char> &pix,co
 		}
 }
 
-void paintsquiggles::generate(stripes_grid &grid, function<double(int,int)> &f) {
+void paintsquiggles::generate(stripes_grid &grid, function<double(int,int)> &f, std::default_random_engine &rng) {
 	grid.clear();
 	int i,j;
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)
-			grid(i,j) = complex<double>(random_levy_1d(levy_alpha,1.),random_levy_1d(levy_alpha,1.));
+			grid(i,j) = complex<double>(random_levy_1d(levy_alpha,1.,rng),random_levy_1d(levy_alpha,1.,rng));
 	grid.transform();
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)
