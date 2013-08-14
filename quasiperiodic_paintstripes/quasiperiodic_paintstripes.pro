@@ -9,12 +9,14 @@ HEADERS	+= quasiperiodic_paintstripes.h \
 	quasiperiodic_paintstripeswidget.h \
 	../basic_painter.h \
 	../basic_painterwidget.h \
-	quasistripesform.h
+	quasistripesform.h \
+	../randgen.h
 
 SOURCES	+= quasiperiodic_paintstripes.cpp \
 	quasiperiodic_paintstripeswidget.cpp \
 	main.cpp \
-	quasistripesform.cpp
+	quasistripesform.cpp \
+	../randgen.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11

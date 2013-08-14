@@ -34,11 +34,7 @@ tuple<cpx,cpx,cpx> random_levy_6d(double alpha, double scale) {
 	cpx z1(random_normal(1),random_normal(1));
 	cpx z2(random_normal(1),random_normal(1));
 	cpx z3(random_normal(1),random_normal(1));
-	double r=0;
-	int i;
-	for(i=0;i<6;i++)
-		r+=random_levy_1d_power_alpha(alpha,scale);
-	r = pow(r,1/alpha)/(sqrt(std::norm(z1)+std::norm(z2)+std::norm(z3)));
+	double r=scale*random_levy_skew_sqrt(alpha/2);
 	return make_tuple(z1*r,z2*r,z3*r);
 }
 
@@ -61,7 +57,7 @@ void paintstripes::paint(int sz, symgroup sym)
 	int i,j;
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++)
-			tie(gridr(i,j),gridg(i,j),gridb(i,j))=random_levy_6d(levy_alpha,norm(i,j));
+			tie(gridr(i,j),gridg(i,j),gridb(i,j))=random_levy_6d(levy_alpha,pow(norm(i,j),.5+1./levy_alpha));
 	gridr.transform();
 	gridg.transform();
 	gridb.transform();

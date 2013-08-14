@@ -76,3 +76,19 @@ double random_sechsquare(double width)
 	double a = random_uniform();
 	return width*log(a/(1-a));
 }
+
+double random_levy_1d(double alpha, double scale)
+{
+	return random_levy_1d(alpha,scale,rnd);
+}
+
+double random_levy_skew_sqrt(double alpha) {
+	if(alpha==1) return 1;
+	double u, v;
+	u = random_exponential(1.);
+	v = M_PI*(random_uniform()-.5);
+	// the usual normalization has a factor of pow(sec(alpha*pi/2),1/(2*alpha)),
+	// but paintstripes rescales everything anyway, so it doesn't matter
+	return sqrt(sin(alpha*(v+M_PI_2))) / pow(cos(v),1/(2*alpha))
+		* pow(cos(v-alpha*(v+M_PI_2))/u,(1-alpha)/(2*alpha));
+}

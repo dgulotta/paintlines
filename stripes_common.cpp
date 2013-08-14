@@ -56,35 +56,3 @@ double stripes_grid::intensity(const function<double(const complex<double> &)> &
 		}
 	return s;
 }
-
-static std::default_random_engine rnd;
-
-double random_levy_1d(double alpha, double scale)
-{
-	return random_levy_1d(alpha,scale,rnd);
-}
-
-double random_levy_1d_power_alpha(double alpha, double scale)
-{
-	double u, v, t, s;
-	u = random_angle()/4;
-	v = random_exponential(1);
-	t = pow(scale*sin(alpha*u),alpha)/cos(u);
-	s = pow(cos((1-alpha)*u)/v,(1-alpha));
-	return t*s;
-}
-
-// This actually isn't correct, but it doesn't matter much.
-complex<double> random_levy_2d(double alpha, double scale)
-{
-	if(scale==0.)
-		return complex<double>(0,0);
-	else {
-		double r=pow(random_levy_1d_power_alpha(alpha,scale)+
-			random_levy_1d_power_alpha(alpha,scale),1./alpha);
-		double q=random_angle();
-		return polar(r,q);
-	}
-}
-
-

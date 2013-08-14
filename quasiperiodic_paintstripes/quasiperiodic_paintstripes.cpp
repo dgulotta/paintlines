@@ -1,8 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   Copyright (C) 2005-2008, 2013 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
- *   Portions copyright (C)  1996, 1997, 1998, 1999, 2000 James Theiler,   *
- *   Brian Gough                                                           *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,7 +20,9 @@
 
 #include "quasiperiodic_paintstripes.h"
 #include <algorithm>
-#include <math.h>
+#include <cmath>
+#include "../randgen.h"
+#include "../stripes_common.h"
 
 const double unitlength=30.;
 const double px[4] = {1.,.30901699437494742411,-.80901699437494742409,
@@ -32,33 +32,17 @@ const double py[4] = {0.,.95105651629515357211,.58778525229247312918,
 
 using std::copy;
 
-/*
-  This function is adapted from gsl_ran_levy function from the GNU Scientific
-  Library.
-*/
-double random_levy_1d_power_alpha(double alpha,double scale)
-{
-  double u, v, t, s;
-  u=(M_PI_2*rand())/RAND_MAX;
-  v=log((RAND_MAX+1.)/(rand()+.5));
-  t=pow(scale*sin(alpha*u),alpha)/cos(u);
-  s=pow(cos((1-alpha)*u)/v,(1-alpha));
-  return t*s;
-}
-
 void random_levy_2d(double *d,double alpha,double scale)
 {
-  if(scale==0.) {
-    *d=0.;
-    *(d+1)=0.;
-  }
-  else {
-    double r=pow(random_levy_1d_power_alpha(alpha,scale)+
-		 random_levy_1d_power_alpha(alpha,scale),1./alpha);
-    double q=(rand()*(2.*M_PI))/RAND_MAX;
-    *d=r*cos(q);
-    *(d+1)=r*sin(q);
-  }
+	if(scale==0.) {
+		d[0]=0;
+		d[1]=0;
+	}
+	else {
+		double r = random_levy_skew_sqrt(alpha/2);
+		d[0] = r*random_normal(scale);
+		d[1] = r*random_normal(scale);
+	}
 }
 
 void quasiperiodic_paintstripes::paint(int sz, int fftsz)
@@ -83,33 +67,37 @@ void quasiperiodic_paintstripes::paint(int sz, int fftsz)
 
 void quasiperiodic_paintstripes::fill(vector<unsigned char> &arr)
 {
-  double mag[2],  n(0.);
-  double norm;
-  int a,b,c,d, i, j;
-  array[0]=array[1]=0.;
-  for(a=0;a<fftsize;a++)
-    for(b=0;b<fftsize;b++)
-      for(c=0;c<fftsize;c++)
-	for(d=0;d<halfsize2;d++)
-	  if(a||b||c||d) {
-	    norm=5.-cos((2.*M_PI*a)/fftsize)-cos((2.*M_PI*b)/fftsize)-
-	      cos((2.*M_PI*c)/fftsize)-cos((2.*M_PI*d)/fftsize)-
-	      cos((2.*M_PI*(a+b+c+d))/fftsize);
-	    random_levy_2d(array+a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+
-			   c*fftsize2+d*2,levy_alpha,1./(norm*norm));
-	  }
-  fftw_execute(fftplan);
-  for(i=0;i<size;i++)
-    for(j=0;j<size;j++) {
-      a=mod((px[0]*i+py[0]*j)/2.,fftsize);
-      b=mod((px[1]*i+py[1]*j)/2.,fftsize);
-      c=mod((px[2]*i+py[2]*j)/2.,fftsize);
-      d=mod((px[3]*i+py[3]*j)/2.,fftsize);
-      arr[i+j*size]=colorchop(128.+6000.*levy_alpha*array[a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+c*fftsize2+d]/(fftsize*fftsize*fftsize*fftsize));
-      /*
-      arr[i+j*size]=255.99/
-	(1.+.0005*pow(fabs(array[a*fftsize*fftsize*fftsize2+b*fftsize*
-				 fftsize2+c*fftsize2+d]),2));
-      */
-    }
+	double mag[2],  n(0.);
+	double norm;
+	int a,b,c,d, i, j;
+	array[0]=array[1]=0.;
+	for(a=0;a<fftsize;a++)
+		for(b=0;b<fftsize;b++)
+			for(c=0;c<fftsize;c++)
+				for(d=0;d<halfsize2;d++)
+					if(a||b||c||d) {
+						norm=5.-cos((2.*M_PI*a)/fftsize)-cos((2.*M_PI*b)/fftsize)-
+							cos((2.*M_PI*c)/fftsize)-cos((2.*M_PI*d)/fftsize)-
+							cos((2.*M_PI*(a+b+c+d))/fftsize);
+						random_levy_2d(array+a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+
+								c*fftsize2+d*2,levy_alpha,pow(norm,-1-2/levy_alpha));
+					}
+	fftw_execute(fftplan);
+	norm=0.;
+	for(a=0;a<fftsize;a++)
+		for(b=0;b<fftsize;b++)
+			for(c=0;c<fftsize;c++)
+				for(d=0;d<fftsize;d++) {
+					double r = array[a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+c*fftsize2+d];
+					norm+=r*r;
+				}
+	norm = 64*fftsize*fftsize/sqrt(norm);
+	for(i=0;i<size;i++)
+		for(j=0;j<size;j++) {
+			a=mod((px[0]*i+py[0]*j)/2.,fftsize);
+			b=mod((px[1]*i+py[1]*j)/2.,fftsize);
+			c=mod((px[2]*i+py[2]*j)/2.,fftsize);
+			d=mod((px[3]*i+py[3]*j)/2.,fftsize);
+			arr[i+j*size]=colorchop(128.+array[a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+c*fftsize2+d]*norm);
+		}
 }
