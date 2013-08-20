@@ -20,68 +20,37 @@
 
 #include <QtGui>
 
+#include "quasiperiodic_paintstripes.h"
 #include "quasistripesform.h"
-#include "quasiperiodic_paintstripeswidget.h"
 
-QuasiStripesForm::QuasiStripesForm()
+void QuasiStripesForm::init()
 {
-  menu = menuBar();
-  menuFile = menu->addMenu(tr("&File"));
-  actionSaveAs = menuFile->addAction(tr("&Save As"));
-  actionExit = menuFile->addAction(tr("E&xit"));
-  QHBoxLayout *mainLayout = new QHBoxLayout;
-  QVBoxLayout *sideLayout = new QVBoxLayout;
-  sideLayout->addWidget(new QLabel(tr("Size")));
-  spinSize = new QSpinBox;
-  spinSize->setMinimum(1);
-  spinSize->setMaximum(65536);
-  spinSize->setValue(256);
-  sideLayout->addWidget(spinSize);
-  sideLayout->addWidget(new QLabel(tr("Quasiperiod")));
-  spinQuasiSize = new QSpinBox;
-  spinQuasiSize->setMinimum(1);
-  spinQuasiSize->setMaximum(256);
-  spinQuasiSize->setValue(16);
-  sideLayout->addWidget(spinQuasiSize);
-  sideLayout->addWidget(new QLabel(tr("Alpha")));
-  spinAlpha = new QDoubleSpinBox;
-  spinAlpha->setMinimum(.01);
-  spinAlpha->setMaximum(2.);
-  spinAlpha->setValue(1.);
-  sideLayout->addWidget(spinAlpha);
-  buttonDraw = new QPushButton(tr("Draw"));
-  sideLayout->addWidget(buttonDraw);
-  sideLayout->addStretch(1);
-  mainLayout->addLayout(sideLayout);
-  stripes = new quasiperiodic_paintstripeswidget;
-  mainLayout->addWidget(stripes);
-  mainLayout->addStretch(1);
-  QWidget *w = new QWidget;
-  w->setLayout(mainLayout);
-  QScrollArea *a = new QScrollArea;
-  a->setWidgetResizable(true);
-  a->setWidget(w);
-  setCentralWidget(a);
-  resize(800,600);
-  connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
-  connect(actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
-  connect(actionExit,SIGNAL(triggered()),this,SLOT(close()));
+	QFormLayout *layout = new QFormLayout;
+	spinSize = new QSpinBox;
+	spinSize->setMinimum(1);
+	spinSize->setMaximum(65536);
+	spinSize->setValue(256);
+	layout->addRow(tr("Size"),spinSize);
+	spinQuasiSize = new QSpinBox;
+	spinQuasiSize->setMinimum(1);
+	spinQuasiSize->setMaximum(256);
+	spinQuasiSize->setValue(16);
+	layout->addRow(tr("Quasiperiod"),spinQuasiSize);
+	spinAlpha = new QDoubleSpinBox;
+	spinAlpha->setMinimum(.01);
+	spinAlpha->setMaximum(2.);
+	spinAlpha->setValue(1.);
+	layout->addRow(tr("Alpha"),spinAlpha);
+	buttonDraw = new QPushButton(tr("Draw"));
+	layout->addRow(buttonDraw);
+	stripes = new quasiperiodic_paintstripes;
+	saver = new ImageSaver(this);
+	sideLayout = layout;
 }
 
 void QuasiStripesForm::draw()
 {
-  stripes->set_alpha(spinAlpha->value());
-  stripes->draw(spinSize->value(),spinQuasiSize->value());
-}
-
-bool QuasiStripesForm::saveAs()
-{
-  QString s=QFileDialog::getSaveFileName();
-  if(!s.isEmpty()) {
-    stripes->save(s,"PNG");
-    return true;
-  }
-  else {
-    return false;
-  }
+	stripes->set_alpha(spinAlpha->value());
+	stripes->paint(spinSize->value(),spinQuasiSize->value());
+	emit newImage(makePixmap(stripes->get_image()));
 }

@@ -22,30 +22,39 @@
 #define _SQUIGGLESFORM_H
 
 #include "../basicform.h"
+#include "../symmetric_canvas.h"
 
 class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
 class RandomColorWidget;
-class paintsquiggleswidget;
+class RandomizeWidget;
+class paintsquiggles;
 
 class SquigglesForm : public BasicForm
 {
-  Q_OBJECT
-public slots:
-  virtual bool saveAs();
+	Q_OBJECT
+signals:
+	void newLayeredImage(const std::vector<layer> *l);
+	void newCanvas(const symmetric_canvas<color_t> *c);
+protected slots:
+	virtual void draw();
+	virtual void init();
+	void clearLayers();
+	void updateImage();
 protected:
-  virtual void addWidgets(QBoxLayout *sideLayout);
-  virtual painterwidget * createPainterWidget();
-  virtual void draw(int sz, int sym_index);
-  QSpinBox *spinColors;
-  QDoubleSpinBox *spinAlpha;
-  QDoubleSpinBox *spinExponent;
-  QDoubleSpinBox *spinThickness;
-  QDoubleSpinBox *spinSharpness;
-  RandomColorWidget *colorWidget;
-  paintsquiggleswidget *squiggles;
+	QSpinBox *spinSize;
+	QSpinBox *spinColors;
+	QComboBox *comboSymmetry;
+	QDoubleSpinBox *spinAlpha;
+	QDoubleSpinBox *spinExponent;
+	QDoubleSpinBox *spinThickness;
+	QDoubleSpinBox *spinSharpness;
+	RandomColorWidget *colorWidget;
+	RandomizeWidget *randomizeWidget;
+	RestoreButton *buttonRestore;
+	paintsquiggles *squiggles;
 };
 
 #endif

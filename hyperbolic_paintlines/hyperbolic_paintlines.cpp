@@ -40,88 +40,56 @@ hyperbolic_coord random_mid(const hyperbolic_coord &c1,
 
 void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
 {
-  hyperbolic_painter::paint(sz,sym);
-  alpha.resize(size*size);
-  red_brushes.resize(ncolors);
-  green_brushes.resize(ncolors);
-  blue_brushes.resize(ncolors);
-  fill(red.begin(),red.end(),0);
-  fill(green.begin(),green.end(),0);
-  fill(blue.begin(),blue.end(),0);
-  double dist;
-  switch(pt) {
-  case POINCARE:
-    proj=&poincare_projection;
-    dist=1.+.01/size;
-    break;
-  case KLEIN:
-    proj=&klein_projection;
-    dist=1.+.005/size;
-  }
-  drawdot_symmetric=sym.symmetrize(bind(&hyperbolic_paintlines::drawdot,this,_1));
-  t=ncolors;
-  while(t--) {
-    switch(random_int(6)) {
-    case 0:
-      red_brushes[t]=255;
-      green_brushes[t]=random_int(256);
-      blue_brushes[t]=0;
-      break;
-    case 1:
-      red_brushes[t]=0;
-      green_brushes[t]=255;
-      blue_brushes[t]=random_int(256);
-      break;
-    case 2:
-      red_brushes[t]=random_int(256);
-      green_brushes[t]=0;
-      blue_brushes[t]=255;
-      break;
-    case 3:
-      red_brushes[t]=random_int(256);
-      green_brushes[t]=255;
-      blue_brushes[t]=0;
-      break;
-    case 4:
-      red_brushes[t]=0;
-      green_brushes[t]=random_int(256);
-      blue_brushes[t]=255;
-      break;
-    default:
-      red_brushes[t]=255;
-      green_brushes[t]=0;
-      blue_brushes[t]=random_int(256);
-    }
-    hyperbolic_coord c;
-    hyperbolic_coord c2;
-    do {
-      double z=1.+random_exponential(1);
-      double r=sqrt(z*z-1.);
-      double q=random_angle();
-      c=hyperbolic_coord(r*cos(q),r*sin(q),z);
-      c2=sg->random_symmetry(c);
-    } while(c.z>=25.||c2.z>=25.);
-	fill(alpha.begin(),alpha.end(),0);
-    drawsmoothline(c,normalize(c2),.02,dist);
-	if(pt==POINCARE)
-		fill_poincare(t);
-	else
-		fill_klein(t);
-  }
+	double dist;
+	image=canvas<color_t>(sz,sz);
+	switch(pt) {
+	case POINCARE:
+		proj=&poincare_projection;
+		dist=1.+.01/sz;
+		break;
+	case KLEIN:
+		proj=&klein_projection;
+		dist=1.+.005/sz;
+	}
+	drawdot_symmetric=sym.symmetrize(bind(&hyperbolic_paintlines::drawdot,this,_1));
+	grids.resize(ncolors);
+	layers.resize(ncolors);
+	for(int i=0;i<ncolors;i++) {
+		grids[i]=canvas<uint8_t>(sz,sz,0);
+		layers[i].pixels=active_grid=&(grids[i]);
+		layers[i].pastel=false;
+		layers[i].color=default_color_generator();
+		hyperbolic_coord c;
+		hyperbolic_coord c2;
+		do {
+			double z=1.+random_exponential(1);
+			double r=sqrt(z*z-1.);
+			double q=random_angle();
+			c=hyperbolic_coord(r*cos(q),r*sin(q),z);
+			c2=sym.random_symmetry(c);
+		} while(c.z>=25.||c2.z>=25.);
+		drawsmoothline(c,normalize(c2),.02,dist);
+		if(pt==POINCARE)
+			fill_poincare();
+		else
+			fill_klein();
+	}
+	merge(image,layers);
 }
 
 void hyperbolic_paintlines::drawdot(const hyperbolic_coord &hc)
 {
 	screen_coord sc = toscreen((*proj)(hc));
-	alpha[sc.x+sc.y*size]=255;
+	(*active_grid)(sc.x,sc.y)=255;
 }
 
-void hyperbolic_paintlines::fill_poincare(int t) {
-	vector<float> mask(size*size,std::numeric_limits<float>::infinity());
+void hyperbolic_paintlines::fill_poincare() {
+	int size=this->size();
+	canvas<float> mask(size,size,std::numeric_limits<float>::infinity());
 	int x,y,i,j;
-	for(x=0;x<size;x++)
-		for(y=0;y<size;y++)
-			if(alpha[x+y*size]) {
+	for(y=0;y<size;y++)
+		for(x=0;x<size;x++)
+			if((*active_grid)(x,y)) {
 				planar_coord pc = fromscreen(screen_coord(x,y));
 				double z = 1-pc.x*pc.x-pc.y*pc.y;
 				if(z<=0) continue;
@@ -133,21 +101,21 @@ void hyperbolic_paintlines::fill_poincare(int t) {
 				if(r+y>=size) r=size-y-1;
 				for(i=-r;i<=r;i++)
 					for(j=-r;j<=r;j++) {
-						int index = (x+i)+(y+j)*size;
 						float val = d2*(i*i+j*j);
-						if(mask[index]>val) mask[index]=val;
+						if(mask(x+i,y+j)>val) mask(x+i,y+j)=val;
 					}
 			}
-	fill_color(mask,t);
+	fill_color(mask);
 }
 
-void hyperbolic_paintlines::fill_klein(int t)
+void hyperbolic_paintlines::fill_klein()
 {
-	vector<float> mask(size*size,std::numeric_limits<float>::infinity());
+	int size=this->size();
+	canvas<float> mask(size,size,std::numeric_limits<float>::infinity());
 	int x,y,i,j;
-	for(x=0;x<size;x++)
-		for(y=0;y<size;y++)
-			if(alpha[x+y*size]) {
+	for(y=0;y<size;y++)
+		for(x=0;x<size;x++)
+			if((*active_grid)(x,y)) {
 				planar_coord pc = fromscreen(screen_coord(x,y));
 				double x2 = pc.x*pc.x, y2 = pc.y*pc.y;
 				double z = 1-pc.x*pc.x-pc.y*pc.y;
@@ -161,33 +129,22 @@ void hyperbolic_paintlines::fill_klein(int t)
 				if(r>y) r=y;
 				if(r+x>=size) r=size-x-1;
 				if(r+y>=size) r=size-y-1;
-				for(i=-r;i<=r;i++)
-					for(j=-r;j<=r;j++) {
-						int index = (x+i)+(y+j)*size;
+				for(j=-r;j<=r;j++)
+					for(i=-r;i<=r;i++) {
 						float val = xx*i*i+yy*j*j+xy*i*j;
-						if(mask[index]>val) mask[index]=val;
+						if(mask(x+i,y+j)>val) mask(x+i,y+j)=val;
 					}
 			}
-	fill_color(mask,t);
+	fill_color(mask);
 }
 
-void hyperbolic_paintlines::fill_color(const vector<float> &mask, int t) {
-	int r=red_brushes[t], g=green_brushes[t], b=blue_brushes[t], i;
-	for(i=size*size-1;i>=0;i--) {
-		float f = mask[i];
-		if(isinf(f)) continue;
-		if(f==0) {
-			red[i]=r;
-			green[i]=g;
-			blue[i]=b;
+void hyperbolic_paintlines::fill_color(const canvas<float> &mask) {
+	for(int j=0;j<size();j++)
+		for(int i=0;i<size();i++) {
+			float f = mask(i,j);
+			if(isinf(f)||f==0) continue;
+			(*active_grid)(i,j)=255.99/(1.+pow(f,sharpness));
 		}
-		else {
-			unsigned short a = 255.99/(1.+pow(f,sharpness));
-			red[i]+=a*(r-red[i])/255;
-			green[i]+=a*(g-green[i])/255;
-			blue[i]+=a*(b-blue[i])/255;
-		}
-	}
 }
 
 void hyperbolic_paintlines::drawsmoothline

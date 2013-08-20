@@ -47,25 +47,26 @@ void random_levy_2d(double *d,double alpha,double scale)
 
 void quasiperiodic_paintstripes::paint(int sz, int fftsz)
 {
-  if(fftsz!=fftsize) {
-    fftsize=fftsz;
-    halfsize2=fftsz/2+1;
-    fftsize2=2*halfsize2;
-    if(array) fftw_free(array);
-    array=(double *)fftw_malloc(sizeof(double)*fftsize*fftsize*fftsize*
+	size=sz;
+	if(fftsz!=fftsize) {
+		fftsize=fftsz;
+		halfsize2=fftsz/2+1;
+		fftsize2=2*halfsize2;
+		if(array) fftw_free(array);
+		array=(double *)fftw_malloc(sizeof(double)*fftsize*fftsize*fftsize*
 				fftsize2);
-    if(fftplan) fftw_destroy_plan(fftplan);
-    int sizes[4]={fftsize,fftsize,fftsize,fftsize};
-    fftplan=fftw_plan_dft_c2r(4,sizes,(fftw_complex*)array,array,FFTW_MEASURE);
-  }
-  basic_painter::paint(sz);
-  dq=2.*M_PI/size;
-  fill(red);
-  fill(green);
-  fill(blue);
+		if(fftplan) fftw_destroy_plan(fftplan);
+		int sizes[4]={fftsize,fftsize,fftsize,fftsize};
+		fftplan=fftw_plan_dft_c2r(4,sizes,(fftw_complex*)array,array,FFTW_MEASURE);
+	}
+	dq=2.*M_PI/size;
+	image=canvas<color_t>(size,size);
+	fill([&](int x, int y, uint8_t c) { image(x,y).red=c; });
+	fill([&](int x, int y, uint8_t c) { image(x,y).green=c; });
+	fill([&](int x, int y, uint8_t c) { image(x,y).blue=c; });
 }
 
-void quasiperiodic_paintstripes::fill(vector<unsigned char> &arr)
+void quasiperiodic_paintstripes::fill(const std::function<void(int,int,uint8_t)> &set)
 {
 	double mag[2],  n(0.);
 	double norm;
@@ -92,12 +93,12 @@ void quasiperiodic_paintstripes::fill(vector<unsigned char> &arr)
 					norm+=r*r;
 				}
 	norm = 64*fftsize*fftsize/sqrt(norm);
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++) {
+	for(j=0;j<size;j++)
+		for(i=0;i<size;i++) {
 			a=mod((px[0]*i+py[0]*j)/2.,fftsize);
 			b=mod((px[1]*i+py[1]*j)/2.,fftsize);
 			c=mod((px[2]*i+py[2]*j)/2.,fftsize);
 			d=mod((px[3]*i+py[3]*j)/2.,fftsize);
-			arr[i+j*size]=colorchop(128.+array[a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+c*fftsize2+d]*norm);
+			set(i,j,colorchop(128.+array[a*fftsize*fftsize*fftsize2+b*fftsize*fftsize2+c*fftsize2+d]*norm));
 		}
 }

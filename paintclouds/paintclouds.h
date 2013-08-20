@@ -21,56 +21,52 @@
 #ifndef _PAINTCLOUDS_H
 #define _PAINTCLOUDS_H
 
-#include <tuple>
-#include "../painter.h"
+#include <functional>
+#include "../color.h"
+#include "../symmetric_canvas.h"
 
-using std::make_tuple;
-using std::get;
-
-class paintclouds : virtual public painter
+class paintclouds
 {
- public:
-  paintclouds() : randfunc(&paintclouds::rand_exp_cos) {}
-  void paint(int size, symgroup sg);
-  void set_colors(unsigned char r1, unsigned char g1, unsigned char b1,
-		  unsigned char r2, unsigned char g2, unsigned char b2,
-		  unsigned char r3, unsigned char g3, unsigned char b3)
-    {red1=r1;red2=r2;red3=r3;blue1=b1;blue2=b2;blue3=b3;green1=g1;green2=g2;
-    green3=g3;}
-  void set_color1(unsigned char r, unsigned char g, unsigned char b)
-    {red1=r;green1=g;blue1=b;}
-  void set_color2(unsigned char r, unsigned char g, unsigned char b)
-    {red2=r;green2=g;blue2=b;}
-  void set_color3(unsigned char r, unsigned char g, unsigned char b)
-    {red3=r;green3=g;blue3=b;}
-  void set_randfunc(const function<double(double)> &r) { randfunc=r; }
-  static double rand_exp_cos(double a);
-  static double rand_normal(double a);
-  static double rand_cauchy(double a);
-  static double rand_sechsquare(double a);
- private:
-  function<void(int,int)> drawfunc;
-  function<double(double)> randfunc;
-  inline void drawpixelsymmetric(int x, int y, unsigned char r,
-				 unsigned char g, unsigned char b) {
-	drawpixelsymmetric(x,y,make_tuple(r,g,b));
-  }
-  void drawpixelsymmetric(int x, int y, const tuple<unsigned char,unsigned char,unsigned char> &rgb) {
-  	temp_color=rgb;
-	drawfunc(x,y);
-  }
-  void drawpixel(int x, int y) {
-  	pixel(x,y)=temp_color;
-  }
-  // Make sure you always call this with the same orientation!
-  void paint_border(int x1, int y1, int x2, int y2);
-  void copy_border(int dx1, int dy1, int dx2, int dy2,
-		   int sx1, int sy1, int sx2, int sy2);
-  void copy_border_backward(int dx1, int dy1, int dx2, int dy2,
-			    int sx1, int sy1, int sx2, int sy2);
-  void paint_triangle(int x1, int y1, int x2, int y2, int x3, int y3);
-  unsigned char red1, red2, red3, blue1, blue2, blue3, green1, green2, green3;
-  tuple<unsigned char,unsigned char,unsigned char> temp_color;
+public:
+	paintclouds() : randfunc(&paintclouds::rand_exp_cos) {}
+	void paint(int size, symgroup sg);
+	void set_colors(uint8_t r1, uint8_t g1, uint8_t b1,
+			uint8_t r2, uint8_t g2, uint8_t b2,
+			uint8_t r3, uint8_t g3, uint8_t b3)
+	{red1=r1;red2=r2;red3=r3;blue1=b1;blue2=b2;blue3=b3;green1=g1;green2=g2;
+		green3=g3;}
+	void set_color1(uint8_t r, uint8_t g, uint8_t b)
+	{red1=r;green1=g;blue1=b;}
+	void set_color2(uint8_t r, uint8_t g, uint8_t b)
+	{red2=r;green2=g;blue2=b;}
+	void set_color3(uint8_t r, uint8_t g, uint8_t b)
+	{red3=r;green3=g;blue3=b;}
+	void set_randfunc(const std::function<double(double)> &r) { randfunc=r; }
+	static double rand_exp_cos(double a);
+	static double rand_normal(double a);
+	static double rand_cauchy(double a);
+	static double rand_sechsquare(double a);
+	const canvas<color_t> & get_image() { return grid.as_canvas(); }
+	const symmetric_canvas<color_t> & get_symmetric_image() { return grid; }
+private:
+	symmetric_canvas<color_t> grid;
+	std::function<double(double)> randfunc;
+	inline void drawpixelsymmetric(int x, int y, uint8_t r,
+			uint8_t g, uint8_t b) {
+		drawpixelsymmetric(x,y,color_t(r,g,b));
+	}
+	void drawpixelsymmetric(int x, int y, const color_t &rgb) {
+		grid.set(x,y,rgb);
+	}
+	const color_t & pixel(int x, int y) { return grid.get(x,y); }
+	// Make sure you always call this with the same orientation!
+	void paint_border(int x1, int y1, int x2, int y2);
+	void copy_border(int dx1, int dy1, int dx2, int dy2,
+			int sx1, int sy1, int sx2, int sy2);
+	void copy_border_backward(int dx1, int dy1, int dx2, int dy2,
+			int sx1, int sy1, int sx2, int sy2);
+	void paint_triangle(int x1, int y1, int x2, int y2, int x3, int y3);
+	uint8_t red1, red2, red3, blue1, blue2, blue3, green1, green2, green3;
 };
 
 #endif

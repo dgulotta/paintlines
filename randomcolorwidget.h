@@ -21,7 +21,7 @@
 #include <QWidget>
 #include <QImage>
 #include <memory>
-#include "basic_painter.h"
+#include "color.h"
 
 class QLineEdit;
 class QCheckBox;
@@ -30,7 +30,7 @@ class RandomColorWidget : public QWidget {
 	Q_OBJECT
 public:
 	RandomColorWidget();
-	color_tuple generate();
+	color_t generate();
 	bool load();
 public slots:
 	void chooseImage();

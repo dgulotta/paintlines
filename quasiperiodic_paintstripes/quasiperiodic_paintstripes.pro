@@ -6,17 +6,17 @@ CONFIG	+= qt warn_on release link_pkgconfig
 PKGCONFIG += fftw3
 
 HEADERS	+= quasiperiodic_paintstripes.h \
-	quasiperiodic_paintstripeswidget.h \
-	../basic_painter.h \
-	../basic_painterwidget.h \
 	quasistripesform.h \
-	../randgen.h
+	../randgen.h \
+	../canvas.h \
+	../color.h \
+	../basicform.h
 
 SOURCES	+= quasiperiodic_paintstripes.cpp \
-	quasiperiodic_paintstripeswidget.cpp \
 	main.cpp \
 	quasistripesform.cpp \
-	../randgen.cpp
+	../randgen.cpp \
+	../basicform.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11

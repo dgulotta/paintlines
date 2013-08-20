@@ -26,15 +26,16 @@
 #include <cmath>
 #include <complex>
 #include <functional>
-#include "painter.h"
+#include "symmetric_canvas.h"
 
 using std::complex;
-using std::fill;
 
 class stripes_grid {
 public:
-	stripes_grid(painter *p) : paint(p), size(p->get_size()),
+	stripes_grid(int sz, symgroup sg) : size(sz),
+		group(sg),
 		array((complex<double> *)fftw_malloc(sizeof(complex<double>)*size*size)),
+		transformations(generate_transforms(sg,sz)),
 		plan(fftw_plan_dft_2d(size,size,(fftw_complex *)array,(fftw_complex *)array,FFTW_BACKWARD,FFTW_ESTIMATE)),
 		phase(2*M_PI/size) {}
 	~stripes_grid() {
@@ -44,17 +45,18 @@ public:
 	complex<double> & operator () (int x, int y) { return array[mod(x,size)+size*mod(y,size)];}
 	const complex<double> operator () (int x, int y) const { return array[mod(x,size)+size*mod(y,size)];}
 	complex<double> get_symmetric(int x, int y) const;
-	void clear() { fill(array,array+size*size,complex<double>(0,0)); }
-	function<double(int,int)> norm_hexagonal();
-	function<double(int,int)> norm_orthogonal();
+	void clear() { std::fill(array,array+size*size,complex<double>(0,0)); }
+	static std::function<double(int,int)> norm_hexagonal(int sz);
+	static std::function<double(int,int)> norm_orthogonal(int sz);
 	void transform() { fftw_execute(plan); }
 	int get_size() const { return size; }
 	typedef double (*proj_t)(const complex<double> &);
-	double intensity(const function<double(const complex<double> &)> &proj=(proj_t)&std::real) const;
+	double intensity(const std::function<double(const complex<double> &)> &proj=(proj_t)&std::real) const;
 private:
-	painter *paint;
 	int size;
+	symgroup group;
 	complex<double> *array;
+	std::vector<transformation> transformations;
 	fftw_plan plan;
 	double phase;
 };

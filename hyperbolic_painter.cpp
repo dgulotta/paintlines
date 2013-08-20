@@ -20,7 +20,9 @@
 
 #include "hyperbolic_painter.h"
 #include "randgen.h"
-#include <cstdlib>
+
+using namespace std;
+using namespace std::placeholders;
 
 hyperbolic_coord normalize(const hyperbolic_coord &c)
 {

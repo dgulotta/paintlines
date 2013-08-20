@@ -20,30 +20,32 @@
 
 #include <Magick++.h>
 
+#include "layer.h"
 #include "magick.h"
 
 using namespace Magick;
 
-bool save_multilayer(int width, int height, const vector<layer> &layers, const std::string &name) {
+bool save_multilayer(int width, int height, const std::vector<layer> &layers, const std::string &name) {
 	try {
-		// Graphicsmagick's alpha channel is the inverse of the usual
+		// GraphicsMagick's alpha channel is the inverse of the usual
 		// alpha channel (0 = opaque, 255 = transparent)
 		// Also, it seems that if you create an image with an opaque
 		// default color, Graphicsmagick assumes that the image
 		// doesn't have an alpha channel
-		vector<Image> images(layers.size()+1,Image(Geometry(width,height),Color(0,0,0,255)));
-		int i, x, y, r, g, b;
+		std::vector<Image> images(layers.size()+1,Image(Geometry(width,height),Color(0,0,0,255)));
+		int i, x, y;
 		for(y=0;y<height;y++)
 			for(x=0;x<width;x++)
 				images[0].pixelColor(x,y,Color(0,0,0,0));
 		for(i=0;i<layers.size();i++) {
-			tie(r,g,b)=layers[i].color;
+			color_t col=layers[i].color;
+			const canvas<uint8_t> &img = *layers[i].pixels;
 			for(y=0;y<height;y++)
 				for(x=0;x<width;x++)
-					images[i+1].pixelColor(x,y,Color(r,g,b,255-layers[i].pixels[x+y*width]));
+					images[i+1].pixelColor(x,y,Color(col.red,col.green,col.blue,255-img(x,y)));
 		}
 		writeImages(images.begin(),images.end(),name);
-	} catch(...) {
+	} catch(Exception &) {
 		return false;
 	}
 	return true;

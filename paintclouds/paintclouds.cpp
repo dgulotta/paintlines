@@ -18,8 +18,11 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <tuple>
 #include "paintclouds.h"
 #include "../randgen.h"
+
+using std::tie;
 
 inline int midpt(int a, int b) {
   int c=a+b;
@@ -50,10 +53,10 @@ double paintclouds::rand_sechsquare(double a) {
 	return .3*random_sechsquare(a);
 }
 
-void paintclouds::paint(int sz, symgroup sym)
+void paintclouds::paint(int size, symgroup sym)
 {
-  painter::paint(sz,sym);
-  drawfunc=symmetrize(bind(&paintclouds::drawpixel,this,_1,_2));
+  grid=symmetric_canvas<color_t>(size,sym);
+  int halfsize=size/2;
   switch(sym) {
   case SYM_CM:
     drawpixelsymmetric(0,0,red1,green1,blue1);
@@ -272,8 +275,8 @@ void paintclouds::paint_border(int x1, int y1, int x2, int y2)
   if(!((mx==x1||mx==x2)&&(my==y1||my==y2))) {
     double dx=x1-x2, dy=y1-y2;
     double norm=sqrt(dx*dx+dy*dy);
-	tie(r1,g1,b1)=pixel(x1,y1);
-	tie(r2,g2,b2)=pixel(x2,y2);
+	tie(r1,g1,b1)=pixel(x1,y1).as_tuple();
+	tie(r2,g2,b2)=pixel(x2,y2).as_tuple();
     drawpixelsymmetric(mx,my,
 		colorchop((r1+r2)/2.+randfunc(norm)+.5),
     	colorchop((g1+g2)/2.+randfunc(norm)+.5),

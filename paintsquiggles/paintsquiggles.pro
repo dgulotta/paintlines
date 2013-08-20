@@ -14,29 +14,29 @@ packagesExist(GraphicsMagick++) {
 }
 
 HEADERS	+= paintsquiggles.h \
-	paintsquiggleswidget.h \
-	../painter.h \
-	../painterwidget.h \
-	../basic_painter.h \
-	../basic_painterwidget.h \
 	../basicform.h \
 	squigglesform.h \
 	../randgen.h \
 	../stripes_common.h \
-	../layer_painter.h \
-	../randomcolorwidget.h
+	../layer.h \
+	../randomcolorwidget.h \
+	../randomizewidget.h \
+	../randomize.h \
+	../canvas.h \
+	../symmetric_canvas.h \
+	../color.h
 
 SOURCES	+= paintsquiggles.cpp \
-	paintsquiggleswidget.cpp \
-	../painter.cpp \
-	../painterwidget.cpp \
 	../basicform.cpp \
 	main.cpp \
 	squigglesform.cpp \
 	../randgen.cpp \
 	../stripes_common.cpp \
-	../layer_painter.cpp \
-	../randomcolorwidget.cpp
+	../layer.cpp \
+	../randomcolorwidget.cpp \
+	../randomizewidget.cpp \
+	../randomize.cpp \
+	../symmetric_canvas.cpp
 
 contains(DEFINES,MULTIPAGE) {
 	HEADERS += ../magick.h

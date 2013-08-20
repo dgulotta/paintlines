@@ -21,37 +21,43 @@
 #ifndef _HYPERBOLIC_PAINTLINES_H
 #define _HYPERBOLIC_PAINTLINES_H
 
+#include "../canvas.h"
+#include "../color.h"
 #include "../hyperbolic_painter.h"
+#include "../layer.h"
 
-hyperbolic_coord random_mid(const hyperbolic_coord &c1,
-			    const hyperbolic_coord &c2, double var);
-
-class hyperbolic_paintlines : virtual public hyperbolic_painter
+class hyperbolic_paintlines
 {
- public:
-  hyperbolic_paintlines() : radius(4.99), brightness(5.), sharpness(1.5), ncolors(0) {}
-  void paint(int sz, hyperbolic_symmetry_group &sym);
-  void set_ncolors(int n) {ncolors=n;}
-  void set_thickness(double r, double b, double s) { radius=r; brightness=b; sharpness=s; }
- private:
-  function<void(const hyperbolic_coord &)> drawdot_symmetric;
-  void drawdot(const hyperbolic_coord & hc);
-  void fill_poincare(int t);
-  void fill_klein(int t);
-  void fill_color(const vector<float> &mask, int t);
-  planar_coord (*proj)(const hyperbolic_coord &);
-  void drawsmoothline(const hyperbolic_coord &end1, 
-		      const hyperbolic_coord &end2, double var, double min);
-  double radius;
-  double brightness;
-  double sharpness;
-  int ncolors;
-  int t;
-  vector<unsigned char> red_brushes;
-  vector<unsigned char> green_brushes;
-  vector<unsigned char> blue_brushes;
-  vector<unsigned char> alpha;
-  vector<bool> pastel;
+public:
+	hyperbolic_paintlines() : radius(4.99), brightness(5.), sharpness(1.5), ncolors(0) {}
+	void paint(int sz, hyperbolic_symmetry_group &sym);
+	void set_ncolors(int n) {ncolors=n;}
+	void set_thickness(double r, double b, double s) { radius=r; brightness=b; sharpness=s; }
+	const std::vector<layer> & get_layers() { return layers; }
+	const canvas<color_t> & get_image() { return image; }
+	void set_projtype(projtype p) { pt=p; }
+private:
+	int size() { return image.height(); }
+	screen_coord toscreen(const planar_coord &pc) { return coord_converter(size()).toscreen(pc); }
+	planar_coord fromscreen(const screen_coord &sc) { return coord_converter(size()).fromscreen(sc); }
+	std::function<void(const hyperbolic_coord &)> drawdot_symmetric;
+	void drawdot(const hyperbolic_coord & hc);
+	void fill_poincare();
+	void fill_klein();
+	void fill_color(const canvas<float> &mask);
+	planar_coord (*proj)(const hyperbolic_coord &);
+	void drawsmoothline(const hyperbolic_coord &end1, 
+			const hyperbolic_coord &end2, double var, double min);
+	canvas<color_t> image;
+	std::vector<canvas<uint8_t>> grids;
+	std::vector<layer> layers;
+	canvas<uint8_t> *active_grid;
+	projtype pt;
+	double radius;
+	double brightness;
+	double sharpness;
+	int ncolors;
+	int t;
 };
 
 #endif

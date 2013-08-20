@@ -48,30 +48,33 @@ void randomnormal_orthogonal(double &x, double &y, double var)
 
 void paintlines::paint(int sz, symgroup sym)
 {
-  painter::paint(sz,sym);
-  drawfunc=symmetrize(bind(&paintlines::drawpixel,this,_1,_2));
-  switch(sym) {
-  case SYM_P3:
-  case SYM_P3M1:
-  case SYM_P31M:
-  case SYM_P6:
-  case SYM_P6M:
-    randomnormal=&randomnormal_hexagonal;
-    break;
-  default:
-    randomnormal=&randomnormal_orthogonal;
-  }
-  layers.resize(ncolors);
-  for(layer &l : layers) {
-    auto it=lower_bound(rules.begin(),rules.end(),random_int(rules.back().weight)+1);
-	l.pixels.resize(size*size);
-	fill(l.pixels.begin(),l.pixels.end(),0);	
-	active_grid=&(l.pixels);
-	l.color=generate_color();
-    l.pastel=it->pastel;
-    handle_rule(it->type);
-  }
-  merge();
+	size=sz;
+	sg=sym;
+	grids.clear();
+	grids.resize(ncolors,symmetric_canvas<uint8_t>(sz,sym,0));
+	layers.resize(ncolors);
+	switch(sym) {
+		case SYM_P3:
+		case SYM_P3M1:
+		case SYM_P31M:
+		case SYM_P6:
+		case SYM_P6M:
+			randomnormal=&randomnormal_hexagonal;
+			break;
+		default:
+			randomnormal=&randomnormal_orthogonal;
+	}
+	for(int i=0;i<ncolors;i++) {
+		layer &l = layers[i];
+		auto it=lower_bound(rules.begin(),rules.end(),random_int(rules.back().weight)+1);
+		active_grid=&grids[i];
+		l.pixels=&(grids[i].as_canvas());
+		l.color=generate_color();
+		l.pastel=it->pastel;
+		handle_rule(it->type);
+	}
+	image=symmetric_canvas<color_t>(sz,sym,black);
+	merge(const_cast<canvas<color_t> &>(image.as_canvas()),layers);
 }
 
 void paintlines::handle_rule(ruletype rt)
@@ -106,12 +109,6 @@ void paintlines::handle_rule(ruletype rt)
     }
     break;
   }
-}
-
-void paintlines::drawpixel(int x, int y)
-{
-	unsigned char &a = (*active_grid)[mod(x,size)+mod(y,size)*size];
-	if(tempalpha>a) a=tempalpha;
 }
 
 void paintlines::drawdotsymmetric(int x, int y, int radius,double brightness)

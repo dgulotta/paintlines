@@ -21,8 +21,8 @@
 #ifndef _MAGICK_H
 #define _MAGICK_H
 
-#include "layer_painter.h"
+#include "layer.h"
 
-bool save_multilayer(int width, int height, const vector<layer> &layers, const std::string &name);
+bool save_multilayer(int width, int height, const std::vector<layer> &layers, const std::string &name);
 
 #endif

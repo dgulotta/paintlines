@@ -26,9 +26,11 @@
 #include <QPalette>
 
 #include "../basicform.h"
+#include "../symmetric_canvas.h"
 
 class QMouseEvent;
-class paintcloudswidget;
+class RandomizeWidget;
+class paintclouds;
 
 class ColorButton : public QWidget
 {
@@ -47,19 +49,23 @@ protected:
 
 class CloudsForm : public BasicForm
 {
-  Q_OBJECT
-public:
-  CloudsForm();
-  virtual ~CloudsForm();
-private:
-  virtual void addWidgets(QBoxLayout *sideLayout);
-  virtual painterwidget * createPainterWidget();
-  virtual void draw(int sz, int sym_index);
-  ColorButton *color1;
-  ColorButton *color2;
-  ColorButton *color3;
-  QComboBox *comboRandom;
-  paintcloudswidget *clouds;
+	Q_OBJECT
+signals:
+	void newCanvas(const symmetric_canvas<color_t> *c);
+protected slots:
+	virtual void draw();
+	virtual void init();
+	void updateImage();
+protected:
+	QSpinBox *spinSize;
+	QComboBox *comboSymmetry;
+	ColorButton *color1;
+	ColorButton *color2;
+	ColorButton *color3;
+	QComboBox *comboRandom;
+	RandomizeWidget *randomizeWidget;
+	RestoreButton *buttonRestore;
+	paintclouds *clouds;
 };
 
 #endif

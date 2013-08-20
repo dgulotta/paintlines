@@ -20,28 +20,53 @@
 
 #include <QtGui>
 
+#include "../randomizewidget.h"
+#include "paintstripes.h"
 #include "stripesform.h"
-#include "paintstripeswidget.h"
 
-void StripesForm::addWidgets(QBoxLayout *sideLayout)
+void StripesForm::init()
 {
-  sideLayout->addWidget(new QLabel(tr("Alpha")));
-  spinAlpha = new QDoubleSpinBox;
-  spinAlpha->setMinimum(.01);
-  spinAlpha->setMaximum(2.);
-  spinAlpha->setValue(1.);
-  sideLayout->addWidget(spinAlpha);
+	QFormLayout *layout = new QFormLayout;
+	spinSize = newSizeSpin();
+	layout->addRow(tr("Size"),spinSize);
+	comboSymmetry = newSymmetryCombo();
+	layout->addRow(tr("Symmetry"),comboSymmetry);
+	spinAlpha = new QDoubleSpinBox;
+	spinAlpha->setMinimum(.01);
+	spinAlpha->setMaximum(2.);
+	spinAlpha->setValue(1.);
+	layout->addRow(tr("Alpha"),spinAlpha);
+	stripes=new paintstripes;
+	saver=new ImageSaver(this);
+	buttonDraw = new QPushButton(tr("Draw"));
+	layout->addRow(buttonDraw);
+	randomizeWidget = new RandomizeWidget;
+	layout->addRow(randomizeWidget);
+	buttonRestore = new RestoreButton;
+	layout->addRow(buttonRestore);
+	stripes = new paintstripes;
+	saver = new ImageSaver(this);
+	sideLayout=layout;
+	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
+	connect(this,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(disable()));
+	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
 }
 
-void StripesForm::draw(int sz, int sym_index)
+void StripesForm::draw()
 {
-	symgroup sg=symgroup(sym_index);
+	if(spinSize->value()%2!=0) {
+		QMessageBox::information(this,"paintstripes",tr("The size must be even."));
+		return;
+	}
 	stripes->set_alpha(spinAlpha->value());
-	stripes->draw(sz,sg);
+	stripes->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
+	updateImage();
 }
 
-painterwidget * StripesForm::createPainterWidget()
-{
-	stripes = new paintstripeswidget;
-	return stripes;
+void StripesForm::updateImage() {
+	emit newImage(makePixmap(stripes->get_image()));
+	emit newCanvas(&(stripes->get_symmetric_image()));
 }

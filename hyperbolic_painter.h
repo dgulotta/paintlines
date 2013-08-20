@@ -27,10 +27,6 @@
 #include <cstdlib>
 #include <functional>
 #include <unordered_map>
-#include "basic_painter.h"
-
-using namespace std;
-using namespace std::placeholders;
 
 static const double ZMAX = 50;
 
@@ -263,9 +259,9 @@ struct generator {
 
 class hyperbolic_symmetry_group {
 public:
-	hyperbolic_symmetry_group(const vector<generator> &g, const hyperbolic_coord &pt, flip_type f=FLIP_ALL); 
+	hyperbolic_symmetry_group(const std::vector<generator> &g, const hyperbolic_coord &pt, flip_type f=FLIP_ALL); 
 	template <typename F>
-	function<void(const hyperbolic_coord &)> symmetrize(const F &f);
+	std::function<void(const hyperbolic_coord &)> symmetrize(const F &f);
 	hyperbolic_coord random_symmetry(const hyperbolic_coord &c);
 	static hyperbolic_symmetry_group * group_sabc(int n1, int n2, int n3, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_a222(int a, flip_type f=FLIP_ALL);
@@ -279,24 +275,24 @@ public:
 	static hyperbolic_symmetry_group * group_sabcd(int a, int b, int c, int d, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_a2sb(int a, int b, flip_type f=FLIP_ALL);
 private:
-	vector<generator> generators;
-	vector<hyperbolic_transformation> transformations;
-	vector<hyperbolic_transformation> flips;
-	tuple<hyperbolic_coord,bool> fundamental_domain(const hyperbolic_coord &hc);
-	tuple<hyperbolic_coord,bool> fundamental_domain_alternating(const hyperbolic_coord &hc);
-	tuple<hyperbolic_coord,bool> fundamental_domain_random(const hyperbolic_coord &hc);
-	unordered_map<long,bool> random_flips;
+	std::vector<generator> generators;
+	std::vector<hyperbolic_transformation> transformations;
+	std::vector<hyperbolic_transformation> flips;
+	std::tuple<hyperbolic_coord,bool> fundamental_domain(const hyperbolic_coord &hc);
+	std::tuple<hyperbolic_coord,bool> fundamental_domain_alternating(const hyperbolic_coord &hc);
+	std::tuple<hyperbolic_coord,bool> fundamental_domain_random(const hyperbolic_coord &hc);
+	std::unordered_map<long,bool> random_flips;
 	decltype(&hyperbolic_symmetry_group::fundamental_domain) fdfunc;
 };
 
 
 
 template<typename F>
-function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(const F &f) {
+std::function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(const F &f) {
 	return [this,f](const hyperbolic_coord &hc) {
 		hyperbolic_coord c;
 		bool b;
-		tie(c,b) = (this->*fdfunc)(hc);
+		std::tie(c,b) = (this->*fdfunc)(hc);
 		if(b)
 			for(auto &t : flips)
 				f(t(c));
@@ -306,24 +302,18 @@ function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(c
 	};
 }
 
-class hyperbolic_painter : public virtual basic_painter
+class coord_converter
 {
- public:
-  hyperbolic_painter() : sg(nullptr), pt(POINCARE) {};
-  void paint(int sz, hyperbolic_symmetry_group &sym) {
-    basic_painter::paint(sz);
-    sg=&sym;
-  }
-  void set_projtype(projtype _pt) {pt=_pt;}
-  screen_coord toscreen(const planar_coord &p) {
-    return screen_coord(size*(p.x+1.)/2.,size*(p.y+1.)/2.);
-  }
-  planar_coord fromscreen(const screen_coord &s) {
-  	return planar_coord((2*s.x+1.)/size-1,(2*s.y+1.)/size-1);
-  }
- protected:
-  hyperbolic_symmetry_group *sg;
-  projtype pt;
+public:
+	coord_converter(int sz) : size(sz) {}
+	screen_coord toscreen(const planar_coord &p) {
+		return screen_coord(size*(p.x+1.)/2.,size*(p.y+1.)/2.);
+	}
+	planar_coord fromscreen(const screen_coord &s) {
+  		return planar_coord((2*s.x+1.)/size-1,(2*s.y+1.)/size-1);
+  	}
+private:
+	int size;
 };
 
 #endif

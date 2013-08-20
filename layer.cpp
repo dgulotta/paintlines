@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008 by Daniel Gulotta                             *
+ *   Copyright (C) 2013 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,15 +18,30 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "paintsquiggleswidget.h"
+#include "layer.h"
+#include "randgen.h"
 
-paintsquiggleswidget::paintsquiggleswidget(QWidget *parent)
-    :painterwidget(parent)	
+#include <iostream>
+using namespace std;
+
+void copy_pastel(uint8_t &c, uint8_t v, uint8_t t)
 {
+	c+=(t*((int)t-v)+255*((int)v-c))*t/(255*255);
 }
 
-void paintsquiggleswidget::draw(int sz, symgroup sg)
+void copy_regular(uint8_t &c, uint8_t v, uint8_t t)
 {
-  paintsquiggles::paint(sz,sg);
-  basic_painterwidget::paint();
+	c+=((int)v-c)*t/255;
+}
+
+color_t default_color_generator()
+{
+	switch(random_int(6)) {
+	case 0: return color_t(255,random_int(256),0);
+	case 1: return color_t(0,255,random_int(256));
+	case 2: return color_t(random_int(256),0,255);
+	case 3: return color_t(random_int(256),255,0);
+	case 4: return color_t(0,random_int(256),255);
+	default: return color_t(255,0,random_int(256));
+	};
 }

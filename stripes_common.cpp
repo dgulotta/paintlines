@@ -22,24 +22,30 @@
 #include "stripes_common.h"
 #include <random>
 
+using std::function;
 using std::polar;
 
 complex<double> stripes_grid::get_symmetric(int x, int y) const {
 	complex<double> sum(0,0);
-	paint->symmetrize([&](int a, int b) { sum+=(*this)(a,b); })(x,y);
+	point p(x,y);
+	int xn, yn;
+	for(auto &t : transformations) {
+		std::tie(xn,yn)=t(p);
+		sum+=(*this)(xn,yn);
+	}
 	return sum;
 }
 
-function<double(int,int)> stripes_grid::norm_hexagonal() {
-	double p=phase;
+function<double(int,int)> stripes_grid::norm_hexagonal(int sz) {
+	double p=2.*M_PI/sz;
 	return [p] (int x, int y) {
 		if(x==0&&y==0) x=1;
 		return 1./(3.-cos(p*x)-cos(p*y)-cos(p*(x-y)));
 	};
 }
 
-function<double(int,int)> stripes_grid::norm_orthogonal() {
-	double p=phase;
+function<double(int,int)> stripes_grid::norm_orthogonal(int sz) {
+	double p=2.*M_PI/sz;
 	return [p] (int x, int y) {
 		if(x==0&&y==0) x=1;
 		return 1./(2.-cos(p*x)-cos(p*y));
@@ -49,8 +55,8 @@ function<double(int,int)> stripes_grid::norm_orthogonal() {
 double stripes_grid::intensity(const function<double(const complex<double> &)> &proj) const {
 	double s=0;
 	int i, j;
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++) {
+	for(j=0;j<size;j++)
+		for(i=0;i<size;i++) {
 			double d=proj(get_symmetric(i,j));
 			s+=d*d;
 		}

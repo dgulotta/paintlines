@@ -40,38 +40,39 @@ tuple<cpx,cpx,cpx> random_levy_6d(double alpha, double scale) {
 
 void paintstripes::paint(int sz, symgroup sym)
 {
-	painter::paint(sz,sym);
-	stripes_grid gridr(this), gridg(this), gridb(this);
-	function<double(int,int)> norm;
+	stripes_grid gridr(sz,sym), gridg(sz,sym), gridb(sz,sym);
+	std::function<double(int,int)> norm;
 	switch(sym) {
 	case SYM_P3:
 	case SYM_P31M:
 	case SYM_P3M1:
 	case SYM_P6:
 	case SYM_P6M:
-    	norm=gridr.norm_hexagonal();
+    	norm=stripes_grid::norm_hexagonal(sz);
 		break;
 	default:
-		norm=gridr.norm_orthogonal();
+		norm=stripes_grid::norm_orthogonal(sz);
   	}
 	int i,j;
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++)
+	for(i=0;i<sz;i++)
+		for(j=0;j<sz;j++)
 			tie(gridr(i,j),gridg(i,j),gridb(i,j))=random_levy_6d(levy_alpha,pow(norm(i,j),.5+1./levy_alpha));
 	gridr.transform();
 	gridg.transform();
 	gridb.transform();
 	double s = gridr.intensity()+gridg.intensity()+gridb.intensity();
-	fill(red,gridr,s);
-	fill(blue,gridb,s);
-	fill(green,gridg,s);
+	image = symmetric_canvas<color_t>(sz,sym);
+	canvas<color_t> & c = const_cast<canvas<color_t> &>(image.as_canvas());
+	fill([&](int x,int y,uint8_t v) { c(x,y).red=v; },gridr,s);
+	fill([&](int x,int y,uint8_t v) { c(x,y).green=v; },gridg,s);
+	fill([&](int x,int y,uint8_t v) { c(x,y).blue=v; },gridb,s);
 }
 
-void paintstripes::fill(vector<unsigned char> &arr, const stripes_grid &g, double intensity)
+void paintstripes::fill(const std::function<void(int,int,uint8_t)> &set, const stripes_grid &g, double intensity)
 {
-	int i,j;
+	int i,j, size=g.get_size();
 	double norm=sqrt(intensity/3)/(size*64);
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++)
-			arr[i+size*j]=colorchop(128.+g.get_symmetric(i,j).real()/norm);
+	for(j=0;j<size;j++)
+		for(i=0;i<size;i++)
+			set(i,j,colorchop(128.+g.get_symmetric(i,j).real()/norm));
 }

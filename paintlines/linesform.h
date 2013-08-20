@@ -25,7 +25,7 @@
 class QCheckBox;
 class QComboBox;
 class QSpinBox;
-class paintlineswidget;
+class RandomizeWidget;
 
 class PaintRuleWidget : public QWidget
 {
@@ -41,14 +41,21 @@ private:
 class LinesForm : public BasicForm
 {
 	Q_OBJECT
-public:
-	virtual bool saveAs();
+signals:
+	void newLayeredImage(const std::vector<layer> *l);
+	void newCanvas(const symmetric_canvas<color_t> *c);
+protected slots:
+	virtual void draw();
+	virtual void init();
+	void clearLayers();
+	void updateImage();
 protected:
-	virtual void addWidgets(QBoxLayout *sideLayout);
-	virtual painterwidget * createPainterWidget();
-	virtual void draw(int sz, int sym_index);
+	QSpinBox *spinSize;
 	QSpinBox *spinColors;
-	vector<PaintRuleWidget *> rules;
+	QComboBox *comboSymmetry;
+	std::vector<PaintRuleWidget *> rules;
 	RandomColorWidget *colorWidget;
-	paintlineswidget *lines;
+	RandomizeWidget *randomizeWidget;
+	RestoreButton *buttonRestore;
+	paintlines *lines;
 };

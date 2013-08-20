@@ -22,22 +22,31 @@
 #define _STRIPESFORM_H
 
 #include "../basicform.h"
+#include "../symmetric_canvas.h"
 
 class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
-class paintstripeswidget;
+class RandomizeWidget;
+class paintstripes;
 
 class StripesForm : public BasicForm
 {
   Q_OBJECT
+signals:
+	void newCanvas(const symmetric_canvas<color_t> *c);
+protected slots:
+	virtual void draw();
+	virtual void init();
+	void updateImage();
 protected:
-  virtual void addWidgets(QBoxLayout *sideLayout);
-  virtual painterwidget * createPainterWidget();
-  virtual void draw(int sz, int sym_index);
-  QDoubleSpinBox *spinAlpha;
-  paintstripeswidget *stripes;
+	QSpinBox *spinSize;
+	QComboBox *comboSymmetry;
+	QDoubleSpinBox *spinAlpha;
+	RandomizeWidget *randomizeWidget;
+	RestoreButton *buttonRestore;
+	paintstripes *stripes;
 };
 
 #endif

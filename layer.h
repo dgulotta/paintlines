@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,27 +18,40 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include "painterwidget.h"
-#include <QPainter>
-#include <QColor>
-#include <QImage>
-#include <QPaintEvent>
+#ifndef _LAYER_H
+#define _LAYER_H
 
-painterwidget::painterwidget(QWidget *parent)
-    : basic_painterwidget(parent)	
+#include "canvas.h"
+#include "color.h"
+
+struct layer {
+	layer() : pixels(nullptr), color(black), pastel(false) {}
+	const canvas<uint8_t> *pixels;
+	color_t color;
+	bool pastel;
+};
+
+void copy_pastel(uint8_t &c, uint8_t v, uint8_t t);
+void copy_regular(uint8_t &c, uint8_t v, uint8_t t);
+
+template <typename Canvas, typename Container>
+void merge(Canvas &img, const Container &layers)
 {
+	for(const layer &l : layers) {
+		color_t col=l.color;
+		auto &src = *(l.pixels);
+		auto copy = l.pastel?&copy_pastel:&copy_regular;
+		for(int j=0;j<img.height();j++)
+			for(int i=0;i<img.width();i++) {
+				uint8_t a = src(i,j);
+				auto &pix = img(i,j);
+				(*copy)(pix.red,col.red,a);
+				(*copy)(pix.green,col.green,a);
+				(*copy)(pix.blue,col.blue,a);
+			}
+	}
 }
 
-void painterwidget::randomize(int xtiles, int ytiles)
-{
-  vector<unsigned char> r,g,b;
-  int width=xtiles*painter::size, height=ytiles*painter::size, i, j;
-  painter::randomize(xtiles,ytiles,r,g,b);
-  QImage myimage(width,height,QImage::Format_RGB32);
-  for(i=0;i<width;i++)
-    for(j=0;j<height;j++)
-      myimage.setPixel(i,j,qRgb(r[i+width*j],g[i+width*j],b[i+width*j]));
-  mypixmap=QPixmap::fromImage(myimage);
-  setMinimumSize(width,height);
-  update();
-}
+color_t default_color_generator();
+
+#endif

@@ -4,23 +4,23 @@ LANGUAGE        = C++
 CONFIG  += qt warn_on release
 
 HEADERS += paintclouds.h \
-	paintcloudswidget.h \
-	../painter.h \
-	../painterwidget.h \
-	../basic_painter.h \
-	../basic_painterwidget.h \
 	cloudsform.h \
 	../basicform.h \
-	../randgen.h
+	../randgen.h \
+	../randomizewidget.h \
+	../randomize.h \
+	../canvas.h \
+	../symmetric_canvas.h \
+	../color.h
 
 SOURCES += paintclouds.cpp \
-	paintcloudswidget.cpp \
-	../painter.cpp \
-	../painterwidget.cpp \
 	main.cpp \
 	cloudsform.cpp \
 	../basicform.cpp \
-	../randgen.cpp
+	../randgen.cpp \
+	../randomizewidget.cpp \
+	../randomize.cpp \
+	../symmetric_canvas.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11

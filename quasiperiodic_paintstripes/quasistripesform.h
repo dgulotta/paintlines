@@ -21,31 +21,24 @@
 #ifndef _QUASISTRIPESFORM_H
 #define _QUASISTRIPESFORM_H
 
-#include <QMainWindow>
+#include "../basicform.h"
 
 class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
-class quasiperiodic_paintstripeswidget;
+class quasiperiodic_paintstripes;
 
-class QuasiStripesForm : public QMainWindow
+class QuasiStripesForm : public BasicForm
 {
-  Q_OBJECT
-public:
-  QuasiStripesForm();
-private slots:
-  bool saveAs();
-  void draw();
-private:
-  QMenuBar *menu;
-  QMenu *menuFile;
-  QAction *actionSaveAs;
-  QAction *actionExit;
-  QSpinBox *spinSize;
-  QSpinBox *spinQuasiSize;
-  QDoubleSpinBox *spinAlpha;
-  QPushButton *buttonDraw;
-  quasiperiodic_paintstripeswidget *stripes;
+	Q_OBJECT
+protected slots:
+	virtual void draw();
+	virtual void init();
+protected:
+	QSpinBox *spinSize;
+	QSpinBox *spinQuasiSize;
+	QDoubleSpinBox *spinAlpha;
+	quasiperiodic_paintstripes *stripes;
 };
 
 #endif

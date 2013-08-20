@@ -12,27 +12,27 @@ packagesExist(GraphicsMagick++) {
 }
 
 HEADERS	+= paintlines.h \
-	paintlineswidget.h \
-	../painter.h \
-	../painterwidget.h \
-	../basic_painter.h \
-	../basic_painterwidget.h \
 	linesform.h \
 	../basicform.h \
 	../randgen.h \
-	../layer_painter.h \
-	../randomcolorwidget.h
+	../layer.h \
+	../randomcolorwidget.h \
+	../randomizewidget.h \
+	../randomize.h \
+	../canvas.h \
+	../symmetric_canvas.h \
+	../color.h
 
 SOURCES	+= paintlines.cpp \
 	main.cpp \
-	paintlineswidget.cpp \
-	../painter.cpp \
-	../painterwidget.cpp \
 	linesform.cpp \
 	../basicform.cpp \
 	../randgen.cpp \
-	../layer_painter.cpp \
-	../randomcolorwidget.cpp
+	../layer.cpp \
+	../randomcolorwidget.cpp \
+	../randomizewidget.cpp \
+	../randomize.cpp \
+	../symmetric_canvas.cpp
 
 contains(DEFINES,MULTIPAGE) {
 	HEADERS += ../magick.h

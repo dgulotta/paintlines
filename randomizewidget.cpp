@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,18 +18,43 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _PAINTLINESWIDGET_H
-#define _PAINTLINESWIDGET_H
+#include <QtGui>
+#include "basicform.h"
+#include "randomize.h"
+#include "randomizewidget.h"
 
-#include "paintstripes.h"
-#include "../painterwidget.h"
-
-class paintstripeswidget : public painterwidget, public paintstripes
+RandomizeWidget::RandomizeWidget(QWidget *parent)
+:QWidget(parent), src(nullptr)
 {
-    Q_OBJECT
-public:
-    paintstripeswidget(QWidget *parent=0);
-    void draw(int sz, symgroup sg);
-};
+	QFormLayout *layout = new QFormLayout;
+	layout->addRow(new QLabel(tr("Randomization")));
+	spinXTiles = new QSpinBox;
+	spinXTiles->setMinimum(1);
+	spinXTiles->setValue(2);
+	layout->addRow(tr("X"),spinXTiles);
+	spinYTiles = new QSpinBox;
+	spinYTiles->setMinimum(1);
+	spinYTiles->setValue(2);
+	layout->addRow(tr("Y"),spinYTiles);
+	buttonRandomize = new QPushButton(tr("Randomize"));
+	buttonRandomize->setEnabled(false);
+	layout->addRow(buttonRandomize);
+	layout->setContentsMargins(0,0,0,0);
+	setLayout(layout);
+	connect(buttonRandomize,SIGNAL(clicked()),this,SLOT(randomize()));
+	
+}
 
-#endif
+void RandomizeWidget::imageUpdated(const symmetric_canvas<color_t> *c)
+{
+	src=c;
+	buttonRandomize->setEnabled(true);
+}
+
+void RandomizeWidget::randomize()
+{
+	int xtiles = spinXTiles->value();
+	int ytiles = spinYTiles->value();
+	auto img = ::randomize(xtiles,ytiles,*src);
+	emit newImage(BasicForm::makePixmap(img.as_canvas()));
+}

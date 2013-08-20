@@ -20,8 +20,9 @@
 
 #include <QtGui>
 
+#include "../paintclouds.h"
+#include "../randomizewidget.h"
 #include "cloudsform.h"
-#include "paintcloudswidget.h"
 
 void ColorButton::mousePressEvent(QMouseEvent *event)
 {
@@ -31,38 +32,39 @@ void ColorButton::mousePressEvent(QMouseEvent *event)
   }
 }
 
-CloudsForm::CloudsForm()
-{
-}
-
-CloudsForm::~CloudsForm()
-{
-}
-
-painterwidget * CloudsForm::createPainterWidget() {
-	clouds = new paintcloudswidget;
-	return clouds;
-}
-
-void CloudsForm::addWidgets(QBoxLayout *sideLayout) {
-  sideLayout->addWidget(new QLabel(tr("Random distribution")));
-  comboRandom = new QComboBox;
-  comboRandom->addItem(tr("Cauchy"));
-  comboRandom->addItem(tr("Normal"));
-  comboRandom->addItem(tr("Pseudo-Exponential"));
-  comboRandom->addItem(tr("Sech^2"));
-  sideLayout->addWidget(comboRandom);
-  QGridLayout *colorLayout = new QGridLayout;
-  colorLayout->addWidget(new QLabel(tr("Color 1")),0,0);
-  color1 = new ColorButton(qRgb(255,255,0));
-  colorLayout->addWidget(color1,0,1);
-  colorLayout->addWidget(new QLabel(tr("Color 2")),1,0);
-  color2 = new ColorButton(qRgb(255,0,255));
-  colorLayout->addWidget(color2,1,1);
-  colorLayout->addWidget(new QLabel(tr("Color 3")),2,0);
-  color3 = new ColorButton(qRgb(0,255,255));
-  colorLayout->addWidget(color3,2,1);
-  sideLayout->addLayout(colorLayout);
+void CloudsForm::init() {
+	QFormLayout *layout = new QFormLayout;
+	spinSize = newSizeSpin();
+	layout->addRow(tr("Size"),spinSize);
+	comboSymmetry = newSymmetryCombo();
+	layout->addRow(tr("Symmetry"),comboSymmetry);
+	comboRandom = new QComboBox;
+	comboRandom->addItem(tr("Cauchy"));
+	comboRandom->addItem(tr("Normal"));
+	comboRandom->addItem(tr("Pseudo-Exponential"));
+	comboRandom->addItem(tr("Sech^2"));
+	layout->addRow(tr("Distribution"),comboRandom);
+	color1 = new ColorButton(qRgb(255,255,0));
+	layout->addRow(tr("Color 1"),color1);
+	color2 = new ColorButton(qRgb(255,0,255));
+	layout->addRow(tr("Color 2"),color2);
+	color3 = new ColorButton(qRgb(0,255,255));
+	layout->addRow(tr("Color 3"),color3);
+	buttonDraw = new QPushButton(tr("Draw"));
+	layout->addRow(buttonDraw);
+	randomizeWidget = new RandomizeWidget;
+	layout->addRow(randomizeWidget);
+	buttonRestore = new RestoreButton;
+	layout->addRow(buttonRestore);
+	clouds = new paintclouds;
+	saver = new ImageSaver(this);
+	sideLayout = layout;
+	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
+	connect(this,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(disable()));
+	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
 }
 
 static double (*(randfuncs[4]))(double) = {
@@ -72,8 +74,12 @@ static double (*(randfuncs[4]))(double) = {
 	&paintclouds::rand_sechsquare
 };
 
-void CloudsForm::draw(int sz, int sym_index)
+void CloudsForm::draw()
 {
+	if(spinSize->value()%2!=0) {
+		QMessageBox::information(this,"paintclouds",tr("The size must be even."));
+		return;
+	}
 	symgroup sg=symgroup(comboSymmetry->currentIndex());
 	QColor c=color1->palette().color(QPalette::Window);
     clouds->set_color1(c.red(),c.green(),c.blue());
@@ -81,8 +87,12 @@ void CloudsForm::draw(int sz, int sym_index)
     clouds->set_color2(c.red(),c.green(),c.blue());
     c=color3->palette().color(QPalette::Window);
     clouds->set_color3(c.red(),c.green(),c.blue());
-    buttonRandomize->setEnabled(true);
-    buttonRestore->setEnabled(false);
 	clouds->set_randfunc(randfuncs[comboRandom->currentIndex()]);
-    clouds->draw(spinSize->value(),sg);
+    clouds->paint(spinSize->value(),sg);
+	updateImage();
+}
+
+void CloudsForm::updateImage() {
+	emit newImage(makePixmap(clouds->get_image()));
+	emit newCanvas(&(clouds->get_symmetric_image()));
 }

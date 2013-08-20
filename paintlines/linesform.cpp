@@ -21,10 +21,9 @@
 #include <QtGui>
 
 #include "linesform.h"
-#include "paintlineswidget.h"
-#ifdef MULTIPAGE
-#include "../magick.h"
-#endif
+#include "../randomizewidget.h"
+
+using std::vector;
 
 PaintRuleWidget::PaintRuleWidget()
 {
@@ -39,6 +38,7 @@ PaintRuleWidget::PaintRuleWidget()
 	layout->addRow("Weight",spinWeight);
 	checkPastel = new QCheckBox("Pastel");
 	layout->addRow(checkPastel);
+	layout->setContentsMargins(0,0,0,0);
 	setLayout(layout);
 }
 
@@ -48,54 +48,69 @@ paintrule PaintRuleWidget::rule()
 	return p;
 }
 
-void LinesForm::addWidgets(QBoxLayout *sideLayout) {
-	sideLayout->addWidget(new QLabel("Colors"));
-	spinColors = new QSpinBox;
-	spinColors->setValue(25);
-	sideLayout->addWidget(spinColors);
+void LinesForm::init() {
+	QFormLayout *layout = new QFormLayout;
+	spinSize = newSizeSpin();
+	layout->addRow(tr("Size"),spinSize);
+	comboSymmetry = newSymmetryCombo();
+	layout->addRow(tr("Symmetry"),comboSymmetry);
+	spinColors = newColorSpin();
+	layout->addRow(tr("Colors"),spinColors);
 	for(int i=0;i<3;i++) {
 		PaintRuleWidget *w = new PaintRuleWidget;
-		sideLayout->addWidget(w);
+		layout->addRow(w);
 		rules.push_back(w);
 	}
 	colorWidget = new RandomColorWidget;
-	sideLayout->addWidget(colorWidget);
+	layout->addRow(colorWidget);
+	buttonDraw = new QPushButton(tr("Draw"));
+	layout->addRow(buttonDraw);
+	randomizeWidget = new RandomizeWidget;
+	layout->addRow(randomizeWidget);
+	buttonRestore = new RestoreButton;
+	layout->addRow(buttonRestore);
+	lines = new paintlines;
+	lines->set_color_generator(std::bind(&RandomColorWidget::generate,colorWidget));
+#ifdef MULTIPAGE
+	saver = new LayeredImageSaver(this);
+	connect(this,SIGNAL(newLayeredImage(const std::vector<layer> *)),saver,SLOT(newLayeredImage(const std::vector<layer> *)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),this,SLOT(clearLayers()));
+#else
+	saver = new ImageSaver(this);
+#endif
+	sideLayout = layout;
+	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
+	connect(this,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(disable()));
+	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
 }
 
-painterwidget * LinesForm::createPainterWidget()
-{
-	lines = new paintlineswidget;
-	lines->set_color_generator(bind(&RandomColorWidget::generate,colorWidget));
-	return lines;
-}
-
-void LinesForm::draw(int sz, int sym_index) {
+void LinesForm::draw() {
+	if(spinSize->value()%2!=0) {
+		QMessageBox::information(this,"paintlines",tr("The size must be even."));
+		return;
+	}
 	vector<paintrule> rule_list;
 	for(int i=0;i<rules.size();i++)
 		rule_list.push_back(rules[i]->rule());
 	lines->set_rules(rule_list);
+	lines->set_ncolors(spinColors->value());
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
-	lines->draw(sz,spinColors->value(),(symgroup)sym_index);
+	lines->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
+	updateImage();
 }
 
-bool LinesForm::saveAs()
+void LinesForm::clearLayers()
 {
-	QString s=QFileDialog::getSaveFileName();
-	if(!s.isEmpty()) {
-#ifdef MULTIPAGE
-		if((!buttonRestore->isEnabled())&&
-			(s.toUpper().endsWith(".TIFF")||s.toUpper().endsWith(".TIF"))&&
-			QMessageBox::question(this,"paintlines",tr("Save individiual layers?"),QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
-			return save_multilayer(lines->get_size(),lines->get_size(),lines->get_layers(),s.toStdString());
-		}
-		else
-#endif
-		{
-			return painter->save(s);
-		}
-	}
-	else {
-		return false;
-	}
+	emit newLayeredImage(nullptr);
+}
+
+void LinesForm::updateImage()
+{
+	emit newImage(makePixmap(lines->get_image()));
+	emit newCanvas(&(lines->get_symmetric_image()));
+	emit newLayeredImage(&(lines->get_layers()));
 }

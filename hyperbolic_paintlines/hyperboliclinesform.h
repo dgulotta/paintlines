@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Daniel Gulotta                                  *
+ *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,7 +21,7 @@
 #ifndef _HYPERBOLICLINESFORM_H
 #define _HYPERBOLICLINESFORM_H
 
-#include <QMainWindow>
+#include "../basicform.h"
 
 class QMenuBar;
 class QMenu;
@@ -32,36 +32,31 @@ class QSpinBox;
 class QLabel;
 class QPushButton;
 class QDoubleSpinBox;
-class hyperbolic_paintlineswidget;
+class hyperbolic_paintlines;
 
-class HyperbolicLinesForm : public QMainWindow
+class HyperbolicLinesForm : public BasicForm
 {
-  Q_OBJECT;
-public:
-  HyperbolicLinesForm();
-private slots:
-  void draw();
-  void symmetryChanged(int n);
-  bool saveAs();
-private:
-  QMenuBar *menu;
-  QMenu *menuFile;
-  QAction *actionSaveAs;
-  QAction *actionExit;
-  QComboBox *comboModel;
-  QComboBox *comboSymmetry;
-  QLabel *labelAngle[3];
-  QLabel *labelPi[3];
-  QSpinBox *spinAngle[3];
-  QComboBox *comboSubset;
-  QSpinBox *spinSize;
-  QSpinBox *spinColors;
-  QPushButton *buttonDraw;
-  QDoubleSpinBox *spinThickness;
-  QDoubleSpinBox *spinSharpness;
-  hyperbolic_paintlineswidget *lines;
-  int angles[11][3];
-  int oldsymm;
+	Q_OBJECT;
+signals:
+	void newLayeredImage(const std::vector<layer> *l);
+protected slots:
+	virtual void draw();
+	virtual void init();
+	void symmetryChanged(int n);
+protected:
+	QComboBox *comboModel;
+	QComboBox *comboSymmetry;
+	QLabel *labelAngle[3];
+	QLabel *labelPi[3];
+	QSpinBox *spinAngle[3];
+	QComboBox *comboSubset;
+	QSpinBox *spinSize;
+	QSpinBox *spinColors;
+	QDoubleSpinBox *spinThickness;
+	QDoubleSpinBox *spinSharpness;
+	hyperbolic_paintlines *lines;
+	int angles[11][3];
+	int oldsymm;
 };
 
 #endif

@@ -18,29 +18,20 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _LAYER_PAINTER_H
+#ifndef _RANDOMIZE_H
+#define _RANDOMIZE_H
 
-#define _LAYER_PAINTER_H
+#include <functional>
+#include "symmetric_canvas.h"
 
-#include "painter.h"
+void randomize(int xtiles, int ytiles, symgroup sg, int size, const std::function<void(int,int,int,int)> &f);
 
-struct layer {
-	vector<unsigned char> pixels;
-	color_tuple color;
-	bool pastel;
-};
-
-class layer_painter : virtual public painter {
-public:
-	layer_painter() { clear_color_generator(); }
-	void set_color_generator(const function<color_tuple(void)> &f) { generate_color = f; }
-	void clear_color_generator() { generate_color = &layer_painter::random_color;}
-	const vector<layer> & get_layers() { return layers; }
-protected:
-	static color_tuple random_color();
-	function<color_tuple(void)> generate_color;
-	void merge();
-	vector<layer> layers;
-};
+template<typename T>
+wrap_canvas<T> randomize(int xtiles, int ytiles, const symmetric_canvas<T> &orig)
+{
+	wrap_canvas<T> randomized(xtiles*orig.size(),ytiles*orig.size());
+	randomize(xtiles,ytiles,orig.group(),orig.size(),[&](int xf,int yf,int xt,int yt) {randomized(xt,yt)=orig.get(xf,yf);});
+	return randomized;
+}
 
 #endif

@@ -21,45 +21,65 @@
 #include <QtGui>
 
 #include "squigglesform.h"
-#include "paintsquiggleswidget.h"
+#include "../paintsquiggles.h"
 #include "../randomcolorwidget.h"
-#ifdef MULTIPAGE
-#include "../magick.h"
-#endif
+#include "../randomizewidget.h"
 
-void SquigglesForm::addWidgets(QBoxLayout *sideLayout)
+void SquigglesForm::init()
 {
-  sideLayout->addWidget(new QLabel(tr("Colors")));
-  spinColors=new QSpinBox;
-  spinColors->setMinimum(1);
-  spinColors->setMaximum(65536);
-  spinColors->setValue(25);
-  sideLayout->addWidget(spinColors);
-  sideLayout->addWidget(new QLabel(tr("Alpha")));
-  spinAlpha = new QDoubleSpinBox;
-  spinAlpha->setMinimum(.01);
-  spinAlpha->setMaximum(2.);
-  spinAlpha->setValue(2.);
-  sideLayout->addWidget(spinAlpha);
-  sideLayout->addWidget(new QLabel(tr("Exponent")));
-  spinExponent = new QDoubleSpinBox;
-  spinExponent->setValue(2.);
-  sideLayout->addWidget(spinExponent);
-  sideLayout->addWidget(new QLabel(tr("Thickness")));
-  spinThickness = new QDoubleSpinBox;
-  spinThickness->setValue(1.);
-  sideLayout->addWidget(spinThickness);
-  sideLayout->addWidget(new QLabel(tr("Sharpness")));
-  spinSharpness = new QDoubleSpinBox;
-  spinSharpness->setValue(2.);
-  sideLayout->addWidget(spinSharpness);
-  colorWidget = new RandomColorWidget;
-  sideLayout->addWidget(colorWidget);
+	QFormLayout *layout = new QFormLayout;
+	spinSize = newSizeSpin();
+	layout->addRow(tr("Size"),spinSize);
+	comboSymmetry = newSymmetryCombo();
+	layout->addRow(tr("Symmetry"),comboSymmetry);
+	spinColors = newColorSpin();
+	layout->addRow(tr("Colors"),spinColors);
+	spinAlpha = new QDoubleSpinBox;
+	spinAlpha->setMinimum(.01);
+	spinAlpha->setMaximum(2.);
+	spinAlpha->setValue(2.);
+	layout->addRow(tr("Alpha"),spinAlpha);
+	spinExponent = new QDoubleSpinBox;
+	spinExponent->setValue(2.);
+	layout->addRow(tr("Exponent"),spinExponent);
+	spinThickness = new QDoubleSpinBox;
+	spinThickness->setValue(1.);
+	layout->addRow(tr("Thickness"),spinThickness);
+	spinSharpness = new QDoubleSpinBox;
+	spinSharpness->setValue(2.);
+	layout->addRow(tr("Sharpness"),spinSharpness);
+	colorWidget = new RandomColorWidget;
+	layout->addRow(colorWidget);
+	buttonDraw = new QPushButton(tr("Draw"));
+	layout->addRow(buttonDraw);
+	randomizeWidget = new RandomizeWidget;
+	layout->addRow(randomizeWidget);
+	buttonRestore = new RestoreButton;
+	layout->addRow(buttonRestore);
+	squiggles=new paintsquiggles;
+	squiggles->set_color_generator(std::bind(&RandomColorWidget::generate,colorWidget));
+#ifdef MULTIPAGE
+	saver = new LayeredImageSaver(this);
+	connect(this,SIGNAL(newLayeredImage(const std::vector<layer> *)),saver,SLOT(newLayeredImage(const std::vector<layer> *)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),this,SLOT(clearLayers()));
+#else
+	saver = new ImageSaver(this);
+#endif
+	sideLayout = layout;
+	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
+	connect(this,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(disable()));
+	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
 }
 
-void SquigglesForm::draw(int sz, int sym_index)
+void SquigglesForm::draw()
 {
-	symgroup sg=symgroup(sym_index);
+	if(spinSize->value()%2!=0) {
+		QMessageBox::information(this,"paintsquiggles",tr("The size must be even."));
+		return;
+	}
 	squiggles->set_alpha(spinAlpha->value());
 	squiggles->set_exponent(spinExponent->value());
 	squiggles->set_ncolors(spinColors->value());
@@ -67,33 +87,18 @@ void SquigglesForm::draw(int sz, int sym_index)
 	squiggles->set_sharpness(spinSharpness->value());
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
-	squiggles->draw(sz,sg);
+	squiggles->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
+	updateImage();
 }
 
-painterwidget * SquigglesForm::createPainterWidget()
+void SquigglesForm::clearLayers()
 {
-	squiggles=new paintsquiggleswidget;
-	squiggles->set_color_generator(bind(&RandomColorWidget::generate,colorWidget));
-	return squiggles;
+	emit newLayeredImage(nullptr);
 }
 
-bool SquigglesForm::saveAs()
+void SquigglesForm::updateImage()
 {
-	QString s=QFileDialog::getSaveFileName();
-	if(!s.isEmpty()) {
-#ifdef MULTIPAGE
-		if((!buttonRestore->isEnabled())&&
-			(s.toUpper().endsWith(".TIFF")||s.toUpper().endsWith(".TIF"))&&
-			QMessageBox::question(this,"paintsquiggles",tr("Save individiual layers?"),QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
-			return save_multilayer(squiggles->get_size(),squiggles->get_size(),squiggles->get_layers(),s.toStdString());
-		}
-		else
-#endif
-		{
-			return painter->save(s);
-		}
-	}
-	else {
-		return false;
-	}
+	emit newImage(makePixmap(squiggles->get_image()));
+	emit newCanvas(&(squiggles->get_symmetric_image()));
+	emit newLayeredImage(&(squiggles->get_layers()));
 }

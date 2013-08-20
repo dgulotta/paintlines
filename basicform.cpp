@@ -21,124 +21,101 @@
 #include <QtGui>
 
 #include "basicform.h"
-#include "painterwidget.h"
 
 BasicForm::BasicForm()
 {
-	QMetaObject::invokeMethod(this,"init",Qt::QueuedConnection);
+	QMetaObject::invokeMethod(this,"baseInit",Qt::QueuedConnection);
 }
 
-void BasicForm::init()
+void BasicForm::baseInit()
 {
-  menu = menuBar();
-  menuFile = menu->addMenu(tr("&File"));
-  actionSaveAs = menuFile->addAction(tr("&Save As"));
-  actionExit = menuFile->addAction(tr("E&xit"));
-  QHBoxLayout *mainLayout = new QHBoxLayout;
-  QVBoxLayout *sideLayout = new QVBoxLayout;
-  sideLayout->addWidget(new QLabel(tr("Symmetry Group")));
-  comboSymmetry = new QComboBox;
-  comboSymmetry->addItem(tr("CM (*x)"));
-  comboSymmetry->addItem(tr("CMM (2*22)"));
-  comboSymmetry->addItem(tr("P1 (o)"));
-  comboSymmetry->addItem(tr("P2 (2222)"));
-  comboSymmetry->addItem(tr("P3 (333)"));
-  comboSymmetry->addItem(tr("P31M (3*3)"));
-  comboSymmetry->addItem(tr("P3M1 (*333)"));
-  comboSymmetry->addItem(tr("P4 (442)"));
-  comboSymmetry->addItem(tr("P4G (4*2)"));
-  comboSymmetry->addItem(tr("P4M (*442)"));
-  comboSymmetry->addItem(tr("P6 (632)"));
-  comboSymmetry->addItem(tr("P6M (*632)"));
-  comboSymmetry->addItem(tr("PG (xx)"));
-  comboSymmetry->addItem(tr("PGG (22x)"));
-  comboSymmetry->addItem(tr("PM (**)"));
-  comboSymmetry->addItem(tr("PMG (22*)"));
-  comboSymmetry->addItem(tr("PMM (*2222)"));
-  sideLayout->addWidget(comboSymmetry);
-  sideLayout->addWidget(new QLabel(tr("Size")));
-  spinSize = new QSpinBox;
-  spinSize->setMinimum(2);
-  spinSize->setMaximum(65536);
-  spinSize->setSingleStep(2);
-  spinSize->setValue(256);
-  sideLayout->addWidget(spinSize);
-  addWidgets(sideLayout);
-  buttonDraw = new QPushButton(tr("Draw"));
-  sideLayout->addWidget(buttonDraw);
-  sideLayout->addWidget(new QLabel(tr("Tiles")));
-  QHBoxLayout *tilesLayout = new QHBoxLayout;
-  tilesLayout->addWidget(new QLabel(tr("X")));
-  spinXTiles = new QSpinBox;
-  spinXTiles->setMinimum(1);
-  spinXTiles->setValue(2);
-  tilesLayout->addWidget(spinXTiles);
-  tilesLayout->addWidget(new QLabel(tr("Y")));
-  spinYTiles = new QSpinBox;
-  spinYTiles->setMinimum(1);
-  spinYTiles->setValue(2);
-  tilesLayout->addWidget(spinYTiles);
-  sideLayout->addLayout(tilesLayout);
-  buttonRandomize = new QPushButton(tr("Randomize"));
-  buttonRandomize->setEnabled(false);
-  sideLayout->addWidget(buttonRandomize);
-  buttonRestore = new QPushButton(tr("Restore Original"));
-  buttonRestore->setEnabled(false);
-  sideLayout->addWidget(buttonRestore);
-  sideLayout->addStretch(1);
-  mainLayout->addLayout(sideLayout);
-  painter = createPainterWidget();
-  mainLayout->addWidget(painter);
-  mainLayout->addStretch(1);
-  QWidget *w = new QWidget;
-  w->setLayout(mainLayout);
-  QScrollArea *a = new QScrollArea;
-  a->setWidgetResizable(true);
-  a->setWidget(w);
-  setCentralWidget(a);
-  resize(800,600);
-  connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
-  connect(buttonRandomize,SIGNAL(clicked()),this,SLOT(randomize()));
-  connect(buttonRestore,SIGNAL(clicked()),this,SLOT(restore()));
-  connect(actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
-  connect(actionExit,SIGNAL(triggered()),this,SLOT(close()));
+	menu = menuBar();
+	menuFile = menu->addMenu(tr("&File"));
+	actionSaveAs = menuFile->addAction(tr("&Save As"));
+	actionExit = menuFile->addAction(tr("E&xit"));
+	labelImage = new QLabel;
+	labelImage->setAlignment(Qt::AlignLeft|Qt::AlignTop);
+	init();
+	QHBoxLayout *mainLayout = new QHBoxLayout;
+	mainLayout->addLayout(sideLayout);
+	mainLayout->addWidget(labelImage);
+	mainLayout->addStretch(1);
+	QWidget *w = new QWidget;
+	w->setLayout(mainLayout);
+	QScrollArea *a = new QScrollArea;
+	a->setWidgetResizable(true);
+	a->setWidget(w);
+	setCentralWidget(a);
+	resize(800,600);
+	connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
+	connect(actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
+	connect(actionExit,SIGNAL(triggered()),this,SLOT(close()));
+	connect(this,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
+	connect(this,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
 }
 
 BasicForm::~BasicForm()
 {
 }
 
-void BasicForm::draw()
-{
-  if(spinSize->value()&1) {
-    QMessageBox::information(this,QCoreApplication::applicationName(),"The size must be even.");
-  }
-  else {
-  	draw(spinSize->value(),comboSymmetry->currentIndex());
-    buttonRandomize->setEnabled(true);
-    buttonRestore->setEnabled(false);
-  }
-}
-
-void BasicForm::randomize()
-{
-  painter->randomize(spinXTiles->value(),spinYTiles->value());
-  buttonRestore->setEnabled(true);
-}
-
-void BasicForm::restore()
-{
-  painter->restore();
-  buttonRestore->setEnabled(false);
-}
-
 bool BasicForm::saveAs()
 {
-  QString s=QFileDialog::getSaveFileName();
-  if(!s.isEmpty()) {
-    return painter->save(s);
-  }
-  else {
-    return false;
-  }
+	QString s=QFileDialog::getSaveFileName();
+	if(!s.isEmpty())
+		return saver->save(s);
+	else
+    	return false;
+}
+
+QPixmap BasicForm::makePixmap(const canvas<color_t> &src)
+{
+	QImage image(src.width(),src.height(),QImage::Format_RGB32);
+	for(int j=0;j<src.height();j++)
+		for(int i=0;i<src.width();i++) {
+			color_t col = src(i,j);
+      		image.setPixel(i,j,qRgb(col.red,col.green,col.blue));
+		}
+  	return QPixmap::fromImage(image);
+}
+
+const QStringList BasicForm::symmetryStrings = {
+	tr("CM (*x)"),
+	tr("CMM (2*22)"),
+	tr("P1 (o)"),
+	tr("P2 (2222)"),
+	tr("P3 (333)"),
+	tr("P31M (3*3)"),
+	tr("P3M1 (*333)"),
+	tr("P4 (442)"),
+	tr("P4G (4*2)"),
+	tr("P4M (*442)"),
+	tr("P6 (632)"),
+	tr("P6M (*632)"),
+	tr("PG (xx)"),
+	tr("PGG (22x)"),
+	tr("PM (**)"),
+	tr("PMG (22*)"),
+	tr("PMM (*2222)"),
+};
+
+QComboBox * BasicForm::newSymmetryCombo()
+{
+	QComboBox *comboSymmetry = new QComboBox;
+	comboSymmetry->addItems(symmetryStrings);
+	return comboSymmetry;
+}
+
+QSpinBox * BasicForm::newSizeSpin() {
+	QSpinBox *spinSize = new QSpinBox;
+	spinSize->setMinimum(2);
+	spinSize->setMaximum(65536);
+	spinSize->setSingleStep(2);
+	spinSize->setValue(256);
+	return spinSize;
+}
+
+QSpinBox * BasicForm::newColorSpin() {
+	QSpinBox *spinColors = new QSpinBox;
+	spinColors->setValue(25);
+	return spinColors;
 }

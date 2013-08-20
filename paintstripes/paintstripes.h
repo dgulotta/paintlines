@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Daniel Gulotta                                  *
- *   dgulotta@mit.edu                                                      *
+ *   Copyright (C) 2005, 2013 by Daniel Gulotta                            *
+ *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,19 +21,24 @@
 #ifndef _PAINTSTRIPES_H
 #define _PAINTSTRIPES_H
 
-#include "../painter.h"
+#include <functional>
+#include "../color.h"
+#include "../symmetric_canvas.h"
 
 class stripes_grid;
 
-class paintstripes : virtual public painter
+class paintstripes
 {
- public:
-  paintstripes() : levy_alpha(1.0) {}
-  void paint(int sz, symgroup sym);
-  void set_alpha(double alpha) {levy_alpha=alpha;}
- private:
-  void fill(vector<unsigned char> &r, const stripes_grid &g, double intensity);
-  double levy_alpha;
+public:
+	paintstripes() : levy_alpha(1.0) {}
+	void paint(int sz, symgroup sym);
+	void set_alpha(double alpha) {levy_alpha=alpha;}
+	const canvas<color_t> & get_image() { return image.as_canvas(); }
+	const symmetric_canvas<color_t> & get_symmetric_image() { return image; }
+private:
+	void fill(const std::function<void(int,int,uint8_t)> &set, const stripes_grid &g, double intensity);
+	symmetric_canvas<color_t> image;
+	double levy_alpha;
 };
 
 #endif

@@ -43,7 +43,7 @@ RandomColorWidget::RandomColorWidget()
 	setLayout(layout);
 }
 
-color_tuple RandomColorWidget::generate()
+color_t RandomColorWidget::generate()
 {
 	bool copyH = (!image.isNull())&&checkCopyHue->isChecked();
 	bool copyS = (!image.isNull())&&checkCopySaturation->isChecked();
@@ -55,7 +55,7 @@ color_tuple RandomColorWidget::generate()
 	int s = copyS ? col.hslSaturation() : 255;
 	int l = copyL ? col.lightness() : 128;
 	col = QColor::fromHsl(h,s,l);
-	return std::make_tuple(col.red(),col.green(),col.blue());
+	return color_t(col.red(),col.green(),col.blue());
 }
 
 bool RandomColorWidget::load()

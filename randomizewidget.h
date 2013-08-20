@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2013 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,38 +18,32 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _BASIC_PAINTER_H
-#define _BASIC_PAINTER_H
+#ifndef _RANDOMIZEWIDGET_H
+#define _RANDOMIZEWIDGET_H
 
-#include <vector>
-#include <tuple>
-using std::tie;
-using std::tuple;
-using std::vector;
+#include <QWidget>
 
-typedef tuple<unsigned char,unsigned char,unsigned char> color_tuple;
-typedef tuple<unsigned char &,unsigned char &,unsigned char &> color_tuple_ref;
+#include "color.h"
+#include "symmetric_canvas.h"
 
-class basic_painter
+class QPushButton;
+class QSpinBox;
+
+class RandomizeWidget : public QWidget
 {
-	public:
-		basic_painter() : size(0) {}
-		void paint(int sz) {
-			size=sz;
-			red.resize(size*size);
-			green.resize(size*size);
-			blue.resize(size*size);
-		}
-		color_tuple_ref pixel(int x, int y) {
-			int index=x+y*size;
-			return tie(red[index],green[index],blue[index]);
-		}
-		int get_size() { return size; }
-	protected:
-		int size;
-		vector<unsigned char> red;
-		vector<unsigned char> green;
-		vector<unsigned char> blue;
+	Q_OBJECT
+public:
+	RandomizeWidget(QWidget *parent=nullptr);
+signals:
+	void newImage(QPixmap p);
+public slots:
+	void imageUpdated(const symmetric_canvas<color_t> *c);
+	void randomize();
+private:
+	const symmetric_canvas<color_t> *src;
+	QPushButton *buttonRandomize;
+	QSpinBox *spinXTiles;
+	QSpinBox *spinYTiles;
 };
 
 #endif

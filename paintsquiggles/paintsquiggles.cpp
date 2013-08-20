@@ -25,11 +25,10 @@
 #include "paintsquiggles.h"
 
 using std::fill;
+using std::function;
 
 void paintsquiggles::paint(int sz, symgroup sym)
 {
-	painter::paint(sz,sym);
-	stripes_grid grid(this);
 	function<double(int,int)> norm;
 	switch(sym) {
 	case SYM_P3:
@@ -37,62 +36,64 @@ void paintsquiggles::paint(int sz, symgroup sym)
 	case SYM_P3M1:
 	case SYM_P6:
 	case SYM_P6M:
-    	norm=grid.norm_hexagonal();
+    	norm=stripes_grid::norm_hexagonal(sz);
 		break;
 	default:
-		norm=grid.norm_orthogonal();
+		norm=stripes_grid::norm_orthogonal(sz);
   	}
-	std::fill(red.begin(),red.end(),0);
-	std::fill(green.begin(),green.end(),0);
-	std::fill(blue.begin(),blue.end(),0);
 	layers.resize(n_colors);
-	for(layer &l : layers) {
-		l.pixels.resize(size*size);
+	grids.clear();
+	grids.resize(n_colors,symmetric_canvas<uint8_t>(sz,sym,0));
+	for(int i=0;i<n_colors;i++) {
+		layer &l = layers[i];
+		l.pixels=&(grids[i].as_canvas());
 		l.color = generate_color();
 		l.pastel = false;
 	}
-	vector<std::future<stripes_grid *>> futures((layers.size()+1)/2);
+	std::vector<std::future<stripes_grid *>> futures((layers.size()+1)/2);
 	std::random_device rd;
 	for(int i=0;i<futures.size();i++) {
 		// fftw_malloc is not thread safe, so allocate the grid beforehand
-		stripes_grid *g = new stripes_grid(this);
+		stripes_grid *g = new stripes_grid(sz,sym);
 		auto seed = rd();
 		futures[i] = std::async(std::launch::async,[&,i,g,seed]() {
 			std::default_random_engine rng(seed);
 			generate((*g),norm,rng);
-			fill(*g,layers[2*i].pixels,(stripes_grid::proj_t)&std::real);
+			fill(*g,const_cast<canvas<uint8_t> &>(*layers[2*i].pixels),(stripes_grid::proj_t)&std::real);
 			if(2*i+1<layers.size())
-				fill(*g,layers[2*i+1].pixels,(stripes_grid::proj_t)&std::imag);
+				fill(*g,const_cast<canvas<uint8_t> &>(*layers[2*i+1].pixels),(stripes_grid::proj_t)&std::imag);
 			return g;
 		});
 	}
 	for(auto &f : futures)
 		delete f.get();
-	merge();
+	image=symmetric_canvas<color_t>(sz,sym,black);
+	merge(const_cast<canvas<color_t> &>(image.as_canvas()),layers);
 }
 
-void paintsquiggles::fill(const stripes_grid &grid,vector<unsigned char> &pix,const function<double(const complex<double> &)> &proj)
+void paintsquiggles::fill(const stripes_grid &grid,canvas<uint8_t> &pix,const function<double(const complex<double> &)> &proj)
 {
+	int size = pix.height();
 	double norm=grid.intensity(proj);
 	norm=sqrt(norm)/(size*64);
 	double height, alpha;
 	int i, j;
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++) {
+	for(j=0;j<size;j++)
+		for(i=0;i<size;i++) {
 			height=proj(grid.get_symmetric(i,j))/norm;
-			pix[i+size*j]=255.99/(pow(abs(height)/(10.*thickness),sharpness)+1.);
+			pix(i,j)=255.99/(pow(abs(height)/(10.*thickness),sharpness)+1.);
 		}
 }
 
 void paintsquiggles::generate(stripes_grid &grid, function<double(int,int)> &f, std::default_random_engine &rng) {
 	grid.clear();
-	int i,j;
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++)
+	int i,j, size=grid.get_size();
+	for(j=0;j<size;j++)
+		for(i=0;i<size;i++)
 			grid(i,j) = complex<double>(random_levy_1d(levy_alpha,1.,rng),random_levy_1d(levy_alpha,1.,rng));
 	grid.transform();
-	for(i=0;i<size;i++)
-		for(j=0;j<size;j++)
+	for(j=0;j<size;j++)
+		for(i=0;i<size;i++)
 			grid(i,j) *= pow(f(i,j),exponent/2.);
 	grid.transform();
 }
