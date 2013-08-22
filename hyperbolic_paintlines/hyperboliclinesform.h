@@ -55,7 +55,7 @@ protected:
 	QDoubleSpinBox *spinThickness;
 	QDoubleSpinBox *spinSharpness;
 	hyperbolic_paintlines *lines;
-	int angles[11][3];
+	int angles[15][3];
 	int oldsymm;
 };
 

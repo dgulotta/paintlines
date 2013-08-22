@@ -170,7 +170,8 @@ class hyperbolic_transformation
   static hyperbolic_transformation rotation_180(const hyperbolic_coord &c);
   static hyperbolic_transformation rotation_origin(double a);
   static hyperbolic_transformation rotation(double a, const hyperbolic_coord &c);
-  static hyperbolic_transformation glide_reflection(const hyperbolic_coord &c, double r);
+  static hyperbolic_transformation glide_reflection(const hyperbolic_coord &c);
+  static hyperbolic_transformation translation(const hyperbolic_coord &e1, const hyperbolic_coord &e2);
   hyperbolic_transformation() {}
   hyperbolic_transformation(double _xx, double _xy, double _xz, double _yx,
 			    double _yy, double _yz, double _zx, double _zy,
@@ -274,6 +275,10 @@ public:
 	static hyperbolic_symmetry_group * group_asbc(int a, int b, int c, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_sabcd(int a, int b, int c, int d, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_a2sb(int a, int b, flip_type f=FLIP_ALL);
+	static hyperbolic_symmetry_group * group_abc(int a, int b, int c, flip_type f=FLIP_ALL);
+	static hyperbolic_symmetry_group * group_ssa(int a, flip_type f=FLIP_ALL);
+	static hyperbolic_symmetry_group * group_axx(int a, flip_type f=FLIP_ALL);
+	static hyperbolic_symmetry_group * group_ao(int a, flip_type f=FLIP_ALL);
 private:
 	std::vector<generator> generators;
 	std::vector<hyperbolic_transformation> transformations;

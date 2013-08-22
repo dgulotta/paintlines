@@ -44,6 +44,10 @@ static const char *anglestrings[][3] = {
   { anglerot, angle2str, angle3str },
   { angle1str, angle2str, angle3str },
   { anglerot, anglesum, nullptr },
+  { anglesum, nullptr, nullptr },
+  { anglesum, nullptr, nullptr },
+  { angle1str, angle2str, angle3str },
+  { anglesum, nullptr, nullptr },
 };
 
 static const char *twopiover = "2 * Pi /";
@@ -62,6 +66,10 @@ static const char *pistrings[][3] = {
   { twopiover, piover, piover },
   { piover, piover, piover },
   { twopiover, piover, nullptr },
+  { piover, nullptr, nullptr },
+  { twopiover, nullptr, nullptr },
+  { twopiover, twopiover, twopiover },
+  { twopiover, nullptr, nullptr },
 };
 
 static const int minangles[][3] = {
@@ -76,6 +84,10 @@ static const int minangles[][3] = {
   { 2, 2, 2 },
   { 2, 2, 2 },
   { 2, 1, 0 },
+  { 2, 0, 0 },
+  { 2, 0, 0 },
+  { 2, 2, 2 },
+  { 2, 0, 0 },
 };
 
 static const int initangles[][3] = {
@@ -90,6 +102,10 @@ static const int initangles[][3] = {
   {3,2,2},
   {3,2,2},
   {3,1,0},
+  {2,0,0},
+  {2,0,0},
+  {5,4,2},
+  {2,0,0},
 };
 
 void HyperbolicLinesForm::init()
@@ -113,9 +129,13 @@ void HyperbolicLinesForm::init()
 	comboSymmetry->addItem(tr("(a*bc)"));
 	comboSymmetry->addItem(tr("(*abc2)"));
 	comboSymmetry->addItem(tr("(a2*b)"));
+	comboSymmetry->addItem(tr("(**a)"));
+	comboSymmetry->addItem(tr("(ao)"));
+	comboSymmetry->addItem(tr("(abc)"));
+	comboSymmetry->addItem(tr("(axx)"));
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	QGridLayout *angleLayout = new QGridLayout;
-	for(j=0;j<11;j++)
+	for(j=0;j<15;j++)
 		for(i=0;i<3;i++)
 			angles[j][i]=initangles[j][i];
 	for(i=0;i<3;i++) {
@@ -199,11 +219,23 @@ void HyperbolicLinesForm::draw()
   case 8:
 	sg=hyperbolic_symmetry_group::group_asbc(spinAngle[0]->value(),spinAngle[1]->value(),spinAngle[2]->value(),ft);
 	break;
-   case 9:
+  case 9:
 	sg=hyperbolic_symmetry_group::group_sabcd(spinAngle[0]->value(),spinAngle[1]->value(),spinAngle[2]->value(),2,ft);
 	break;
-   case 10:
+  case 10:
 	sg=hyperbolic_symmetry_group::group_a2sb(spinAngle[0]->value(),spinAngle[1]->value(),ft);
+	break;
+  case 11:
+  	sg=hyperbolic_symmetry_group::group_ssa(spinAngle[0]->value(),ft);
+	break;
+  case 12:
+  	sg=hyperbolic_symmetry_group::group_ao(spinAngle[0]->value(),ft);
+	break;
+  case 13:
+    sg=hyperbolic_symmetry_group::group_abc(spinAngle[0]->value(),spinAngle[1]->value(),spinAngle[2]->value(),ft);
+	break;
+  case 14:
+  	sg=hyperbolic_symmetry_group::group_axx(spinAngle[0]->value());
   }
   if(sg) {
   	double t = spinThickness->value();
