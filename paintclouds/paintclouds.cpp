@@ -212,17 +212,17 @@ void paintclouds::paint(int size, symgroup sym)
   case SYM_PGG:
     {
       int y1=(halfsize+1)/2;
-      drawpixelsymmetric(-y1,y1,red1,green1,blue1);
-      drawpixelsymmetric(y1,y1,red2,green2,blue2);
-      drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
-      paint_border(y1,y1,halfsize+y1,y1);
-      copy_border_backward(halfsize+y1,y1,size+y1,y1,
-			   halfsize+y1,y1,y1,y1);
-      paint_border(halfsize,halfsize,y1,y1);
-      copy_border(size,halfsize,size-y1,size-y1,halfsize,halfsize,y1,y1);
-      paint_border(size-y1,size-y1,halfsize,halfsize);
-      copy_border(size+y1,y1,size,halfsize,size-y1,size-y1,halfsize,halfsize);
-      paint_triangle(size-y1,size-y1,y1,y1,size+y1,y1);
+      drawpixelsymmetric(0,halfsize,red1,green1,blue1);
+      drawpixelsymmetric(halfsize,halfsize,red2,green2,blue2);
+      drawpixelsymmetric(halfsize+y1,halfsize+y1,red3,green3,blue3);
+      paint_border(halfsize,halfsize,size,halfsize);
+      copy_border_backward(size,halfsize,size,halfsize,
+			   size,halfsize,halfsize,halfsize);
+      paint_border(halfsize+y1,halfsize+y1,halfsize,halfsize);
+      copy_border(size+y1,halfsize+y1,size,size,halfsize+y1,halfsize+y1,halfsize,halfsize);
+      paint_border(size,size,halfsize+y1,halfsize+y1);
+      copy_border(size+halfsize,halfsize,size+y1,halfsize+y1,size,size,halfsize+y1,halfsize+y1);
+      paint_triangle(size,size,halfsize,halfsize,size+halfsize,halfsize);
     }
     break;
   case SYM_PM:
@@ -231,7 +231,7 @@ void paintclouds::paint(int size, symgroup sym)
     drawpixelsymmetric(halfsize,0,red3,green3,blue3);
     paint_border(0,0,0,halfsize);
     paint_border(0,halfsize,0,size);
-    paint_border(halfsize,halfsize,halfsize,size+halfsize);
+    paint_border(halfsize,0,halfsize,size);
     paint_border(0,0,halfsize,halfsize);
     paint_border(halfsize,halfsize,0,size);
     paint_triangle(0,size,0,0,halfsize,halfsize);
@@ -240,15 +240,15 @@ void paintclouds::paint(int size, symgroup sym)
   case SYM_PMG:
     {
       int y1=(halfsize+1)/2;
-      drawpixelsymmetric(0,y1,red1,green1,blue1);
-      drawpixelsymmetric(halfsize-y1,halfsize,red2,green2,blue2);
-      drawpixelsymmetric(halfsize-y1,0,red3,green3,blue3);
-      paint_border(0,size+y1,0,y1);
-      paint_border(halfsize-y1,halfsize,halfsize,halfsize+y1);
-      copy_border_backward(0,y1,halfsize-y1,halfsize,
-			   halfsize,halfsize+y1,halfsize-y1,halfsize);
-      paint_border(y1,0,0,y1);
-      paint_triangle(0,size+y1,0,y1,halfsize,halfsize+y1);
+      drawpixelsymmetric(y1,y1,red1,green1,blue1);
+      drawpixelsymmetric(halfsize,halfsize,red2,green2,blue2);
+      drawpixelsymmetric(halfsize,0,red3,green3,blue3);
+      paint_border(y1,size+y1,y1,y1);
+      paint_border(halfsize,halfsize,halfsize+y1,halfsize+y1);
+      copy_border_backward(y1,y1,halfsize,halfsize,
+			   halfsize+y1,halfsize+y1,halfsize,halfsize);
+      paint_border(halfsize,0,y1,y1);
+      paint_triangle(y1,size+y1,y1,y1,halfsize+y1,halfsize+y1);
     }
     break;
   case SYM_PMM:

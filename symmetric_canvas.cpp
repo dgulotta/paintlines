@@ -76,11 +76,11 @@ std::vector<transformation> generate_transforms(symgroup sg, int sz)
 	case SYM_P6M:
 		return {id,rot60,rot120,rot180,rot240,rot300,flipD1,flipD2,flipD3,flipD4,flipD5,flipD6};
 	case SYM_PG:
-		return {id,glideX(h,h)};
+		return {id,glideX(h,0)};
 	case SYM_PGG:
 		return {id,rot180,glideX(h,h),glideY(h,h)};
 	case SYM_PM:
-		return {id,flipV};
+		return {id,flipH};
 	case SYM_PMG:
 		return {id,rot180,glideX(h,0),glideY(0,h)};
 	case SYM_PMM:
