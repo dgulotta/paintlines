@@ -63,6 +63,11 @@ public:
 	int size() const { return base_canvas.height(); }
 	symgroup group() const { return _group; }
 	const std::vector<transformation> & transforms() const { return _transforms; }
+	void unsafe_set_symmetry_group(symgroup g) {
+		_group = g;
+		_transforms = generate_transforms(g,size());
+	}
+	canvas<T> & unsafe_get_canvas() { return base_canvas.as_canvas(); }
 private:
 	symgroup _group;
 	wrap_canvas<T> base_canvas;

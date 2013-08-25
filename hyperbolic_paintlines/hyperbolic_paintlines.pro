@@ -18,7 +18,8 @@ HEADERS	+= ../hyperbolic_painter.h \
 	../basicform.h \
 	../canvas.h \
 	../color.h \
-	../layer.h`
+	../layer.h \
+	../hyperbolic_polygons.h
 
 SOURCES	+= ../hyperbolic_painter.cpp \
 	hyperbolic_paintlines.cpp \

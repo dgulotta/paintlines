@@ -18,6 +18,7 @@
 Makefile
 
 # Executables
+/converter/converter
 /hyperbolic_paintlines/hyperbolic_paintlines
 /quasiperiodic_paintstripes/quasiperiodic_paintstripes
 /paintclouds/paintclouds

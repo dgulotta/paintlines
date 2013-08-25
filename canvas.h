@@ -69,6 +69,7 @@ public:
 	int height() const { return data.height(); }
 	T & operator () (int x, int y) { return data(mod(x,width()),mod(y,height())); }
 	const T & operator () (int x, int y) const { return data(mod(x,width()),mod(y,height())); }
+	canvas<T> & as_canvas() { return data; }
 	const canvas<T> & as_canvas() const { return data; }
 	typedef typename canvas<T>::iterator iterator;
 	iterator begin() { return data.begin(); }

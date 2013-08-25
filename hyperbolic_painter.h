@@ -253,7 +253,7 @@ struct generator {
 	 * each generator.
 	 */
 	generator(const hyperbolic_transformation &t, const hyperbolic_coord &e) : trans(t), edge(e), is_flip(t.is_flip()) {}
-	bool inside(const hyperbolic_coord &hc) { return edge*hc>=0; }
+	bool inside(const hyperbolic_coord &hc) { return edge*hc+1.e-15>=0; }
 	hyperbolic_coord operator () (const hyperbolic_coord &hc) { return trans(hc); }
 	hyperbolic_transformation right_multiply(const hyperbolic_transformation &t) { return t*trans; }
 };
@@ -264,6 +264,7 @@ public:
 	template <typename F>
 	std::function<void(const hyperbolic_coord &)> symmetrize(const F &f);
 	hyperbolic_coord random_symmetry(const hyperbolic_coord &c);
+	hyperbolic_coord fundamental_domain_point(const hyperbolic_coord &hc) { return std::get<0>((this->*fdfunc)(hc)); }
 	static hyperbolic_symmetry_group * group_sabc(int n1, int n2, int n3, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_a222(int a, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_2sab(int a, int b, flip_type f=FLIP_ALL);

@@ -31,11 +31,11 @@ void BasicForm::baseInit()
 {
 	menu = menuBar();
 	menuFile = menu->addMenu(tr("&File"));
-	actionSaveAs = menuFile->addAction(tr("&Save As"));
-	actionExit = menuFile->addAction(tr("E&xit"));
 	labelImage = new QLabel;
 	labelImage->setAlignment(Qt::AlignLeft|Qt::AlignTop);
 	init();
+	actionSaveAs = menuFile->addAction(tr("&Save As"));
+	actionExit = menuFile->addAction(tr("E&xit"));
 	QHBoxLayout *mainLayout = new QHBoxLayout;
 	mainLayout->addLayout(sideLayout);
 	mainLayout->addWidget(labelImage);
