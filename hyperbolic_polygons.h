@@ -29,10 +29,10 @@ public:
 		:a1(_a1), a2(_a2), a3(_a3), sin1(sin(_a1)), cos1(cos(_a1)), sin2(sin(_a2)),
 		cos2(cos(_a2)), sin3(sin(_a3)), cos3(cos(_a3)), x1(0), y1(0), z1(1)
 	{
-		z2=(cos2+cos1*cos3)/(sin1*sin3);
+		z2=(cos3+cos1*cos2)/(sin1*sin2);
 		x2=sqrt(z2*z2-1);
 		y2=0;
-		z3=(cos3+cos1*cos2)/(sin1*sin2);
+		z3=(cos2+cos1*cos3)/(sin1*sin3);
 		double r3=sqrt(z3*z3-1);
 		x3=r3*cos1;
 		y3=r3*sin1;
