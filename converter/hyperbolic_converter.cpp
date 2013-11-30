@@ -122,7 +122,7 @@ canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype p
 		break;
 	case SYM_PG:
 		sg = hyperbolic_symmetry_group::group_axx(2);
-		trans = quadrilateral_transformer(hyperbolic_quadrilateral_square(M_PI/4),.5*size,.75*size,size,.25*size,.5*size,-.25*size,0,.25*size);
+		trans = quadrilateral_transformer(hyperbolic_quadrilateral_square(M_PI/4),.5*size,.5*size,size,0,.5*size,-.5*size,0,0);
 		break;
 	case SYM_PGG:
 		sg = hyperbolic_symmetry_group::group_a2x(3);

@@ -41,6 +41,10 @@ int random_range_inclusive(int a, int b)
 	return uniform_int_distribution<int>(a,b)(rnd);
 }
 
+int random_sign() {
+	return 2*random_int(2)-1;
+}
+
 bool random_bool()
 {
 	return random_int(2)!=0;

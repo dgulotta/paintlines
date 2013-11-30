@@ -76,7 +76,7 @@ std::vector<transformation> generate_transforms(symgroup sg, int sz)
 	case SYM_P6M:
 		return {id,rot60,rot120,rot180,rot240,rot300,flipD1,flipD2,flipD3,flipD4,flipD5,flipD6};
 	case SYM_PG:
-		return {id,glideX(h,0)};
+		return {id,glideX(h,h)};
 	case SYM_PGG:
 		return {id,rot180,glideX(h,h),glideY(h,h)};
 	case SYM_PM:

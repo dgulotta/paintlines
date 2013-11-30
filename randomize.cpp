@@ -21,8 +21,10 @@
 #include "randgen.h"
 #include "randomize.h"
 #include <tuple>
+#include <cstdio>
 
 using namespace std;
+using namespace std::placeholders;
 
 struct painter_transformation {
 	painter_transformation() {}
@@ -52,6 +54,17 @@ const painter_transformation pt_p1_list[8] = {
 	{ 0,1,0,-1,0,0 },
 	{ 0,-1,0,1,0,0 },
 	{ 1,0,0,0,-1,0 },
+};
+
+const painter_transformation pt_pg_list[8] = {
+	{ 1, 0, 0, 0, 1, 0},
+	{-1, 0, 0, 0, 1, 0},
+	{ 1, 0, 0, 0,-1, 0},
+	{-1, 0, 0, 0,-1, 0},
+	{ 0,-1, 0, 1, 0, 0},
+	{ 0, 1, 0, 1, 0, 0},
+	{ 0,-1, 0,-1, 0, 0},
+	{ 0, 1, 0,-1, 0, 0},
 };
 
 const painter_transformation pt_ident = {1,0,0,0,1,0};
@@ -89,46 +102,69 @@ vector<tuple<int,int>> triangle(int x1, int y1, int x2, int y2, int x3, int y3, 
 	return v;
 }
 
+void fill(int ke, int le, int kc, int lc, const function<bool(int,int)> &mark, const function<tuple<int,int>(int,int,int,int)> &mov, const function<void(int,int,int,int)> &put)
+{
+	while(mark(ke,le)) {
+		put(ke,le,kc,lc);
+		tie(ke,le)=mov(ke,le,kc,lc);
+		tie(kc,lc)=make_tuple(2*ke-kc,2*le-lc);
+	}
+}
+
+int dot_prod(tuple<int,int> t1, int x1, int x2)
+{
+	return get<0>(t1)*x1+get<1>(t1)*x2;
+}
+
+tuple<int,int> p1_move1(int ke, int le, int kc, int lc)
+{
+	return make_tuple(kc-lc+le,lc-kc+ke);
+}
+
+tuple<int,int> p1_move2(int ke, int le, int kc, int lc)
+{
+	return make_tuple(kc+lc-le,lc+kc-ke);
+}
+
 void randomize_p1(int xtiles, int ytiles, int size, const copy_func_t &copy)
 {
 	int k, l;
 	int halfsize=size/2;
 	wrap_canvas<int> z(xtiles*2,ytiles*2);
+	wrap_canvas<tuple<int,int>> c1(xtiles*2,ytiles*2), c2(xtiles*2,ytiles*2);
 	for(k=0;k<2*xtiles;k++)
 		for(l=0;l<2*ytiles;l++)
 			if (k&l&1)
 				z(k,l)=random_int(2);
 			else if((k|l)&1)
-				z(k,l)=0xF;
-	auto fill = [&](int shift, int flip) {
-		int k, l, ke, le, kc, lc, v;
-		for(k=0;k<xtiles*2;k++)
-			for(l=(k+1)%2;l<ytiles*2;l+=2) {
-				v=random_int(2);
-				ke=k;
-				le=l;
-				kc=k|1;
-				lc=l|1;
-				while(z(ke,le)&(4<<shift)) {
-					z(ke,le)&=~((4|v)<<shift);
-					if(z(kc,lc)^flip) {
-						tie(ke,le)=make_tuple(kc+le-lc,lc+ke-kc);
-						v^=1;
-					}
-					else {
-						tie(ke,le)=make_tuple(kc-le+lc,lc-ke+kc);
-					}
-					tie(kc,lc)=make_tuple(2*ke-kc,2*le-lc);
-				}
-			}
+				z(k,l)=0xC;
+	auto mark = [&z] (int b, int i, int j) { bool a = z(i,j)&b; z(i,j)&=~b; return a; };
+	auto mark1 = bind(mark,0x4,_1,_2), mark2 = bind(mark,0x8,_1,_2);
+	auto mov1 = [&z] (int ke, int le, int kc, int lc) {
+		return (z(kc,lc)?p1_move1:p1_move2)(ke,le,kc,lc);
 	};
-	fill(0,0);
-	fill(1,1);
-	auto points = triangle(0,0,0,size,halfsize,halfsize);
+	auto mov2 = [&z] (int ke, int le, int kc, int lc) {
+		return (z(kc,lc)?p1_move2:p1_move1)(ke,le,kc,lc);
+	};
+	auto put = [] (wrap_canvas<tuple<int,int>> &c, int ke, int le, int kc, int lc) {
+		c(ke,le)=make_tuple(ke-kc,le-lc);
+	};
+	auto put1 = bind(put,ref(c1),_1,_2,_3,_4), put2 = bind(put,ref(c2),_1,_2,_3,_4);
 	for(k=0;k<xtiles;k++)
 		for(l=0;l<ytiles;l++) {
-			int el=z(2*k,2*l+1), er=z(2*k+2,2*l+1)^0x3;
-			int et=z(2*k+1,2*l)^0x3, eb=z(2*k+1,2*l+2);
+			fill(2*k,2*l+1,2*k+random_sign(),2*l+1,mark1,mov1,put1);
+			fill(2*k,2*l+1,2*k+random_sign(),2*l+1,mark2,mov2,put2);
+			fill(2*k+1,2*l,2*k+1,2*l+random_sign(),mark1,mov1,put1);
+			fill(2*k+1,2*l,2*k+1,2*l+random_sign(),mark2,mov2,put2);
+		}
+	auto points = triangle(0,0,0,size,halfsize,halfsize);
+	auto rel = [&] (int i, int j, int n1, int n2) {
+		return 2*(dot_prod(c1(i,j),n1,n2)>0)+(dot_prod(c2(i,j),n1,n2)>0);
+	};
+	for(k=0;k<xtiles;k++)
+		for(l=0;l<ytiles;l++) {
+			int el=rel(2*k,2*l+1,1,0), er=rel(2*k+2,2*l+1,-1,0);
+			int et=rel(2*k+1,2*l,0,-1), eb=rel(2*k+1,2*l+2,0,1);
 			int flip;
 			if(el==er)
 				flip=4*random_int(2);
@@ -138,6 +174,75 @@ void randomize_p1(int xtiles, int ytiles, int size, const copy_func_t &copy)
 			copy(points,pt_p1_list[et^flip],painter_transformation(0,1,k*size,1,0,l*size));
 			copy(points,pt_p1_list[er^flip],painter_transformation(-1,0,(k+1)*size,0,-1,(l+1)*size));
 			copy(points,pt_p1_list[eb^flip],painter_transformation(0,-1,(k+1)*size,-1,0,(l+1)*size));
+		}
+}
+
+tuple<int,int> pg_move1(int ke, int le, int kc, int lc)
+{
+	return make_tuple(2*kc-ke,le);
+}
+
+tuple<int,int> pg_move2(int ke, int le, int kc, int lc)
+{
+	return make_tuple(ke,2*lc-le);
+}
+
+void randomize_pg(int xtiles, int ytiles, int size, const copy_func_t &copy)
+{
+	int k, l;
+	int halfsize=size/2;
+	int v;
+	wrap_canvas<int> z(xtiles*4,ytiles*4);
+	wrap_canvas<tuple<int,int>> c1(xtiles*4,ytiles*4);
+	wrap_canvas<int> c2(xtiles*4,ytiles*4);
+	for(k=0;k<4*xtiles;k++)
+		for(l=0;l<4*ytiles;l++) {
+			if(((k+l)&3)==0&&((k-l)&3)==0) {
+				z(k,l)=random_int(2);
+			}
+			else if(k&l&1)
+				z(k,l)=0xC;
+		}
+	auto mark = [&z] (int b, int i, int j) { bool a = z(i,j)&b; z(i,j)&=~b; return a; };
+	auto mark1 = bind(mark,0x4,_1,_2), mark2 = bind(mark,0x8,_1,_2);
+	auto mov1 = [&z] (int ke, int le, int kc, int lc) {
+		return (z(kc,lc)?pg_move1:pg_move2)(ke,le,kc,lc);
+	};
+	auto mov2 = [&z] (int ke, int le, int kc, int lc) {
+		return (z(kc,lc)?pg_move2:pg_move1)(ke,le,kc,lc);
+	};
+	auto put1 = [&c1] (int ke, int le, int kc, int lc) {
+		c1(ke,le)=make_tuple(ke-kc,le-lc);
+	};
+	auto put2 = [&c2,&v] (int ke, int le, int kc, int lc) {
+		c2(ke,le)=v;
+	};
+	for(k=1;k<4*xtiles;k+=2)
+		for(l=1;l<4*ytiles;l+=2) {
+			v = random_sign();
+			int kc = k+v*(2-(k&3));
+			int lc = l+v*(2-(l&3));
+			v = random_int(2);
+			fill(k,l,kc,lc,mark1,mov1,put1);
+			fill(k,l,kc,lc,mark2,mov2,put2);
+		}
+	auto points = triangle(0,0,0,halfsize,halfsize,0);
+	auto rel = [&] (int i, int j, int n1, int n2) {
+		return (dot_prod(c1(i,j),n1,n2)>0)+2*c2(i,j);
+	};
+	for(k=0;k<2*xtiles;k+=1)
+		for(l=k&1;l<2*ytiles;l+=2) {
+			int ey=rel(2*k-1,2*l-1,1,1), eu=rel(2*k+1,2*l-1,1,-1);
+			int eb=rel(2*k-1,2*l+1,-1,1), en=rel(2*k+1,2*l+1,-1,-1);
+			int flip;
+			if(ey==en)
+				flip=4*random_int(2);
+			else
+				flip=((ey^eu)==0x1||(ey^eb)==0x2)?0:4;
+			copy(points,pt_pg_list[en^flip],painter_transformation(1,0,k*halfsize,0,1,l*halfsize));
+			copy(points,pt_pg_list[eb^flip],painter_transformation(-1,0,k*halfsize,0,1,l*halfsize));
+			copy(points,pt_pg_list[eu^flip],painter_transformation(1,0,k*halfsize,0,-1,l*halfsize));
+			copy(points,pt_pg_list[ey^flip],painter_transformation(-1,0,k*halfsize,0,-1,l*halfsize));
 		}
 }
 
@@ -316,9 +421,11 @@ void randomize(int xtiles, int ytiles, symgroup sg, int size, const function<voi
 	switch(sg) {
 	case SYM_CM:
 	case SYM_P1:
-	case SYM_PG:
 	case SYM_PM:
 		randomize_p1(xtiles,ytiles,size,copy_func);
+		break;
+	case SYM_PG:
+		randomize_pg(xtiles,ytiles,size,copy_func);
 		break;
 	case SYM_CMM:
 	case SYM_P2:
