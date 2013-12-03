@@ -199,14 +199,14 @@ void paintclouds::paint(int size, symgroup sym)
   case SYM_PG:
     {
       int x1=midpt(halfsize,0);
-      drawpixelsymmetric(0,0,red1,green1,blue1);
-      drawpixelsymmetric(x1,halfsize,red2,green2,blue2);
-      drawpixelsymmetric(x1,0,red3,green3,blue3);
-      paint_border(x1,halfsize,0,0);
-      paint_border(halfsize,size,x1,halfsize);
-      paint_border(0,0,x1,0);
-      paint_border(x1,0,halfsize,0);
-      paint_triangle(0,0,size,0,halfsize,size);
+      drawpixelsymmetric(0,-x1,red1,green1,blue1);
+      drawpixelsymmetric(x1,x1,red2,green2,blue2);
+      drawpixelsymmetric(x1,-x1,red3,green3,blue3);
+      paint_border(x1,x1,0,-x1);
+      paint_border(halfsize,halfsize+x1,x1,x1);
+      paint_border(0,-x1,x1,-x1);
+      paint_border(x1,-x1,halfsize,-x1);
+      paint_triangle(0,-x1,size,-x1,halfsize,halfsize+x1);
     }
     break;
   case SYM_PGG:
