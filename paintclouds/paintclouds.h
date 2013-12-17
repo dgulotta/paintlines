@@ -51,21 +51,13 @@ public:
 private:
 	symmetric_canvas<color_t> grid;
 	std::function<double(double)> randfunc;
-	inline void drawpixelsymmetric(int x, int y, uint8_t r,
-			uint8_t g, uint8_t b) {
-		drawpixelsymmetric(x,y,color_t(r,g,b));
-	}
-	void drawpixelsymmetric(int x, int y, const color_t &rgb) {
-		grid.set(x,y,rgb);
-	}
-	const color_t & pixel(int x, int y) { return grid.get(x,y); }
-	// Make sure you always call this with the same orientation!
-	void paint_border(int x1, int y1, int x2, int y2);
-	void copy_border(int dx1, int dy1, int dx2, int dy2,
-			int sx1, int sy1, int sx2, int sy2);
-	void copy_border_backward(int dx1, int dy1, int dx2, int dy2,
-			int sx1, int sy1, int sx2, int sy2);
-	void paint_triangle(int x1, int y1, int x2, int y2, int x3, int y3);
+	uint8_t random_byte(short b1, short b2, int d);
+	color_t random_color(color_t c1, color_t c2, int d);
+	void fill_line(canvas<color_t> &tri, int i1, int j1, int i2, int j2);
+	void fill_tri(canvas<color_t> &tri);
+	void fill_tri_ab2(canvas<color_t> &tri);
+	void fill_tri_sabc(canvas<color_t> &tri);
+	void fill_tri_asb(canvas<color_t> &tri);
 	uint8_t red1, red2, red3, blue1, blue2, blue3, green1, green2, green3;
 };
 

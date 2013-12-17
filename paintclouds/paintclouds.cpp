@@ -22,14 +22,8 @@
 #include "paintclouds.h"
 #include "../randgen.h"
 
-using std::tie;
-
-inline int midpt(int a, int b) {
-  int c=a+b;
-  if(a<b) c++;
-  if(c<0) c--;
-  return c/2;
-}
+using std::max;
+using std::min;
 
 // I don't think this corresponds to any well-known distribution.
 // I think I used to be using a normal distribution here, but
@@ -53,281 +47,357 @@ double paintclouds::rand_sechsquare(double a) {
 	return .3*random_sechsquare(a);
 }
 
+uint8_t paintclouds::random_byte(short b1, short b2, int d)
+{
+	return colorchop((b1+b2)/2.+randfunc(d)+.5);
+}
+
+color_t paintclouds::random_color(color_t c1, color_t c2, int d)
+{
+	return color_t(random_byte(c1.red,c2.red,d),
+		random_byte(c1.green,c2.green,d),random_byte(c1.blue,c2.blue,d));
+}
+
+void paintclouds::fill_tri(canvas<color_t> &tri)
+{
+	int sz=tri.height()-1;
+	for(int d=sz/2;d>0;d/=2)
+		for(int i=d;i<sz;i+=d)
+			for(int j=d;i+j<sz;j+=d) {
+				int di=(i&d), dj=(j&d);
+				if(di||dj) {
+					color_t c1 = tri(i-di,j+dj);
+					color_t c2 = tri(i+di,j-dj);
+					tri(i,j)=random_color(c1,c2,d);
+				}
+			}
+}
+
+#include <cstdio>
+
+void paintclouds::fill_line(canvas<color_t> &tri, int i1, int j1, int i2, int j2)
+{
+	int d = max(abs(i1-i2),abs(j1-j2))/2;
+	if(d>0) {
+		//printf("%d %d %d %d\n",i1,j1,i2,j2);
+		int mi=(i1+i2)/2, mj=(j1+j2)/2;
+		color_t c1 = tri(i1,j1);
+		color_t c2 = tri(i2,j2);
+		tri(mi,mj)=random_color(c1,c2,d);
+		fill_line(tri,i1,j1,mi,mj);
+		fill_line(tri,mi,mj,i2,j2);
+	}
+}
+
+int tri_size(int m)
+{
+	int n=4;
+	while(n<m) n*=2;
+	return n;
+}
+
+void copy(symmetric_canvas<color_t> &img, canvas<color_t> &tri, int x1, int y1, int x2, int y2, int x3, int y3, int scale=1)
+{
+	int d=tri.height()-1;
+	long xmin=divide(min({x1,x2,x3}),scale), ymin=divide(min({y1,y2,y3}),scale);
+	long xmax=-divide(-max({x1,x2,x3}),scale), ymax=-divide(-max({y1,y2,y3}),scale);
+	long x,y,t=(x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2));
+	for(x=xmin;x<=xmax;x++)
+		for(y=ymin;y<=ymax;y++) {
+			long a1 = scale*x*(y2-y3)+x2*(y3-scale*y)+x3*(scale*y-y2);
+			long a2 = x1*(scale*y-y3)+scale*x*(y3-y1)+x3*(y1-scale*y);
+			long a3 = x1*(y2-scale*y)+x2*(scale*y-y1)+scale*x*(y1-y2);
+			if(a1*t>=0&&a2*t>=0&&a3*t>=0) {
+				img(x,y)=tri((d*a2)/t,(d*a3)/t);
+			}
+		}
+}
+
+void paintclouds::fill_tri_ab2(canvas<color_t> &tri) {
+	int d = tri.height()-1;
+	tri(0,0)=color_t(red1,green1,blue1);
+	tri(d,0)=color_t(red2,green2,blue2);
+	tri(d/2,d/2)=color_t(red3,green3,blue3);
+	fill_line(tri,0,0,d,0);
+	fill_line(tri,d,0,d/2,d/2);
+	for(int i=0;i<=d;i++) tri(0,i)=tri(i,0);
+	for(int i=0;i<d/2;i++) tri(i,d-i)=tri(d-i,i);
+	fill_tri(tri);
+}
+
+void paintclouds::fill_tri_sabc(canvas<color_t> &tri) {
+	int d = tri.height()-1;
+	tri(0,0)=color_t(red1,green1,blue1);
+	tri(d,0)=color_t(red2,green2,blue2);
+	tri(0,d)=color_t(red3,green3,blue3);
+	fill_line(tri,0,0,d,0);
+	fill_line(tri,0,0,0,d);
+	fill_line(tri,d,0,0,d);
+	fill_tri(tri);
+}
+
+void paintclouds::fill_tri_asb(canvas<color_t> &tri) {
+	int d = tri.height()-1;
+	tri(0,0)=color_t(red1,green1,blue1);
+	tri(d,0)=color_t(red2,green2,blue2);
+	tri(d/2,d/2)=color_t(red3,green3,blue3);
+	fill_line(tri,0,0,d,0);
+	fill_line(tri,d,0,d/2,d/2);
+	for(int i=0;i<=d;i++) tri(0,i)=tri(i,0);
+	fill_line(tri,0,d,d/2,d/2);
+	fill_tri(tri);
+}
+
 void paintclouds::paint(int size, symgroup sym)
 {
-  grid=symmetric_canvas<color_t>(size,sym);
-  int halfsize=size/2;
-  switch(sym) {
-  case SYM_CM:
-    drawpixelsymmetric(0,0,red1,green1,blue1);
-    drawpixelsymmetric(halfsize,0,red2,green2,blue2);
-    drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
-    paint_border(0,0,halfsize,0);
-    paint_border(halfsize,0,size,0);
-    paint_border(0,0,halfsize,halfsize);
-    paint_border(halfsize,halfsize,size,size);
-    paint_triangle(0,0,size,0,size,size);
-    break;
-  case SYM_CMM:
-    drawpixelsymmetric(0,0,red1,green1,blue1);
-    drawpixelsymmetric(halfsize,halfsize,red2,green2,blue2);
-    drawpixelsymmetric(halfsize,0,red3,green3,blue3);
-    paint_border(0,0,halfsize,0);
-    paint_border(halfsize,halfsize,0,0);
-    paint_border(size,0,halfsize,halfsize);
-    paint_triangle(0,0,size,0,halfsize,halfsize);
-    break;
-  case SYM_P1:
-    drawpixelsymmetric(0,0,red1,green1,blue1);
-    drawpixelsymmetric(halfsize,0,red2,green2,blue2);
-    drawpixelsymmetric(0,halfsize,red3,green3,blue3);
-    paint_border(0,0,halfsize,0);
-    paint_border(halfsize,0,size,0);
-    paint_border(0,0,0,halfsize);
-    paint_border(0,halfsize,0,size);
-    paint_border(0,size,size,0);
-    paint_triangle(0,0,size,0,0,size);
-    paint_triangle(0,size,size,0,size,size);
-    break;
-  case SYM_P2:
-    drawpixelsymmetric(0,0,((int)red1+red2+red3)/3,
-		       ((int)green1+green2+green3)/3,
-		       ((int)blue1+blue2+blue3)/3);
-    drawpixelsymmetric(halfsize,0,red1,green1,blue1);
-    drawpixelsymmetric(0,halfsize,red2,green2,blue2);
-    drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
-    paint_border(0,0,0,halfsize);
-    paint_border(0,0,halfsize,0);
-    paint_border(size,0,halfsize,halfsize);
-    paint_triangle(0,0,size,0,0,size);
-    break;
-  case SYM_P3:
-    {
-      int x1=(size-2)/3;
-      drawpixelsymmetric(-1,1,red1,green1,blue1);
-      drawpixelsymmetric(1,-1,red1,green1,blue1);
-      drawpixelsymmetric(x1,x1,red2,green2,blue2);
-      drawpixelsymmetric(size-x1,size-x1,red3,green3,blue3);
-      paint_border(x1,x1,-1,size+1);
-      paint_border(size+1,-1,size-x1,size-x1);
-      paint_border(size-x1,size-x1,x1,x1);
-      copy_border(x1,x1,size+1,-1,x1,x1,-1,size+1);
-      copy_border(-1,size+1,size-x1,size-x1,size+1,-1,size-x1,size-x1);
-      paint_triangle(size+1,-1,size-x1,size-x1,x1,x1);
-      paint_triangle(size-x1,size-x1,x1,x1,-1,size+1);
-    }
-    break;
-  case SYM_P31M:
-    {
-      int x1=(size-1)/3;
-      drawpixelsymmetric(-1,1,red1,green1,blue1);
-      drawpixelsymmetric(1,-1,red1,green1,blue1);
-      drawpixelsymmetric(x1,x1,red2,green2,blue2);
-      drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
-      paint_border(x1,x1,-1,size+1);
-      copy_border_backward(size+1,-1,x1,x1,x1,x1,-1,size+1);
-      paint_border(-1,size+1,halfsize,halfsize);
-      paint_border(halfsize,halfsize,size+1,-1);
-      paint_triangle(-1,size+1,size+1,-1,x1,x1);
-    }
-    break;
-  case SYM_P3M1:
-    {
-      int x1=(size-2)/3;
-      drawpixelsymmetric(-1,1,red1,green1,blue1);
-      drawpixelsymmetric(x1,x1,red2,green2,blue2);
-      drawpixelsymmetric(size-x1,size-x1,red3,green3,blue3);
-      paint_border(x1,x1,-1,size+1);
-      paint_border(size+1,-1,size-x1,size-x1);
-      paint_border(size-x1,size-x1,x1,x1);
-      paint_triangle(size+1,-1,size-x1,size-x1,x1,x1);
-    }
-    break;
-  case SYM_P4:
-    drawpixelsymmetric(0,0,red1,green1,blue1);
-    drawpixelsymmetric(halfsize,halfsize,red2,green2,blue2);
-    drawpixelsymmetric(halfsize,0,red3,green3,blue3);
-    paint_border(0,0,halfsize,0);
-    paint_border(0,0,halfsize,halfsize);
-    paint_triangle(0,0,size,0,halfsize,halfsize);
-    break;
-  case SYM_P4G:
-    drawpixelsymmetric(0,0,red1,green1,blue1);
-    drawpixelsymmetric(halfsize,0,red2,green2,blue2);
-    paint_border(0,0,halfsize,0);
-    {
-      int mx=halfsize/2,my=halfsize-mx;
-      drawpixelsymmetric(mx,my,red3,green3,blue3);
-      paint_border(halfsize,0,mx,my);
-      paint_border(0,halfsize,mx,my);
-    }
-    paint_triangle(0,0,halfsize,0,0,halfsize);
-    break;
-  case SYM_P4M:
-    drawpixelsymmetric(0,0,red1,green1,blue1);
-    drawpixelsymmetric(halfsize,0,red2,green2,blue2);
-    drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
-    paint_border(0,0,halfsize,0);
-    paint_border(0,0,halfsize,halfsize);
-    paint_border(halfsize,0,halfsize,halfsize);
-    paint_triangle(0,0,halfsize,0,halfsize,halfsize);
-    break;
-  case SYM_P6:
-    {
-      int x1=(size-1)/3;
-      drawpixelsymmetric(-1,1,red1,green1,blue1);
-      drawpixelsymmetric(x1,x1,red2,green2,blue2);
-      drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
-      paint_border(x1,x1,-1,size+1);
-      copy_border_backward(-1,size+1,size-x1,size-x1,-1,size+1,x1,x1);
-      paint_border(x1,x1,halfsize,halfsize);
-      paint_triangle(-1,size+1,size-x1,size-x1,x1,x1);
-    }
-    break;
-  case SYM_P6M:
-    {
-      int x1=(size-2)/3;
-      drawpixelsymmetric(-1,1,red1,green1,blue1);
-      drawpixelsymmetric(x1,x1,red2,green2,blue2);
-      drawpixelsymmetric(halfsize,halfsize,red3,green3,blue3);
-      paint_border(-1,size+1,x1,x1);
-      paint_border(x1,x1,halfsize,halfsize);
-      paint_border(halfsize,halfsize,-1,size+1);
-      paint_triangle(-1,size+1,x1,x1,halfsize,halfsize);
-    }
-    break;
-  case SYM_PG:
-    {
-      int x1=midpt(halfsize,0);
-      drawpixelsymmetric(0,-x1,red1,green1,blue1);
-      drawpixelsymmetric(x1,x1,red2,green2,blue2);
-      drawpixelsymmetric(x1,-x1,red3,green3,blue3);
-      paint_border(x1,x1,0,-x1);
-      paint_border(halfsize,halfsize+x1,x1,x1);
-      paint_border(0,-x1,x1,-x1);
-      paint_border(x1,-x1,halfsize,-x1);
-      paint_triangle(0,-x1,size,-x1,halfsize,halfsize+x1);
-    }
-    break;
-  case SYM_PGG:
-    {
-      int y1=(halfsize+1)/2;
-      drawpixelsymmetric(0,halfsize,red1,green1,blue1);
-      drawpixelsymmetric(halfsize,halfsize,red2,green2,blue2);
-      drawpixelsymmetric(halfsize+y1,halfsize+y1,red3,green3,blue3);
-      paint_border(halfsize,halfsize,size,halfsize);
-      copy_border_backward(size,halfsize,size,halfsize,
-			   size,halfsize,halfsize,halfsize);
-      paint_border(halfsize+y1,halfsize+y1,halfsize,halfsize);
-      copy_border(size+y1,halfsize+y1,size,size,halfsize+y1,halfsize+y1,halfsize,halfsize);
-      paint_border(size,size,halfsize+y1,halfsize+y1);
-      copy_border(size+halfsize,halfsize,size+y1,halfsize+y1,size,size,halfsize+y1,halfsize+y1);
-      paint_triangle(size,size,halfsize,halfsize,size+halfsize,halfsize);
-    }
-    break;
-  case SYM_PM:
-    drawpixelsymmetric(0,0,red1,green1,blue1);
-    drawpixelsymmetric(0,halfsize,red2,green2,blue2);
-    drawpixelsymmetric(halfsize,0,red3,green3,blue3);
-    paint_border(0,0,0,halfsize);
-    paint_border(0,halfsize,0,size);
-    paint_border(halfsize,0,halfsize,size);
-    paint_border(0,0,halfsize,halfsize);
-    paint_border(halfsize,halfsize,0,size);
-    paint_triangle(0,size,0,0,halfsize,halfsize);
-    paint_triangle(halfsize,halfsize,halfsize,size+halfsize,0,size);
-    break;
-  case SYM_PMG:
-    {
-      int y1=(halfsize+1)/2;
-      drawpixelsymmetric(y1,y1,red1,green1,blue1);
-      drawpixelsymmetric(halfsize,halfsize,red2,green2,blue2);
-      drawpixelsymmetric(halfsize,0,red3,green3,blue3);
-      paint_border(y1,size+y1,y1,y1);
-      paint_border(halfsize,halfsize,halfsize+y1,halfsize+y1);
-      copy_border_backward(y1,y1,halfsize,halfsize,
-			   halfsize+y1,halfsize+y1,halfsize,halfsize);
-      paint_border(halfsize,0,y1,y1);
-      paint_triangle(y1,size+y1,y1,y1,halfsize+y1,halfsize+y1);
-    }
-    break;
-  case SYM_PMM:
-    drawpixelsymmetric(0,0,red1,green1,blue1);
-    drawpixelsymmetric(0,halfsize,red2,green2,blue2);
-    drawpixelsymmetric(halfsize,0,red3,green3,blue3);
-    drawpixelsymmetric(halfsize,halfsize,red1,green1,blue1);
-    paint_border(0,0,0,halfsize);
-    paint_border(0,0,halfsize,0);
-    paint_border(0,halfsize,halfsize,halfsize);
-    paint_border(halfsize,0,halfsize,halfsize);
-    paint_border(0,halfsize,halfsize,0);
-    paint_triangle(0,0,halfsize,0,0,halfsize);
-    paint_triangle(0,halfsize,halfsize,0,halfsize,halfsize);
-    break;
-  }
-}
-
-void paintclouds::paint_border(int x1, int y1, int x2, int y2)
-{
-  int mx=midpt(x1,x2);
-  int my=midpt(y1,y2);
-  short r1,g1,b1,r2,g2,b2;
-  if(!((mx==x1||mx==x2)&&(my==y1||my==y2))) {
-    double dx=x1-x2, dy=y1-y2;
-    double norm=sqrt(dx*dx+dy*dy);
-	tie(r1,g1,b1)=pixel(x1,y1).as_tuple();
-	tie(r2,g2,b2)=pixel(x2,y2).as_tuple();
-    drawpixelsymmetric(mx,my,
-		colorchop((r1+r2)/2.+randfunc(norm)+.5),
-    	colorchop((g1+g2)/2.+randfunc(norm)+.5),
-    	colorchop((b1+b2)/2.+randfunc(norm)+.5));
-    paint_border(x1,y1,mx,my);
-    paint_border(mx,my,x2,y2);
-  }
-}
-
-void paintclouds::copy_border(int dx1, int dy1, int dx2, int dy2,
-			      int sx1, int sy1, int sx2, int sy2)
-{
-  int dmx=midpt(dx1,dx2);
-  int dmy=midpt(dy1,dy2);
-  if(!((dmx==dx1||dmx==dx2)&&(dmy==dy1||dmy==dy2))) {
-    int smx=midpt(sx1,sx2);
-    int smy=midpt(sy1,sy2);
-    drawpixelsymmetric(dmx,dmy,pixel(smx,smy));
-    copy_border(dx1,dy1,dmx,dmy,sx1,sy1,smx,smy);
-    copy_border(dmx,dmy,dx2,dy2,smx,smy,sx2,sy2);
-  }
-}
-
-void paintclouds::copy_border_backward(int dx1, int dy1, int dx2, int dy2,
-				       int sx1, int sy1, int sx2, int sy2)
-{
-  int dmx=midpt(dx1,dx2);
-  int dmy=midpt(dy1,dy2);
-  if(!((dmx==dx1||dmx==dx2)&&(dmy==dy1||dmy==dy2))) {
-    int smx=midpt(sx2,sx1);
-    int smy=midpt(sy2,sy1);
-    drawpixelsymmetric(dmx,dmy,pixel(smx,smy));
-    copy_border_backward(dx1,dy1,dmx,dmy,sx1,sy1,smx,smy);
-    copy_border_backward(dmx,dmy,dx2,dy2,smx,smy,sx2,sy2);
-  }
-}
-
-void paintclouds::paint_triangle(int x1, int y1, int x2, int y2, int x3,
-				 int y3)
-{
-  int area=x1*y2+x2*y3+x3*y1-x1*y3-x2*y1-x3*y2;
-  if(area>1||area<-1) {
-    int m1x=midpt(x2,x3), m1y=midpt(y2,y3);
-    int m2x=midpt(x3,x1), m2y=midpt(y3,y1);
-    int m3x=midpt(x1,x2), m3y=midpt(y1,y2);
-    paint_border(m1x,m1y,m3x,m3y);
-    paint_border(m2x,m2y,m1x,m1y);
-    paint_border(m3x,m3y,m2x,m2y);
-    paint_triangle(x1,y1,m3x,m3y,m2x,m2y);
-    paint_triangle(m3x,m3y,x2,y2,m1x,m1y);
-    paint_triangle(m2x,m2y,m1x,m1y,x3,y3);
-    paint_triangle(m1x,m1y,m3x,m3y,m2x,m2y);
-  }
+	grid=symmetric_canvas<color_t>(size,sym);
+	int halfsize=size/2;
+	switch(sym) {
+	case SYM_CM:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri(d+1,d+1);
+		tri(0,0)=tri(d,0)=color_t(red1,green1,blue1);
+		tri(d/2,0)=color_t(red2,green2,blue2);
+		tri(d/2,d/2)=color_t(red3,green3,blue3);
+		fill_line(tri,0,0,d/2,0);
+		fill_line(tri,d/2,0,d,0);
+		for(int i=0;i<=d;i++)
+			tri(0,i)=tri(d-i,0);
+		fill_line(tri,d,0,d/2,d/2);
+		fill_line(tri,0,d,d/2,d/2);
+		fill_tri(tri);
+		copy(grid,tri,d,0,d,d,0,0);
+		break;
+	}
+	case SYM_CMM:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri(d+1,d+1);
+		tri(d,0)=color_t(red1,green1,blue1);
+		tri(0,0)=color_t(red2,green2,blue2);
+		tri(d/2,d/2)=color_t(red3,green3,blue3);
+		fill_line(tri,d,0,d/2,d/2);
+		for(int i=0;i<d/2;i++) tri(i,d-i)=tri(d-i,i);
+		fill_line(tri,0,0,d,0);
+		fill_line(tri,0,0,0,d);
+		fill_tri(tri);
+		copy(grid,tri,halfsize,halfsize,0,0,size,0);
+		break;
+	}
+	case SYM_P1:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri1(d+1,d+1), tri2(d+1,d+1);
+		tri1(0,0)=tri1(d,0)=tri1(0,d)=color_t(red1,green1,blue1);
+		tri1(d/2,0)=color_t(red2,green2,blue2);
+		tri1(0,d/2)=color_t(red3,green3,blue3);
+		fill_line(tri1,0,0,d/2,0);
+		fill_line(tri1,d/2,0,d,0);
+		fill_line(tri1,0,0,0,d/2);
+		fill_line(tri1,0,d/2,0,d);
+		fill_line(tri1,0,d,d,0);
+		for(int i=0;i<=d;i++) {
+			tri2(i,0)=tri1(d-i,0);
+			tri2(0,i)=tri1(0,d-i);
+			tri2(i,d-i)=tri1(d-i,i);
+		}
+		fill_tri(tri1);
+		fill_tri(tri2);
+		copy(grid,tri1,0,0,0,size,size,0);
+		copy(grid,tri2,size,size,size,0,0,size);
+		break;
+	}
+	case SYM_P2:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri(d+1,d+1);
+		tri(0,0)=tri(d,0)=color_t(((int)red1+red2+red3)/3,
+			((int)green1+green2+green3)/3,((int)blue1+blue2+blue3)/3);
+		tri(d/2,0)=color_t(red1,green1,blue1);
+		tri(0,d/2)=color_t(red2,green2,blue2);
+		tri(d/2,d/2)=color_t(red3,green3,blue3);
+		fill_line(tri,0,0,d/2,0);
+		fill_line(tri,0,0,0,d/2);
+		fill_line(tri,d,0,d/2,d/2);
+		for(int i=0;i<d/2;i++) {
+			tri(d-i,0)=tri(i,0);
+			tri(0,d-i)=tri(0,i);
+			tri(i,d-i)=tri(d-i,i);
+		}
+		fill_tri(tri);
+		copy(grid,tri,0,0,size,0,0,size);
+		break;
+	}
+	case SYM_P3:
+	{
+		int d = tri_size((2*size+1)/3);
+		canvas<color_t> tri1(d+1,d+1), tri2(d+1,d+1);
+		tri1(0,0)=color_t(red1,green1,blue1);
+		tri1(d,0)=color_t(red2,green2,blue2);
+		tri1(0,d)=color_t(red3,green3,blue3);
+		fill_line(tri1,0,0,d,0);
+		fill_line(tri1,0,0,0,d);
+		fill_line(tri1,d,0,0,d);
+		for(int i=0;i<=d;i++) {
+			tri2(i,0)=tri1(i,0);
+			tri2(0,i)=tri1(0,i);
+			tri2(i,d-i)=tri1(i,d-i);
+		}
+		fill_tri(tri1);
+		fill_tri(tri2);
+		copy(grid,tri1,0,0,size,size,2*size,-size,3);
+		copy(grid,tri2,0,0,size,size,-size,2*size,3);
+		break;
+	}
+	case SYM_P31M:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri(d+1,d+1);
+		fill_tri_asb(tri);
+		copy(grid,tri,size,size,3*size,0,0,3*size,3);
+		break;
+	}
+	case SYM_P3M1:
+	{
+		int d = tri_size((2*size+1)/3);
+		canvas<color_t> tri(d+1,d+1);
+		fill_tri_sabc(tri);
+		copy(grid,tri,0,0,size,size,2*size,-size,3);
+		break;
+	}
+	case SYM_P4:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri(d+1,d+1);
+		fill_tri_ab2(tri);
+		copy(grid,tri,halfsize,halfsize,size,0,0,0);
+		break;
+	}
+	case SYM_P4G:
+	{
+		int d = tri_size(halfsize);
+		canvas<color_t> tri(d+1,d+1);
+		fill_tri_asb(tri);
+		copy(grid,tri,0,0,0,halfsize,halfsize,0);
+		break;
+	}
+	case SYM_P4M:
+	{
+		int d = tri_size(halfsize);
+		canvas<color_t> tri(d+1,d+1);
+		fill_tri_sabc(tri);
+		copy(grid,tri,0,0,halfsize,0,halfsize,halfsize);
+		break;
+	}
+	case SYM_P6:
+	{
+		int d = tri_size((2*size+1)/3);
+		canvas<color_t> tri(d+1,d+1);
+		fill_tri_ab2(tri);
+		copy(grid,tri,0,0,size,size,2*size,-size,3);
+		break;
+	}
+	case SYM_P6M:
+	{
+		int d = tri_size((2*size+1)/3);
+		canvas<color_t> tri(d+1,d+1);
+		fill_tri_sabc(tri);
+		copy(grid,tri,0,0,2*size,2*size,3*size,0,6);
+		break;
+	}
+	case SYM_PG:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri(d+1,d+1);
+		tri(0,0)=tri(d,0)=tri(d/2,d/2)=color_t(red1,green1,blue1);
+		tri(d/2,0)=tri(0,d/2)=color_t(red2,green2,blue2);
+		tri(3*d/4,d/4)=color_t(red3,green3,blue3);
+		fill_line(tri,d,0,3*d/4,d/4);
+		fill_line(tri,d/2,d/2,3*d/4,d/4);
+		for(int i=0;i<=d/2;i++)
+			tri(d/2-i,d/2+i)=tri(d-i,i);
+		fill_line(tri,0,0,d/2,0);
+		fill_line(tri,d,0,d/2,0);
+		for(int i=0;i<=d;i++) tri(0,i)=tri(d-i,0);
+		fill_tri(tri);
+		copy(grid,tri,2*size,3*size,0,-size,4*size,-size,4);
+		break;
+	}
+	case SYM_PGG:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri(d+1,d+1);
+		tri(0,0)=tri(d,0)=tri(0,d)=color_t(red1,green1,blue1);
+		tri(d/2,d/2)=color_t(red2,green2,blue2);
+		tri(d/2,0)=color_t(red3,green3,blue3);
+		fill_line(tri,0,0,d/2,0);
+		fill_line(tri,d,0,d/2,0);
+		fill_line(tri,d,0,d/2,d/2);
+		for(int i=0;i<=d;i++) tri(0,i)=tri(d-i,0);
+		for(int i=0;i<d/2;i++) tri(i,d-i)=tri(d-i,i);
+		fill_tri(tri);
+		copy(grid,tri,halfsize,0,0,-halfsize,0,halfsize);
+		break;
+	}
+	case SYM_PM:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri1(d+1,d+1), tri2(d+1,d+2);
+		tri1(0,0)=color_t(red1,green1,blue1);
+		tri1(d,0)=tri1(0,d)=color_t(red2,green2,blue2);
+		tri1(d/2,d/2)=color_t(red3,green3,blue3);
+		fill_line(tri1,0,0,d,0);
+		fill_line(tri1,0,0,0,d);
+		fill_line(tri1,d,0,d/2,d/2);
+		fill_line(tri1,0,d,d/2,d/2);
+		for(int i=0;i<=d;i++) {
+			tri2(i,0)=tri1(d-i,0);
+			tri2(0,i)=tri1(0,d-i);
+		}
+		fill_line(tri2,d,0,0,d);
+		fill_tri(tri1);
+		fill_tri(tri2);
+		copy(grid,tri1,halfsize,halfsize,0,size,0,0);
+		copy(grid,tri2,0,0,halfsize,-halfsize,halfsize,halfsize);
+		break;
+	}
+	case SYM_PMG:
+	{
+		int d = tri_size(size);
+		canvas<color_t> tri(d+1,d+1);
+		tri(0,0)=color_t(red1,green1,blue1);
+		tri(d/2,0)=color_t(red2,green2,blue2);
+		tri(0,d/2)=color_t(red3,green3,blue3);
+		fill_line(tri,0,0,d/2,0);
+		fill_line(tri,0,0,0,d/2);
+		for(int i=0;i<d/2;i++) {
+			tri(d-i,0)=tri(i,0);
+			tri(0,d-i)=tri(0,i);
+		}
+		fill_line(tri,d,0,0,d);
+		fill_tri(tri);
+		copy(grid,tri,3*size,3*size,size,size,size,5*size,4);
+		break;
+	}
+	case SYM_PMM:
+	{
+		int d = tri_size(halfsize);
+		canvas<color_t> tri1(d+1,d+1), tri2(d+1,d+1);
+		tri1(0,0)=tri2(0,0)=color_t(red1,green1,blue1);
+		tri1(d,0)=color_t(red2,green2,blue2);
+		tri1(0,d)=color_t(red3,green3,blue3);
+		fill_line(tri1,0,0,d,0);
+		fill_line(tri1,0,0,0,d);
+		fill_line(tri1,d,0,0,d);
+		for(int i=0;i<=d;i++)
+			tri2(i,d-i)=tri1(d-i,i);
+		fill_line(tri2,0,0,d,0);
+		fill_line(tri2,0,0,0,d);
+		fill_tri(tri1);
+		fill_tri(tri2);
+		copy(grid,tri1,0,0,0,halfsize,halfsize,0);
+		copy(grid,tri2,halfsize,halfsize,halfsize,0,0,halfsize);
+		break;
+	}}
 }

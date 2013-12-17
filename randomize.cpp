@@ -72,11 +72,6 @@ const painter_transformation pt_hflip = {-1,0,0,0,1,0};
 const painter_transformation pt_vflip = {1,0,0,0,-1,0};
 const painter_transformation pt_dflip = {0,1,0,1,0,0};
 
-inline int divide(int x, int y)
-{
-	return (x>0)?(x/y):(-(-x)/y);
-}
-
 vector<tuple<int,int>> rectangle(int xmin, int ymin, int xmax, int ymax) {
 	vector<tuple<int,int>> v;
 	int x,y;
