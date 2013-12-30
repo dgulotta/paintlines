@@ -79,36 +79,41 @@ void paintlines::paint(int sz, symgroup sym)
 
 void paintlines::handle_rule(ruletype rt)
 {
-  int i(random_int(size)),j(random_int(size));
-  switch(rt) {
-  case RULE_SMOOTH_ARC:
-    drawsmootharc(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,.8,2000.,1.);
-    break;
-  case RULE_SMOOTHLINE2_BEADS:
-    drawsmoothline2(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,25000.,100.);
-    break;
-  case RULE_SMOOTHLINE2:
-    drawsmoothline2(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,25000.,1.);
-    break;
-  case RULE_CLUSTER:
-    drawcluster(i,j,4000.,4);
-    break;
-  case RULE_FLOWER:
-    drawflower(i,j,.1,50);
-    break;
-  case RULE_CLUSTER2:
-    drawcluster5(i,j,size);
-    break;
-  case RULE_OPEN_STRING:
-    {
-      double sigma=random_exponential(size*.1);
-      double var=sigma*sigma;
-      double x2=i,y2=j;
-      (*randomnormal)(x2,y2,var);
-      drawline(i,j,x2,y2,var/4.,1.);
-    }
-    break;
-  }
+	int i(random_int(size)),j(random_int(size));
+	switch(rt) {
+		case RULE_SMOOTH_ARC:
+			drawsmootharc(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,.8,2000.,1.);
+			break;
+		case RULE_SMOOTHLINE2_BEADS:
+			drawsmoothline2(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,25000.,100.);
+			break;
+		case RULE_SMOOTHLINE2:
+			drawsmoothline2(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,25000.,1.);
+			break;
+		case RULE_CLUSTER:
+			drawcluster(i,j,4000.,4);
+			break;
+		case RULE_FLOWER:
+			drawflower(i,j,.1,50);
+			break;
+		case RULE_CLUSTER2:
+			drawcluster5(i,j,size);
+			break;
+		case RULE_OPEN_STRING:
+			{
+				double sigma=random_exponential(size*.1);
+				double var=sigma*sigma;
+				double x2=i,y2=j;
+				(*randomnormal)(x2,y2,var);
+				drawline(i,j,x2,y2,var/4.,1.);
+			}
+			break;
+		case RULE_SWIRL:
+			do {
+				drawswirl();
+			} while(random_int(20)>=num_symmetries[sg]);
+			break;
+	}
 }
 
 void paintlines::drawdotsymmetric(int x, int y, int radius,double brightness)
@@ -558,4 +563,20 @@ void paintlines::drawtriangle(double x1, double y1, double x2, double y2,
     if(random_bool()) drawsmoothline2(x3,y3,mx1,my1,var/2.,dist);
     if(random_bool()) drawsmoothline2(x3,y3,mx2,my2,var/2.,dist);
   }
+}
+
+static const double swirl_eps = .005;
+
+void paintlines::drawswirl() {
+	double l = random_exponential(1.);
+	double k1 = random_normal(3.), k2 = random_normal(3.);
+	double q = random_angle();
+	double x = random_uniform()*size, y = random_uniform()*size;
+	double t;
+	for(t=0;t<l;t+=swirl_eps) {
+		drawdotsymmetric(x,y,5,1.);
+		q+=swirl_eps*(t*k1+(l-t)*k2)/l;
+		x+=cos(q);
+		y+=sin(q);
+	}
 }

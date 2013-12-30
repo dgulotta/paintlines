@@ -26,7 +26,8 @@
 #include "../symmetric_canvas.h"
 
 enum ruletype {RULE_SMOOTH_ARC, RULE_SMOOTHLINE2_BEADS, RULE_CLUSTER,
-	RULE_FLOWER, RULE_CLUSTER2, RULE_SMOOTHLINE2, RULE_OPEN_STRING};
+	RULE_FLOWER, RULE_CLUSTER2, RULE_SMOOTHLINE2, RULE_OPEN_STRING,
+	RULE_SWIRL};
 
 struct paintrule
 {
@@ -116,6 +117,7 @@ private:
 	void drawflower(double x, double y, double var, int steps);
 	void drawtriangle(double x1, double y1, double x2, double y2, double x3,
 			double y3, double var, double dist);
+	void drawswirl();
 };
 
 #endif

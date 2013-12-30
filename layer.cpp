@@ -21,7 +21,6 @@
 #include "layer.h"
 #include "randgen.h"
 
-#include <iostream>
 using namespace std;
 
 void copy_pastel(uint8_t &c, uint8_t v, uint8_t t)

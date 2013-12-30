@@ -33,6 +33,9 @@ enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
 	SYM_P4, SYM_P4G, SYM_P4M, SYM_P6, SYM_P6M, SYM_PG, SYM_PGG, SYM_PM,
 	SYM_PMG, SYM_PMM};
 
+static const int num_symmetries[17] = { 2, 4, 1,
+	2, 3, 6, 6, 4, 8, 8, 6, 12, 2, 4, 2, 4, 4};
+
 std::vector<transformation> generate_transforms(symgroup sg, int sz);
 
 template<typename T>

@@ -21,7 +21,6 @@
 #include "randgen.h"
 #include "randomize.h"
 #include <tuple>
-#include <cstdio>
 
 using namespace std;
 using namespace std::placeholders;

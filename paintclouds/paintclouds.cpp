@@ -73,13 +73,10 @@ void paintclouds::fill_tri(canvas<color_t> &tri)
 			}
 }
 
-#include <cstdio>
-
 void paintclouds::fill_line(canvas<color_t> &tri, int i1, int j1, int i2, int j2)
 {
 	int d = max(abs(i1-i2),abs(j1-j2))/2;
 	if(d>0) {
-		//printf("%d %d %d %d\n",i1,j1,i2,j2);
 		int mi=(i1+i2)/2, mj=(j1+j2)/2;
 		color_t c1 = tri(i1,j1);
 		color_t c2 = tri(i2,j2);
