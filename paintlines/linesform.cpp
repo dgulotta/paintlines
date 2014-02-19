@@ -30,7 +30,7 @@ PaintRuleWidget::PaintRuleWidget()
 	QFormLayout *layout = new QFormLayout();
 	comboType = new QComboBox();
 	QStringList types;
-	types << "Arc" << "Beads" << "Cluster" << "Flower" << "Fractal" << "Line" << "String" << "Swirl";
+	types << "Arc" << "Beads" << "Cluster" << "Flower" << "Fractal" << "Line" << "String" << "Swirl" << "Orbit";
 	comboType->addItems(types);
 	layout->addRow("Type",comboType);
 	spinWeight = new QSpinBox();

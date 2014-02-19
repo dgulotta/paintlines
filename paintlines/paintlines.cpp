@@ -113,6 +113,9 @@ void paintlines::handle_rule(ruletype rt)
 				drawswirl();
 			} while(random_int(20)>=num_symmetries[sg]);
 			break;
+		case RULE_ORBIT:
+			draworbit();
+			break;
 	}
 }
 
@@ -578,5 +581,39 @@ void paintlines::drawswirl() {
 		q+=swirl_eps*(t*k1+(l-t)*k2)/l;
 		x+=cos(q);
 		y+=sin(q);
+	}
+}
+
+static const double orbit_stdev = sqrt(1.5);
+
+void paintlines::draworbit() {
+	double q[3][2], dq[3][2];
+	double t;
+	int i, j;
+	for(i=0;i<3;i++)
+		for(j=0;j<2;j++) {
+			q[i][j]=random_angle();
+			dq[i][j]=random_normal(orbit_stdev);
+		}
+	for(t=12./num_symmetries[sg];t>=0;t-=swirl_eps) {
+		for(i=0;i<3;i++) {
+			drawdotsymmetric(q[i][0]*size/(2*M_PI),q[i][1]*size/(2*M_PI),5,1.);
+		}
+		for(i=1;i<3;i++)
+			for(j=0;j<i;j++) {
+				double dx = q[i][0]-q[j][0];
+				double dy = q[i][1]-q[j][1];
+				double d = 2.-cos(dx)-cos(dy);
+				double sx = sin(dx)*swirl_eps/d;
+				double sy = sin(dy)*swirl_eps/d;
+				dq[i][0]-=sx;
+				dq[i][1]-=sy;
+				dq[j][0]+=sx;
+				dq[j][1]+=sy;
+			}
+		for(i=0;i<3;i++)
+			for(j=0;j<2;j++) {
+				q[i][j]+=dq[i][j]*swirl_eps;
+			}
 	}
 }
