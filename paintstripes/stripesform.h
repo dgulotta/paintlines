@@ -46,6 +46,7 @@ protected:
 	QDoubleSpinBox *spinAlpha;
 	RandomizeWidget *randomizeWidget;
 	RestoreButton *buttonRestore;
+	QCheckBox *checkTiled;
 	paintstripes *stripes;
 };
 

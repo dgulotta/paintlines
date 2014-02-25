@@ -24,11 +24,13 @@
 #include <QCoreApplication>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QLabel>
 #include <vector>
 #include "../canvas.h"
 #include "../color.h"
 
 class QBoxLayout;
+class QCheckBox;
 class QComboBox;
 class QLabel;
 class QSpinBox;
@@ -80,6 +82,32 @@ protected:
 
 #endif
 
+class ImageWidget : public QLabel
+{
+	Q_OBJECT
+	Q_PROPERTY(QPixmap pixmap READ pixmap)
+	Q_PROPERTY(bool tiled READ tiled WRITE setTiled)
+public:
+	ImageWidget()
+		: imageIsTileable(false), tilingEnabled(false)
+		{
+			setAlignment(Qt::AlignLeft|Qt::AlignTop);
+		}
+	const QPixmap *pixmap() const { return &_pixmap; }
+	QSize minimumSizeHint() const { return _pixmap.size(); }
+	bool tiled() const { return tilingEnabled; }
+public slots:
+	void setPixmap(const QPixmap &p, bool tileable);
+	void setPixmapTileable(const QPixmap &p) { setPixmap(p,true); }
+	void setPixmapNonTileable(const QPixmap &p) { setPixmap(p,false); }
+	void setTiled(bool b) { tilingEnabled = b;  recomputeTiling(); }
+private:
+	void recomputeTiling();
+	QPixmap _pixmap;
+	bool imageIsTileable;
+	bool tilingEnabled;
+};
+
 class BasicForm : public QMainWindow
 {
 	Q_OBJECT
@@ -88,7 +116,7 @@ public:
 	virtual ~BasicForm();
 	static QPixmap makePixmap(const canvas<color_t> &src);
 signals:
-	void newImage(QPixmap p); 
+	void newImage(QPixmap p, bool tileable); 
 protected slots:
 	bool saveAs();
 	void baseInit();
@@ -99,12 +127,13 @@ protected:
 	static QSpinBox * newSizeSpin();
 	static QSpinBox * newColorSpin();
 	static const QStringList symmetryStrings;
+	QCheckBox * newTileCheck();
 	ImageSaver *saver;
 	QMenuBar *menu;
 	QMenu *menuFile;
 	QAction *actionSaveAs;
 	QAction *actionExit;
-	QLabel *labelImage;
+	ImageWidget *labelImage;
 	QLayout *sideLayout;
 	QPushButton *buttonDraw;
 };

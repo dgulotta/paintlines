@@ -65,6 +65,7 @@ protected:
 	QComboBox *comboRandom;
 	RandomizeWidget *randomizeWidget;
 	RestoreButton *buttonRestore;
+	QCheckBox *checkTiled;
 	paintclouds *clouds;
 };
 

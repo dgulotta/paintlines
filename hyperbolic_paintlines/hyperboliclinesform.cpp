@@ -243,7 +243,7 @@ void HyperbolicLinesForm::draw()
 	lines->set_projtype((projtype)comboModel->currentIndex());
 	lines->set_ncolors(spinColors->value());
     lines->paint(spinSize->value(),*sg);
-	emit newImage(makePixmap(lines->get_image()));
+	emit newImage(makePixmap(lines->get_image()),false);
 	emit newLayeredImage(&(lines->get_layers()));
 	delete sg;
   }

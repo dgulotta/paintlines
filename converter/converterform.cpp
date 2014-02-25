@@ -49,7 +49,7 @@ void ConverterForm::open()
 			QRgb pix = img.pixel(i,j);
 			base_image(i,j)=color_t(qRed(pix),qGreen(pix),qBlue(pix));
 		}
-	emit newImage(QPixmap::fromImage(img));
+	emit newImage(QPixmap::fromImage(img),true);
 	emit newCanvas(&image);
 }
 
@@ -75,17 +75,19 @@ void ConverterForm::init()
 	layout->addRow(buttonDraw);
 	buttonRestore = new RestoreButton;
 	layout->addRow(buttonRestore);
+	checkTiled = newTileCheck();
+	layout->addRow(checkTiled);
 	saver = new ImageSaver(this);
 	sideLayout = layout;
 	menuFile->addAction(tr("&Open"),this,SLOT(open()));
 	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(this,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(disable()));
+	connect(this,SIGNAL(newImage(QPixmap,bool)),buttonRestore,SLOT(disable()));
 	connect(this,SIGNAL(newHyperbolicImage(QPixmap)),buttonRestore,SLOT(enable()));
-	connect(this,SIGNAL(newHyperbolicImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
+	connect(this,SIGNAL(newHyperbolicImage(QPixmap)),labelImage,SLOT(setPixmapNonTileable(const QPixmap &)));
 	connect(this,SIGNAL(newHyperbolicImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
 	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
 	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmapTileable(const QPixmap &)));
 	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
 	connect(comboSymmetry,SIGNAL(currentIndexChanged(int)),this,SLOT(symmetryChanged(int)));
 }
@@ -102,5 +104,5 @@ void ConverterForm::symmetryChanged(int n)
 
 void ConverterForm::updateImage()
 {
-	emit newImage(makePixmap(image.as_canvas()));
+	emit newImage(makePixmap(image.as_canvas()),true);
 }

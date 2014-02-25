@@ -25,6 +25,7 @@
 #include "../symmetric_canvas.h"
 #include "hyperbolic_converter.h"
 
+class QCheckBox;
 class RandomizeWidget;
 
 class ConverterForm : public BasicForm
@@ -44,6 +45,7 @@ protected:
 	QComboBox *comboModel;
 	QSpinBox *spinSize;
 	RandomizeWidget *randomizeWidget;
+	QCheckBox *checkTiled;
 	RestoreButton *buttonRestore;
 	symmetric_canvas<color_t> image;
 };

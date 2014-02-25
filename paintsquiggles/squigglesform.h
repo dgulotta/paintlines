@@ -54,6 +54,7 @@ protected:
 	RandomColorWidget *colorWidget;
 	RandomizeWidget *randomizeWidget;
 	RestoreButton *buttonRestore;
+	QCheckBox *checkTiled;
 	paintsquiggles *squiggles;
 };
 

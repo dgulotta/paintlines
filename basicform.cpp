@@ -31,15 +31,13 @@ void BasicForm::baseInit()
 {
 	menu = menuBar();
 	menuFile = menu->addMenu(tr("&File"));
-	labelImage = new QLabel;
-	labelImage->setAlignment(Qt::AlignLeft|Qt::AlignTop);
+	labelImage = new ImageWidget;
 	init();
 	actionSaveAs = menuFile->addAction(tr("&Save As"));
 	actionExit = menuFile->addAction(tr("E&xit"));
 	QHBoxLayout *mainLayout = new QHBoxLayout;
 	mainLayout->addLayout(sideLayout);
-	mainLayout->addWidget(labelImage);
-	mainLayout->addStretch(1);
+	mainLayout->addWidget(labelImage,1);
 	QWidget *w = new QWidget;
 	w->setLayout(mainLayout);
 	QScrollArea *a = new QScrollArea;
@@ -50,8 +48,8 @@ void BasicForm::baseInit()
 	connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
 	connect(actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
 	connect(actionExit,SIGNAL(triggered()),this,SLOT(close()));
-	connect(this,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
-	connect(this,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
+	connect(this,SIGNAL(newImage(QPixmap,bool)),labelImage,SLOT(setPixmap(const QPixmap &,bool)));
+	connect(this,SIGNAL(newImage(QPixmap,bool)),saver,SLOT(newImage(const QPixmap &)));
 }
 
 BasicForm::~BasicForm()
@@ -118,4 +116,30 @@ QSpinBox * BasicForm::newColorSpin() {
 	QSpinBox *spinColors = new QSpinBox;
 	spinColors->setValue(25);
 	return spinColors;
+}
+
+QCheckBox * BasicForm::newTileCheck() {
+	QCheckBox *check = new QCheckBox(tr("Show tiled"));
+	check->setCheckState(Qt::Checked);
+	labelImage->setTiled(true);
+	connect(check,SIGNAL(toggled(bool)),labelImage,SLOT(setTiled(bool)));
+	return check;
+}
+
+void ImageWidget::setPixmap(const QPixmap &p, bool tileable)
+{
+	_pixmap = p;
+	QPalette pal(palette());
+	pal.setBrush(QPalette::Background,p);
+	setPalette(pal);
+	imageIsTileable = tileable;
+	recomputeTiling();
+	updateGeometry();
+}
+
+void ImageWidget::recomputeTiling()
+{
+	bool b = tilingEnabled&&imageIsTileable;
+	setAutoFillBackground(b);
+	QLabel::setPixmap(b?QPixmap():_pixmap);
 }

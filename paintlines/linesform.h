@@ -53,6 +53,7 @@ protected:
 	QSpinBox *spinSize;
 	QSpinBox *spinColors;
 	QComboBox *comboSymmetry;
+	QCheckBox *checkTiled;
 	std::vector<PaintRuleWidget *> rules;
 	RandomColorWidget *colorWidget;
 	RandomizeWidget *randomizeWidget;

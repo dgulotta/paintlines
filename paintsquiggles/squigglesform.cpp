@@ -56,6 +56,8 @@ void SquigglesForm::init()
 	layout->addRow(randomizeWidget);
 	buttonRestore = new RestoreButton;
 	layout->addRow(buttonRestore);
+	checkTiled = newTileCheck();
+	layout->addRow(checkTiled);
 	squiggles=new paintsquiggles;
 	squiggles->set_color_generator(std::bind(&RandomColorWidget::generate,colorWidget));
 #ifdef MULTIPAGE
@@ -67,10 +69,10 @@ void SquigglesForm::init()
 #endif
 	sideLayout = layout;
 	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(this,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(disable()));
+	connect(this,SIGNAL(newImage(QPixmap,bool)),buttonRestore,SLOT(disable()));
 	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
 	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmap(const QPixmap &)));
+	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmapTileable(const QPixmap &)));
 	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
 }
 
@@ -98,7 +100,7 @@ void SquigglesForm::clearLayers()
 
 void SquigglesForm::updateImage()
 {
-	emit newImage(makePixmap(squiggles->get_image()));
+	emit newImage(makePixmap(squiggles->get_image()),true);
 	emit newCanvas(&(squiggles->get_symmetric_image()));
 	emit newLayeredImage(&(squiggles->get_layers()));
 }
