@@ -164,7 +164,7 @@ void paintclouds::paint(int size, symgroup sym)
 		fill_line(tri,d,0,d/2,d/2);
 		fill_line(tri,0,d,d/2,d/2);
 		fill_tri(tri);
-		copy(grid,tri,d,0,d,d,0,0);
+		copy(grid,tri,size,0,size,size,0,0);
 		break;
 	}
 	case SYM_CMM:
