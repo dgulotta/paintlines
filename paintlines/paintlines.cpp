@@ -116,6 +116,9 @@ void paintlines::handle_rule(ruletype rt)
 		case RULE_ORBIT:
 			draworbit();
 			break;
+		case RULE_TREE:
+			drawtree();
+			break;
 	}
 }
 
@@ -616,4 +619,31 @@ void paintlines::draworbit() {
 				q[i][j]+=dq[i][j]*swirl_eps;
 			}
 	}
+}
+
+void paintlines::drawtree()
+{
+	drawtree_split(random_int(size),random_int(size),random_angle(),0);
+}
+
+void paintlines::drawtree(double x, double y, double q, int depth)
+{
+	int n = random_poisson(20);
+	double vx = cos(q);
+	double vy = sin(q);
+	while(--n>=0) {
+		x+=vx;
+		y+=vy;
+		depth++;
+		drawdotsymmetric(x,y,5,1);
+	}
+	if(random_bernoulli(1/(1+depth/100.)))
+		drawtree_split(x,y,q,depth);
+}
+
+void paintlines::drawtree_split(double x, double y, double q, int depth)
+{
+	double dq = random_normal(M_PI/6.);
+	drawtree(x,y,q+dq,depth);
+	drawtree(x,y,q-dq,depth);
 }

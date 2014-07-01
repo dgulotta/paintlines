@@ -27,7 +27,7 @@
 
 enum ruletype {RULE_SMOOTH_ARC, RULE_SMOOTHLINE2_BEADS, RULE_CLUSTER,
 	RULE_FLOWER, RULE_CLUSTER2, RULE_SMOOTHLINE2, RULE_OPEN_STRING,
-	RULE_SWIRL, RULE_ORBIT};
+	RULE_SWIRL, RULE_ORBIT, RULE_TREE};
 
 struct paintrule
 {
@@ -119,6 +119,9 @@ private:
 			double y3, double var, double dist);
 	void drawswirl();
 	void draworbit();
+	void drawtree();
+	void drawtree(double x, double y, double q, int depth);
+	void drawtree_split(double x, double y, double q, int depth);
 };
 
 #endif
