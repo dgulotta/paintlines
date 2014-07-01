@@ -38,7 +38,7 @@ class QSpinBox;
 class RestoreButton : public QPushButton {
 	Q_OBJECT
 public:
-	RestoreButton() : QPushButton(tr("Restore")) {}
+	RestoreButton() : QPushButton(tr("Restore")) { setEnabled(false); }
 public slots:
 	void enable() { setEnabled(true); }
 	void disable() { setEnabled(false); }
