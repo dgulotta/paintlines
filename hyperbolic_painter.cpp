@@ -382,7 +382,6 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_asbc(int a, int b, 
 	if(a*b+a*c+2*b*c>=2*a*b*c)
 		return nullptr;
 	hyperbolic_quadrilateral_kite t(2*M_PI/a,M_PI_2/b,M_PI/c);
-	hyperbolic_coord p = t.interior_point();
 	generator g1 = t.rotation1_gen(), g2 = t.rotation2_gen(), g3 = t.reflection3_gen(), g4 = t.reflection4_gen();
 	return new hyperbolic_symmetry_group({
 		t.rotation1_gen(),
