@@ -36,6 +36,9 @@ enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
 static const int num_symmetries[17] = { 2, 4, 1,
 	2, 3, 6, 6, 4, 8, 8, 6, 12, 2, 4, 2, 4, 4};
 
+static const bool sym_is_hexagonal[17] = { false, false, false, false, true, true,
+	true, false, false, false, true, true, false, false, false, false, false };
+
 std::vector<transformation> generate_transforms(symgroup sg, int sz);
 
 template<typename T>

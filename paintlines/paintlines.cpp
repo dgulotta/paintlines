@@ -29,8 +29,11 @@ using std::sin;
 using std::log;
 using std::sqrt;
 using std::rand;
+using std::tuple;
+using std::make_tuple;
+using std::get;
 
-void randomnormal_hexagonal(double &x, double &y, double var)
+void paintlines_layer_generator::randomnormal_hexagonal(double &x, double &y, double var)
 {
   double v = sqrt(var/2);
   double s=random_normal(v)*.93060485910209959893;
@@ -39,7 +42,7 @@ void randomnormal_hexagonal(double &x, double &y, double var)
   y+=s-d;
 }
 
-void randomnormal_orthogonal(double &x, double &y, double var)
+void paintlines_layer_generator::randomnormal_orthogonal(double &x, double &y, double var)
 {
   double v = sqrt(var/2);
   x+=random_normal(v);
@@ -53,17 +56,6 @@ void paintlines::paint(int sz, symgroup sym)
 	grids.clear();
 	grids.resize(ncolors,symmetric_canvas<uint8_t>(sz,sym,0));
 	layers.resize(ncolors);
-	switch(sym) {
-		case SYM_P3:
-		case SYM_P3M1:
-		case SYM_P31M:
-		case SYM_P6:
-		case SYM_P6M:
-			randomnormal=&randomnormal_hexagonal;
-			break;
-		default:
-			randomnormal=&randomnormal_orthogonal;
-	}
 	for(int i=0;i<ncolors;i++) {
 		layer &l = layers[i];
 		auto it=lower_bound(rules.begin(),rules.end(),random_int(rules.back().weight)+1);
@@ -74,85 +66,124 @@ void paintlines::paint(int sz, symgroup sym)
 		handle_rule(it->type);
 	}
 	image=symmetric_canvas<color_t>(sz,sym,black);
-	merge(const_cast<canvas<color_t> &>(image.as_canvas()),layers);
+	merge(image.unsafe_get_canvas(),layers);
 }
+
+tuple<int,int,int,int> random_endpoints(int size)
+{
+	int i = random_int(size), j = random_int(size);
+	return make_tuple(i,j,i+random_range_inclusive(-2,2)*size,j+random_range_inclusive(-2,2)*size);
+}
+
+void paintlines_layer_generator::generate_smootharc(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	auto t = random_endpoints(g.size());
+	gen.drawsmootharc(get<0>(t),get<1>(t),get<2>(t),get<3>(t),.8,2000.,1.);
+}
+
+void paintlines_layer_generator::generate_smoothline2_beads(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	auto t = random_endpoints(g.size());
+	gen.drawsmoothline2(get<0>(t),get<1>(t),get<2>(t),get<3>(t),25000.,100.);
+}
+
+void paintlines_layer_generator::generate_smoothline2(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	auto t = random_endpoints(g.size());
+	gen.drawsmoothline2(get<0>(t),get<1>(t),get<2>(t),get<3>(t),25000.,1.);
+}
+
+void paintlines_layer_generator::generate_cluster(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	gen.drawcluster(random_int(g.size()),random_int(g.size()),4000.,4);
+}
+
+void paintlines_layer_generator::generate_flower(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	gen.drawflower(random_int(g.size()),random_int(g.size()),.1,50);
+}
+
+void paintlines_layer_generator::generate_cluster2(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	gen.drawcluster5(random_int(g.size()),random_int(g.size()),g.size());
+}
+
+void paintlines_layer_generator::generate_open_string(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	gen.drawopenstring();
+}
+
+void paintlines_layer_generator::generate_swirl(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	do {
+		gen.drawswirl();
+	} while(random_int(20)>=num_symmetries[g.group()]);
+}
+
+void paintlines_layer_generator::generate_orbit(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	gen.draworbit();
+}
+
+void paintlines_layer_generator::generate_tree(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	gen.drawtree();
+}
+
+const std::function<void(symmetric_canvas<uint8_t> &)> paintlines::rulefuncs[] = {
+	paintlines_layer_generator::generate_smootharc,
+	paintlines_layer_generator::generate_smoothline2_beads,
+	paintlines_layer_generator::generate_cluster,
+	paintlines_layer_generator::generate_flower,
+	paintlines_layer_generator::generate_cluster2,
+	paintlines_layer_generator::generate_smoothline2,
+	paintlines_layer_generator::generate_open_string,
+	paintlines_layer_generator::generate_swirl,
+	paintlines_layer_generator::generate_orbit,
+	paintlines_layer_generator::generate_tree,
+};
 
 void paintlines::handle_rule(ruletype rt)
 {
-	int i(random_int(size)),j(random_int(size));
-	switch(rt) {
-		case RULE_SMOOTH_ARC:
-			drawsmootharc(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,.8,2000.,1.);
-			break;
-		case RULE_SMOOTHLINE2_BEADS:
-			drawsmoothline2(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,25000.,100.);
-			break;
-		case RULE_SMOOTHLINE2:
-			drawsmoothline2(i,j,i+random_range_inclusive(-2,2)*size, j+random_range_inclusive(-2,2)*size,25000.,1.);
-			break;
-		case RULE_CLUSTER:
-			drawcluster(i,j,4000.,4);
-			break;
-		case RULE_FLOWER:
-			drawflower(i,j,.1,50);
-			break;
-		case RULE_CLUSTER2:
-			drawcluster5(i,j,size);
-			break;
-		case RULE_OPEN_STRING:
-			{
-				double sigma=random_exponential(size*.1);
-				double var=sigma*sigma;
-				double x2=i,y2=j;
-				(*randomnormal)(x2,y2,var);
-				drawline(i,j,x2,y2,var/4.,1.);
-			}
-			break;
-		case RULE_SWIRL:
-			do {
-				drawswirl();
-			} while(random_int(20)>=num_symmetries[sg]);
-			break;
-		case RULE_ORBIT:
-			draworbit();
-			break;
-		case RULE_TREE:
-			drawtree();
-			break;
-	}
+	rulefuncs[rt](*active_grid);
 }
 
-void paintlines::drawdotsymmetric(int x, int y, int radius,double brightness)
+void paintlines_layer_generator::drawdotsymmetric(int x, int y, int radius,double brightness)
 {
-  int i,j;
-  double num, denom;
-  switch(sg) {
-  case SYM_P3:
-  case SYM_P3M1:
-  case SYM_P31M:
-  case SYM_P6:
-  case SYM_P6M:
-    denom=brightness*4.33;
-    num=brightness*1104.;
-    for(i=-radius;i<=radius;i++)
-      for(j=-radius;j<=radius;j++) {
-	drawpixelsymmetric(x+i,y+j,num/(denom+i*i+i*j+j*j));
-      }
-    break;
-  default:
-    denom=brightness*5.;
-    num=brightness*1275.;
-    for(i=-radius;i<=radius;i++)
-      for(j=-radius;j<=radius;j++) {
-	drawpixelsymmetric(x+i,y+j,num/(denom+i*i+j*j));
-      }
-  } 
+	int i,j;
+	double num, denom;
+	if(is_hexagonal()) {
+		denom=brightness*4.33;
+		num=brightness*1104.;
+		for(i=-radius;i<=radius;i++)
+			for(j=-radius;j<=radius;j++) {
+				drawpixelsymmetric(x+i,y+j,num/(denom+i*i+i*j+j*j));
+			}
+	}
+	else {
+		denom=brightness*5.;
+		num=brightness*1275.;
+		for(i=-radius;i<=radius;i++)
+			for(j=-radius;j<=radius;j++) {
+				drawpixelsymmetric(x+i,y+j,num/(denom+i*i+j*j));
+			}
+	} 
 }
 
-void paintlines::drawcluster(double x, double y, double var, int maxdepth)
+void paintlines_layer_generator::drawcluster(double x, double y, double var, int maxdepth)
 {
   double mx=x,my=y;
-  (*randomnormal)(mx,my,var);
+  randomnormal(mx,my,var);
   int z=random_int(maxdepth);
   while(z--) {
     drawsmoothline2(x,y,mx,my,var/4.,1.);
@@ -161,7 +192,7 @@ void paintlines::drawcluster(double x, double y, double var, int maxdepth)
   drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster2(int x, int y, int d)
+void paintlines_layer_generator::drawcluster2(int x, int y, int d)
 {
   if(d) {
     int z=random_int(4);
@@ -174,7 +205,7 @@ void paintlines::drawcluster2(int x, int y, int d)
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster3(int x, int y, int d)
+void paintlines_layer_generator::drawcluster3(int x, int y, int d)
 {
   if(d) {
     d/=2;
@@ -187,7 +218,7 @@ void paintlines::drawcluster3(int x, int y, int d)
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster4(int x, int y, int d)
+void paintlines_layer_generator::drawcluster4(int x, int y, int d)
 {
   if(d) {
     int z=random_int(4);
@@ -200,7 +231,7 @@ void paintlines::drawcluster4(int x, int y, int d)
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster5(int x, int y, int d)
+void paintlines_layer_generator::drawcluster5(int x, int y, int d)
 {
   if(d) {
     d/=2;
@@ -213,7 +244,7 @@ void paintlines::drawcluster5(int x, int y, int d)
 }
 
 
-void paintlines::drawcluster6(int x, int y, int d)
+void paintlines_layer_generator::drawcluster6(int x, int y, int d)
 {
   if(d) {
     d/=2;
@@ -225,7 +256,7 @@ void paintlines::drawcluster6(int x, int y, int d)
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster7(int x, int y, int d)
+void paintlines_layer_generator::drawcluster7(int x, int y, int d)
 {
   if(d) {
     int d2=d/2;
@@ -237,7 +268,7 @@ void paintlines::drawcluster7(int x, int y, int d)
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster8(int x, int y, int d)
+void paintlines_layer_generator::drawcluster8(int x, int y, int d)
 {
   if(d) {
     d/=2;
@@ -247,7 +278,7 @@ void paintlines::drawcluster8(int x, int y, int d)
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster9(int x, int y, int d)
+void paintlines_layer_generator::drawcluster9(int x, int y, int d)
 {
   if(d) {
     if(random_int(3)) drawcluster9(x,y,d/2);
@@ -258,7 +289,7 @@ void paintlines::drawcluster9(int x, int y, int d)
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster10(int x, int y, int d)
+void paintlines_layer_generator::drawcluster10(int x, int y, int d)
 {
   if(d) {
     if(random_int(3)) drawcluster10(x,y,d/2);
@@ -269,11 +300,11 @@ void paintlines::drawcluster10(int x, int y, int d)
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster11(double x, double y, double var, int maxdepth,
+void paintlines_layer_generator::drawcluster11(double x, double y, double var, int maxdepth,
 		   double dist)
 {
   double xx=x, yy=y;
-  (*randomnormal)(x,y,var);
+  randomnormal(x,y,var);
   int z=random_int(maxdepth);
   while(z--) {
     drawcluster11(x,y,var/2.,maxdepth-1,dist);
@@ -281,7 +312,7 @@ void paintlines::drawcluster11(double x, double y, double var, int maxdepth,
   }
 }
 
-void paintlines::drawcluster12(int x, int y, int d, unsigned char myalpha)
+void paintlines_layer_generator::drawcluster12(int x, int y, int d, unsigned char myalpha)
 {
   if(d) {
     d/=2;
@@ -296,25 +327,25 @@ void paintlines::drawcluster12(int x, int y, int d, unsigned char myalpha)
   }
 }
 
-void paintlines::drawcluster13(double x, double y, double var, int maxdepth)
+void paintlines_layer_generator::drawcluster13(double x, double y, double var, int maxdepth)
 {
-  (*randomnormal)(x,y,var);
+  randomnormal(x,y,var);
   int z=random_int(maxdepth);
   while(z--) drawcluster13(x,y,var/2.,maxdepth-1);
   int s=sqrt(var);
   drawdotsymmetric(x,y,s,var/1275.);
 }
 
-void paintlines::drawcluster14(double x, double y, double var, int maxdepth)
+void paintlines_layer_generator::drawcluster14(double x, double y, double var, int maxdepth)
 {
-  (*randomnormal)(x,y,var);
+  randomnormal(x,y,var);
   int z=random_int(maxdepth);
   while(z--) drawcluster13(x,y,var/2.,maxdepth-1);
   double s=sqrt(var);
   drawcluster5(x-s/2.,y-s/2.,s);
 }
 
-void paintlines::drawcluster15(double x, double y, double m, double px,
+void paintlines_layer_generator::drawcluster15(double x, double y, double m, double px,
 			       double py, int maxdepth)
 {
   if(maxdepth) {
@@ -341,7 +372,7 @@ void paintlines::drawcluster15(double x, double y, double m, double px,
   }
 }
 
-void paintlines::drawcluster16(double x, double y, double x1, double y1,
+void paintlines_layer_generator::drawcluster16(double x, double y, double x1, double y1,
 			       double x2, double y2, double x3, double y3,
 			       int depth)
 {
@@ -363,7 +394,7 @@ void paintlines::drawcluster16(double x, double y, double x1, double y1,
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster17(double x, double y, double x1, double y1,
+void paintlines_layer_generator::drawcluster17(double x, double y, double x1, double y1,
 			       double x2, double y2, double x3, double y3,
 			       int depth)
 {
@@ -380,7 +411,7 @@ void paintlines::drawcluster17(double x, double y, double x1, double y1,
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster18(double x, double y, double x1, double y1,
+void paintlines_layer_generator::drawcluster18(double x, double y, double x1, double y1,
 			       double x2, double y2, double x3, double y3,
 			       int depth)
 {
@@ -398,7 +429,7 @@ void paintlines::drawcluster18(double x, double y, double x1, double y1,
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster19(double x, double y, double x1, double y1,
+void paintlines_layer_generator::drawcluster19(double x, double y, double x1, double y1,
 			       double x2, double y2, double x3, double y3,
 			       int depth)
 {
@@ -417,7 +448,7 @@ void paintlines::drawcluster19(double x, double y, double x1, double y1,
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawcluster20(double x, double y, double x1, double y1,
+void paintlines_layer_generator::drawcluster20(double x, double y, double x1, double y1,
 			       double x2, double y2, int depth)
 {
   if(depth--) {
@@ -434,11 +465,11 @@ void paintlines::drawcluster20(double x, double y, double x1, double y1,
   else drawdotsymmetric(x,y,5,1.);
 }
 
-void paintlines::drawline(double x1, double y1, double x2, double y2,
+void paintlines_layer_generator::drawline(double x1, double y1, double x2, double y2,
 			  double var, double dist)
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
-  (*randomnormal)(mx,my,var);
+  randomnormal(mx,my,var);
   var/=2.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
@@ -450,26 +481,26 @@ void paintlines::drawline(double x1, double y1, double x2, double y2,
 }
 
 
-void paintlines::drawsmoothline(double var, double steps)
+void paintlines_layer_generator::drawsmoothline(double var, double steps)
 {
   double x, y;
-  x=random_int(size);
-  y=random_int(size);
+  x=random_int(size());
+  y=random_int(size());
   double vx(0.), vy(0.);
-  (*randomnormal)(vx,vy,var*sqrt(steps));
+  randomnormal(vx,vy,var*sqrt(steps));
   while(steps--) {
-    (*randomnormal)(vx,vy,var);
+    randomnormal(vx,vy,var);
     x+=vx;
     y+=vy;
     drawdotsymmetric(x,y,5,1.);
   }
 }
 
-void paintlines::drawsmoothline2(double x1, double y1, double x2, double y2,
+void paintlines_layer_generator::drawsmoothline2(double x1, double y1, double x2, double y2,
 			  double var, double dist)
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
-  (*randomnormal)(mx,my,var);
+  randomnormal(mx,my,var);
   var/=4.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
@@ -480,11 +511,11 @@ void paintlines::drawsmoothline2(double x1, double y1, double x2, double y2,
   if(dx*dx+dy*dy>=dist) drawsmoothline2(mx,my,x2,y2,var,dist);
 }
 
-void paintlines::drawsmoothline3(double x1, double y1, double x2, double y2,
+void paintlines_layer_generator::drawsmoothline3(double x1, double y1, double x2, double y2,
 			  double var, double dist)
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
-  (*randomnormal)(mx,my,var);
+  randomnormal(mx,my,var);
   var/=2.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
@@ -497,11 +528,11 @@ void paintlines::drawsmoothline3(double x1, double y1, double x2, double y2,
     while(random_bool()) drawsmoothline3(mx,my,x2,y2,var/4.,dist);
 }
 
-void paintlines::drawsmoothline4(double x1, double y1, double x2, double y2,
+void paintlines_layer_generator::drawsmoothline4(double x1, double y1, double x2, double y2,
 			  double var, double dist)
 {
   double mx=(x1+x2)/2, my=(y1+y2)/2, dx, dy;
-  (*randomnormal)(mx,my,var);
+  randomnormal(mx,my,var);
   var/=2.;
   double a=15.*sqrt(var);
   if(a<50.) a=50.;
@@ -515,11 +546,11 @@ void paintlines::drawsmoothline4(double x1, double y1, double x2, double y2,
   if(dx*dx+dy*dy>=dist) drawsmoothline4(mx,my,x2,y2,var/4.,dist);
 }
 
-void paintlines::drawsmootharc(double x1, double y1, double x2, double y2,
+void paintlines_layer_generator::drawsmootharc(double x1, double y1, double x2, double y2,
 			       double k, double var, double dist)
 {
   double mx=(x1+x2)/2+k*(y2-y1), my=(y1+y2)/2+k*(x1-x2), dx, dy;
-  (*randomnormal)(mx,my,var);
+  randomnormal(mx,my,var);
   var/=4.;
   drawdotsymmetric(mx,my,5,1.);
   dx=mx-x1;
@@ -530,7 +561,7 @@ void paintlines::drawsmootharc(double x1, double y1, double x2, double y2,
   if(dx*dx+dy*dy>=dist) drawsmootharc(mx,my,x2,y2,k/2.,var,dist);
 }
 
-void paintlines::drawflower(double x, double y, double var, int steps)
+void paintlines_layer_generator::drawflower(double x, double y, double var, int steps)
 {
   int n=3.+random_exponential(10);
   int i;
@@ -540,9 +571,9 @@ void paintlines::drawflower(double x, double y, double var, int steps)
     double xn(x), yn(y);
     double vx(cos(2.*M_PI*(i+offset)/n)), vy(sin(2.*M_PI*(i+offset)/n));
     int st(steps);
-    (*randomnormal)(vx,vy,.01);
+    randomnormal(vx,vy,.01);
     while(st--) {
-      (*randomnormal)(vx,vy,.01);
+      randomnormal(vx,vy,.01);
       xn+=vx;
       yn+=vy;
       drawdotsymmetric(xn,yn,5,1.);
@@ -551,14 +582,14 @@ void paintlines::drawflower(double x, double y, double var, int steps)
 }
 
 
-void paintlines::drawtriangle(double x1, double y1, double x2, double y2,
+void paintlines_layer_generator::drawtriangle(double x1, double y1, double x2, double y2,
 			      double x3, double y3, double var, double dist)
 {
   double mx3((x1+x2)/2.), my3((y1+y2)/2.), mx1((x2+x3)/2.), my1((y2+y3)/2.),
     mx2((x3+x1)/2.), my2((y3+y1)/2.);
-  (*randomnormal)(mx1,my1,var);
-  (*randomnormal)(mx2,my2,var);
-  (*randomnormal)(mx3,my3,var);
+  randomnormal(mx1,my1,var);
+  randomnormal(mx2,my2,var);
+  randomnormal(mx3,my3,var);
   if(mx1*mx1+my1*my1+mx2*mx2+my2*my2+mx3*mx3+my3*my3-mx1*mx2-mx2*mx3-mx3*mx1-
      my1*my2-my2*my3-my3*my1>dist) {
     drawtriangle(mx1,my1,mx2,my2,mx3,my3,var/2.,dist);
@@ -573,11 +604,11 @@ void paintlines::drawtriangle(double x1, double y1, double x2, double y2,
 
 static const double swirl_eps = .005;
 
-void paintlines::drawswirl() {
+void paintlines_layer_generator::drawswirl() {
 	double l = random_exponential(1.);
 	double k1 = random_normal(3.), k2 = random_normal(3.);
 	double q = random_angle();
-	double x = random_uniform()*size, y = random_uniform()*size;
+	double x = random_uniform()*size(), y = random_uniform()*size();
 	double t;
 	for(t=0;t<l;t+=swirl_eps) {
 		drawdotsymmetric(x,y,5,1.);
@@ -587,9 +618,19 @@ void paintlines::drawswirl() {
 	}
 }
 
+void paintlines_layer_generator::drawopenstring()
+{
+	double sigma=random_exponential(size()*.1);
+	double var=sigma*sigma;
+	int i = random_int(size()), j = random_int(size());
+	double x2=i,y2=j;
+	randomnormal(x2,y2,var);
+	drawline(i,j,x2,y2,var/4.,1.);
+}
+
 static const double orbit_stdev = sqrt(1.5);
 
-void paintlines::draworbit() {
+void paintlines_layer_generator::draworbit() {
 	double q[3][2], dq[3][2];
 	double t;
 	int i, j;
@@ -598,9 +639,9 @@ void paintlines::draworbit() {
 			q[i][j]=random_angle();
 			dq[i][j]=random_normal(orbit_stdev);
 		}
-	for(t=12./num_symmetries[sg];t>=0;t-=swirl_eps) {
+	for(t=12./num_symmetries[group()];t>=0;t-=swirl_eps) {
 		for(i=0;i<3;i++) {
-			drawdotsymmetric(q[i][0]*size/(2*M_PI),q[i][1]*size/(2*M_PI),5,1.);
+			drawdotsymmetric(q[i][0]*size()/(2*M_PI),q[i][1]*size()/(2*M_PI),5,1.);
 		}
 		for(i=1;i<3;i++)
 			for(j=0;j<i;j++) {
@@ -621,12 +662,12 @@ void paintlines::draworbit() {
 	}
 }
 
-void paintlines::drawtree()
+void paintlines_layer_generator::drawtree()
 {
-	drawtree_split(random_int(size),random_int(size),random_angle(),0);
+	drawtree_split(random_int(size()),random_int(size()),random_angle(),0);
 }
 
-void paintlines::drawtree(double x, double y, double q, int depth)
+void paintlines_layer_generator::drawtree(double x, double y, double q, int depth)
 {
 	int n = random_poisson(20);
 	double vx = cos(q);
@@ -641,7 +682,7 @@ void paintlines::drawtree(double x, double y, double q, int depth)
 		drawtree_split(x,y,q,depth);
 }
 
-void paintlines::drawtree_split(double x, double y, double q, int depth)
+void paintlines_layer_generator::drawtree_split(double x, double y, double q, int depth)
 {
 	double dq = random_normal(M_PI/6.);
 	drawtree(x,y,q+dq,depth);

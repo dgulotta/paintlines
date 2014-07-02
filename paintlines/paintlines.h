@@ -37,46 +37,47 @@ struct paintrule
 	bool operator < (int n) {return weight<n;}
 };
 
-class paintlines
+class paintlines_layer_generator
 {
 public:
-	paintlines() : ncolors(0), generate_color(&default_color_generator) {}
-	~paintlines() {}
-	void paint(int sz, symgroup sym);
-	void set_rules(const std::vector<paintrule> &r) {
-		rules=r;
-		int i;
-		for(i=1;i<rules.size();i++)
-			rules[i].weight+=rules[i-1].weight;
-	}
-	void set_ruletype(int n, ruletype r) {rules[n].type=r;}
-	void set_weight(int n, int w) {rules[n].weight=w;}
-	void set_pastel(int n, bool b) {rules[n].pastel=b;}
-	void handle_rule(ruletype rt);
-	symgroup get_symgroup() {return sg;}
-	void set_ncolors(int n) {ncolors=n;}
-	const std::vector<layer> & get_layers() { return layers; }
-	const canvas<color_t> & get_image() { return image.as_canvas(); }
-	const symmetric_canvas<color_t> & get_symmetric_image() { return image; }
-	void set_color_generator(const std::function<color_t()> &f) { generate_color = f; }
-private:
-	std::vector<paintrule> rules;
-	void (*randomnormal)(double &, double &, double);
-	std::vector<layer> layers;
-	std::vector<symmetric_canvas<uint8_t>> grids; 
-	symmetric_canvas<uint8_t> *active_grid;
-	symmetric_canvas<color_t> image;
-	int ncolors;
-	int size;
-	symgroup sg;
-	std::function<color_t()> generate_color;
-	void drawpixelsymmetric(int x, int y, uint8_t alpha) { if(alpha>active_grid->get(x,y)) active_grid->set(x,y,alpha); }
-	void drawdotsymmetric(int x, int y, int radius, double brightness);
+	paintlines_layer_generator(symmetric_canvas<uint8_t> &g) : grid(&g) {}
+	int size() const { return grid->size(); }
+	symgroup group() const { return grid->group(); }
+	bool is_hexagonal() { return sym_is_hexagonal[(int)group()]; }
+	static void generate_smootharc(symmetric_canvas<uint8_t> &g);
+	static void generate_smoothline2_beads(symmetric_canvas<uint8_t> &g);
+	static void generate_smoothline2(symmetric_canvas<uint8_t> &g);
+	static void generate_cluster(symmetric_canvas<uint8_t> &g);
+	static void generate_flower(symmetric_canvas<uint8_t> &g);
+	static void generate_cluster2(symmetric_canvas<uint8_t> &g);
+	static void generate_open_string(symmetric_canvas<uint8_t> &g);
+	static void generate_swirl(symmetric_canvas<uint8_t> &g);
+	static void generate_orbit(symmetric_canvas<uint8_t> &g);
+	static void generate_tree(symmetric_canvas<uint8_t> &g);
+	void drawsmootharc(double x1, double y1, double x2, double y2, double k,
+		double var, double dist);
+	void drawsmoothline2(double x1, double y1, double x2, double y2,
+			double var, double dist);
 	void drawcluster(double x, double y, double var, int maxdepth);
+	void drawcluster5(int x, int y, int d);
+	void drawflower(double x, double y, double var, int steps);
+	void drawopenstring();
+	void drawswirl();
+	void draworbit();
+	void drawtree();
+private:
+	symmetric_canvas<uint8_t> *grid;
+	static void randomnormal_orthogonal(double &x, double &y, double var);
+	static void randomnormal_hexagonal(double &x, double &y, double var);
+	void randomnormal(double &x, double &y, double var) {
+		if(is_hexagonal()) randomnormal_hexagonal(x,y,var);
+		else randomnormal_orthogonal(x,y,var);
+	}
+	void drawdotsymmetric(int x, int y, int radius, double brightness);
+	void drawpixelsymmetric(int x, int y, uint8_t alpha) { if(alpha>grid->get(x,y)) grid->set(x,y,alpha); }
 	void drawcluster2(int x, int y, int d);
 	void drawcluster3(int x, int y, int d);
 	void drawcluster4(int x, int y, int d);
-	void drawcluster5(int x, int y, int d);
 	void drawcluster6(int x, int y, int d);
 	void drawcluster7(int x, int y, int d);
 	void drawcluster8(int x, int y, int d);
@@ -106,22 +107,49 @@ private:
 	void drawline(double x1, double y1, double x2, double y2, double var,
 			double dist);
 	void drawsmoothline(double var, double steps);
-	void drawsmoothline2(double x1, double y1, double x2, double y2,
-			double var, double dist);
 	void drawsmoothline3(double x1, double y1, double x2, double y2,
 			double var, double dist);
 	void drawsmoothline4(double x1, double y1, double x2, double y2,
 			double var, double dist);
-	void drawsmootharc(double x1, double y1, double x2, double y2, double k,
-			double var, double dist);
-	void drawflower(double x, double y, double var, int steps);
 	void drawtriangle(double x1, double y1, double x2, double y2, double x3,
 			double y3, double var, double dist);
-	void drawswirl();
-	void draworbit();
-	void drawtree();
 	void drawtree(double x, double y, double q, int depth);
 	void drawtree_split(double x, double y, double q, int depth);
+};
+
+class paintlines
+{
+public:
+	paintlines() : ncolors(0), generate_color(&default_color_generator) {}
+	~paintlines() {}
+	void paint(int sz, symgroup sym);
+	void set_rules(const std::vector<paintrule> &r) {
+		rules=r;
+		int i;
+		for(i=1;i<rules.size();i++)
+			rules[i].weight+=rules[i-1].weight;
+	}
+	void set_ruletype(int n, ruletype r) {rules[n].type=r;}
+	void set_weight(int n, int w) {rules[n].weight=w;}
+	void set_pastel(int n, bool b) {rules[n].pastel=b;}
+	void handle_rule(ruletype rt);
+	symgroup get_symgroup() {return sg;}
+	void set_ncolors(int n) {ncolors=n;}
+	const std::vector<layer> & get_layers() { return layers; }
+	const canvas<color_t> & get_image() { return image.as_canvas(); }
+	const symmetric_canvas<color_t> & get_symmetric_image() { return image; }
+	void set_color_generator(const std::function<color_t()> &f) { generate_color = f; }
+private:
+	std::vector<paintrule> rules;
+	std::vector<layer> layers;
+	std::vector<symmetric_canvas<uint8_t>> grids; 
+	symmetric_canvas<uint8_t> *active_grid;
+	symmetric_canvas<color_t> image;
+	int ncolors;
+	int size;
+	symgroup sg;
+	std::function<color_t()> generate_color;
+	static const std::function<void(symmetric_canvas<uint8_t> &)> rulefuncs[];
 };
 
 #endif
