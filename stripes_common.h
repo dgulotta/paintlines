@@ -48,8 +48,12 @@ public:
 	void clear() { std::fill(array,array+size*size,complex<double>(0,0)); }
 	static std::function<double(int,int)> norm_hexagonal(int sz);
 	static std::function<double(int,int)> norm_orthogonal(int sz);
+	std::function<double(int,int)> norm() {
+		return sym_is_hexagonal[group]?norm_hexagonal(size):norm_orthogonal(size);
+	}
 	void transform() { fftw_execute(plan); }
 	int get_size() const { return size; }
+	symgroup get_group() { return group; }
 	typedef double (*proj_t)(const complex<double> &);
 	double intensity(const std::function<double(const complex<double> &)> &proj=(proj_t)&std::real) const;
 private:

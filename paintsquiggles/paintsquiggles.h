@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2005, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -45,9 +45,17 @@ public:
 	const canvas<color_t> & get_image() { return image.as_canvas(); }
 	const symmetric_canvas<color_t> & get_symmetric_image() { return image; }
 	void set_color_generator(const std::function<color_t()> &f) { generate_color = f; }
+	static void fill_one(symmetric_canvas<uint8_t> &grid,std::default_random_engine &rng,
+		double alpha,double exponent,double thickness, double sharpness);
+	static void fill_two(symmetric_canvas<uint8_t> &g1,symmetric_canvas<uint8_t> &g2,
+		std::default_random_engine &rng, double alpha, double exponent, double thickness,
+		double sharpness);
+	static void fill_one(symmetric_canvas<uint8_t> &grid,std::default_random_engine &rng,
+		double alpha,double exponent,double thickness, double sharpness, stripes_grid &sgr);
+	static void fill_two(symmetric_canvas<uint8_t> &g1,symmetric_canvas<uint8_t> &g2,
+		std::default_random_engine &rng, double alpha, double exponent, double thickness,
+		double sharpness, stripes_grid &sgr);
 private:
-	void fill(const stripes_grid &grid, canvas<uint8_t> &pix, const std::function<double(const std::complex<double> &)> &proj);
-	void generate(stripes_grid &grid, std::function<double(int,int)> &f, std::default_random_engine &rng);
 	std::vector<layer> layers;
 	std::vector<symmetric_canvas<uint8_t>> grids;
 	symmetric_canvas<color_t> image;

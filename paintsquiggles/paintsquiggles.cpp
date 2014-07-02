@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2005, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -29,18 +29,6 @@ using std::function;
 
 void paintsquiggles::paint(int sz, symgroup sym)
 {
-	function<double(int,int)> norm;
-	switch(sym) {
-	case SYM_P3:
-	case SYM_P31M:
-	case SYM_P3M1:
-	case SYM_P6:
-	case SYM_P6M:
-    	norm=stripes_grid::norm_hexagonal(sz);
-		break;
-	default:
-		norm=stripes_grid::norm_orthogonal(sz);
-  	}
 	layers.resize(n_colors);
 	grids.clear();
 	grids.resize(n_colors,symmetric_canvas<uint8_t>(sz,sym,0));
@@ -58,42 +46,81 @@ void paintsquiggles::paint(int sz, symgroup sym)
 		auto seed = rd();
 		futures[i] = std::async(std::launch::async,[&,i,g,seed]() {
 			std::default_random_engine rng(seed);
-			generate((*g),norm,rng);
-			fill(*g,const_cast<canvas<uint8_t> &>(*layers[2*i].pixels),(stripes_grid::proj_t)&std::real);
 			if(2*i+1<layers.size())
-				fill(*g,const_cast<canvas<uint8_t> &>(*layers[2*i+1].pixels),(stripes_grid::proj_t)&std::imag);
+				fill_two(grids[2*i],grids[2*i+1],rng,levy_alpha,exponent,thickness,sharpness,*g);
+			else
+				fill_one(grids[2*i],rng,levy_alpha,exponent,thickness,sharpness,*g);
 			return g;
 		});
 	}
 	for(auto &f : futures)
 		delete f.get();
 	image=symmetric_canvas<color_t>(sz,sym,black);
-	merge(const_cast<canvas<color_t> &>(image.as_canvas()),layers);
+	merge(image.unsafe_get_canvas(),layers);
 }
 
-void paintsquiggles::fill(const stripes_grid &grid,canvas<uint8_t> &pix,const function<double(const complex<double> &)> &proj)
+typedef std::function<complex<double>(const std::function<double()> &)> dtocx;
+
+void fill(const stripes_grid &grid,canvas<uint8_t> &pix,const function<double(const complex<double> &)> &proj,double thickness,double sharpness)
 {
 	int size = pix.height();
 	double norm=grid.intensity(proj);
-	norm=sqrt(norm)/(size*64);
+	norm=sqrt(norm)/(grid.get_size()*64);
 	double height, alpha;
 	int i, j;
-	for(j=0;j<size;j++)
-		for(i=0;i<size;i++) {
+	for(j=0;j<grid.get_size();j++)
+		for(i=0;i<grid.get_size();i++) {
 			height=proj(grid.get_symmetric(i,j))/norm;
 			pix(i,j)=255.99/(pow(abs(height)/(10.*thickness),sharpness)+1.);
 		}
 }
 
-void paintsquiggles::generate(stripes_grid &grid, function<double(int,int)> &f, std::default_random_engine &rng) {
+void generate(stripes_grid &grid, const dtocx &gen,
+	std::default_random_engine &rng, double alpha, double exponent)
+{
 	grid.clear();
 	int i,j, size=grid.get_size();
+	auto norm = grid.norm();
+	auto randfunc = [&] () { return random_levy_1d(alpha,1.,rng); };
 	for(j=0;j<size;j++)
 		for(i=0;i<size;i++)
-			grid(i,j) = complex<double>(random_levy_1d(levy_alpha,1.,rng),random_levy_1d(levy_alpha,1.,rng));
+			grid(i,j) = gen(randfunc);
 	grid.transform();
 	for(j=0;j<size;j++)
 		for(i=0;i<size;i++)
-			grid(i,j) *= pow(f(i,j),exponent/2.);
+			grid(i,j) *= pow(norm(i,j),exponent/2.);
 	grid.transform();
 }
+
+void paintsquiggles::fill_one(symmetric_canvas<uint8_t> &grid,std::default_random_engine &rng,
+	double alpha, double exponent, double thickness, double sharpness)
+{
+	stripes_grid g(grid.size(),grid.group());
+	fill_one(grid,rng,alpha,exponent,thickness,sharpness,g);
+}
+
+void paintsquiggles::fill_one(symmetric_canvas<uint8_t> &grid,std::default_random_engine &rng,
+	double alpha, double exponent, double thickness, double sharpness, stripes_grid &sgr)
+{
+	generate(sgr,[] (const function<double()> &f) { return complex<double>(f(),0); },rng,alpha,exponent);
+	fill(sgr,grid.unsafe_get_canvas(),(stripes_grid::proj_t)std::real,thickness,sharpness);
+}
+
+void paintsquiggles::fill_two(symmetric_canvas<uint8_t> &g1, symmetric_canvas<uint8_t> &g2,
+	std::default_random_engine &rng, double alpha, double exponent, double thickness, 
+	double sharpness)
+{
+	stripes_grid g(g1.size(),g1.group());
+	fill_two(g1,g2,rng,alpha,exponent,thickness,sharpness,g);
+}
+
+void paintsquiggles::fill_two(symmetric_canvas<uint8_t> &g1, symmetric_canvas<uint8_t> &g2,
+	std::default_random_engine &rng, double alpha, double exponent, double thickness, 
+	double sharpness, stripes_grid &sgr)
+{
+	generate(sgr,[] (const function<double()> &f) { return complex<double>(f(),f()); },rng,alpha,exponent);
+	fill(sgr,g1.unsafe_get_canvas(),(stripes_grid::proj_t)std::real,thickness,sharpness);
+	fill(sgr,g2.unsafe_get_canvas(),(stripes_grid::proj_t)std::imag,thickness,sharpness);
+}
+
+
