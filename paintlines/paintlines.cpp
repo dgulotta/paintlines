@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2003-2005, 2013 by Daniel Gulotta                       *
+ *   Copyright (C) 2003-2005, 2013-2014 by Daniel Gulotta                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -108,10 +108,12 @@ void paintlines_layer_generator::generate_flower(symmetric_canvas<uint8_t> &g)
 	gen.drawflower(random_int(g.size()),random_int(g.size()),.1,50);
 }
 
+static const int fractal_prob[13] = { 0, 40, 40, 38, 37, 0, 35, 0, 34, 0, 0, 0, 32 };
+
 void paintlines_layer_generator::generate_cluster2(symmetric_canvas<uint8_t> &g)
 {
 	paintlines_layer_generator gen(g);
-	gen.drawcluster5(random_int(g.size()),random_int(g.size()),g.size());
+	gen.drawfractal(random_int(g.size()),random_int(g.size()),g.size(),fractal_prob[num_symmetries[g.group()]]);
 }
 
 void paintlines_layer_generator::generate_open_string(symmetric_canvas<uint8_t> &g)
@@ -687,4 +689,16 @@ void paintlines_layer_generator::drawtree_split(double x, double y, double q, in
 	double dq = random_normal(M_PI/6.);
 	drawtree(x,y,q+dq,depth);
 	drawtree(x,y,q-dq,depth);
+}
+
+void paintlines_layer_generator::drawfractal(int x, int y, int d, int prob)
+{
+	if(d) {
+		d/=2;
+		if(random_int(60)<prob) drawfractal(x,y,d,prob);
+		if(random_int(60)<prob) drawfractal(x+d,y,d,prob);
+		if(random_int(60)<prob) drawfractal(x,y+d,d,prob);
+		if(random_int(60)<prob) drawfractal(x+d,y+d,d,prob);
+	}
+	else drawdotsymmetric(x,y,5,1.);
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2003-2005, 2013 by Daniel Gulotta                       *
+ *   Copyright (C) 2003-2005, 2013-2014 by Daniel Gulotta                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -59,12 +59,12 @@ public:
 	void drawsmoothline2(double x1, double y1, double x2, double y2,
 			double var, double dist);
 	void drawcluster(double x, double y, double var, int maxdepth);
-	void drawcluster5(int x, int y, int d);
 	void drawflower(double x, double y, double var, int steps);
 	void drawopenstring();
 	void drawswirl();
 	void draworbit();
 	void drawtree();
+	void drawfractal(int x, int y, int d, int prob);
 private:
 	symmetric_canvas<uint8_t> *grid;
 	static void randomnormal_orthogonal(double &x, double &y, double var);
@@ -78,6 +78,7 @@ private:
 	void drawcluster2(int x, int y, int d);
 	void drawcluster3(int x, int y, int d);
 	void drawcluster4(int x, int y, int d);
+	void drawcluster5(int x, int y, int d);
 	void drawcluster6(int x, int y, int d);
 	void drawcluster7(int x, int y, int d);
 	void drawcluster8(int x, int y, int d);
