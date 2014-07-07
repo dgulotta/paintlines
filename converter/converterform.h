@@ -26,6 +26,8 @@
 #include "hyperbolic_converter.h"
 
 class QCheckBox;
+class QDragEnterEvent;
+class QDropEvent;
 class RandomizeWidget;
 
 class ConverterForm : public BasicForm
@@ -41,6 +43,10 @@ protected slots:
 	void updateImage();
 	void symmetryChanged(int n);
 protected:
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+	void open(const QString &s);
+	void open(const QImage &img);
 	QComboBox *comboSymmetry;
 	QComboBox *comboModel;
 	QSpinBox *spinSize;

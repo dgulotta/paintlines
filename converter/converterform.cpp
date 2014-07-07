@@ -27,7 +27,16 @@ void ConverterForm::open()
 {
 	QString s = QFileDialog::getOpenFileName();
 	if(s.isEmpty()) return;
-	QImage img(s);
+	open(s);
+}
+
+void ConverterForm::open(const QString &s)
+{
+	open(QImage(s));
+}
+
+void ConverterForm::open(const QImage &img)
+{
 	if(img.isNull()) {
 		QMessageBox::information(this,"converter",tr("Failed to load image."));
 		return;
@@ -55,6 +64,7 @@ void ConverterForm::open()
 
 void ConverterForm::init()
 {
+	setAcceptDrops(true);
 	QFormLayout *layout = new QFormLayout;
 	comboSymmetry = newSymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
@@ -105,4 +115,22 @@ void ConverterForm::symmetryChanged(int n)
 void ConverterForm::updateImage()
 {
 	emit newImage(makePixmap(image.as_canvas()),true);
+}
+
+void ConverterForm::dragEnterEvent(QDragEnterEvent *event)
+{
+	const QMimeData *mime = event->mimeData();
+	if(mime->hasImage())
+		event->acceptProposedAction();
+	else if(mime->hasUrls()&&mime->urls()[0].isLocalFile())
+		event->acceptProposedAction();
+}
+
+void ConverterForm::dropEvent(QDropEvent *event)
+{
+	const QMimeData *mime = event->mimeData();
+	if(mime->hasImage())
+		open(qvariant_cast<QImage>(mime->imageData()));
+	else if(mime->hasUrls()&&mime->urls()[0].isLocalFile())
+		open(mime->urls()[0].toLocalFile());
 }
