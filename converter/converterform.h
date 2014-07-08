@@ -42,6 +42,8 @@ protected slots:
 	virtual void open();
 	void updateImage();
 	void symmetryChanged(int n);
+	void paste();
+	void checkPasteEnabled();
 protected:
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
@@ -53,6 +55,7 @@ protected:
 	RandomizeWidget *randomizeWidget;
 	QCheckBox *checkTiled;
 	RestoreButton *buttonRestore;
+	QAction *actionPaste;
 	symmetric_canvas<color_t> image;
 };
 

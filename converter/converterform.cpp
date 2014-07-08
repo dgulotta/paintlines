@@ -90,6 +90,9 @@ void ConverterForm::init()
 	saver = new ImageSaver(this);
 	sideLayout = layout;
 	menuFile->addAction(tr("&Open"),this,SLOT(open()));
+	actionPaste = menuFile->addAction(tr("&Paste from clipboard"),this,SLOT(paste()));
+	connect(QApplication::clipboard(),SIGNAL(dataChanged()),this,SLOT(checkPasteEnabled()));
+	checkPasteEnabled();
 	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
 	connect(this,SIGNAL(newImage(QPixmap,bool)),buttonRestore,SLOT(disable()));
 	connect(this,SIGNAL(newHyperbolicImage(QPixmap)),buttonRestore,SLOT(enable()));
@@ -133,4 +136,14 @@ void ConverterForm::dropEvent(QDropEvent *event)
 		open(qvariant_cast<QImage>(mime->imageData()));
 	else if(mime->hasUrls()&&mime->urls()[0].isLocalFile())
 		open(mime->urls()[0].toLocalFile());
+}
+
+void ConverterForm::checkPasteEnabled()
+{
+	actionPaste->setEnabled(QApplication::clipboard()->mimeData()->hasImage());
+}
+
+void ConverterForm::paste()
+{
+	open(QApplication::clipboard()->image());
 }
