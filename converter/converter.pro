@@ -13,7 +13,8 @@ HEADERS += converterform.h \
 	../color.h \
 	../hyperbolic_painter.h \
 	hyperbolic_converter.h \
-	../hyperbolic_polygons.h
+	../hyperbolic_polygons.h \
+	../interpolate.h
 
 SOURCES += converterform.cpp \
 	main.cpp \
@@ -23,7 +24,8 @@ SOURCES += converterform.cpp \
 	../randomize.cpp \
 	../symmetric_canvas.cpp \
 	../hyperbolic_painter.cpp \
-	hyperbolic_converter.cpp
+	hyperbolic_converter.cpp \
+	../interpolate.cpp
 
 *-g++* {
     QMAKE_CXXFLAGS += --std=c++11

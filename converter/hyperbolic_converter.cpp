@@ -21,6 +21,7 @@
 #include "../color.h"
 #include "../hyperbolic_painter.h"
 #include "../hyperbolic_polygons.h"
+#include "../interpolate.h"
 #include "../symmetric_canvas.h"
 
 #include <functional>
@@ -150,7 +151,7 @@ canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype p
 			hyperbolic_coord hc = sg->fundamental_domain_point((*iproj)(pc));
 			double xd,yd;
 			tie(xd,yd)=trans(hc);
-			newimg(i,j)=img(round(xd),round(yd));
+			newimg(i,j)=combine_colors(img.as_wrap_canvas(),interpolate_linear(xd,yd));
 		}
 	delete sg;
 	return newimg;
