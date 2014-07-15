@@ -12,7 +12,7 @@ HEADERS += converterform.h \
 	../symmetric_canvas.h \
 	../color.h \
 	../hyperbolic_painter.h \
-	hyperbolic_converter.h \
+	converters.h \
 	../hyperbolic_polygons.h \
 	../interpolate.h
 
@@ -24,7 +24,7 @@ SOURCES += converterform.cpp \
 	../randomize.cpp \
 	../symmetric_canvas.cpp \
 	../hyperbolic_painter.cpp \
-	hyperbolic_converter.cpp \
+	converters.cpp \
 	../interpolate.cpp
 
 *-g++* {

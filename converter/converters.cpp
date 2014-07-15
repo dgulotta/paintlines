@@ -156,3 +156,19 @@ canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype p
 	delete sg;
 	return newimg;
 }
+
+const double short_factor = pow(4./3.,.25);
+const double long_factor = pow(12.,.25);
+
+wrap_canvas<color_t> hexagonal_stretch(const symmetric_canvas<color_t> &src)
+{
+	wrap_canvas<color_t> dest(round(src.size()*long_factor),round(src.size()*short_factor));
+	for(int y=0;y<dest.height();y++) {
+		double yn = double(y)*src.size()/dest.height();
+		for(int x=0;x<dest.width();x++) {
+			double xn = double(x)*src.size()/dest.width();
+			dest(x,y)=combine_colors(src.as_wrap_canvas(),interpolate_cubic(xn+yn,xn-yn));
+		}
+	}
+	return dest;
+}

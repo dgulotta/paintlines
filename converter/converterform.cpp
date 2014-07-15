@@ -20,6 +20,7 @@
 
 #include <QtGui>
 #include "converterform.h"
+#include "converters.h"
 #include "../hyperbolic_painter.h"
 #include "../randomizewidget.h"
 
@@ -82,6 +83,8 @@ void ConverterForm::init()
 	buttonDraw = new QPushButton(tr("Make hyperbolic"));
 	buttonDraw->setEnabled(false);
 	layout->addRow(buttonDraw);
+	buttonHexStretch = new QPushButton("Hexagonal Stretch");
+	layout->addRow(buttonHexStretch);
 	buttonRestore = new RestoreButton;
 	layout->addRow(buttonRestore);
 	checkTiled = newTileCheck();
@@ -93,6 +96,7 @@ void ConverterForm::init()
 	connect(QApplication::clipboard(),SIGNAL(dataChanged()),this,SLOT(checkPasteEnabled()));
 	checkPasteEnabled();
 	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
+	connect(buttonHexStretch,SIGNAL(clicked()),this,SLOT(hexStretch()));
 	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
 	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
 	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
@@ -102,6 +106,11 @@ void ConverterForm::init()
 void ConverterForm::draw()
 {
 	emit newImage(ImageData(make_hyperbolic(image,(projtype)comboModel->currentIndex(),spinSize->value())));
+}
+
+void ConverterForm::hexStretch()
+{
+	emit newImage(ImageData(hexagonal_stretch(image).as_canvas(),true));	
 }
 
 void ConverterForm::symmetryChanged(int n)

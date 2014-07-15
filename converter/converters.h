@@ -22,7 +22,10 @@
 #define _HYPERBOLIC_CONVERTER_H
 
 #include "../hyperbolic_painter.h"
+#include "../symmetric_canvas.h"
 
 canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype pt, int newsize);
+
+wrap_canvas<color_t> hexagonal_stretch(const symmetric_canvas<color_t> &src);
 
 #endif

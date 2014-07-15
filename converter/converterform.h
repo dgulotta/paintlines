@@ -23,7 +23,6 @@
 
 #include "../basicform.h"
 #include "../symmetric_canvas.h"
-#include "hyperbolic_converter.h"
 
 class QCheckBox;
 class QDragEnterEvent;
@@ -37,6 +36,7 @@ protected slots:
 	virtual void draw();
 	virtual void init();
 	virtual void open();
+	void hexStretch();
 	void updateImage();
 	void symmetryChanged(int n);
 	void paste();
@@ -52,6 +52,7 @@ protected:
 	RandomizeWidget *randomizeWidget;
 	QCheckBox *checkTiled;
 	RestoreButton *buttonRestore;
+	QPushButton *buttonHexStretch;
 	QAction *actionPaste;
 	symmetric_canvas<color_t> image;
 };
