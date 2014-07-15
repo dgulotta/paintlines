@@ -25,7 +25,7 @@
 
 using std::vector;
 
-PaintRuleWidget::PaintRuleWidget()
+PaintRuleWidget::PaintRuleWidget(int weight)
 {
 	QFormLayout *layout = new QFormLayout();
 	comboType = new QComboBox();
@@ -34,7 +34,7 @@ PaintRuleWidget::PaintRuleWidget()
 	comboType->addItems(types);
 	layout->addRow("Type",comboType);
 	spinWeight = new QSpinBox();
-	spinWeight->setValue(1);
+	spinWeight->setValue(weight);
 	layout->addRow("Weight",spinWeight);
 	checkPastel = new QCheckBox("Pastel");
 	layout->addRow(checkPastel);
@@ -57,7 +57,7 @@ void LinesForm::init() {
 	spinColors = newColorSpin();
 	layout->addRow(tr("Colors"),spinColors);
 	for(int i=0;i<3;i++) {
-		PaintRuleWidget *w = new PaintRuleWidget;
+		PaintRuleWidget *w = new PaintRuleWidget(i==0?1:0);
 		layout->addRow(w);
 		rules.push_back(w);
 	}

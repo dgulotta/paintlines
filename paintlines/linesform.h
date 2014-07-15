@@ -30,7 +30,7 @@ class RandomizeWidget;
 class PaintRuleWidget : public QWidget
 {
 public:
-	PaintRuleWidget();
+	PaintRuleWidget(int weight=0);
 	paintrule rule();
 private:
 	QComboBox *comboType;
