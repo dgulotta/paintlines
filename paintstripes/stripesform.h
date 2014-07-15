@@ -34,8 +34,6 @@ class paintstripes;
 class StripesForm : public BasicForm
 {
   Q_OBJECT
-signals:
-	void newCanvas(const symmetric_canvas<color_t> *c);
 protected slots:
 	virtual void draw();
 	virtual void init();

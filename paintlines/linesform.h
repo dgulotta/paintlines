@@ -41,13 +41,9 @@ private:
 class LinesForm : public BasicForm
 {
 	Q_OBJECT
-signals:
-	void newLayeredImage(const std::vector<layer> *l);
-	void newCanvas(const symmetric_canvas<color_t> *c);
 protected slots:
 	virtual void draw();
 	virtual void init();
-	void clearLayers();
 	void updateImage();
 protected:
 	QSpinBox *spinSize;

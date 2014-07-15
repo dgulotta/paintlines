@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -35,13 +35,32 @@ class QComboBox;
 class QLabel;
 class QSpinBox;
 
+template<typename T>
+class symmetric_canvas;
+
+class layer;
+
+class BasicForm;
+
+struct ImageData
+{
+	ImageData(const QPixmap &pix, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
+		const std::vector<layer> *l=nullptr) : pixmap(pix), tileable(t), sym_canvas(sc), layers(l) {}
+	ImageData(const canvas<color_t> &c, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
+		const std::vector<layer> *l=nullptr);
+	ImageData(const canvas<color_t> &c, const symmetric_canvas<color_t> &sc, const std::vector<layer> *l=nullptr) : ImageData(c,true,&sc,l) {}
+	QPixmap pixmap;
+	bool tileable;
+	const symmetric_canvas<color_t> *sym_canvas;
+	const std::vector<layer> *layers;
+};
+
 class RestoreButton : public QPushButton {
 	Q_OBJECT
 public:
 	RestoreButton() : QPushButton(tr("Restore")) { setEnabled(false); }
 public slots:
-	void enable() { setEnabled(true); }
-	void disable() { setEnabled(false); }
+	void newImage(const ImageData &data) { setEnabled(!data.sym_canvas); }
 };
 
 class ImageSaver : public QObject {
@@ -50,7 +69,7 @@ public:
 	ImageSaver(QWidget *parent) : QObject(parent) {}
 	virtual bool save(const QString &s) { return pix.save(s); }
 public slots:
-	void newImage(const QPixmap &p) { pix=p; }
+	virtual void newImage(const ImageData &data) { pix=data.pixmap; }
 protected:
 	QPixmap pix;
 };
@@ -64,7 +83,7 @@ protected:
 class LayeredImageSaver : public ImageSaver {
 	Q_OBJECT
 public:
-	LayeredImageSaver(QWidget *parent) : ImageSaver(parent) {}
+	LayeredImageSaver(QWidget *parent) : ImageSaver(parent), layers(nullptr) {}
 	virtual bool save(const QString &s) {
 		if(layers&&(s.toUpper().endsWith("TIF")||s.toUpper().endsWith("TIFF"))&&
 			QMessageBox::question((QWidget *)parent(),QCoreApplication::applicationName(),tr("Save individiual layers?"),QMessageBox::Yes|QMessageBox::No)==QMessageBox::Yes) {
@@ -75,7 +94,7 @@ public:
 		}
 	}
 public slots:
-	void newLayeredImage(const std::vector<layer> *l) { layers=l; }
+	virtual void newImage(const ImageData &data) { pix=data.pixmap; layers=data.layers; }
 protected:
 	const std::vector<layer> *layers;
 };
@@ -97,9 +116,7 @@ public:
 	QSize minimumSizeHint() const { return _pixmap.size(); }
 	bool tiled() const { return tilingEnabled; }
 public slots:
-	void setPixmap(const QPixmap &p, bool tileable);
-	void setPixmapTileable(const QPixmap &p) { setPixmap(p,true); }
-	void setPixmapNonTileable(const QPixmap &p) { setPixmap(p,false); }
+	void setPixmap(const ImageData &data);
 	void setTiled(bool b) { tilingEnabled = b;  recomputeTiling(); }
 private:
 	void recomputeTiling();
@@ -116,7 +133,7 @@ public:
 	virtual ~BasicForm();
 	static QPixmap makePixmap(const canvas<color_t> &src);
 signals:
-	void newImage(QPixmap p, bool tileable); 
+	void newImage(const ImageData &data);
 protected slots:
 	bool saveAs();
 	void baseInit();

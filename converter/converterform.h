@@ -33,9 +33,6 @@ class RandomizeWidget;
 class ConverterForm : public BasicForm
 {
 	Q_OBJECT
-signals:
-	void newCanvas(const symmetric_canvas<color_t> *c);
-	void newHyperbolicImage(QPixmap p);
 protected slots:
 	virtual void draw();
 	virtual void init();

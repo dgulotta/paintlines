@@ -180,7 +180,6 @@ void HyperbolicLinesForm::init()
 	lines = new hyperbolic_paintlines;
 #ifdef MULTIPAGE
 	saver = new LayeredImageSaver(this);
-	connect(this,SIGNAL(newLayeredImage(const std::vector<layer> *)),saver,SLOT(newLayeredImage(const std::vector<layer> *)));
 #else
 	saver = new ImageSaver(this);
 #endif
@@ -243,8 +242,7 @@ void HyperbolicLinesForm::draw()
 	lines->set_projtype((projtype)comboModel->currentIndex());
 	lines->set_ncolors(spinColors->value());
     lines->paint(spinSize->value(),*sg);
-	emit newImage(makePixmap(lines->get_image()),false);
-	emit newLayeredImage(&(lines->get_layers()));
+	emit newImage(ImageData(lines->get_image(),false,nullptr,&(lines->get_layers())));
 	delete sg;
   }
   else QMessageBox::information(this,"Hyperbolic Paintlines",tr("The chosen group is not hyperbolic.  Try increasing the parameters."));

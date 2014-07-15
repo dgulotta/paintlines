@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -58,8 +58,7 @@ void ConverterForm::open(const QImage &img)
 			QRgb pix = img.pixel(i,j);
 			base_image(i,j)=color_t(qRed(pix),qGreen(pix),qBlue(pix));
 		}
-	emit newImage(QPixmap::fromImage(img),true);
-	emit newCanvas(&image);
+	updateImage();
 }
 
 void ConverterForm::init()
@@ -94,20 +93,15 @@ void ConverterForm::init()
 	connect(QApplication::clipboard(),SIGNAL(dataChanged()),this,SLOT(checkPasteEnabled()));
 	checkPasteEnabled();
 	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(this,SIGNAL(newImage(QPixmap,bool)),buttonRestore,SLOT(disable()));
-	connect(this,SIGNAL(newHyperbolicImage(QPixmap)),buttonRestore,SLOT(enable()));
-	connect(this,SIGNAL(newHyperbolicImage(QPixmap)),labelImage,SLOT(setPixmapNonTileable(const QPixmap &)));
-	connect(this,SIGNAL(newHyperbolicImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
-	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmapTileable(const QPixmap &)));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
+	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
 	connect(comboSymmetry,SIGNAL(currentIndexChanged(int)),this,SLOT(symmetryChanged(int)));
 }
 
 void ConverterForm::draw()
 {
-	emit newHyperbolicImage(makePixmap(make_hyperbolic(image,(projtype)comboModel->currentIndex(),spinSize->value())));
+	emit newImage(ImageData(make_hyperbolic(image,(projtype)comboModel->currentIndex(),spinSize->value())));
 }
 
 void ConverterForm::symmetryChanged(int n)
@@ -117,7 +111,7 @@ void ConverterForm::symmetryChanged(int n)
 
 void ConverterForm::updateImage()
 {
-	emit newImage(makePixmap(image.as_canvas()),true);
+	emit newImage(ImageData(image.as_canvas(),image));
 }
 
 void ConverterForm::dragEnterEvent(QDragEnterEvent *event)

@@ -52,5 +52,5 @@ void QuasiStripesForm::draw()
 {
 	stripes->set_alpha(spinAlpha->value());
 	stripes->paint(spinSize->value(),spinQuasiSize->value());
-	emit newImage(makePixmap(stripes->get_image()),false);
+	emit newImage(ImageData(stripes->get_image()));
 }

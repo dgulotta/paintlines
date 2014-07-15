@@ -50,11 +50,9 @@ void StripesForm::init()
 	saver = new ImageSaver(this);
 	sideLayout=layout;
 	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(this,SIGNAL(newImage(QPixmap,bool)),buttonRestore,SLOT(disable()));
-	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmapTileable(const QPixmap &)));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
+	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
 }
 
 void StripesForm::draw()
@@ -69,6 +67,6 @@ void StripesForm::draw()
 }
 
 void StripesForm::updateImage() {
-	emit newImage(makePixmap(stripes->get_image()),true);
-	emit newCanvas(&(stripes->get_symmetric_image()));
+	ImageData data(stripes->get_image(),stripes->get_symmetric_image());
+	emit newImage(data);
 }

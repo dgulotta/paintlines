@@ -75,18 +75,14 @@ void LinesForm::init() {
 	lines->set_color_generator(std::bind(&RandomColorWidget::generate,colorWidget));
 #ifdef MULTIPAGE
 	saver = new LayeredImageSaver(this);
-	connect(this,SIGNAL(newLayeredImage(const std::vector<layer> *)),saver,SLOT(newLayeredImage(const std::vector<layer> *)));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),this,SLOT(clearLayers()));
 #else
 	saver = new ImageSaver(this);
 #endif
 	sideLayout = layout;
 	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(this,SIGNAL(newImage(QPixmap,bool)),buttonRestore,SLOT(disable()));
-	connect(this,SIGNAL(newCanvas(const symmetric_canvas<color_t> *)),randomizeWidget,SLOT(imageUpdated(const symmetric_canvas<color_t> *)));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),buttonRestore,SLOT(enable()));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),labelImage,SLOT(setPixmapTileable(const QPixmap &)));
-	connect(randomizeWidget,SIGNAL(newImage(QPixmap)),saver,SLOT(newImage(const QPixmap &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
+	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
 }
 
 void LinesForm::draw() {
@@ -105,14 +101,8 @@ void LinesForm::draw() {
 	updateImage();
 }
 
-void LinesForm::clearLayers()
-{
-	emit newLayeredImage(nullptr);
-}
-
 void LinesForm::updateImage()
 {
-	emit newImage(makePixmap(lines->get_image()),true);
-	emit newCanvas(&(lines->get_symmetric_image()));
-	emit newLayeredImage(&(lines->get_layers()));
+	ImageData data(lines->get_image(),lines->get_symmetric_image(),&(lines->get_layers()));
+	emit newImage(data);
 }

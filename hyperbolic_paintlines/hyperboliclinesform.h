@@ -37,8 +37,6 @@ class hyperbolic_paintlines;
 class HyperbolicLinesForm : public BasicForm
 {
 	Q_OBJECT;
-signals:
-	void newLayeredImage(const std::vector<layer> *l);
 protected slots:
 	virtual void draw();
 	virtual void init();

@@ -45,10 +45,12 @@ RandomizeWidget::RandomizeWidget(QWidget *parent)
 	
 }
 
-void RandomizeWidget::imageUpdated(const symmetric_canvas<color_t> *c)
+void RandomizeWidget::imageUpdated(const ImageData &data)
 {
-	src=c;
-	buttonRandomize->setEnabled(true);
+	if(data.sym_canvas) {
+		src=data.sym_canvas;
+		buttonRandomize->setEnabled(true);
+	}
 }
 
 void RandomizeWidget::randomize()
@@ -56,5 +58,5 @@ void RandomizeWidget::randomize()
 	int xtiles = spinXTiles->value();
 	int ytiles = spinYTiles->value();
 	auto img = ::randomize(xtiles,ytiles,*src);
-	emit newImage(BasicForm::makePixmap(img.as_canvas()));
+	emit newImage(ImageData(img.as_canvas(),true));
 }

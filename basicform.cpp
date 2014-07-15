@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,6 +21,10 @@
 #include <QtGui>
 
 #include "basicform.h"
+
+
+ImageData::ImageData(const canvas<color_t> &sc, bool t, const symmetric_canvas<color_t> *c, const std::vector<layer> *l)
+	: ImageData(BasicForm::makePixmap(sc),t,c,l) {}
 
 BasicForm::BasicForm()
 {
@@ -48,8 +52,8 @@ void BasicForm::baseInit()
 	connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
 	connect(actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
 	connect(actionExit,SIGNAL(triggered()),this,SLOT(close()));
-	connect(this,SIGNAL(newImage(QPixmap,bool)),labelImage,SLOT(setPixmap(const QPixmap &,bool)));
-	connect(this,SIGNAL(newImage(QPixmap,bool)),saver,SLOT(newImage(const QPixmap &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),labelImage,SLOT(setPixmap(const ImageData &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),saver,SLOT(newImage(const ImageData &)));
 }
 
 BasicForm::~BasicForm()
@@ -126,13 +130,13 @@ QCheckBox * BasicForm::newTileCheck() {
 	return check;
 }
 
-void ImageWidget::setPixmap(const QPixmap &p, bool tileable)
+void ImageWidget::setPixmap(const ImageData &data)
 {
-	_pixmap = p;
+	_pixmap = data.pixmap;
 	QPalette pal(palette());
-	pal.setBrush(QPalette::Background,p);
+	pal.setBrush(QPalette::Background,_pixmap);
 	setPalette(pal);
-	imageIsTileable = tileable;
+	imageIsTileable = data.tileable;
 	recomputeTiling();
 	updateGeometry();
 }

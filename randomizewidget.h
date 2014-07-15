@@ -28,6 +28,7 @@
 
 class QPushButton;
 class QSpinBox;
+class ImageData;
 
 class RandomizeWidget : public QWidget
 {
@@ -35,9 +36,9 @@ class RandomizeWidget : public QWidget
 public:
 	RandomizeWidget(QWidget *parent=nullptr);
 signals:
-	void newImage(QPixmap p);
+	void newImage(const ImageData &data);
 public slots:
-	void imageUpdated(const symmetric_canvas<color_t> *c);
+	void imageUpdated(const ImageData &data);
 	void randomize();
 private:
 	const symmetric_canvas<color_t> *src;
