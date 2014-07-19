@@ -269,7 +269,7 @@ public:
 	static hyperbolic_symmetry_group * group_sabcd(int a, int b, int c, int d, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_a2sb(int a, int b, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_abc(int a, int b, int c, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_ssa(int a, flip_type f=FLIP_ALL);
+	static hyperbolic_symmetry_group * group_sasb(int a, int b, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_axx(int a, flip_type f=FLIP_ALL);
 	static hyperbolic_symmetry_group * group_ao(int a, flip_type f=FLIP_ALL);
 private:

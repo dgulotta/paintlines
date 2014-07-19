@@ -38,7 +38,7 @@ void HyperbolicLinesForm::init()
 		{ {3,2}, '*', {2,2}, {2,2} },
 		{ '*', {3,2}, {2,2}, {2,2}, {2,2} },
 		{ {3,2}, '2', '*', {1,1} },
-		{ '*', '*', {2,2} },
+		{ '*', {2,1}, '*', {1,1} },
 		{ {2,2}, 'o' },
 		{ {5,2}, {4,2}, {2,2} },
 		{ {2,2}, 'x', 'x' },
@@ -134,7 +134,7 @@ void HyperbolicLinesForm::draw()
 	sg=hyperbolic_symmetry_group::group_a2sb(t[0].value,t[3].value,ft);
 	break;
   case 11:
-  	sg=hyperbolic_symmetry_group::group_ssa(t[2].value,ft);
+  	sg=hyperbolic_symmetry_group::group_sasb(t[1].value,t[3].value,ft);
 	break;
   case 12:
   	sg=hyperbolic_symmetry_group::group_ao(t[0].value,ft);

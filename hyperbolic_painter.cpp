@@ -430,9 +430,9 @@ hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_abc(int a, int b, i
 	},q.interior_point(),f);
 }
 
-hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_ssa(int a, flip_type f)
+hyperbolic_symmetry_group * hyperbolic_symmetry_group::group_sasb(int a, int b, flip_type f)
 {
-	hyperbolic_quadrilateral_trapezoid q(M_PI_2,M_PI_2/a);
+	hyperbolic_quadrilateral_trapezoid q(M_PI_2/a,M_PI_2/b);
 	return new hyperbolic_symmetry_group({
 		q.translation1_gen(),
 		q.reflection2_gen(),
