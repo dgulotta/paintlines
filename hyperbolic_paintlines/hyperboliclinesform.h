@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,16 +23,42 @@
 
 #include "../basicform.h"
 
+#include <QSpinBox>
+
 class QMenuBar;
 class QMenu;
 class QAction;
 class QGroupBox;
 class QComboBox;
-class QSpinBox;
 class QLabel;
 class QPushButton;
 class QDoubleSpinBox;
 class hyperbolic_paintlines;
+
+struct SymmetryGroupToken
+{
+	SymmetryGroupToken(char t) : type(t), value(0), min_value(0) {}
+	SymmetryGroupToken(int v, int m) : type('#'), value(v), min_value(m) {}
+	char type;
+	int value;
+	int min_value;
+};
+
+class SymmetrySpin : public QSpinBox
+{
+	Q_OBJECT
+public:
+	SymmetrySpin(SymmetryGroupToken &t) : token(&t) {
+		setValue(token->value);
+		setMinimum(token->min_value);
+		connect(this,SIGNAL(valueChanged(int)),this,SLOT(update(int)));
+	}
+	virtual QSize minimumSizeHint() const { return sizeHint(); }
+public slots:
+	void update(int n) { token->value=n; }
+private:
+	SymmetryGroupToken *token;
+};
 
 class HyperbolicLinesForm : public BasicForm
 {
@@ -44,17 +70,14 @@ protected slots:
 protected:
 	QComboBox *comboModel;
 	QComboBox *comboSymmetry;
-	QLabel *labelAngle[3];
-	QLabel *labelPi[3];
-	QSpinBox *spinAngle[3];
 	QComboBox *comboSubset;
 	QSpinBox *spinSize;
 	QSpinBox *spinColors;
 	QDoubleSpinBox *spinThickness;
 	QDoubleSpinBox *spinSharpness;
+	QBoxLayout *parameterLayout;
 	hyperbolic_paintlines *lines;
-	int angles[15][3];
-	int oldsymm;
+	std::vector<std::vector<SymmetryGroupToken>> tokens;
 };
 
 #endif
