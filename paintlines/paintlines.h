@@ -54,6 +54,7 @@ public:
 	static void generate_swirl(symmetric_canvas<uint8_t> &g);
 	static void generate_orbit(symmetric_canvas<uint8_t> &g);
 	static void generate_tree(symmetric_canvas<uint8_t> &g);
+	static void generate_smoothline5(symmetric_canvas<uint8_t> &g);
 	void drawsmootharc(double x1, double y1, double x2, double y2, double k,
 		double var, double dist);
 	void drawsmoothline2(double x1, double y1, double x2, double y2,
@@ -112,6 +113,8 @@ private:
 			double var, double dist);
 	void drawsmoothline4(double x1, double y1, double x2, double y2,
 			double var, double dist);
+	void drawsmoothline5(double x1, double y1, double dx1, double dy1,
+			double x2, double y2, double dx2, double dy2, double var, double dist);
 	void drawtriangle(double x1, double y1, double x2, double y2, double x3,
 			double y3, double var, double dist);
 	void drawtree(double x, double y, double q, int depth);

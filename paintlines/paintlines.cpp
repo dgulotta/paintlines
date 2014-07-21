@@ -142,6 +142,15 @@ void paintlines_layer_generator::generate_tree(symmetric_canvas<uint8_t> &g)
 	gen.drawtree();
 }
 
+void paintlines_layer_generator::generate_smoothline5(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	auto t = random_endpoints(g.size());
+	double vx = random_normal(g.size()), vy = random_normal(g.size());
+	gen.drawsmoothline5(get<0>(t),get<1>(t),vx,vy,get<2>(t),get<3>(t),
+		vx,vy,75000.,1.);
+}
+
 const std::function<void(symmetric_canvas<uint8_t> &)> paintlines::rulefuncs[] = {
 	paintlines_layer_generator::generate_smootharc,
 	paintlines_layer_generator::generate_smoothline2_beads,
@@ -153,6 +162,7 @@ const std::function<void(symmetric_canvas<uint8_t> &)> paintlines::rulefuncs[] =
 	paintlines_layer_generator::generate_swirl,
 	paintlines_layer_generator::generate_orbit,
 	paintlines_layer_generator::generate_tree,
+	paintlines_layer_generator::generate_smoothline5,
 };
 
 void paintlines::handle_rule(ruletype rt)
@@ -546,6 +556,23 @@ void paintlines_layer_generator::drawsmoothline4(double x1, double y1, double x2
   dx=mx-x2;
   dy=my-y2;
   if(dx*dx+dy*dy>=dist) drawsmoothline4(mx,my,x2,y2,var/4.,dist);
+}
+
+void paintlines_layer_generator::drawsmoothline5(double x1, double y1, double dx1, double dy1,
+	double x2, double y2, double dx2, double dy2, double var, double dist)
+{
+	double mx = (x1+x2)*.5+(dx1-dx2)*.25, my = (y1+y2)*.5+(dy1-dy2)*.25;
+	double mdx = .375*(x2-x1)-.125*(dx1+dx2), mdy = .375*(y2-y1)-.125*(dy1+dy2);
+	randomnormal(mx,my,var);
+	randomnormal(mdx,mdy,var*.75);
+	dx1/=2.; dy1/=2.; dx2/=2.; dy2/=2.;
+	var/=8.;
+	drawdotsymmetric(mx,my,5,1.);
+	double dx=mx-x1, dy=my-y1;
+	if(dx*dx+dy*dy>=dist) drawsmoothline5(x1,y1,dx1,dy1,mx,my,mdx,mdy,var,dist);
+	dx=mx-x2;
+	dy=my-y2;
+	if(dx*dx+dy*dy>=dist) drawsmoothline5(mx,my,mdx,mdy,x2,y2,dx2,dy2,var,dist);
 }
 
 void paintlines_layer_generator::drawsmootharc(double x1, double y1, double x2, double y2,
