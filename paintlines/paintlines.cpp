@@ -69,10 +69,10 @@ void paintlines::paint(int sz, symgroup sym)
 	merge(image.unsafe_get_canvas(),layers);
 }
 
-tuple<int,int,int,int> random_endpoints(int size)
+tuple<int,int,int,int> random_endpoints(int size,int wrap=2)
 {
 	int i = random_int(size), j = random_int(size);
-	return make_tuple(i,j,i+random_range_inclusive(-2,2)*size,j+random_range_inclusive(-2,2)*size);
+	return make_tuple(i,j,i+random_range_inclusive(-wrap,wrap)*size,j+random_range_inclusive(-wrap,wrap)*size);
 }
 
 void paintlines_layer_generator::generate_smootharc(symmetric_canvas<uint8_t> &g)
@@ -145,7 +145,7 @@ void paintlines_layer_generator::generate_tree(symmetric_canvas<uint8_t> &g)
 void paintlines_layer_generator::generate_smoothline5(symmetric_canvas<uint8_t> &g)
 {
 	paintlines_layer_generator gen(g);
-	auto t = random_endpoints(g.size());
+	auto t = random_endpoints(g.size(),1);
 	double vx = random_normal(g.size()), vy = random_normal(g.size());
 	gen.drawsmoothline5(get<0>(t),get<1>(t),vx,vy,get<2>(t),get<3>(t),
 		vx,vy,75000.,1.);
