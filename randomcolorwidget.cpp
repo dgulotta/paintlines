@@ -39,6 +39,12 @@ RandomColorWidget::RandomColorWidget()
 	layout->addWidget(checkCopySaturation,3,0,1,2);
 	checkCopyLightness = new QCheckBox(tr("Use lightness"));
 	layout->addWidget(checkCopyLightness,4,0,1,2);
+	layout->addWidget(new QLabel(tr("Saturation boost")),5,0,1,1);
+	spinSaturationBoost = new QDoubleSpinBox;
+	spinSaturationBoost->setRange(-1,3);
+	spinSaturationBoost->setSingleStep(0.1);
+	spinSaturationBoost->setValue(0.5);
+	layout->addWidget(spinSaturationBoost,5,1,1,1);
 	layout->setContentsMargins(0,0,0,0);
 	setLayout(layout);
 }
@@ -52,7 +58,8 @@ color_t RandomColorWidget::generate()
 	if(copyH||copyS||copyL)
 		col = image.pixel(random_int(image.width()),random_int(image.height()));
 	int h = copyH ? col.hslHue() : random_int(360);
-	int s = copyS ? col.hslSaturation() : 255;
+	int s = copyS ? (int)(col.hslSaturation()*(1+spinSaturationBoost->value())) : 255;
+	if(s>255) s=255;
 	int l = copyL ? col.lightness() : 128;
 	col = QColor::fromHsl(h,s,l);
 	return color_t(col.red(),col.green(),col.blue());

@@ -25,6 +25,7 @@
 
 class QLineEdit;
 class QCheckBox;
+class QDoubleSpinBox;
 
 class RandomColorWidget : public QWidget {
 	Q_OBJECT
@@ -40,4 +41,5 @@ private:
 	QCheckBox * checkCopyHue;
 	QCheckBox * checkCopySaturation;
 	QCheckBox * checkCopyLightness;
+	QDoubleSpinBox *spinSaturationBoost;
 };
