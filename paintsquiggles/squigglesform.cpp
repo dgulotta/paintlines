@@ -52,6 +52,9 @@ void SquigglesForm::init()
 	layout->addRow(colorWidget);
 	buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
+	newColorButton = new QPushButton(tr("Change Colors"));
+	layout->addRow(newColorButton);
+	newColorButton->setEnabled(false);
 	randomizeWidget = new RandomizeWidget;
 	layout->addRow(randomizeWidget);
 	buttonRestore = new RestoreButton;
@@ -67,6 +70,7 @@ void SquigglesForm::init()
 #endif
 	sideLayout = layout;
 	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
+	connect(newColorButton,SIGNAL(clicked()),this,SLOT(resetColors()));
 	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
 	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
 	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
@@ -87,10 +91,20 @@ void SquigglesForm::draw()
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
 	squiggles->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
 	updateImage();
+	newColorButton->setEnabled(true);
 }
 
 void SquigglesForm::updateImage()
 {
 	ImageData data(squiggles->get_image(),squiggles->get_symmetric_image(),&(squiggles->get_layers()));
 	emit newImage(data);
+}
+
+void SquigglesForm::resetColors()
+{
+	if(!colorWidget->load())
+		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
+	squiggles->choose_new_colors();
+	updateImage();
+
 }

@@ -39,6 +39,7 @@ protected slots:
 	virtual void draw();
 	virtual void init();
 	void updateImage();
+	void resetColors();
 protected:
 	QSpinBox *spinSize;
 	QSpinBox *spinColors;
@@ -48,6 +49,7 @@ protected:
 	QDoubleSpinBox *spinThickness;
 	QDoubleSpinBox *spinSharpness;
 	RandomColorWidget *colorWidget;
+	QPushButton *newColorButton;
 	RandomizeWidget *randomizeWidget;
 	RestoreButton *buttonRestore;
 	QCheckBox *checkTiled;

@@ -45,6 +45,13 @@ public:
 	const canvas<color_t> & get_image() { return image.as_canvas(); }
 	const symmetric_canvas<color_t> & get_symmetric_image() { return image; }
 	void set_color_generator(const std::function<color_t()> &f) { generate_color = f; }
+	void choose_new_colors() {
+		if(!grids.empty()) {
+			for(auto &l : layers) { l.color = generate_color(); }
+			image=symmetric_canvas<color_t>(grids[0].size(),grids[0].group(),black);
+			merge(image.unsafe_get_canvas(),layers);
+		}
+	}
 	static void fill_one(symmetric_canvas<uint8_t> &grid,std::default_random_engine &rng,
 		double alpha,double exponent,double thickness, double sharpness);
 	static void fill_two(symmetric_canvas<uint8_t> &g1,symmetric_canvas<uint8_t> &g2,
