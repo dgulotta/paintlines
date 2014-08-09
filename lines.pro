@@ -6,5 +6,6 @@ SUBDIRS = paintlines \
           paintstripes \
 	  paintsquiggles \
 	  hyperbolic_paintlines \
-	  quasiperiodic_paintstripes
+	  quasiperiodic_paintstripes \
+	  converter
 

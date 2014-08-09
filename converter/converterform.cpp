@@ -28,11 +28,6 @@ void ConverterForm::open()
 {
 	QString s = QFileDialog::getOpenFileName();
 	if(s.isEmpty()) return;
-	open(s);
-}
-
-void ConverterForm::open(const QString &s)
-{
 	open(QImage(s));
 }
 
@@ -123,22 +118,26 @@ void ConverterForm::updateImage()
 	emit newImage(ImageData(image.as_canvas(),image));
 }
 
+std::function<QImage()> ConverterForm::mimeToImage(const QMimeData *mime)
+{
+	if(mime->hasImage())
+		return [=] { return qvariant_cast<QImage>(mime->imageData()); };
+	else if(mime->hasUrls()&&mime->urls().size()==1&&mime->urls()[0].isLocalFile())
+		return [=] { return QImage(mime->urls()[0].toLocalFile()); };
+	else
+		return {};
+}
+
 void ConverterForm::dragEnterEvent(QDragEnterEvent *event)
 {
-	const QMimeData *mime = event->mimeData();
-	if(mime->hasImage())
-		event->acceptProposedAction();
-	else if(mime->hasUrls()&&mime->urls()[0].isLocalFile())
+	if(mimeToImage(event->mimeData()))
 		event->acceptProposedAction();
 }
 
 void ConverterForm::dropEvent(QDropEvent *event)
 {
-	const QMimeData *mime = event->mimeData();
-	if(mime->hasImage())
-		open(qvariant_cast<QImage>(mime->imageData()));
-	else if(mime->hasUrls()&&mime->urls()[0].isLocalFile())
-		open(mime->urls()[0].toLocalFile());
+	auto f = mimeToImage(event->mimeData());
+	if(f) open(f());
 }
 
 void ConverterForm::checkPasteEnabled()
