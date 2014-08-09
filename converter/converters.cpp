@@ -130,7 +130,7 @@ canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype p
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/9,2*M_PI/9),0,0,.5*size,.5*size,.5*size,-.5*size);
 		break;
 	case SYM_PM:
-		sg = hyperbolic_symmetry_group::group_ssa(2);
+		sg = hyperbolic_symmetry_group::group_sasb(1,2);
 		trans = quadrilateral_transformer(hyperbolic_quadrilateral_trapezoid(M_PI/2,M_PI/4),0,0,0,size,.5*size,size,.5*size,0);
 		break;
 	case SYM_PMG:
