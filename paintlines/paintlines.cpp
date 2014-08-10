@@ -739,8 +739,8 @@ void paintlines_layer_generator::drawtree_split(double x, double y, double q, in
 
 void paintlines_layer_generator::drawfractal(int x, int y, int d, int prob)
 {
+	d/=2;
 	if(d) {
-		d/=2;
 		if(random_int(60)<prob) drawfractal(x,y,d,prob);
 		if(random_int(60)<prob) drawfractal(x+d,y,d,prob);
 		if(random_int(60)<prob) drawfractal(x,y+d,d,prob);
