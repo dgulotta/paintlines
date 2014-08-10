@@ -59,11 +59,12 @@ void paintlines::paint(int sz, symgroup sym)
 	for(int i=0;i<ncolors;i++) {
 		layer &l = layers[i];
 		auto it=lower_bound(rules.begin(),rules.end(),random_int(rules.back().weight)+1);
-		active_grid=&grids[i];
-		l.pixels=&(grids[i].as_canvas());
+		auto &gr = grids[i];
+		active_grid=&gr;
+		l.pixels=&(gr.as_canvas());
 		l.color=generate_color();
 		l.pastel=it->pastel;
-		handle_rule(it->type);
+		it->func(gr);
 	}
 	image=symmetric_canvas<color_t>(sz,sym,black);
 	merge(image.unsafe_get_canvas(),layers);
@@ -155,26 +156,6 @@ void paintlines_layer_generator::generate_granules(symmetric_canvas<uint8_t>  &g
 {
 	paintlines_layer_generator gen(g);
 	gen.drawgranules();
-}
-
-const std::function<void(symmetric_canvas<uint8_t> &)> paintlines::rulefuncs[] = {
-	paintlines_layer_generator::generate_smootharc,
-	paintlines_layer_generator::generate_smoothline2_beads,
-	paintlines_layer_generator::generate_cluster,
-	paintlines_layer_generator::generate_flower,
-	paintlines_layer_generator::generate_cluster2,
-	paintlines_layer_generator::generate_smoothline2,
-	paintlines_layer_generator::generate_open_string,
-	paintlines_layer_generator::generate_swirl,
-	paintlines_layer_generator::generate_orbit,
-	paintlines_layer_generator::generate_tree,
-	paintlines_layer_generator::generate_smoothline5,
-	paintlines_layer_generator::generate_granules,
-};
-
-void paintlines::handle_rule(ruletype rt)
-{
-	rulefuncs[rt](*active_grid);
 }
 
 void paintlines_layer_generator::drawdotsymmetric(int x, int y, int radius,double brightness)

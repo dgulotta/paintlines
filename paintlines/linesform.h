@@ -27,12 +27,21 @@ class QComboBox;
 class QSpinBox;
 class RandomizeWidget;
 
+struct ruletype {
+	QString name;
+	std::function<void(symmetric_canvas<uint8_t> &)> func;
+};
+
 class PaintRuleWidget : public QWidget
 {
+	Q_OBJECT
 public:
-	PaintRuleWidget(int weight=0);
+	PaintRuleWidget(const std::vector<ruletype> &rt, int weight=0);
 	paintrule rule();
+public slots:
+	void updateRules();
 private:
+	const std::vector<ruletype> *rule_types;
 	QComboBox *comboType;
 	QSpinBox *spinWeight;
 	QCheckBox *checkPastel;
@@ -41,6 +50,8 @@ private:
 class LinesForm : public BasicForm
 {
 	Q_OBJECT
+signals:
+	void ruleTypesChanged();
 protected slots:
 	virtual void draw();
 	virtual void init();
@@ -55,4 +66,5 @@ protected:
 	RandomizeWidget *randomizeWidget;
 	RestoreButton *buttonRestore;
 	paintlines *lines;
+	std::vector<ruletype> rule_types;
 };

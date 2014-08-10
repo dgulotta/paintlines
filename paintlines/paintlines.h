@@ -25,13 +25,9 @@
 #include "../layer.h"
 #include "../symmetric_canvas.h"
 
-enum ruletype {RULE_SMOOTH_ARC, RULE_SMOOTHLINE2_BEADS, RULE_CLUSTER,
-	RULE_FLOWER, RULE_CLUSTER2, RULE_SMOOTHLINE2, RULE_OPEN_STRING,
-	RULE_SWIRL, RULE_ORBIT, RULE_TREE};
-
 struct paintrule
 {
-	ruletype type;
+	std::function<void(symmetric_canvas<uint8_t> &)> func;
 	bool pastel;
 	int weight;
 	bool operator < (int n) {return weight<n;}
@@ -68,6 +64,7 @@ public:
 	void drawtree();
 	void drawgranules();
 	void drawfractal(int x, int y, int d, int prob);
+	void drawdotsymmetric(int x, int y, int radius, double brightness);
 private:
 	symmetric_canvas<uint8_t> *grid;
 	static void randomnormal_orthogonal(double &x, double &y, double var);
@@ -76,7 +73,6 @@ private:
 		if(is_hexagonal()) randomnormal_hexagonal(x,y,var);
 		else randomnormal_orthogonal(x,y,var);
 	}
-	void drawdotsymmetric(int x, int y, int radius, double brightness);
 	void drawpixelsymmetric(int x, int y, uint8_t alpha) { if(alpha>grid->get(x,y)) grid->set(x,y,alpha); }
 	void drawcluster2(int x, int y, int d);
 	void drawcluster3(int x, int y, int d);
@@ -135,10 +131,9 @@ public:
 		for(i=1;i<rules.size();i++)
 			rules[i].weight+=rules[i-1].weight;
 	}
-	void set_ruletype(int n, ruletype r) {rules[n].type=r;}
+	void set_ruletype(int n, std::function<void(symmetric_canvas<uint8_t> &)> &r) {rules[n].func=r;}
 	void set_weight(int n, int w) {rules[n].weight=w;}
 	void set_pastel(int n, bool b) {rules[n].pastel=b;}
-	void handle_rule(ruletype rt);
 	symgroup get_symgroup() {return sg;}
 	void set_ncolors(int n) {ncolors=n;}
 	const std::vector<layer> & get_layers() { return layers; }

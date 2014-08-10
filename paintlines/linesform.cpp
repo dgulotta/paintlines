@@ -25,13 +25,27 @@
 
 using std::vector;
 
-PaintRuleWidget::PaintRuleWidget(int weight)
+static const vector<ruletype> builtin_rules = {
+	{"Arc",paintlines_layer_generator::generate_smootharc},
+	{"Beads",paintlines_layer_generator::generate_smoothline2_beads},
+	{"Cluster",paintlines_layer_generator::generate_cluster},
+	{"Flower",paintlines_layer_generator::generate_flower},
+	{"Fractal",paintlines_layer_generator::generate_cluster2},
+	{"Granules",paintlines_layer_generator::generate_granules},
+	{"Line",paintlines_layer_generator::generate_smoothline2},
+	{"Loop",paintlines_layer_generator::generate_smoothline5},
+	{"String",paintlines_layer_generator::generate_open_string},
+	{"Swirl",paintlines_layer_generator::generate_swirl},
+	{"Orbit",paintlines_layer_generator::generate_orbit},
+	{"Tree",paintlines_layer_generator::generate_tree},
+};
+
+PaintRuleWidget::PaintRuleWidget(const vector<ruletype> &rt, int weight)
+:rule_types(&rt)
 {
 	QFormLayout *layout = new QFormLayout();
 	comboType = new QComboBox();
-	QStringList types;
-	types << "Arc" << "Beads" << "Cluster" << "Flower" << "Fractal" << "Line" << "String" << "Swirl" << "Orbit" << "Tree" << "Loop" << "Granules";
-	comboType->addItems(types);
+	updateRules();
 	layout->addRow("Type",comboType);
 	spinWeight = new QSpinBox();
 	spinWeight->setValue(weight);
@@ -44,11 +58,18 @@ PaintRuleWidget::PaintRuleWidget(int weight)
 
 paintrule PaintRuleWidget::rule()
 {
-	paintrule p = { (ruletype)comboType->currentIndex(), checkPastel->isChecked(), spinWeight->value() };
+	paintrule p = { (*rule_types)[comboType->currentIndex()].func, checkPastel->isChecked(), spinWeight->value() };
 	return p;
 }
 
+void PaintRuleWidget::updateRules()
+{
+	for(int i=comboType->count();i<rule_types->size();i++)
+		comboType->addItem((*rule_types)[i].name);
+}
+
 void LinesForm::init() {
+	rule_types = builtin_rules;
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
 	layout->addRow(tr("Size"),spinSize);
@@ -57,9 +78,10 @@ void LinesForm::init() {
 	spinColors = newColorSpin();
 	layout->addRow(tr("Colors"),spinColors);
 	for(int i=0;i<3;i++) {
-		PaintRuleWidget *w = new PaintRuleWidget(i==0?1:0);
+		PaintRuleWidget *w = new PaintRuleWidget(rule_types,i==0?1:0);
 		layout->addRow(w);
 		rules.push_back(w);
+		connect(this,SIGNAL(ruleTypesChanged()),w,SLOT(updateRules()));
 	}
 	colorWidget = new RandomColorWidget;
 	layout->addRow(colorWidget);
