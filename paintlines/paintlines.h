@@ -55,6 +55,7 @@ public:
 	static void generate_orbit(symmetric_canvas<uint8_t> &g);
 	static void generate_tree(symmetric_canvas<uint8_t> &g);
 	static void generate_smoothline5(symmetric_canvas<uint8_t> &g);
+	static void generate_granules(symmetric_canvas<uint8_t> &g);
 	void drawsmootharc(double x1, double y1, double x2, double y2, double k,
 		double var, double dist);
 	void drawsmoothline2(double x1, double y1, double x2, double y2,
@@ -65,6 +66,7 @@ public:
 	void drawswirl();
 	void draworbit();
 	void drawtree();
+	void drawgranules();
 	void drawfractal(int x, int y, int d, int prob);
 private:
 	symmetric_canvas<uint8_t> *grid;

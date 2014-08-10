@@ -97,12 +97,12 @@ double random_levy_skew_sqrt(double alpha) {
 		* pow(cos(v-alpha*(v+M_PI_2))/u,(1-alpha)/(2*alpha));
 }
 
-double random_bernoulli(double p)
+bool random_bernoulli(double p)
 {
 	return bernoulli_distribution(p)(rnd);
 }
 
-double random_poisson(double mu)
+int random_poisson(double mu)
 {
 	return poisson_distribution<>(mu)(rnd);
 }

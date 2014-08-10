@@ -151,6 +151,12 @@ void paintlines_layer_generator::generate_smoothline5(symmetric_canvas<uint8_t> 
 		vx,vy,75000.,1.);
 }
 
+void paintlines_layer_generator::generate_granules(symmetric_canvas<uint8_t>  &g)
+{
+	paintlines_layer_generator gen(g);
+	gen.drawgranules();
+}
+
 const std::function<void(symmetric_canvas<uint8_t> &)> paintlines::rulefuncs[] = {
 	paintlines_layer_generator::generate_smootharc,
 	paintlines_layer_generator::generate_smoothline2_beads,
@@ -163,6 +169,7 @@ const std::function<void(symmetric_canvas<uint8_t> &)> paintlines::rulefuncs[] =
 	paintlines_layer_generator::generate_orbit,
 	paintlines_layer_generator::generate_tree,
 	paintlines_layer_generator::generate_smoothline5,
+	paintlines_layer_generator::generate_granules,
 };
 
 void paintlines::handle_rule(ruletype rt)
@@ -658,6 +665,18 @@ void paintlines_layer_generator::drawopenstring()
 }
 
 static const double orbit_stdev = sqrt(1.5);
+
+void paintlines_layer_generator::drawgranules() {
+	double x = random_int(size()), y = random_int(size());
+	int m = random_poisson(size()*size()/(10.*num_symmetries[group()]));
+	for(int i=0;i<m;i++) {
+		double z = random_normal(3.);
+		x+=random_normal(1.)/z;
+		y+=random_normal(1.)/z;
+		drawdotsymmetric(x,y,5,1.);
+	}
+	return;
+}
 
 void paintlines_layer_generator::draworbit() {
 	double q[3][2], dq[3][2];

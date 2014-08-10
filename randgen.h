@@ -60,8 +60,8 @@ double random_levy_1d(double alpha, double scale);
 
 double random_levy_skew_sqrt(double alpha);
 
-double random_bernoulli(double p);
+bool random_bernoulli(double p);
 
-double random_poisson(double mu);
+int random_poisson(double mu);
 
 #endif
