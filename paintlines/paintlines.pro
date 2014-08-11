@@ -11,6 +11,13 @@ packagesExist(GraphicsMagick++) {
 	DEFINES += MULTIPAGE
 }
 
+packagesExist(lua) {
+	PKGCONFIG += lua
+	DEFINES += LUARULES
+	HEADERS += luafuncs.h
+	SOURCES += luafuncs.cpp
+}
+
 HEADERS	+= paintlines.h \
 	linesform.h \
 	../basicform.h \

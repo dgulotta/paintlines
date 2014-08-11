@@ -56,7 +56,9 @@ protected slots:
 	virtual void draw();
 	virtual void init();
 	void updateImage();
+	void loadRule();
 protected:
+	bool checkLuaErrors();
 	QSpinBox *spinSize;
 	QSpinBox *spinColors;
 	QComboBox *comboSymmetry;

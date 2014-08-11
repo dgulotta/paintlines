@@ -23,6 +23,10 @@
 #include "linesform.h"
 #include "../randomizewidget.h"
 
+#ifdef LUARULES
+#include "luafuncs.h"
+#endif
+
 using std::vector;
 
 static const vector<ruletype> builtin_rules = {
@@ -105,6 +109,25 @@ void LinesForm::init() {
 	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
 	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
 	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
+#ifdef LUARULES
+	menuFile->addAction(tr("&Load rule"),this,SLOT(loadRule()));
+#endif
+}
+
+bool LinesForm::checkLuaErrors()
+{
+#ifdef LUARULES
+	if(!get_lua_errors().empty()) {
+		QString msg;
+		QTextStream s(&msg);
+		s << "The following errors occurred:\n";
+		for(auto e : get_lua_errors()) { s << e.c_str(); }
+		QMessageBox::information(this,"paintlines",msg);
+		clear_lua_errors();
+		return true;
+	}
+#endif
+	return false;
 }
 
 void LinesForm::draw() {
@@ -121,10 +144,31 @@ void LinesForm::draw() {
 		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
 	lines->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
 	updateImage();
+	checkLuaErrors();
 }
 
 void LinesForm::updateImage()
 {
 	ImageData data(lines->get_image(),lines->get_symmetric_image(),&(lines->get_layers()));
 	emit newImage(data);
+}
+
+void LinesForm::loadRule()
+{
+#ifdef LUARULES
+	QString fileName = QFileDialog::getOpenFileName(this,"paintlines",QString(),"Lua source code (*.lua);;All files (*)");
+	if(fileName.isEmpty()) return;
+	QByteArray fi = fileName.toAscii();
+	auto funcs = get_lua_functions(fi.data());
+	if(checkLuaErrors()) return;
+	QStringList funclist;
+	for(auto &s : funcs) funclist << s.c_str();
+	QString funcName = QInputDialog::getItem(this,"paintlines","Function",funclist);
+	if(funcName.isEmpty()) return;
+	QByteArray fn = funcName.toAscii();
+	std::function<void(symmetric_canvas<uint8_t> &)> f =
+		[=] (symmetric_canvas<uint8_t> &c) { run_lua_rule(fi.data(),fn.data(),c); };
+	rule_types.push_back({QString("(Lua)%1").arg(funcName),f});
+	emit ruleTypesChanged();
+#endif
 }
