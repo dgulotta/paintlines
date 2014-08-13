@@ -38,6 +38,7 @@ void BasicForm::baseInit()
 	labelImage = new ImageWidget;
 	init();
 	actionSaveAs = menuFile->addAction(tr("&Save As"));
+	actionSaveAs->setEnabled(false);
 	actionExit = menuFile->addAction(tr("E&xit"));
 	QHBoxLayout *mainLayout = new QHBoxLayout;
 	mainLayout->addLayout(sideLayout);
@@ -54,6 +55,12 @@ void BasicForm::baseInit()
 	connect(actionExit,SIGNAL(triggered()),this,SLOT(close()));
 	connect(this,SIGNAL(newImage(const ImageData &)),labelImage,SLOT(setPixmap(const ImageData &)));
 	connect(this,SIGNAL(newImage(const ImageData &)),saver,SLOT(newImage(const ImageData &)));
+	connect(this,SIGNAL(newImage(const ImageData &)),this,SLOT(enableSave()));
+}
+
+void BasicForm::enableSave()
+{
+	actionSaveAs->setEnabled(true);
 }
 
 BasicForm::~BasicForm()
