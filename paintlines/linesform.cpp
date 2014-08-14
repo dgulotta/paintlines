@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -29,27 +29,10 @@
 
 using std::vector;
 
-static const vector<ruletype> builtin_rules = {
-	{"Arc",paintlines_layer_generator::generate_smootharc},
-	{"Beads",paintlines_layer_generator::generate_smoothline2_beads},
-	{"Cluster",paintlines_layer_generator::generate_cluster},
-	{"Flower",paintlines_layer_generator::generate_flower},
-	{"Fractal",paintlines_layer_generator::generate_cluster2},
-	{"Granules",paintlines_layer_generator::generate_granules},
-	{"Line",paintlines_layer_generator::generate_smoothline2},
-	{"Loop",paintlines_layer_generator::generate_smoothline5},
-	{"String",paintlines_layer_generator::generate_open_string},
-	{"Swirl",paintlines_layer_generator::generate_swirl},
-	{"Orbit",paintlines_layer_generator::generate_orbit},
-	{"Tree",paintlines_layer_generator::generate_tree},
-};
-
-PaintRuleWidget::PaintRuleWidget(const vector<ruletype> &rt, int weight)
-:rule_types(&rt)
+PaintRuleWidget::PaintRuleWidget(int weight)
 {
 	QFormLayout *layout = new QFormLayout();
 	comboType = new QComboBox();
-	updateRules();
 	layout->addRow("Type",comboType);
 	spinWeight = new QSpinBox();
 	spinWeight->setValue(weight);
@@ -62,18 +45,16 @@ PaintRuleWidget::PaintRuleWidget(const vector<ruletype> &rt, int weight)
 
 paintrule PaintRuleWidget::rule()
 {
-	paintrule p = { (*rule_types)[comboType->currentIndex()].func, checkPastel->isChecked(), spinWeight->value() };
+	paintrule p = { comboType->itemData(comboType->currentIndex()).value<paintfunc>(), checkPastel->isChecked(), spinWeight->value() };
 	return p;
 }
 
-void PaintRuleWidget::updateRules()
+void PaintRuleWidget::addRule(const QString &s, const paintfunc &f)
 {
-	for(int i=comboType->count();i<rule_types->size();i++)
-		comboType->addItem((*rule_types)[i].name);
+	comboType->addItem(s,QVariant::fromValue(f));
 }
 
 void LinesForm::init() {
-	rule_types = builtin_rules;
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
 	layout->addRow(tr("Size"),spinSize);
@@ -82,11 +63,23 @@ void LinesForm::init() {
 	spinColors = newColorSpin();
 	layout->addRow(tr("Colors"),spinColors);
 	for(int i=0;i<3;i++) {
-		PaintRuleWidget *w = new PaintRuleWidget(rule_types,i==0?1:0);
+		PaintRuleWidget *w = new PaintRuleWidget(i==0?1:0);
 		layout->addRow(w);
 		rules.push_back(w);
-		connect(this,SIGNAL(ruleTypesChanged()),w,SLOT(updateRules()));
+		connect(this,SIGNAL(addRule(const QString &,const paintfunc &)),w,SLOT(addRule(const QString &, const paintfunc &)));
 	}
+	emit addRule("Arc",paintlines_layer_generator::generate_smootharc);
+	emit addRule("Beads",paintlines_layer_generator::generate_smoothline2_beads);
+	emit addRule("Cluster",paintlines_layer_generator::generate_cluster);
+	emit addRule("Flower",paintlines_layer_generator::generate_flower);
+	emit addRule("Fractal",paintlines_layer_generator::generate_cluster2);
+	emit addRule("Granules",paintlines_layer_generator::generate_granules);
+	emit addRule("Line",paintlines_layer_generator::generate_smoothline2);
+	emit addRule("Loop",paintlines_layer_generator::generate_smoothline5);
+	emit addRule("String",paintlines_layer_generator::generate_open_string);
+	emit addRule("Swirl",paintlines_layer_generator::generate_swirl);
+	emit addRule("Orbit",paintlines_layer_generator::generate_orbit);
+	emit addRule("Tree",paintlines_layer_generator::generate_tree);
 	colorWidget = new RandomColorWidget;
 	layout->addRow(colorWidget);
 	buttonDraw = new QPushButton(tr("Draw"));
@@ -166,9 +159,7 @@ void LinesForm::loadRule()
 	QString funcName = QInputDialog::getItem(this,"paintlines","Function",funclist);
 	if(funcName.isEmpty()) return;
 	QByteArray fn = funcName.toAscii();
-	std::function<void(symmetric_canvas<uint8_t> &)> f =
-		[=] (symmetric_canvas<uint8_t> &c) { run_lua_rule(fi.data(),fn.data(),c); };
-	rule_types.push_back({QString("(Lua)%1").arg(funcName),f});
-	emit ruleTypesChanged();
+	paintfunc f = [=] (symmetric_canvas<uint8_t> &c) { run_lua_rule(fi.data(),fn.data(),c); };
+	emit addRule(QString("(Lua)%1").arg(funcName),f);
 #endif
 }

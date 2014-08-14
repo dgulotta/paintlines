@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,30 +18,27 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <QMetaType>
 #include "../basicform.h"
 #include "../randomcolorwidget.h"
 #include "paintlines.h"
+
+Q_DECLARE_METATYPE(paintfunc);
 
 class QCheckBox;
 class QComboBox;
 class QSpinBox;
 class RandomizeWidget;
 
-struct ruletype {
-	QString name;
-	std::function<void(symmetric_canvas<uint8_t> &)> func;
-};
-
 class PaintRuleWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	PaintRuleWidget(const std::vector<ruletype> &rt, int weight=0);
+	PaintRuleWidget(int weight=0);
 	paintrule rule();
 public slots:
-	void updateRules();
+	void addRule(const QString &s, const paintfunc &f);
 private:
-	const std::vector<ruletype> *rule_types;
 	QComboBox *comboType;
 	QSpinBox *spinWeight;
 	QCheckBox *checkPastel;
@@ -51,7 +48,7 @@ class LinesForm : public BasicForm
 {
 	Q_OBJECT
 signals:
-	void ruleTypesChanged();
+	void addRule(const QString &s, const paintfunc &f);
 protected slots:
 	virtual void draw();
 	virtual void init();
@@ -68,5 +65,4 @@ protected:
 	RandomizeWidget *randomizeWidget;
 	RestoreButton *buttonRestore;
 	paintlines *lines;
-	std::vector<ruletype> rule_types;
 };

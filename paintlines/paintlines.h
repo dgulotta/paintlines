@@ -25,9 +25,11 @@
 #include "../layer.h"
 #include "../symmetric_canvas.h"
 
+typedef std::function<void(symmetric_canvas<uint8_t> &)> paintfunc;
+
 struct paintrule
 {
-	std::function<void(symmetric_canvas<uint8_t> &)> func;
+	paintfunc func;
 	bool pastel;
 	int weight;
 	bool operator < (int n) {return weight<n;}
@@ -150,7 +152,6 @@ private:
 	int size;
 	symgroup sg;
 	std::function<color_t()> generate_color;
-	static const std::function<void(symmetric_canvas<uint8_t> &)> rulefuncs[];
 };
 
 #endif
