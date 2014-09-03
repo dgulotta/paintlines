@@ -20,7 +20,7 @@
 
 #include "randomcolorwidget.h"
 #include "randgen.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <tuple>
 
 RandomColorWidget::RandomColorWidget()

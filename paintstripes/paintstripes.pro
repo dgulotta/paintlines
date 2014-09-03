@@ -5,6 +5,8 @@ CONFIG	+= qt warn_on debug link_pkgconfig
 
 PKGCONFIG += fftw3
 
+QT += widgets
+
 HEADERS	+= paintstripes.h \
 	../basicform.h \
 	stripesform.h \

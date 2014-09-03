@@ -18,7 +18,7 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "../randomizewidget.h"
 #include "paintstripes.h"

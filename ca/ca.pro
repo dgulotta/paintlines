@@ -3,6 +3,8 @@ LANGUAGE        = C++
 
 CONFIG  += qt warn_on release
 
+QT += widgets
+
 HEADERS += ca.h \
 	caform.h \
 	../canvas.h \

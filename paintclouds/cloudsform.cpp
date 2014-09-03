@@ -18,7 +18,7 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "../paintclouds.h"
 #include "../randomizewidget.h"

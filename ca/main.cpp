@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include "caform.h"
 
 int main(int argc, char **argv)

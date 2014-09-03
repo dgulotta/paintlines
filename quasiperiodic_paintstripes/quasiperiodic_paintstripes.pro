@@ -3,6 +3,8 @@ LANGUAGE	= C++
 
 CONFIG	+= qt warn_on release link_pkgconfig
 
+QT += widgets
+
 PKGCONFIG += fftw3
 
 HEADERS	+= quasiperiodic_paintstripes.h \

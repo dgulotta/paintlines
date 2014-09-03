@@ -5,6 +5,8 @@ CONFIG	+= qt warn_on release link_pkgconfig
 
 PKGCONFIG += fftw3
 
+QT += widgets
+
 packagesExist(GraphicsMagick++) {
 	PKGCONFIG += GraphicsMagick++
 	DEFINES += MULTIPAGE

@@ -7,7 +7,7 @@ Installation instructions
 =========================
 Paintlines requires the following software:
 * A C++ compiler that supports C++11
-* Qt 4.8
+* Qt 5
 * FFTW 3 (required for paintstripes, paintsquiggles, and quasiperiodic_paintstripes programs only)
 * GraphicsMagick or ImageMagick (only required if you want to save multipage TIFF files)
 * Lua (only required if you want to create custom rules for paintlines)

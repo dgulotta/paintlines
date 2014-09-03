@@ -3,6 +3,8 @@ LANGUAGE        = C++
 
 CONFIG  += qt warn_on release
 
+QT += widgets
+
 HEADERS += paintclouds.h \
 	cloudsform.h \
 	../basicform.h \

@@ -18,7 +18,7 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtGui>
+#include <QtWidgets>
 
 #include "linesform.h"
 #include "../randomizewidget.h"
@@ -151,14 +151,14 @@ void LinesForm::loadRule()
 #ifdef LUARULES
 	QString fileName = QFileDialog::getOpenFileName(this,"paintlines",QString(),"Lua source code (*.lua);;All files (*)");
 	if(fileName.isEmpty()) return;
-	QByteArray fi = fileName.toAscii();
+	QByteArray fi = fileName.toLocal8Bit();
 	auto funcs = get_lua_functions(fi.data());
 	if(checkLuaErrors()) return;
 	QStringList funclist;
 	for(auto &s : funcs) funclist << s.c_str();
 	QString funcName = QInputDialog::getItem(this,"paintlines","Function",funclist);
 	if(funcName.isEmpty()) return;
-	QByteArray fn = funcName.toAscii();
+	QByteArray fn = funcName.toLocal8Bit();
 	paintfunc f = [=] (symmetric_canvas<uint8_t> &c) { run_lua_rule(fi.data(),fn.data(),c); };
 	emit addRule(QString("(Lua)%1").arg(funcName),f);
 #endif
