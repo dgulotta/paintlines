@@ -88,14 +88,14 @@ void ConverterForm::init()
 	sideLayout = layout;
 	menuFile->addAction(tr("&Open"),this,SLOT(open()));
 	actionPaste = menuFile->addAction(tr("&Paste from clipboard"),this,SLOT(paste()));
-	connect(QApplication::clipboard(),SIGNAL(dataChanged()),this,SLOT(checkPasteEnabled()));
+	connect(QApplication::clipboard(),&QClipboard::dataChanged,this,&ConverterForm::checkPasteEnabled);
 	checkPasteEnabled();
-	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(buttonHexStretch,SIGNAL(clicked()),this,SLOT(hexStretch()));
-	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
-	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
-	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
-	connect(comboSymmetry,SIGNAL(currentIndexChanged(int)),this,SLOT(symmetryChanged(int)));
+	connect(buttonRestore,&QPushButton::clicked,this,&ConverterForm::updateImage);
+	connect(buttonHexStretch,&QPushButton::clicked,this,&ConverterForm::hexStretch);
+	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
+	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
+	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
+	connect(comboSymmetry,(void (QComboBox::*)(int))&QComboBox::currentIndexChanged,this,&ConverterForm::symmetryChanged);
 }
 
 void ConverterForm::draw()

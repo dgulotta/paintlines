@@ -97,7 +97,7 @@ void CAForm::init()
 	layout->addRow(buttonContinue);
 	sideLayout = layout;
 	saver = new ImageSaver(this);
-	connect(buttonContinue,SIGNAL(clicked()),this,SLOT(cont()));
+	connect(buttonContinue,&QPushButton::clicked,this,&CAForm::cont);
 }
 
 void CAForm::addRule(const QString &s, const rule &r)

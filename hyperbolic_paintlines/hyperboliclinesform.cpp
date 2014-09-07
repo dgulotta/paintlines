@@ -91,7 +91,7 @@ void HyperbolicLinesForm::init()
 #else
 	saver = new ImageSaver(this);
 #endif
-	connect(comboSymmetry,SIGNAL(currentIndexChanged(int)),this,SLOT(symmetryChanged(int)));
+	connect(comboSymmetry,(void (QComboBox::*)(int))&QComboBox::currentIndexChanged,this,&HyperbolicLinesForm::symmetryChanged);
 }
 
 void HyperbolicLinesForm::draw()

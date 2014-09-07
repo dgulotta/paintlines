@@ -51,7 +51,7 @@ public:
 	SymmetrySpin(SymmetryGroupToken &t) : token(&t) {
 		setValue(token->value);
 		setMinimum(token->min_value);
-		connect(this,SIGNAL(valueChanged(int)),this,SLOT(update(int)));
+		connect(this,(void (QSpinBox::*)(int))&QSpinBox::valueChanged,this,&SymmetrySpin::update);
 	}
 	virtual QSize minimumSizeHint() const { return sizeHint(); }
 public slots:

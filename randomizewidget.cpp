@@ -41,7 +41,7 @@ RandomizeWidget::RandomizeWidget(QWidget *parent)
 	layout->addRow(buttonRandomize);
 	layout->setContentsMargins(0,0,0,0);
 	setLayout(layout);
-	connect(buttonRandomize,SIGNAL(clicked()),this,SLOT(randomize()));
+	connect(buttonRandomize,&QPushButton::clicked,this,&RandomizeWidget::randomize);
 	
 }
 

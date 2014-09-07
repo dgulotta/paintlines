@@ -66,7 +66,7 @@ void LinesForm::init() {
 		PaintRuleWidget *w = new PaintRuleWidget(i==0?1:0);
 		layout->addRow(w);
 		rules.push_back(w);
-		connect(this,SIGNAL(addRule(const QString &,const paintfunc &)),w,SLOT(addRule(const QString &, const paintfunc &)));
+		connect(this,&LinesForm::addRule,w,&PaintRuleWidget::addRule);
 	}
 	emit addRule("Arc",paintlines_layer_generator::generate_smootharc);
 	emit addRule("Beads",paintlines_layer_generator::generate_smoothline2_beads);
@@ -98,10 +98,10 @@ void LinesForm::init() {
 	saver = new ImageSaver(this);
 #endif
 	sideLayout = layout;
-	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
-	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
-	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
+	connect(buttonRestore,&QPushButton::clicked,this,&LinesForm::updateImage);
+	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
+	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
+	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
 #ifdef LUARULES
 	menuFile->addAction(tr("&Load rule"),this,SLOT(loadRule()));
 #endif

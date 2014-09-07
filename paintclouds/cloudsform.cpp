@@ -61,10 +61,10 @@ void CloudsForm::init() {
 	clouds = new paintclouds;
 	saver = new ImageSaver(this);
 	sideLayout = layout;
-	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
-	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
-	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
+	connect(buttonRestore,&QPushButton::clicked,this,&CloudsForm::updateImage);
+	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
+	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
+	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
 }
 
 static double (*(randfuncs[4]))(double) = {

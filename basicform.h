@@ -137,7 +137,6 @@ signals:
 protected slots:
 	bool saveAs();
 	void baseInit();
-	void enableSave();
 	virtual void draw() = 0;
 protected:
 	virtual void init() = 0;

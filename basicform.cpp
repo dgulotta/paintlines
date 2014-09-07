@@ -50,17 +50,12 @@ void BasicForm::baseInit()
 	a->setWidget(w);
 	setCentralWidget(a);
 	resize(800,600);
-	connect(buttonDraw,SIGNAL(clicked()),this,SLOT(draw()));
-	connect(actionSaveAs,SIGNAL(triggered()),this,SLOT(saveAs()));
-	connect(actionExit,SIGNAL(triggered()),this,SLOT(close()));
-	connect(this,SIGNAL(newImage(const ImageData &)),labelImage,SLOT(setPixmap(const ImageData &)));
-	connect(this,SIGNAL(newImage(const ImageData &)),saver,SLOT(newImage(const ImageData &)));
-	connect(this,SIGNAL(newImage(const ImageData &)),this,SLOT(enableSave()));
-}
-
-void BasicForm::enableSave()
-{
-	actionSaveAs->setEnabled(true);
+	connect(buttonDraw,&QPushButton::clicked,this,&BasicForm::draw);
+	connect(actionSaveAs,&QAction::triggered,this,&BasicForm::saveAs);
+	connect(actionExit,&QAction::triggered,this,&BasicForm::close);
+	connect(this,&BasicForm::newImage,labelImage,&ImageWidget::setPixmap);
+	connect(this,&BasicForm::newImage,saver,&ImageSaver::newImage);
+	connect(this,&BasicForm::newImage,[this]() { actionSaveAs->setEnabled(true); });
 }
 
 BasicForm::~BasicForm()
@@ -133,7 +128,7 @@ QCheckBox * BasicForm::newTileCheck() {
 	QCheckBox *check = new QCheckBox(tr("Show tiled"));
 	check->setCheckState(Qt::Checked);
 	labelImage->setTiled(true);
-	connect(check,SIGNAL(toggled(bool)),labelImage,SLOT(setTiled(bool)));
+	connect(check,&QCheckBox::toggled,labelImage,&ImageWidget::setTiled);
 	return check;
 }
 

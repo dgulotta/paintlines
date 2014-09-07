@@ -32,7 +32,7 @@ RandomColorWidget::RandomColorWidget()
 	QToolButton *button = new QToolButton;
 	button->setText(tr("..."));
 	layout->addWidget(button,1,1,1,1);
-	connect(button,SIGNAL(clicked()),this,SLOT(chooseImage()));
+	connect(button,&QPushButton::clicked,this,&RandomColorWidget::chooseImage);
 	checkCopyHue = new QCheckBox(tr("Use hue"));
 	layout->addWidget(checkCopyHue,2,0,1,2);
 	checkCopySaturation = new QCheckBox(tr("Use saturation"));

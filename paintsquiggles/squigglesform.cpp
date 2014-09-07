@@ -69,11 +69,11 @@ void SquigglesForm::init()
 	saver = new ImageSaver(this);
 #endif
 	sideLayout = layout;
-	connect(buttonRestore,SIGNAL(clicked()),this,SLOT(updateImage()));
-	connect(newColorButton,SIGNAL(clicked()),this,SLOT(resetColors()));
-	connect(this,SIGNAL(newImage(const ImageData &)),buttonRestore,SLOT(newImage(const ImageData &)));
-	connect(this,SIGNAL(newImage(const ImageData &)),randomizeWidget,SLOT(imageUpdated(const ImageData &)));
-	connect(randomizeWidget,SIGNAL(newImage(const ImageData &)),this,SIGNAL(newImage(const ImageData &)));
+	connect(buttonRestore,&QPushButton::clicked,this,&SquigglesForm::updateImage);
+	connect(newColorButton,&QPushButton::clicked,this,&SquigglesForm::resetColors);
+	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
+	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
+	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
 }
 
 void SquigglesForm::draw()
