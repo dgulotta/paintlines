@@ -19,34 +19,30 @@
  ***************************************************************************/
 
 #include <QtWidgets>
-#include "converterform.h"
-#include "converters.h"
-#include "../hyperbolic_painter.h"
-#include "../randomizewidget.h"
+#include "../imagedata.h"
+#include "loaderwidget.h"
 
-void ConverterForm::open()
+void LoaderWidget::openFile()
 {
 	QString s = QFileDialog::getOpenFileName();
 	if(s.isEmpty()) return;
 	open(QImage(s));
 }
 
-void ConverterForm::open(const QImage &img)
+bool LoaderWidget::open(const QImage &img)
 {
 	if(img.isNull()) {
 		QMessageBox::information(this,"converter",tr("Failed to load image."));
-		return;
+		return false;
 	}
 	if(img.height()!=img.width()) {
 		QMessageBox::information(this,"converter",tr("The image must be square."));
-		return;
+		return false;
 	}
 	if(img.height()%2!=0) {
 		QMessageBox::information(this,"converter",tr("The image size must be even."));
-		return;
+		return false;
 	}
-	randomizeWidget->setEnabled(true);
-	buttonDraw->setEnabled(true);
 	image = symmetric_canvas<color_t>(img.height(),(symgroup)comboSymmetry->currentIndex());
 	canvas<color_t> &base_image = image.unsafe_get_canvas();
 	for(int j=0;j<img.height();j++)
@@ -54,71 +50,33 @@ void ConverterForm::open(const QImage &img)
 			QRgb pix = img.pixel(i,j);
 			base_image(i,j)=color_t(qRed(pix),qGreen(pix),qBlue(pix));
 		}
-	updateImage();
+	emit newImage(ImageData(image));
+	return true;
 }
 
-void ConverterForm::init()
+LoaderWidget::LoaderWidget()
 {
-	setAcceptDrops(true);
 	QFormLayout *layout = new QFormLayout;
 	comboSymmetry = newSymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
-	randomizeWidget = new RandomizeWidget;
-	randomizeWidget->setEnabled(false);
-	layout->addRow(randomizeWidget);
-	spinSize = new QSpinBox();
-	spinSize->setMinimum(1);
-	spinSize->setMaximum(65536);
-	spinSize->setValue(256);
-	layout->addRow(tr("Size"),spinSize);
-	comboModel = new QComboBox;
-	comboModel->addItem(tr("Poincare"));
-	comboModel->addItem(tr("Klein"));
-	layout->addRow(tr("Model"),comboModel);
-	buttonDraw = new QPushButton(tr("Make hyperbolic"));
-	buttonDraw->setEnabled(false);
-	layout->addRow(buttonDraw);
-	buttonHexStretch = new QPushButton("Hexagonal Stretch");
-	layout->addRow(buttonHexStretch);
-	buttonRestore = new RestoreButton;
-	layout->addRow(buttonRestore);
-	checkTiled = newTileCheck();
-	layout->addRow(checkTiled);
-	saver = new ImageSaver(this);
-	sideLayout = layout;
-	menuFile->addAction(tr("&Open"),this,SLOT(open()));
-	actionPaste = menuFile->addAction(tr("&Paste from clipboard"),this,SLOT(paste()));
-	connect(QApplication::clipboard(),&QClipboard::dataChanged,this,&ConverterForm::checkPasteEnabled);
+	QPushButton *buttonOpen = new QPushButton(tr("Open file"));
+	layout->addRow(buttonOpen);
+	buttonPaste = new QPushButton(tr("Paste from clipboard"));
+	layout->addRow(buttonPaste);
+	setLayout(layout);
+	connect(QApplication::clipboard(),&QClipboard::dataChanged,this,&LoaderWidget::checkPasteEnabled);
+	connect(buttonOpen,&QPushButton::clicked,this,&LoaderWidget::openFile);
+	connect(buttonPaste,&QPushButton::clicked,this,&LoaderWidget::paste);
+	connect(comboSymmetry,(void(QComboBox::*)(int))&QComboBox::currentIndexChanged,this,&LoaderWidget::symmetryChanged);
 	checkPasteEnabled();
-	connect(buttonRestore,&QPushButton::clicked,this,&ConverterForm::updateImage);
-	connect(buttonHexStretch,&QPushButton::clicked,this,&ConverterForm::hexStretch);
-	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
-	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
-	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
-	connect(comboSymmetry,(void (QComboBox::*)(int))&QComboBox::currentIndexChanged,this,&ConverterForm::symmetryChanged);
 }
 
-void ConverterForm::draw()
-{
-	emit newImage(ImageData(make_hyperbolic(image,(projtype)comboModel->currentIndex(),spinSize->value())));
-}
-
-void ConverterForm::hexStretch()
-{
-	emit newImage(ImageData(hexagonal_stretch(image).as_canvas(),true));	
-}
-
-void ConverterForm::symmetryChanged(int n)
+void LoaderWidget::symmetryChanged(int n)
 {
 	image.unsafe_set_symmetry_group((symgroup)n);
 }
 
-void ConverterForm::updateImage()
-{
-	emit newImage(ImageData(image.as_canvas(),image));
-}
-
-std::function<QImage()> ConverterForm::mimeToImage(const QMimeData *mime)
+std::function<QImage()> LoaderWidget::mimeToImage(const QMimeData *mime)
 {
 	if(mime->hasImage())
 		return [=] { return qvariant_cast<QImage>(mime->imageData()); };
@@ -128,24 +86,25 @@ std::function<QImage()> ConverterForm::mimeToImage(const QMimeData *mime)
 		return {};
 }
 
-void ConverterForm::dragEnterEvent(QDragEnterEvent *event)
+void LoaderWidget::handleDragEnter(QDragEnterEvent *event)
 {
 	if(mimeToImage(event->mimeData()))
 		event->acceptProposedAction();
 }
 
-void ConverterForm::dropEvent(QDropEvent *event)
+bool LoaderWidget::handleDrop(QDropEvent *event)
 {
 	auto f = mimeToImage(event->mimeData());
-	if(f) open(f());
+	if(f) return open(f());
+	else return false;
 }
 
-void ConverterForm::checkPasteEnabled()
+void LoaderWidget::checkPasteEnabled()
 {
-	actionPaste->setEnabled(QApplication::clipboard()->mimeData()->hasImage());
+	buttonPaste->setEnabled(QApplication::clipboard()->mimeData()->hasImage());
 }
 
-void ConverterForm::paste()
+void LoaderWidget::paste()
 {
 	open(QApplication::clipboard()->image());
 }

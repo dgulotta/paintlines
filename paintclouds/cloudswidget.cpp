@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,9 +20,9 @@
 
 #include <QtWidgets>
 
-#include "../paintclouds.h"
+#include "paintclouds.h"
 #include "../randomizewidget.h"
-#include "cloudsform.h"
+#include "cloudswidget.h"
 
 void ColorButton::mousePressEvent(QMouseEvent *event)
 {
@@ -32,7 +32,8 @@ void ColorButton::mousePressEvent(QMouseEvent *event)
   }
 }
 
-void CloudsForm::init() {
+CloudsWidget::CloudsWidget()
+{
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
 	layout->addRow(tr("Size"),spinSize);
@@ -50,21 +51,11 @@ void CloudsForm::init() {
 	layout->addRow(tr("Color 2"),color2);
 	color3 = new ColorButton(qRgb(0,255,255));
 	layout->addRow(tr("Color 3"),color3);
-	buttonDraw = new QPushButton(tr("Draw"));
+	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	randomizeWidget = new RandomizeWidget;
-	layout->addRow(randomizeWidget);
-	buttonRestore = new RestoreButton;
-	layout->addRow(buttonRestore);
-	checkTiled = newTileCheck();
-	layout->addRow(checkTiled);
 	clouds = new paintclouds;
-	saver = new ImageSaver(this);
-	sideLayout = layout;
-	connect(buttonRestore,&QPushButton::clicked,this,&CloudsForm::updateImage);
-	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
-	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
-	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
+	setLayout(layout);
+	connect(buttonDraw,&QPushButton::clicked,this,&CloudsWidget::draw);
 }
 
 static double (*(randfuncs[4]))(double) = {
@@ -74,7 +65,7 @@ static double (*(randfuncs[4]))(double) = {
 	&paintclouds::rand_sechsquare
 };
 
-void CloudsForm::draw()
+void CloudsWidget::draw()
 {
 	if(spinSize->value()%2!=0) {
 		QMessageBox::information(this,"paintclouds",tr("The size must be even."));
@@ -89,10 +80,6 @@ void CloudsForm::draw()
     clouds->set_color3(c.red(),c.green(),c.blue());
 	clouds->set_randfunc(randfuncs[comboRandom->currentIndex()]);
     clouds->paint(spinSize->value(),sg);
-	updateImage();
-}
-
-void CloudsForm::updateImage() {
-	ImageData data(clouds->get_image(),clouds->get_symmetric_image());
+	ImageData data(clouds->get_symmetric_image());
 	emit newImage(data);
 }

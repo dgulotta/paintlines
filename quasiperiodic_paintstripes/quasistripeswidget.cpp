@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013, 2014 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2014 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,35 +18,40 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _RANDOMIZEWIDGET_H
-#define _RANDOMIZEWIDGET_H
+#include <QtWidgets>
 
-#include <QWidget>
+#include "../imagedata.h"
+#include "quasiperiodic_paintstripes.h"
+#include "quasistripeswidget.h"
 
-#include "color.h"
-#include "imagedata.h"
-#include "symmetric_canvas.h"
-
-class QPushButton;
-class QSpinBox;
-class ImageData;
-
-class RandomizeWidget : public QWidget
+QuasiStripesWidget::QuasiStripesWidget()
 {
-	Q_OBJECT
-public:
-	RandomizeWidget(QWidget *parent=nullptr);
-signals:
-	void newImage(const ImageData &data);
-public slots:
-	void imageUpdated(const ImageData &data);
-	void randomize();
-private:
-	ImageData receivedData;
-	ImageData usedData;
-	QPushButton *buttonRandomize;
-	QSpinBox *spinXTiles;
-	QSpinBox *spinYTiles;
-};
+	QFormLayout *layout = new QFormLayout;
+	spinSize = new QSpinBox;
+	spinSize->setMinimum(1);
+	spinSize->setMaximum(65536);
+	spinSize->setValue(256);
+	layout->addRow(tr("Size"),spinSize);
+	spinQuasiSize = new QSpinBox;
+	spinQuasiSize->setMinimum(1);
+	spinQuasiSize->setMaximum(256);
+	spinQuasiSize->setValue(16);
+	layout->addRow(tr("Quasiperiod"),spinQuasiSize);
+	spinAlpha = new QDoubleSpinBox;
+	spinAlpha->setMinimum(.01);
+	spinAlpha->setMaximum(2.);
+	spinAlpha->setValue(1.);
+	layout->addRow(tr("Alpha"),spinAlpha);
+	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
+	layout->addRow(buttonDraw);
+	stripes = new quasiperiodic_paintstripes;
+	setLayout(layout);
+	connect(buttonDraw,&QPushButton::clicked,this,&QuasiStripesWidget::draw);
+}
 
-#endif
+void QuasiStripesWidget::draw()
+{
+	stripes->set_alpha(spinAlpha->value());
+	stripes->paint(spinSize->value(),spinQuasiSize->value());
+	emit newImage(ImageData(stripes->get_image()));
+}

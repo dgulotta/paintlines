@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2008, 2014 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,44 +18,28 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _CONVERTERFORM_H
-#define _CONVERTERFORM_H
+#ifndef _QUASISTRIPESWIDGET_H
+#define _QUASISTRIPESWIDGET_H
 
-#include "../basicform.h"
-#include "../symmetric_canvas.h"
+#include "../imagegeneratorwidget.h"
 
-class QCheckBox;
-class QDragEnterEvent;
-class QDropEvent;
-class QMimeData;
-class RandomizeWidget;
+class QSpinBox;
+class QDoubleSpinBox;
+class QPushButton;
+class quasiperiodic_paintstripes;
 
-class ConverterForm : public BasicForm
+class QuasiStripesWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
+public:
+	QuasiStripesWidget();
 protected slots:
-	virtual void draw();
-	virtual void init();
-	virtual void open();
-	void hexStretch();
-	void updateImage();
-	void symmetryChanged(int n);
-	void paste();
-	void checkPasteEnabled();
+	void draw();
 protected:
-	std::function<QImage()> mimeToImage(const QMimeData *mime);
-	void dragEnterEvent(QDragEnterEvent *event);
-	void dropEvent(QDropEvent *event);
-	void open(const QImage &img);
-	QComboBox *comboSymmetry;
-	QComboBox *comboModel;
 	QSpinBox *spinSize;
-	RandomizeWidget *randomizeWidget;
-	QCheckBox *checkTiled;
-	RestoreButton *buttonRestore;
-	QPushButton *buttonHexStretch;
-	QAction *actionPaste;
-	symmetric_canvas<color_t> image;
+	QSpinBox *spinQuasiSize;
+	QDoubleSpinBox *spinAlpha;
+	quasiperiodic_paintstripes *stripes;
 };
 
 #endif

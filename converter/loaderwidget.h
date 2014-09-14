@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013, 2014 by Daniel Gulotta                            *
+ *   Copyright (C) 2014 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,35 +18,36 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _RANDOMIZEWIDGET_H
-#define _RANDOMIZEWIDGET_H
+#ifndef _LOADERWIDGET_H
+#define _LOADERWIDGET_H
 
-#include <QWidget>
+#include "../color.h"
+#include "../imagegeneratorwidget.h"
+#include "../symmetric_canvas.h"
 
-#include "color.h"
-#include "imagedata.h"
-#include "symmetric_canvas.h"
-
+class QDragEnterEvent;
+class QDropEvent;
+class QMimeData;
 class QPushButton;
-class QSpinBox;
-class ImageData;
 
-class RandomizeWidget : public QWidget
+class LoaderWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
-	RandomizeWidget(QWidget *parent=nullptr);
-signals:
-	void newImage(const ImageData &data);
-public slots:
-	void imageUpdated(const ImageData &data);
-	void randomize();
-private:
-	ImageData receivedData;
-	ImageData usedData;
-	QPushButton *buttonRandomize;
-	QSpinBox *spinXTiles;
-	QSpinBox *spinYTiles;
+	LoaderWidget();
+	void handleDragEnter(QDragEnterEvent *event);
+	bool handleDrop(QDropEvent *event);
+protected slots:
+	void openFile();
+	void paste();
+	void checkPasteEnabled();
+	void symmetryChanged(int n);
+protected:
+	std::function<QImage()> mimeToImage(const QMimeData *mime);
+	bool open(const QImage &img);
+	QComboBox *comboSymmetry;
+	QPushButton *buttonPaste;
+	symmetric_canvas<color_t> image;
 };
 
 #endif

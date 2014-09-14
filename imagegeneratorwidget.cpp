@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,38 +19,47 @@
  ***************************************************************************/
 
 #include <QtWidgets>
+#include "imagegeneratorwidget.h"
 
-#include "quasiperiodic_paintstripes.h"
-#include "quasistripesform.h"
+const QStringList ImageGeneratorWidget::symmetryStrings = {
+	tr("CM (*x)"),
+	tr("CMM (2*22)"),
+	tr("P1 (o)"),
+	tr("P2 (2222)"),
+	tr("P3 (333)"),
+	tr("P31M (3*3)"),
+	tr("P3M1 (*333)"),
+	tr("P4 (442)"),
+	tr("P4G (4*2)"),
+	tr("P4M (*442)"),
+	tr("P6 (632)"),
+	tr("P6M (*632)"),
+	tr("PG (xx)"),
+	tr("PGG (22x)"),
+	tr("PM (**)"),
+	tr("PMG (22*)"),
+	tr("PMM (*2222)"),
+};
 
-void QuasiStripesForm::init()
+QComboBox * ImageGeneratorWidget::newSymmetryCombo()
 {
-	QFormLayout *layout = new QFormLayout;
-	spinSize = new QSpinBox;
-	spinSize->setMinimum(1);
+	QComboBox *comboSymmetry = new QComboBox;
+	comboSymmetry->addItems(symmetryStrings);
+	return comboSymmetry;
+}
+
+QSpinBox * ImageGeneratorWidget::newSizeSpin() {
+	QSpinBox *spinSize = new QSpinBox;
+	spinSize->setMinimum(2);
 	spinSize->setMaximum(65536);
+	spinSize->setSingleStep(2);
 	spinSize->setValue(256);
-	layout->addRow(tr("Size"),spinSize);
-	spinQuasiSize = new QSpinBox;
-	spinQuasiSize->setMinimum(1);
-	spinQuasiSize->setMaximum(256);
-	spinQuasiSize->setValue(16);
-	layout->addRow(tr("Quasiperiod"),spinQuasiSize);
-	spinAlpha = new QDoubleSpinBox;
-	spinAlpha->setMinimum(.01);
-	spinAlpha->setMaximum(2.);
-	spinAlpha->setValue(1.);
-	layout->addRow(tr("Alpha"),spinAlpha);
-	buttonDraw = new QPushButton(tr("Draw"));
-	layout->addRow(buttonDraw);
-	stripes = new quasiperiodic_paintstripes;
-	saver = new ImageSaver(this);
-	sideLayout = layout;
+	return spinSize;
 }
 
-void QuasiStripesForm::draw()
-{
-	stripes->set_alpha(spinAlpha->value());
-	stripes->paint(spinSize->value(),spinQuasiSize->value());
-	emit newImage(ImageData(stripes->get_image()));
+QSpinBox * ImageGeneratorWidget::newColorSpin() {
+	QSpinBox *spinColors = new QSpinBox;
+	spinColors->setValue(25);
+	return spinColors;
 }
+

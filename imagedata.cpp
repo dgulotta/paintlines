@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013, 2014 by Daniel Gulotta                            *
+ *   Copyright (C) 2014 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,35 +18,17 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _RANDOMIZEWIDGET_H
-#define _RANDOMIZEWIDGET_H
-
-#include <QWidget>
-
-#include "color.h"
 #include "imagedata.h"
+#include "color.h"
+#include "mainform.h"
 #include "symmetric_canvas.h"
 
-class QPushButton;
-class QSpinBox;
-class ImageData;
+ImageData::ImageData(const canvas<color_t> &c, bool t, const symmetric_canvas<color_t> *sc,
+		const std::vector<layer> *l, const ImageData *p)
+:ImageData(MainForm::makePixmap(c),t,sc,l,p) {}
 
-class RandomizeWidget : public QWidget
-{
-	Q_OBJECT
-public:
-	RandomizeWidget(QWidget *parent=nullptr);
-signals:
-	void newImage(const ImageData &data);
-public slots:
-	void imageUpdated(const ImageData &data);
-	void randomize();
-private:
-	ImageData receivedData;
-	ImageData usedData;
-	QPushButton *buttonRandomize;
-	QSpinBox *spinXTiles;
-	QSpinBox *spinYTiles;
-};
+ImageData::ImageData(const wrap_canvas<color_t> &wc, const ImageData *p)
+:ImageData(wc.as_canvas(),true,nullptr,nullptr,p) {}
 
-#endif
+ImageData::ImageData(const symmetric_canvas<color_t> &sc, const std::vector<layer> *l)
+:ImageData(sc.as_canvas(),true,&sc,l,nullptr) {}

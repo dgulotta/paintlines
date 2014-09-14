@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,11 +20,11 @@
 
 #include <QtWidgets>
 
-#include "../randomizewidget.h"
+#include "../imagedata.h"
 #include "paintstripes.h"
-#include "stripesform.h"
+#include "stripeswidget.h"
 
-void StripesForm::init()
+StripesWidget::StripesWidget()
 {
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
@@ -37,25 +37,14 @@ void StripesForm::init()
 	spinAlpha->setValue(1.);
 	layout->addRow(tr("Alpha"),spinAlpha);
 	stripes=new paintstripes;
-	saver=new ImageSaver(this);
-	buttonDraw = new QPushButton(tr("Draw"));
+	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	randomizeWidget = new RandomizeWidget;
-	layout->addRow(randomizeWidget);
-	buttonRestore = new RestoreButton;
-	layout->addRow(buttonRestore);
-	checkTiled = newTileCheck();
-	layout->addRow(checkTiled);
 	stripes = new paintstripes;
-	saver = new ImageSaver(this);
-	sideLayout=layout;
-	connect(buttonRestore,&QPushButton::clicked,this,&StripesForm::updateImage);
-	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
-	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
-	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
+	setLayout(layout);
+	connect(buttonDraw,&QPushButton::clicked,this,&StripesWidget::draw);
 }
 
-void StripesForm::draw()
+void StripesWidget::draw()
 {
 	if(spinSize->value()%2!=0) {
 		QMessageBox::information(this,"paintstripes",tr("The size must be even."));
@@ -63,10 +52,6 @@ void StripesForm::draw()
 	}
 	stripes->set_alpha(spinAlpha->value());
 	stripes->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
-	updateImage();
-}
-
-void StripesForm::updateImage() {
-	ImageData data(stripes->get_image(),stripes->get_symmetric_image());
+	ImageData data(stripes->get_symmetric_image());
 	emit newImage(data);
 }

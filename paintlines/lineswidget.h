@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013, 2014 by Daniel Gulotta                            *
+ *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,35 +18,52 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _RANDOMIZEWIDGET_H
-#define _RANDOMIZEWIDGET_H
+#ifndef _LINESWIDGET_H
+#define _LINESWIDGET_H
 
-#include <QWidget>
+#include <QMetaType>
+#include "../imagegeneratorwidget.h"
+#include "paintlines.h"
 
-#include "color.h"
-#include "imagedata.h"
-#include "symmetric_canvas.h"
+Q_DECLARE_METATYPE(paintfunc);
 
-class QPushButton;
+class QCheckBox;
+class QComboBox;
 class QSpinBox;
-class ImageData;
+class RandomColorWidget;
 
-class RandomizeWidget : public QWidget
+class PaintRuleWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	RandomizeWidget(QWidget *parent=nullptr);
-signals:
-	void newImage(const ImageData &data);
+	PaintRuleWidget(int weight=0);
+	paintrule rule();
 public slots:
-	void imageUpdated(const ImageData &data);
-	void randomize();
+	void addRule(const QString &s, const paintfunc &f);
 private:
-	ImageData receivedData;
-	ImageData usedData;
-	QPushButton *buttonRandomize;
-	QSpinBox *spinXTiles;
-	QSpinBox *spinYTiles;
+	QComboBox *comboType;
+	QSpinBox *spinWeight;
+	QCheckBox *checkPastel;
+};
+
+class LinesWidget : public ImageGeneratorWidget
+{
+	Q_OBJECT
+public:
+	LinesWidget();
+signals:
+	void addRule(const QString &s, const paintfunc &f);
+protected slots:
+	void draw();
+	void loadRule();
+protected:
+	bool checkLuaErrors();
+	QSpinBox *spinSize;
+	QSpinBox *spinColors;
+	QComboBox *comboSymmetry;
+	std::vector<PaintRuleWidget *> rules;
+	RandomColorWidget *colorWidget;
+	paintlines *lines;
 };
 
 #endif

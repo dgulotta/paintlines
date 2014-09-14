@@ -21,10 +21,11 @@
 #include <QtWidgets>
 #include <sstream>
 
-#include "hyperboliclinesform.h"
+#include "../imagedata.h"
+#include "hyperboliclineswidget.h"
 #include "hyperbolic_paintlines.h"
 
-void HyperbolicLinesForm::init()
+HyperbolicLinesWidget::HyperbolicLinesWidget()
 {
 	tokens = {
 		{ '*',{2,2},'x' },
@@ -82,19 +83,15 @@ void HyperbolicLinesForm::init()
 	spinSharpness = new QDoubleSpinBox;
 	spinSharpness->setValue(1.5);
 	layout->addRow(tr("Sharpness"),spinSharpness);
-	buttonDraw = new QPushButton(tr("Draw"));
+	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	sideLayout=layout;
+	setLayout(layout);
 	lines = new hyperbolic_paintlines;
-#ifdef MULTIPAGE
-	saver = new LayeredImageSaver(this);
-#else
-	saver = new ImageSaver(this);
-#endif
-	connect(comboSymmetry,(void (QComboBox::*)(int))&QComboBox::currentIndexChanged,this,&HyperbolicLinesForm::symmetryChanged);
+	connect(comboSymmetry,(void (QComboBox::*)(int))&QComboBox::currentIndexChanged,this,&HyperbolicLinesWidget::symmetryChanged);
+	connect(buttonDraw,&QPushButton::clicked,this,&HyperbolicLinesWidget::draw);
 }
 
-void HyperbolicLinesForm::draw()
+void HyperbolicLinesWidget::draw()
 {
   hyperbolic_symmetry_group *sg;
   flip_type ft = (flip_type)comboSubset->currentIndex();
@@ -157,7 +154,7 @@ void HyperbolicLinesForm::draw()
   else QMessageBox::information(this,"Hyperbolic Paintlines",tr("The chosen group is not hyperbolic.  Try increasing the parameters."));
 }
 
-void HyperbolicLinesForm::symmetryChanged(int n)
+void HyperbolicLinesWidget::symmetryChanged(int n)
 {
 	QLayoutItem *item;
 	while((item = parameterLayout->takeAt(0))!=nullptr) {

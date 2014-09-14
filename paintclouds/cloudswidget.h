@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013, 2014 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,35 +18,45 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _RANDOMIZEWIDGET_H
-#define _RANDOMIZEWIDGET_H
+#ifndef _CLOUDSWIDGET_H
+#define _CLOUDSWIDGET_H
 
-#include <QWidget>
+#include "../imagegeneratorwidget.h"
 
-#include "color.h"
-#include "imagedata.h"
-#include "symmetric_canvas.h"
+class QMouseEvent;
+class RandomizeWidget;
+class paintclouds;
 
-class QPushButton;
-class QSpinBox;
-class ImageData;
+class ColorButton : public QWidget
+{
+  Q_OBJECT
+public:
+  ColorButton(QWidget *parent=0) : QWidget(parent) {
+    setAutoFillBackground(true);
+  }
+  ColorButton(QColor col, QWidget *parent=0) : QWidget(parent) {
+    setPalette(QPalette(col));
+    setAutoFillBackground(true);
+  }
+protected:
+  virtual void mousePressEvent(QMouseEvent *event);
+};
 
-class RandomizeWidget : public QWidget
+class CloudsWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
-	RandomizeWidget(QWidget *parent=nullptr);
-signals:
-	void newImage(const ImageData &data);
-public slots:
-	void imageUpdated(const ImageData &data);
-	void randomize();
-private:
-	ImageData receivedData;
-	ImageData usedData;
-	QPushButton *buttonRandomize;
-	QSpinBox *spinXTiles;
-	QSpinBox *spinYTiles;
+	CloudsWidget();
+protected slots:
+	void draw();
+protected:
+	QSpinBox *spinSize;
+	QComboBox *comboSymmetry;
+	ColorButton *color1;
+	ColorButton *color2;
+	ColorButton *color3;
+	QComboBox *comboRandom;
+	paintclouds *clouds;
 };
 
 #endif

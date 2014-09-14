@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
+ *   Copyright (C) 2014 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,52 +17,37 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
  *   02110-1301  USA                                                       *
  ***************************************************************************/
+ 
+#ifndef _IMAGEDATA_H
+#define _IMAGEDATA_H
 
-#include <QMetaType>
-#include "../basicform.h"
-#include "../randomcolorwidget.h"
-#include "paintlines.h"
+#include <vector>
+#include <QPixmap>
 
-Q_DECLARE_METATYPE(paintfunc);
+class color_t;
+class layer;
+template<typename T>
+class symmetric_canvas;
+template<typename T>
+class wrap_canvas;
+template<typename T>
+class canvas;
 
-class QCheckBox;
-class QComboBox;
-class QSpinBox;
-class RandomizeWidget;
-
-class PaintRuleWidget : public QWidget
+struct ImageData
 {
-	Q_OBJECT
-public:
-	PaintRuleWidget(int weight=0);
-	paintrule rule();
-public slots:
-	void addRule(const QString &s, const paintfunc &f);
-private:
-	QComboBox *comboType;
-	QSpinBox *spinWeight;
-	QCheckBox *checkPastel;
+	ImageData(const QPixmap &pix, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
+		const std::vector<layer> *l=nullptr, const ImageData *p=nullptr)
+		: pixmap(pix), tileable(t), sym_canvas(sc), layers(l), parent(p) {}
+	ImageData() : ImageData(QPixmap()) {}
+	ImageData(const canvas<color_t> &c, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
+		const std::vector<layer> *l=nullptr, const ImageData *p=nullptr);
+	ImageData(const wrap_canvas<color_t> &wc, const ImageData *p=nullptr);
+	ImageData(const symmetric_canvas<color_t> &sc, const std::vector<layer> *l=nullptr);
+	QPixmap pixmap;
+	bool tileable;
+	const symmetric_canvas<color_t> *sym_canvas;
+	const std::vector<layer> *layers;
+	const ImageData *parent;
 };
 
-class LinesForm : public BasicForm
-{
-	Q_OBJECT
-signals:
-	void addRule(const QString &s, const paintfunc &f);
-protected slots:
-	virtual void draw();
-	virtual void init();
-	void updateImage();
-	void loadRule();
-protected:
-	bool checkLuaErrors();
-	QSpinBox *spinSize;
-	QSpinBox *spinColors;
-	QComboBox *comboSymmetry;
-	QCheckBox *checkTiled;
-	std::vector<PaintRuleWidget *> rules;
-	RandomColorWidget *colorWidget;
-	RandomizeWidget *randomizeWidget;
-	RestoreButton *buttonRestore;
-	paintlines *lines;
-};
+#endif

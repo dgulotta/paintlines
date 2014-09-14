@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013, 2014 by Daniel Gulotta                            *
+ *   Copyright (C) 2014 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,36 +17,35 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
  *   02110-1301  USA                                                       *
  ***************************************************************************/
+ 
+#ifndef _CONVERTERWIDGET_H
+#define _CONVERTERWIDGET_H
 
-#ifndef _RANDOMIZEWIDGET_H
-#define _RANDOMIZEWIDGET_H
-
-#include <QWidget>
-
-#include "color.h"
-#include "imagedata.h"
-#include "symmetric_canvas.h"
+#include "imagegeneratorwidget.h"
+#include "mainform.h"
 
 class QPushButton;
-class QSpinBox;
-class ImageData;
+class RandomizeWidget;
 
-class RandomizeWidget : public QWidget
+class ConverterWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
-	RandomizeWidget(QWidget *parent=nullptr);
-signals:
-	void newImage(const ImageData &data);
+	ConverterWidget();
+	void makeConnections(MainForm *f);
 public slots:
 	void imageUpdated(const ImageData &data);
-	void randomize();
+	void restore();
+	void makeHyperbolic();
+	void hexagonalStretch();
 private:
-	ImageData receivedData;
-	ImageData usedData;
-	QPushButton *buttonRandomize;
-	QSpinBox *spinXTiles;
-	QSpinBox *spinYTiles;
+	QSpinBox *spinSize;
+	QComboBox *comboModel;
+	QPushButton *buttonHyperbolic;
+	QPushButton *buttonRestore;
+	QPushButton *buttonHexStretch;
+	RandomizeWidget *randomizeWidget;
+	ImageData restoreData;
 };
 
 #endif

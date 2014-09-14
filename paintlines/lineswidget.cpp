@@ -19,15 +19,12 @@
  ***************************************************************************/
 
 #include <QtWidgets>
-
-#include "linesform.h"
-#include "../randomizewidget.h"
-
+#include "../imagedata.h"
+#include "../randomcolorwidget.h"
+#include "lineswidget.h"
 #ifdef LUARULES
 #include "luafuncs.h"
 #endif
-
-using std::vector;
 
 PaintRuleWidget::PaintRuleWidget(int weight)
 {
@@ -54,7 +51,8 @@ void PaintRuleWidget::addRule(const QString &s, const paintfunc &f)
 	comboType->addItem(s,QVariant::fromValue(f));
 }
 
-void LinesForm::init() {
+LinesWidget::LinesWidget()
+{
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
 	layout->addRow(tr("Size"),spinSize);
@@ -62,11 +60,16 @@ void LinesForm::init() {
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	spinColors = newColorSpin();
 	layout->addRow(tr("Colors"),spinColors);
+#ifdef LUARULES
+	QPushButton *buttonAddRule = new QPushButton(tr("Load rule"));
+	layout->addRow(buttonAddRule);
+	connect(buttonAddRule,&QPushButton::clicked,this,&LinesWidget::loadRule);
+#endif
 	for(int i=0;i<3;i++) {
 		PaintRuleWidget *w = new PaintRuleWidget(i==0?1:0);
 		layout->addRow(w);
 		rules.push_back(w);
-		connect(this,&LinesForm::addRule,w,&PaintRuleWidget::addRule);
+		connect(this,&LinesWidget::addRule,w,&PaintRuleWidget::addRule);
 	}
 	emit addRule("Arc",paintlines_layer_generator::generate_smootharc);
 	emit addRule("Beads",paintlines_layer_generator::generate_smoothline2_beads);
@@ -82,32 +85,15 @@ void LinesForm::init() {
 	emit addRule("Tree",paintlines_layer_generator::generate_tree);
 	colorWidget = new RandomColorWidget;
 	layout->addRow(colorWidget);
-	buttonDraw = new QPushButton(tr("Draw"));
+	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	randomizeWidget = new RandomizeWidget;
-	layout->addRow(randomizeWidget);
-	buttonRestore = new RestoreButton;
-	layout->addRow(buttonRestore);
-	checkTiled = newTileCheck();
-	layout->addRow(checkTiled);
 	lines = new paintlines;
 	lines->set_color_generator(std::bind(&RandomColorWidget::generate,colorWidget));
-#ifdef MULTIPAGE
-	saver = new LayeredImageSaver(this);
-#else
-	saver = new ImageSaver(this);
-#endif
-	sideLayout = layout;
-	connect(buttonRestore,&QPushButton::clicked,this,&LinesForm::updateImage);
-	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
-	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
-	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
-#ifdef LUARULES
-	menuFile->addAction(tr("&Load rule"),this,SLOT(loadRule()));
-#endif
+	setLayout(layout);
+	connect(buttonDraw,&QPushButton::clicked,this,&LinesWidget::draw);
 }
 
-bool LinesForm::checkLuaErrors()
+bool LinesWidget::checkLuaErrors()
 {
 #ifdef LUARULES
 	if(!get_lua_errors().empty()) {
@@ -123,12 +109,12 @@ bool LinesForm::checkLuaErrors()
 	return false;
 }
 
-void LinesForm::draw() {
+void LinesWidget::draw() {
 	if(spinSize->value()%2!=0) {
 		QMessageBox::information(this,"paintlines",tr("The size must be even."));
 		return;
 	}
-	vector<paintrule> rule_list;
+	std::vector<paintrule> rule_list;
 	for(int i=0;i<rules.size();i++)
 		rule_list.push_back(rules[i]->rule());
 	lines->set_rules(rule_list);
@@ -136,17 +122,12 @@ void LinesForm::draw() {
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
 	lines->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
-	updateImage();
+	ImageData data(lines->get_symmetric_image(),&(lines->get_layers()));
+	emit newImage(data);
 	checkLuaErrors();
 }
 
-void LinesForm::updateImage()
-{
-	ImageData data(lines->get_image(),lines->get_symmetric_image(),&(lines->get_layers()));
-	emit newImage(data);
-}
-
-void LinesForm::loadRule()
+void LinesWidget::loadRule()
 {
 #ifdef LUARULES
 	QString fileName = QFileDialog::getOpenFileName(this,"paintlines",QString(),"Lua source code (*.lua);;All files (*)");

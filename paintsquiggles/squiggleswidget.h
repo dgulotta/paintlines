@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013, 2014 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,35 +18,38 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _RANDOMIZEWIDGET_H
-#define _RANDOMIZEWIDGET_H
+#ifndef _SQUIGGLESWIDGET_H
+#define _SQUIGGLESWIDGET_H
 
-#include <QWidget>
+#include "../imagegeneratorwidget.h"
 
-#include "color.h"
-#include "imagedata.h"
-#include "symmetric_canvas.h"
-
-class QPushButton;
+class QComboBox;
 class QSpinBox;
-class ImageData;
+class QDoubleSpinBox;
+class QPushButton;
+class RandomColorWidget;
+class paintsquiggles;
 
-class RandomizeWidget : public QWidget
+class SquigglesWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
-	RandomizeWidget(QWidget *parent=nullptr);
-signals:
-	void newImage(const ImageData &data);
-public slots:
-	void imageUpdated(const ImageData &data);
-	void randomize();
-private:
-	ImageData receivedData;
-	ImageData usedData;
-	QPushButton *buttonRandomize;
-	QSpinBox *spinXTiles;
-	QSpinBox *spinYTiles;
+	SquigglesWidget();
+protected slots:
+	void draw();
+	void updateImage();
+	void resetColors();
+protected:
+	QSpinBox *spinSize;
+	QSpinBox *spinColors;
+	QComboBox *comboSymmetry;
+	QDoubleSpinBox *spinAlpha;
+	QDoubleSpinBox *spinExponent;
+	QDoubleSpinBox *spinThickness;
+	QDoubleSpinBox *spinSharpness;
+	RandomColorWidget *colorWidget;
+	QPushButton *newColorButton;
+	paintsquiggles *squiggles;
 };
 
 #endif

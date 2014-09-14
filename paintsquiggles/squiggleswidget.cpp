@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -20,12 +20,12 @@
 
 #include <QtWidgets>
 
-#include "squigglesform.h"
-#include "../paintsquiggles.h"
+#include "squiggleswidget.h"
+#include "paintsquiggles.h"
+#include "../imagedata.h"
 #include "../randomcolorwidget.h"
-#include "../randomizewidget.h"
 
-void SquigglesForm::init()
+SquigglesWidget::SquigglesWidget()
 {
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
@@ -50,33 +50,19 @@ void SquigglesForm::init()
 	layout->addRow(tr("Sharpness"),spinSharpness);
 	colorWidget = new RandomColorWidget;
 	layout->addRow(colorWidget);
-	buttonDraw = new QPushButton(tr("Draw"));
+	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
 	newColorButton = new QPushButton(tr("Change Colors"));
 	layout->addRow(newColorButton);
 	newColorButton->setEnabled(false);
-	randomizeWidget = new RandomizeWidget;
-	layout->addRow(randomizeWidget);
-	buttonRestore = new RestoreButton;
-	layout->addRow(buttonRestore);
-	checkTiled = newTileCheck();
-	layout->addRow(checkTiled);
 	squiggles=new paintsquiggles;
 	squiggles->set_color_generator(std::bind(&RandomColorWidget::generate,colorWidget));
-#ifdef MULTIPAGE
-	saver = new LayeredImageSaver(this);
-#else
-	saver = new ImageSaver(this);
-#endif
-	sideLayout = layout;
-	connect(buttonRestore,&QPushButton::clicked,this,&SquigglesForm::updateImage);
-	connect(newColorButton,&QPushButton::clicked,this,&SquigglesForm::resetColors);
-	connect(this,&BasicForm::newImage,buttonRestore,&RestoreButton::newImage);
-	connect(this,&BasicForm::newImage,randomizeWidget,&RandomizeWidget::imageUpdated);
-	connect(randomizeWidget,&RandomizeWidget::newImage,this,&BasicForm::newImage);
+	setLayout(layout);
+	connect(buttonDraw,&QPushButton::clicked,this,&SquigglesWidget::draw);
+	connect(newColorButton,&QPushButton::clicked,this,&SquigglesWidget::resetColors);
 }
 
-void SquigglesForm::draw()
+void SquigglesWidget::draw()
 {
 	if(spinSize->value()%2!=0) {
 		QMessageBox::information(this,"paintsquiggles",tr("The size must be even."));
@@ -94,17 +80,16 @@ void SquigglesForm::draw()
 	newColorButton->setEnabled(true);
 }
 
-void SquigglesForm::updateImage()
+void SquigglesWidget::updateImage()
 {
-	ImageData data(squiggles->get_image(),squiggles->get_symmetric_image(),&(squiggles->get_layers()));
+	ImageData data(squiggles->get_symmetric_image(),&(squiggles->get_layers()));
 	emit newImage(data);
 }
 
-void SquigglesForm::resetColors()
+void SquigglesWidget::resetColors()
 {
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
 	squiggles->choose_new_colors();
 	updateImage();
-
 }

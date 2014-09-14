@@ -1,6 +1,6 @@
 #include <QApplication>
-#include "hyperboliclinesform.h"
-#include "../randgen.h"
+#include "mainform.h"
+#include "randgen.h"
 #ifdef MULTIPAGE
 #include <Magick++.h>
 #endif
@@ -12,7 +12,7 @@ int main( int argc, char ** argv )
 	Magick::InitializeMagick(nullptr);
 #endif
     QApplication a( argc, argv );
-    HyperbolicLinesForm w;
+    MainForm w;
     w.show();
     return a.exec();
 }

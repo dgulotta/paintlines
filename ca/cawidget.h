@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2014 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,35 +17,40 @@
  *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA         *
  *   02110-1301  USA                                                       *
  ***************************************************************************/
+ 
+#ifndef _CAWIDGET_H
+#define _CAWIDGET_H
 
-#ifndef _STRIPESFORM_H
-#define _STRIPESFORM_H
+#include <QMetaType>
+#include "../imagegeneratorwidget.h"
+#include "ca.h"
 
-#include "../basicform.h"
-#include "../symmetric_canvas.h"
+Q_DECLARE_METATYPE(const rule*);
 
-class QComboBox;
-class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
-class RandomizeWidget;
-class paintstripes;
 
-class StripesForm : public BasicForm
+class CAWidget : public ImageGeneratorWidget
 {
-  Q_OBJECT
+	Q_OBJECT
+public:
+	CAWidget();
 protected slots:
-	virtual void draw();
-	virtual void init();
-	void updateImage();
+	void draw();
+	void cont();
 protected:
-	QSpinBox *spinSize;
-	QComboBox *comboSymmetry;
-	QDoubleSpinBox *spinAlpha;
-	RandomizeWidget *randomizeWidget;
-	RestoreButton *buttonRestore;
-	QCheckBox *checkTiled;
-	paintstripes *stripes;
+	void addRule(const QString &s, const rule &r);
+	QSpinBox *spinWidth;
+	QSpinBox *spinHeight;
+	QComboBox *comboRule;
+	QSpinBox *spinLeft;
+	QSpinBox *spinRight;
+	QSpinBox *spinTop;
+	QSpinBox *spinBottom;
+	QSpinBox *spinTurns;
+	QDoubleSpinBox *spinIntensity;
+	QPushButton *buttonContinue;
+	QScopedPointer<ca> ca_sim;
 };
 
 #endif

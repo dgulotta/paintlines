@@ -18,66 +18,74 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _HYPERBOLICLINESFORM_H
-#define _HYPERBOLICLINESFORM_H
+#ifndef _MAINFORM_H
+#define _MAINFORM_H
 
-#include "../basicform.h"
+#include <vector>
+#include <QLabel>
+#include <QMainWindow>
+#include "imagedata.h"
 
-#include <QSpinBox>
-
-class QMenuBar;
-class QMenu;
-class QAction;
-class QGroupBox;
+class ImageGeneratorWidget;
+class LoaderWidget;
+class QActionGroup;
 class QComboBox;
-class QLabel;
-class QPushButton;
-class QDoubleSpinBox;
-class hyperbolic_paintlines;
+class QDragEnterEvent;
+class QDropEvent;
+class QPixmap;
+class QSpinBox;
+class QStackedWidget;
 
-struct SymmetryGroupToken
+class ImageWidget : public QLabel
 {
-	SymmetryGroupToken(char t) : type(t), value(0), min_value(0) {}
-	SymmetryGroupToken(int v, int m) : type('#'), value(v), min_value(m) {}
-	char type;
-	int value;
-	int min_value;
+	Q_OBJECT
+	Q_PROPERTY(QPixmap pixmap READ pixmap)
+	Q_PROPERTY(bool tiled READ tiled WRITE setTiled)
+public:
+	ImageWidget()
+		: imageIsTileable(false), tilingEnabled(false)
+		{
+			setAlignment(Qt::AlignLeft|Qt::AlignTop);
+		}
+	const QPixmap *pixmap() const { return &_pixmap; }
+	QSize minimumSizeHint() const { return _pixmap.size(); }
+	bool tiled() const { return tilingEnabled; }
+public slots:
+	void setPixmap(const ImageData &data);
+	void setTiled(bool b) { tilingEnabled = b;  recomputeTiling(); }
+private:
+	void recomputeTiling();
+	QPixmap _pixmap;
+	bool imageIsTileable;
+	bool tilingEnabled;
 };
 
-class SymmetrySpin : public QSpinBox
+class MainForm : public QMainWindow
 {
 	Q_OBJECT
 public:
-	SymmetrySpin(SymmetryGroupToken &t) : token(&t) {
-		setValue(token->value);
-		setMinimum(token->min_value);
-		connect(this,(void (QSpinBox::*)(int))&QSpinBox::valueChanged,this,&SymmetrySpin::update);
-	}
-	virtual QSize minimumSizeHint() const { return sizeHint(); }
-public slots:
-	void update(int n) { token->value=n; }
-private:
-	SymmetryGroupToken *token;
-};
-
-class HyperbolicLinesForm : public BasicForm
-{
-	Q_OBJECT;
+	MainForm();
+	static QPixmap makePixmap(const canvas<color_t> &src);
+signals:
+	void newImage(const ImageData &data);
 protected slots:
-	virtual void draw();
-	virtual void init();
-	void symmetryChanged(int n);
+	bool saveAs();
+	bool saveLayers();
+	void processNewImage(const ImageData &data);
 protected:
-	QComboBox *comboModel;
-	QComboBox *comboSymmetry;
-	QComboBox *comboSubset;
-	QSpinBox *spinSize;
-	QSpinBox *spinColors;
-	QDoubleSpinBox *spinThickness;
-	QDoubleSpinBox *spinSharpness;
-	QBoxLayout *parameterLayout;
-	hyperbolic_paintlines *lines;
-	std::vector<std::vector<SymmetryGroupToken>> tokens;
+	QAction *addDesign(const QString &name, ImageGeneratorWidget *w);
+	void dragEnterEvent(QDragEnterEvent *event);
+	void dropEvent(QDropEvent *event);
+	QStackedWidget *designs;
+	ImageWidget *imageWidget;
+	LoaderWidget *loader;
+	QAction *actionLoader;
+	QMenu *menuDesign;
+	QAction *actionSaveAs;
+	QAction *actionSaveLayers;
+	QActionGroup *designActions;
+	ImageData lastData;
 };
 
 #endif
+

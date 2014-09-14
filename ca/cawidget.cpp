@@ -19,11 +19,12 @@
  ***************************************************************************/
 
 #include <QtWidgets>
-#include "caform.h"
+#include "../imagedata.h"
+#include "cawidget.h"
 
 using std::get;
 
-void CAForm::init()
+CAWidget::CAWidget()
 {
 	QFormLayout *layout = new QFormLayout;
 	spinWidth = new QSpinBox;
@@ -90,22 +91,22 @@ void CAForm::init()
 	spinIntensity->setValue(1.);
 	spinIntensity->setSingleStep(.01);
 	layout->addRow("Intensity",spinIntensity);
-	buttonDraw = new QPushButton("Start");
+	QPushButton *buttonDraw = new QPushButton("Start");
 	layout->addRow(buttonDraw);
 	buttonContinue = new QPushButton("Continue");
 	buttonContinue->setEnabled(false);
 	layout->addRow(buttonContinue);
-	sideLayout = layout;
-	saver = new ImageSaver(this);
-	connect(buttonContinue,&QPushButton::clicked,this,&CAForm::cont);
+	setLayout(layout);
+	connect(buttonContinue,&QPushButton::clicked,this,&CAWidget::cont);
+	connect(buttonDraw,&QPushButton::clicked,this,&CAWidget::draw);
 }
 
-void CAForm::addRule(const QString &s, const rule &r)
+void CAWidget::addRule(const QString &s, const rule &r)
 {
 	comboRule->addItem(s,QVariant::fromValue(&r));
 }
 
-void CAForm::draw()
+void CAWidget::draw()
 {
 	buttonContinue->setEnabled(true);
 	const rule *r = comboRule->itemData(comboRule->currentIndex()).value<const rule *>();
@@ -115,7 +116,7 @@ void CAForm::draw()
 	cont();
 }
 
-void CAForm::cont()
+void CAWidget::cont()
 {
 	ca_sim->run_for(spinTurns->value());
 	ImageData data(ca_sim->get_diff_image(spinIntensity->value()));

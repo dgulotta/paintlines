@@ -21,6 +21,7 @@
 #ifndef _HYPERBOLIC_CONVERTER_H
 #define _HYPERBOLIC_CONVERTER_H
 
+#include "../color.h"
 #include "../hyperbolic_painter.h"
 #include "../symmetric_canvas.h"
 

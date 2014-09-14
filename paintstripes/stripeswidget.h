@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,42 +18,28 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _SQUIGGLESFORM_H
-#define _SQUIGGLESFORM_H
+#ifndef _STRIPESWIDGET_H
+#define _STRIPESWIDGET_H
 
-#include "../basicform.h"
-#include "../symmetric_canvas.h"
+#include "../imagegeneratorwidget.h"
 
 class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;
-class QPushButton;
-class RandomColorWidget;
-class RandomizeWidget;
-class paintsquiggles;
+class paintstripes;
 
-class SquigglesForm : public BasicForm
+class StripesWidget : public ImageGeneratorWidget
 {
-	Q_OBJECT
+  Q_OBJECT
+public:
+	StripesWidget();
 protected slots:
-	virtual void draw();
-	virtual void init();
-	void updateImage();
-	void resetColors();
+	void draw();
 protected:
 	QSpinBox *spinSize;
-	QSpinBox *spinColors;
 	QComboBox *comboSymmetry;
 	QDoubleSpinBox *spinAlpha;
-	QDoubleSpinBox *spinExponent;
-	QDoubleSpinBox *spinThickness;
-	QDoubleSpinBox *spinSharpness;
-	RandomColorWidget *colorWidget;
-	QPushButton *newColorButton;
-	RandomizeWidget *randomizeWidget;
-	RestoreButton *buttonRestore;
-	QCheckBox *checkTiled;
-	paintsquiggles *squiggles;
+	paintstripes *stripes;
 };
 
 #endif

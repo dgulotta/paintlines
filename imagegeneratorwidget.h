@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2014 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,53 +18,26 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _CLOUDSFORM_H
-#define _CLOUDSFORM_H
+#ifndef _IMAGEGENERATORWIDGET_H
+#define _IMAGEGENERATORWIDGET_H
 
+#include <QStringList>
 #include <QWidget>
-#include <QColor>
-#include <QPalette>
 
-#include "../basicform.h"
-#include "../symmetric_canvas.h"
+class QComboBox;
+class QSpinBox;
+class ImageData;
 
-class QMouseEvent;
-class RandomizeWidget;
-class paintclouds;
-
-class ColorButton : public QWidget
-{
-  Q_OBJECT
-public:
-  ColorButton(QWidget *parent=0) : QWidget(parent) {
-    setAutoFillBackground(true);
-  }
-  ColorButton(QColor col, QWidget *parent=0) : QWidget(parent) {
-    setPalette(QPalette(col));
-    setAutoFillBackground(true);
-  }
-protected:
-  virtual void mousePressEvent(QMouseEvent *event);
-};
-
-class CloudsForm : public BasicForm
+class ImageGeneratorWidget : public QWidget
 {
 	Q_OBJECT
-protected slots:
-	virtual void draw();
-	virtual void init();
-	void updateImage();
-protected:
-	QSpinBox *spinSize;
-	QComboBox *comboSymmetry;
-	ColorButton *color1;
-	ColorButton *color2;
-	ColorButton *color3;
-	QComboBox *comboRandom;
-	RandomizeWidget *randomizeWidget;
-	RestoreButton *buttonRestore;
-	QCheckBox *checkTiled;
-	paintclouds *clouds;
+public:
+	static QComboBox * newSymmetryCombo();
+	static QSpinBox * newSizeSpin();
+	static QSpinBox * newColorSpin();
+	static const QStringList symmetryStrings;
+signals:
+	void newImage(const ImageData &data);
 };
 
 #endif
