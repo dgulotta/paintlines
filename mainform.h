@@ -65,6 +65,7 @@ class MainForm : public QMainWindow
 	Q_OBJECT
 public:
 	MainForm();
+	static QImage makeImage(const canvas<color_t> &src);
 	static QPixmap makePixmap(const canvas<color_t> &src);
 signals:
 	void newImage(const ImageData &data);
@@ -72,6 +73,7 @@ protected slots:
 	bool saveAs();
 	bool saveLayers();
 	void processNewImage(const ImageData &data);
+	void copy();
 protected:
 	QAction *addDesign(const QString &name, ImageGeneratorWidget *w);
 	void dragEnterEvent(QDragEnterEvent *event);

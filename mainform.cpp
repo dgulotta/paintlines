@@ -62,6 +62,7 @@ MainForm::MainForm()
 #ifndef MULTIPAGE
 	actionSaveLayers->setVisible(false);
 #endif
+	menuFile->addAction(tr("&Copy"),this,SLOT(copy()));
 	menuFile->addAction(tr("E&xit"),this,SLOT(close()));
 	QAction *actionTile = menuView->addAction(tr("&Tile"));
 	addDesign("Cellular Automata",new CAWidget);
@@ -133,7 +134,7 @@ void MainForm::dropEvent(QDropEvent *event)
 		actionLoader->trigger();	
 }
 
-QPixmap MainForm::makePixmap(const canvas<color_t> &src)
+QImage MainForm::makeImage(const canvas<color_t> &src)
 {
 	QImage image(src.width(),src.height(),QImage::Format_RGB32);
 	for(int j=0;j<src.height();j++)
@@ -141,7 +142,12 @@ QPixmap MainForm::makePixmap(const canvas<color_t> &src)
 			color_t col = src(i,j);
       		image.setPixel(i,j,qRgb(col.red,col.green,col.blue));
 		}
-  	return QPixmap::fromImage(image);
+	return image;
+}
+
+QPixmap MainForm::makePixmap(const canvas<color_t> &src)
+{
+	return QPixmap::fromImage(makeImage(src));
 }
 
 void ImageWidget::setPixmap(const ImageData &data)
@@ -162,3 +168,7 @@ void ImageWidget::recomputeTiling()
 	QLabel::setPixmap(b?QPixmap():_pixmap);
 }
 
+void MainForm::copy()
+{
+	QApplication::clipboard()->setPixmap(lastData.pixmap);
+}
