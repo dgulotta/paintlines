@@ -37,20 +37,23 @@
 
 MainForm::MainForm()
 {
-	QHBoxLayout *layout = new QHBoxLayout;
 	designs = new QStackedWidget;
-	layout->addWidget(designs);
-	imageWidget = new ImageWidget;
-	layout->addWidget(imageWidget,1);
+	QDockWidget *designsDock = new QDockWidget(tr("Design"));
+	designsDock->setWidget(designs);
+	designsDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
+	addDockWidget(Qt::LeftDockWidgetArea,designsDock);
 	ConverterWidget *converterWidget = new ConverterWidget;
-	layout->addWidget(converterWidget);
-	QWidget *w = new QWidget;
-	w->setLayout(layout);
+	QDockWidget *converterDock = new QDockWidget(tr("Postprocessing"));
+	converterDock->setWidget(converterWidget);
+	converterDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
+	tabifyDockWidget(designsDock,converterDock);
+	designsDock->raise();
+	imageWidget = new ImageWidget;
 	QScrollArea *a = new QScrollArea;
 	a->setWidgetResizable(true);
-	a->setWidget(w);
+	a->setWidget(imageWidget);
 	setCentralWidget(a);
-	resize(800,600);
+	resize(1024,768);
 	designActions = new QActionGroup(this);
 	QMenu *menuFile = menuBar()->addMenu(tr("&File"));
 	menuDesign = menuBar()->addMenu(tr("&Design"));
