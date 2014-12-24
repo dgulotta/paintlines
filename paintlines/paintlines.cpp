@@ -22,6 +22,7 @@
 #include "../randgen.h"
 #include <algorithm>
 #include <cmath>
+#include <queue>
 
 using std::lower_bound;
 using std::cos;
@@ -156,6 +157,12 @@ void paintlines_layer_generator::generate_granules(symmetric_canvas<uint8_t>  &g
 {
 	paintlines_layer_generator gen(g);
 	gen.drawgranules();
+}
+
+void paintlines_layer_generator::generate_star(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	gen.drawstar();
 }
 
 void paintlines_layer_generator::drawdotsymmetric(int x, int y, int radius,double brightness)
@@ -728,4 +735,46 @@ void paintlines_layer_generator::drawfractal(int x, int y, int d, int prob)
 		if(random_int(60)<prob) drawfractal(x+d,y+d,d,prob);
 	}
 	else drawdotsymmetric(x,y,5,1.);
+}
+
+struct path_node
+{
+	double d;
+	int x;
+	int y;
+	bool operator < (const path_node &p) const { return d>p.d; }
+};
+
+void paintlines_layer_generator::drawstar()
+{
+	symmetric_canvas<double> hdist(size(),group(),0.);
+	symmetric_canvas<double> vdist(size(),group(),0.);
+	symmetric_canvas<char> mark(size(),group(),0);
+	double starsize = size()/15;
+	for(int i=0;i<size();i++)
+		for(int j=0;j<size();j++) {
+			hdist(i,j)=random_exponential(1);
+			vdist(i,j)=random_exponential(1);
+		}
+	std::priority_queue<path_node> q;
+	for(int i=random_poisson(5);--i>=0;) {
+		q.push({0.,random_int(size()),random_int(size())});
+	}
+	while(!q.empty()) {
+		path_node p = q.top();
+		q.pop();
+		if(!mark(p.x,p.y)) {
+			if(p.d>starsize) break;
+			mark(p.x,p.y)=1;
+			drawpixelsymmetric(p.x,p.y,colorchop(256*(1-p.d/starsize)));
+			if(!mark(p.x-1,p.y))
+				q.push({p.d+hdist(p.x,p.y),p.x-1,p.y});
+			if(!mark(p.x+1,p.y))
+				q.push({p.d+hdist(p.x+1,p.y),p.x+1,p.y});
+			if(!mark(p.x,p.y-1))
+				q.push({p.d+vdist(p.x,p.y),p.x,p.y-1});
+			if(!mark(p.x,p.y+1))
+				q.push({p.d+vdist(p.x,p.y+1),p.x,p.y+1});
+		}
+	}
 }

@@ -79,9 +79,10 @@ LinesWidget::LinesWidget()
 	emit addRule("Granules",paintlines_layer_generator::generate_granules);
 	emit addRule("Line",paintlines_layer_generator::generate_smoothline2);
 	emit addRule("Loop",paintlines_layer_generator::generate_smoothline5);
+	emit addRule("Orbit",paintlines_layer_generator::generate_orbit);
+	emit addRule("Star",paintlines_layer_generator::generate_star);
 	emit addRule("String",paintlines_layer_generator::generate_open_string);
 	emit addRule("Swirl",paintlines_layer_generator::generate_swirl);
-	emit addRule("Orbit",paintlines_layer_generator::generate_orbit);
 	emit addRule("Tree",paintlines_layer_generator::generate_tree);
 	colorWidget = new RandomColorWidget;
 	layout->addRow(colorWidget);
