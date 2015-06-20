@@ -152,6 +152,19 @@ iterfunc randfunc_pg(symgroup sg)
 	return PT(a0+a1*x+a6*sy,b0+b2*y+b3*cx+b4*sx+b5*cy);
 }
 
+iterfunc randfunc_pgg(symgroup sg)
+{
+	int a1=random_sign(), b2=random_sign();
+	double a0=random_torsion(2), a6=random_normal(1.);
+	double b0=random_torsion(2), b4=random_normal(1.);
+	if(random_bool()) {
+		return PT(a0+a1*x+a6*sy,b0+b2*y+b4*sx);
+	}
+	else {
+		return PT(a0+a1*y+a6*sx,b0+b2*x+b4*sy);
+	}
+}
+
 iterfunc randfunc_p4(symgroup sg)
 {
 	int a1, a2;
@@ -178,6 +191,8 @@ iterfunc random_iterfunc(symgroup sg)
 		return randfunc_p4(sg);
 	case SYM_PG:
 		return randfunc_pg(sg);
+	case SYM_PGG:
+		return randfunc_pgg(sg);
 	case SYM_PM:
 		return randfunc_pm(sg);
 	default:
@@ -190,6 +205,7 @@ function<double(double,double)> distfunc(symgroup sg)
 	switch(sg)
 	{
 	case SYM_PG:
+	case SYM_PGG:
 		return [] (double x, double y) { return cos(x+y)+cos(x-y); };
 	default:
 		return [] (double x, double y) { return cos(x)+cos(y); };
