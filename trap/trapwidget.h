@@ -1,5 +1,11 @@
+
+#ifndef _TRAPWIDGET_H
+#define _TRAPWIDGET_H
+
+#include "../color.h"
+#include "../imagegeneratorwidget.h"
 /***************************************************************************
- *   Copyright (C) 2008, 2014-2015 by Daniel Gulotta                       *
+ *   Copyright (C) 2014-2015 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,28 +24,19 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _IMAGEGENERATORWIDGET_H
-#define _IMAGEGENERATORWIDGET_H
+#include "../symmetric_canvas.h"
 
-#include <QStringList>
-#include <QWidget>
-#include <vector>
-
-class QComboBox;
-class QSpinBox;
-class ImageData;
-
-class ImageGeneratorWidget : public QWidget
+class TrapWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
-	static QComboBox * newSymmetryCombo();
-	static QComboBox * newSymmetryCombo(const std::vector<int> &v);
-	static QSpinBox * newSizeSpin();
-	static QSpinBox * newColorSpin();
-	static const QStringList symmetryStrings;
-signals:
-	void newImage(const ImageData &data);
+	TrapWidget();
+private slots:
+	void draw();
+private:
+	QSpinBox *spinSize;
+	QComboBox *comboSymmetry;
+	symmetric_canvas<color_t> img;
 };
 
 #endif

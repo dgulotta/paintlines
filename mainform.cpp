@@ -25,6 +25,7 @@
 #include "hyperbolic_paintlines/hyperboliclineswidget.h"
 #include "paintclouds/cloudswidget.h"
 #include "paintlines/lineswidget.h"
+#include "trap/trapwidget.h"
 #ifdef FFTWPROGS
 #include "paintsquiggles/squiggleswidget.h"
 #include "paintstripes/stripeswidget.h"
@@ -38,7 +39,7 @@
 MainForm::MainForm()
 {
 	designs = new QStackedWidget;
-	QDockWidget *designsDock = new QDockWidget(tr("Design"));
+	designsDock = new QDockWidget(tr("Design"));
 	designsDock->setWidget(designs);
 	designsDock->setFeatures(QDockWidget::DockWidgetMovable|QDockWidget::DockWidgetFloatable);
 	addDockWidget(Qt::LeftDockWidgetArea,designsDock);
@@ -74,6 +75,7 @@ MainForm::MainForm()
 	loader = new LoaderWidget;
 	actionLoader = addDesign("Import",loader);
 	addDesign("Lines",new LinesWidget);
+	addDesign("Orbit Trap",new TrapWidget);
 #ifdef FFTWPROGS
 	addDesign("Quasiperiodic Stripes",new QuasiStripesWidget);
 	addDesign("Squiggles",new SquigglesWidget);
@@ -121,7 +123,7 @@ QAction *MainForm::addDesign(const QString &name, ImageGeneratorWidget *w)
 	designs->addWidget(w);
 	designActions->addAction(act);
 	act->setCheckable(true);
-	connect(act,&QAction::triggered,[=] () { designs->setCurrentWidget(w); });
+	connect(act,&QAction::triggered,[=] () { designs->setCurrentWidget(w); designsDock->raise(); });
 	connect(w,&ImageGeneratorWidget::newImage,this,&MainForm::newImage);
 	return act;
 }

@@ -86,6 +86,7 @@ protected:
 	QAction *actionSaveAs;
 	QAction *actionSaveLayers;
 	QActionGroup *designActions;
+	QDockWidget *designsDock;
 	ImageData lastData;
 };
 

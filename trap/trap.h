@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2014-2015 by Daniel Gulotta                       *
+ *   Copyright (C) 2014-2015 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,28 +18,18 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _IMAGEGENERATORWIDGET_H
-#define _IMAGEGENERATORWIDGET_H
+#ifndef _TRAP_H
+#define _TRAP_H
 
-#include <QStringList>
-#include <QWidget>
-#include <vector>
+#include <tuple>
+#include <functional>
+#include "../color.h"
+#include "../symmetric_canvas.h"
 
-class QComboBox;
-class QSpinBox;
-class ImageData;
+typedef std::function<std::tuple<double,double>(double,double)> iterfunc;
 
-class ImageGeneratorWidget : public QWidget
-{
-	Q_OBJECT
-public:
-	static QComboBox * newSymmetryCombo();
-	static QComboBox * newSymmetryCombo(const std::vector<int> &v);
-	static QSpinBox * newSizeSpin();
-	static QSpinBox * newColorSpin();
-	static const QStringList symmetryStrings;
-signals:
-	void newImage(const ImageData &data);
-};
+iterfunc random_iterfunc(symgroup sg);
+
+void drawtrap(symmetric_canvas<color_t> &c);
 
 #endif

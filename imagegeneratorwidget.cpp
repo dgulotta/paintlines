@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
+ *   Copyright (C) 2013-2015 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -45,6 +45,14 @@ QComboBox * ImageGeneratorWidget::newSymmetryCombo()
 {
 	QComboBox *comboSymmetry = new QComboBox;
 	comboSymmetry->addItems(symmetryStrings);
+	return comboSymmetry;
+}
+
+QComboBox * ImageGeneratorWidget::newSymmetryCombo(const std::vector<int> &v)
+{
+	QComboBox *comboSymmetry = new QComboBox;
+	for(int g : v)
+		comboSymmetry->addItem(symmetryStrings[g],g);
 	return comboSymmetry;
 }
 

@@ -29,7 +29,9 @@ HEADERS += canvas.h \
 	paintclouds/cloudswidget.h \
 	paintclouds/paintclouds.h \
 	paintlines/lineswidget.h \
-	paintlines/paintlines.h
+	paintlines/paintlines.h \
+	trap/trap.h \
+	trap/trapwidget.h
 
 SOURCES += converterwidget.cpp \
 	hyperbolic_painter.cpp \
@@ -53,7 +55,9 @@ SOURCES += converterwidget.cpp \
 	paintclouds/cloudswidget.cpp \
 	paintclouds/paintclouds.cpp \
 	paintlines/paintlines.cpp \
-	paintlines/lineswidget.cpp
+	paintlines/lineswidget.cpp \
+	trap/trap.cpp \
+	trap/trapwidget.cpp
 
 packagesExist(GraphicsMagick++) {
 	PKGCONFIG += GraphicsMagick++

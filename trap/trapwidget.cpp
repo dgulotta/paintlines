@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2014-2015 by Daniel Gulotta                       *
+ *   Copyright (C) 2014-2015 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,28 +18,27 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _IMAGEGENERATORWIDGET_H
-#define _IMAGEGENERATORWIDGET_H
+#include <QtWidgets>
+#include "../imagedata.h"
+#include "trap.h"
+#include "trapwidget.h"
 
-#include <QStringList>
-#include <QWidget>
-#include <vector>
-
-class QComboBox;
-class QSpinBox;
-class ImageData;
-
-class ImageGeneratorWidget : public QWidget
+TrapWidget::TrapWidget()
 {
-	Q_OBJECT
-public:
-	static QComboBox * newSymmetryCombo();
-	static QComboBox * newSymmetryCombo(const std::vector<int> &v);
-	static QSpinBox * newSizeSpin();
-	static QSpinBox * newColorSpin();
-	static const QStringList symmetryStrings;
-signals:
-	void newImage(const ImageData &data);
-};
+	QFormLayout *layout = new QFormLayout;
+	spinSize = newSizeSpin();
+	layout->addRow(tr("Size"),spinSize);
+	comboSymmetry = newSymmetryCombo({SYM_CM,SYM_CMM,SYM_P1,SYM_P2,SYM_P4,SYM_PG,SYM_PM});
+	layout->addRow(tr("Symmetry"),comboSymmetry);
+	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
+	layout->addRow(buttonDraw);
+	connect(buttonDraw,&QPushButton::clicked,this,&TrapWidget::draw);
+	setLayout(layout);
+}
 
-#endif
+void TrapWidget::draw()
+{
+	img=symmetric_canvas<color_t>(spinSize->value(),(symgroup)comboSymmetry->currentData().toInt());
+	drawtrap(img);
+	emit newImage(ImageData(img));
+}
