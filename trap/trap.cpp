@@ -173,7 +173,10 @@ iterfunc randfunc_p4(symgroup sg)
 		a2=random_range_inclusive(-1,1);
 	} while(a1*a1+a2*a2>1);
 	double a0=random_torsion(2), a5=random_normal(1.), a6=random_normal(1.);
-	return PT(a0+a1*x+a2*y+a5*sx+a6*sy,a0-a2*x+a1*y-a6*sx+a5*sy);
+	if(random_bool())
+		return PT(a0+a1*x+a2*y+a5*sx+a6*sy,a0-a2*x+a1*y-a6*sx+a5*sy);
+	else
+		return PT(a0-a1*x+a2*y-a5*sx+a6*sy,a0+a2*x+a1*y+a6*sx+a5*sy);
 }
 
 
