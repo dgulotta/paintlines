@@ -165,6 +165,54 @@ iterfunc randfunc_pgg(symgroup sg)
 	}
 }
 
+const int mat6[7][4] = {
+	{ 0, 0, 0, 0 },
+	{ 1, 0, 0, 1 },
+	{ 0, 1,-1,-1 },
+	{-1,-1, 1, 0 },
+	{-1, 0, 0,-1 },
+	{ 0, -1,1, 1 },
+	{ 1, 1,-1, 0 },
+};
+
+const double sq1_3 = sqrt(1./3.);
+
+iterfunc randfunc_p3(symgroup sg)
+{
+	int z=random_int(7);
+	const int *m=mat6[z];
+	double a0=random_torsion(3);
+	double a3=random_normal(1./3.), a4=random_normal(sq1_3);
+	double a5=random_normal(1./3.), a6=random_normal(sq1_3);
+	auto tr = PT(a0+m[0]*x+m[1]*y
+		+a3*2*sx+(a4-a3)*sy+(a4+a3)*(sx*cy+cx*sy)
+		+a5*2*cx+(a6-a5)*cy+(a6+a5)*(sx*sy-cx*cy),
+		a0+m[2]*x+m[3]*y
+		+a3*2*sy-(a4+a3)*sx+(a3-a4)*(sx*cy+cx*sy)
+		+a5*2*cy-(a6+a5)*cx+(a5-a6)*(sx*sy-cx*cy));
+	if(random_bool()) {
+		return tr;
+	}
+	else {
+		return [=] (double x, double y) { return tr(y,x); };
+	}
+}
+
+iterfunc randfunc_p6(symgroup sg)
+{
+	int z=random_int(7);
+	const int *m=mat6[z];
+	double a3=random_normal(sq1_3), a4=random_normal(1);
+	auto tr = PT(m[0]*x+m[1]*y+a3*2*sx+(a4-a3)*sy+(a4+a3)*(sx*cy+cx*sy),
+		m[2]*x+m[3]*y+a3*2*sy-(a4+a3)*sx+(a3-a4)*(sx*cy+cx*sy));
+	if(random_bool()) {
+		return tr;
+	}
+	else {
+		return [=] (double x, double y) { return tr(y,x); };
+	}
+}
+
 iterfunc randfunc_p4(symgroup sg)
 {
 	int a1, a2;
@@ -190,8 +238,12 @@ iterfunc random_iterfunc(symgroup sg)
 		return randfunc_cmm(sg);
 	case SYM_P2:
 		return randfunc_p2(sg);
+	case SYM_P3:
+		return randfunc_p3(sg);
 	case SYM_P4:
 		return randfunc_p4(sg);
+	case SYM_P6:
+		return randfunc_p6(sg);
 	case SYM_PG:
 		return randfunc_pg(sg);
 	case SYM_PGG:
@@ -210,6 +262,9 @@ function<double(double,double)> distfunc(symgroup sg)
 	case SYM_PG:
 	case SYM_PGG:
 		return [] (double x, double y) { return cos(x+y)+cos(x-y); };
+	case SYM_P3:
+	case SYM_P6:
+		return [] (double x, double y) { return (cos(x)+cos(y)+cos(x+y)-.75)*(8./9.); };
 	default:
 		return [] (double x, double y) { return cos(x)+cos(y); };
 	}
