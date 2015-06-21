@@ -143,6 +143,42 @@ iterfunc randfunc_pm(symgroup sg)
 	}
 }
 
+iterfunc randfunc_pmg(symgroup sg)
+{
+	if(random_bool()) {
+		double a0=random_torsion(2), b0=random_torsion(2);
+		int a1=random_sign(), b2=random_range_inclusive(-1,1);
+		double a3=random_normal(1.), b3=random_normal(1.), b4=random_normal(1.);
+		return PT(a0+a1*x+a3*cx*sy,b0+b2*y+b3*sx+b4*sy);
+	}
+	else {
+		double a0=random_angle(), b0=random_angle();
+		double a3=random_normal(1.), a4=random_normal(1.);
+		double b3=random_normal(1.), b4=random_normal(1.);
+		return PT(a0+a3*cy+a4*sx*sy,b0+b3*cy+b4*sx*sy);
+	}
+}
+
+iterfunc randfunc_pmm(symgroup sg)
+{
+	if(random_bool()) {
+		double a0=random_torsion(2), b0=random_torsion(2);
+		int a1=random_range_inclusive(-1,1), b2=random_range_inclusive(-1,1);
+		double a3=random_normal(1.), a4=random_normal(1.);
+		double b3=random_normal(1.), b4=random_normal(1.);
+		if(random_bool())
+			return PT(a0+a1*x+a3*sx+a4*sx*cy,b0+b2*y+b3*sy+b4*sy*cx);
+		else
+			return PT(a0+a1*y+a3*sy+a4*sy*cx,b0+b2*x+b3*sx+b4*sx*cy);
+	}
+	else {
+		double a0=random_angle(), b0=random_angle();
+		double a3=random_normal(1.), a4=random_normal(1.), a5=random_normal(1.);
+		double b3=random_normal(1.), b4=random_normal(1.), b5=random_normal(1.);
+		return PT(a0+a3*cx+a4*cy+a5*cx*cy,b0+a3*cx+a4*cy+b5*cx*cy);
+	}
+}
+
 iterfunc randfunc_pg(symgroup sg)
 {
 	int a1=random_sign(), b2=random_range_inclusive(-1,1);
@@ -250,6 +286,10 @@ iterfunc random_iterfunc(symgroup sg)
 		return randfunc_pgg(sg);
 	case SYM_PM:
 		return randfunc_pm(sg);
+	case SYM_PMG:
+		return randfunc_pmg(sg);
+	case SYM_PMM:
+		return randfunc_pmm(sg);
 	default:
 		return randfunc_p1(sg);
 	}
@@ -262,6 +302,8 @@ function<double(double,double)> distfunc(symgroup sg)
 	case SYM_PG:
 	case SYM_PGG:
 		return [] (double x, double y) { return cos(x+y)+cos(x-y); };
+	case SYM_PMG:
+		return [] (double x, double y) { return cos(x+y)-cos(x-y); };
 	case SYM_P3:
 	case SYM_P6:
 		return [] (double x, double y) { return (cos(x)+cos(y)+cos(x+y)-.75)*(8./9.); };
