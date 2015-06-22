@@ -35,7 +35,7 @@ private slots:
 	void draw();
 private:
 	QSpinBox *spinSize;
-	QComboBox *comboSymmetry;
+	SymmetryCombo *comboSymmetry;
 	symmetric_canvas<color_t> img;
 };
 

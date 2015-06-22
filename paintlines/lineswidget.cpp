@@ -56,7 +56,7 @@ LinesWidget::LinesWidget()
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
 	layout->addRow(tr("Size"),spinSize);
-	comboSymmetry = newSymmetryCombo();
+	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	spinColors = newColorSpin();
 	layout->addRow(tr("Colors"),spinColors);
@@ -122,7 +122,7 @@ void LinesWidget::draw() {
 	lines->set_ncolors(spinColors->value());
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
-	lines->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
+	lines->paint(spinSize->value(),(symgroup)comboSymmetry->group());
 	ImageData data(lines->get_symmetric_image(),&(lines->get_layers()));
 	emit newImage(data);
 	checkLuaErrors();

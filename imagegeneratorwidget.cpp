@@ -20,8 +20,33 @@
 
 #include <QtWidgets>
 #include "imagegeneratorwidget.h"
+#include "randgen.h"
 
-const QStringList ImageGeneratorWidget::symmetryStrings = {
+SymmetryCombo::SymmetryCombo(bool random)
+{
+	for(int g=0;g<symmetryStrings.size();g++)
+		addItem(symmetryStrings[g],g);
+	if(random)
+		addItem("Random",-1);
+}
+
+SymmetryCombo::SymmetryCombo(const std::vector<int> &v, bool random)
+{
+	for(int g : v)
+		addItem(symmetryStrings[g],g);
+	if(random)
+		addItem("Random",-1);
+}
+
+int SymmetryCombo::group()
+{
+	int g=currentData().toInt();
+	if(g<0)
+		return itemData(random_int(count()-1)).toInt();
+	return g;
+}
+
+const QStringList SymmetryCombo::symmetryStrings = {
 	tr("CM (*x)"),
 	tr("CMM (2*22)"),
 	tr("P1 (o)"),
@@ -40,21 +65,6 @@ const QStringList ImageGeneratorWidget::symmetryStrings = {
 	tr("PMG (22*)"),
 	tr("PMM (*2222)"),
 };
-
-QComboBox * ImageGeneratorWidget::newSymmetryCombo()
-{
-	QComboBox *comboSymmetry = new QComboBox;
-	comboSymmetry->addItems(symmetryStrings);
-	return comboSymmetry;
-}
-
-QComboBox * ImageGeneratorWidget::newSymmetryCombo(const std::vector<int> &v)
-{
-	QComboBox *comboSymmetry = new QComboBox;
-	for(int g : v)
-		comboSymmetry->addItem(symmetryStrings[g],g);
-	return comboSymmetry;
-}
 
 QSpinBox * ImageGeneratorWidget::newSizeSpin() {
 	QSpinBox *spinSize = new QSpinBox;

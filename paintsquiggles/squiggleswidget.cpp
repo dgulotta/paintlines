@@ -30,7 +30,7 @@ SquigglesWidget::SquigglesWidget()
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
 	layout->addRow(tr("Size"),spinSize);
-	comboSymmetry = newSymmetryCombo();
+	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	spinColors = newColorSpin();
 	layout->addRow(tr("Colors"),spinColors);
@@ -75,7 +75,7 @@ void SquigglesWidget::draw()
 	squiggles->set_sharpness(spinSharpness->value());
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
-	squiggles->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
+	squiggles->paint(spinSize->value(),(symgroup)comboSymmetry->group());
 	updateImage();
 	newColorButton->setEnabled(true);
 }

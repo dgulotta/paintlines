@@ -29,7 +29,7 @@ StripesWidget::StripesWidget()
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
 	layout->addRow(tr("Size"),spinSize);
-	comboSymmetry = newSymmetryCombo();
+	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	spinAlpha = new QDoubleSpinBox;
 	spinAlpha->setMinimum(.01);
@@ -51,7 +51,7 @@ void StripesWidget::draw()
 		return;
 	}
 	stripes->set_alpha(spinAlpha->value());
-	stripes->paint(spinSize->value(),(symgroup)comboSymmetry->currentIndex());
+	stripes->paint(spinSize->value(),(symgroup)comboSymmetry->group());
 	ImageData data(stripes->get_symmetric_image());
 	emit newImage(data);
 }

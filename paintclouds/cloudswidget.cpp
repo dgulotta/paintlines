@@ -37,7 +37,7 @@ CloudsWidget::CloudsWidget()
 	QFormLayout *layout = new QFormLayout;
 	spinSize = newSizeSpin();
 	layout->addRow(tr("Size"),spinSize);
-	comboSymmetry = newSymmetryCombo();
+	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	comboRandom = new QComboBox;
 	comboRandom->addItem(tr("Cauchy"));
@@ -71,7 +71,7 @@ void CloudsWidget::draw()
 		QMessageBox::information(this,"paintclouds",tr("The size must be even."));
 		return;
 	}
-	symgroup sg=symgroup(comboSymmetry->currentIndex());
+	symgroup sg=symgroup(comboSymmetry->group());
 	QColor c=color1->palette().color(QPalette::Window);
     clouds->set_color1(c.red(),c.green(),c.blue());
     c=color2->palette().color(QPalette::Window);

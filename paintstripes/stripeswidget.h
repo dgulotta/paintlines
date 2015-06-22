@@ -37,7 +37,7 @@ protected slots:
 	void draw();
 protected:
 	QSpinBox *spinSize;
-	QComboBox *comboSymmetry;
+	SymmetryCombo *comboSymmetry;
 	QDoubleSpinBox *spinAlpha;
 	paintstripes *stripes;
 };

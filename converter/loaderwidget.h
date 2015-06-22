@@ -45,7 +45,7 @@ protected slots:
 protected:
 	std::function<QImage()> mimeToImage(const QMimeData *mime);
 	bool open(const QImage &img);
-	QComboBox *comboSymmetry;
+	SymmetryCombo *comboSymmetry;
 	QPushButton *buttonPaste;
 	symmetric_canvas<color_t> image;
 };

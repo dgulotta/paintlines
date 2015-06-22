@@ -43,7 +43,7 @@ bool LoaderWidget::open(const QImage &img)
 		QMessageBox::information(this,"converter",tr("The image size must be even."));
 		return false;
 	}
-	image = symmetric_canvas<color_t>(img.height(),(symgroup)comboSymmetry->currentIndex());
+	image = symmetric_canvas<color_t>(img.height(),(symgroup)comboSymmetry->group());
 	canvas<color_t> &base_image = image.unsafe_get_canvas();
 	for(int j=0;j<img.height();j++)
 		for(int i=0;i<img.width();i++) {
@@ -57,7 +57,7 @@ bool LoaderWidget::open(const QImage &img)
 LoaderWidget::LoaderWidget()
 {
 	QFormLayout *layout = new QFormLayout;
-	comboSymmetry = newSymmetryCombo();
+	comboSymmetry = new SymmetryCombo(false);
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	QPushButton *buttonOpen = new QPushButton(tr("Open file"));
 	layout->addRow(buttonOpen);

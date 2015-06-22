@@ -60,7 +60,7 @@ protected:
 	bool checkLuaErrors();
 	QSpinBox *spinSize;
 	QSpinBox *spinColors;
-	QComboBox *comboSymmetry;
+	SymmetryCombo *comboSymmetry;
 	std::vector<PaintRuleWidget *> rules;
 	RandomColorWidget *colorWidget;
 	paintlines *lines;

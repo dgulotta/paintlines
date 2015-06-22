@@ -42,7 +42,7 @@ protected slots:
 protected:
 	QSpinBox *spinSize;
 	QSpinBox *spinColors;
-	QComboBox *comboSymmetry;
+	SymmetryCombo *comboSymmetry;
 	QDoubleSpinBox *spinAlpha;
 	QDoubleSpinBox *spinExponent;
 	QDoubleSpinBox *spinThickness;

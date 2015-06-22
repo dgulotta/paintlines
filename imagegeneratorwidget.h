@@ -23,21 +23,28 @@
 
 #include <QStringList>
 #include <QWidget>
+#include <QComboBox>
 #include <vector>
 
-class QComboBox;
 class QSpinBox;
 class ImageData;
+
+class SymmetryCombo : public QComboBox
+{
+	Q_OBJECT
+public:
+	SymmetryCombo(bool random=true);
+	SymmetryCombo(const std::vector<int> &groups,bool random=true);
+	int group();
+	static const QStringList symmetryStrings;
+};
 
 class ImageGeneratorWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	static QComboBox * newSymmetryCombo();
-	static QComboBox * newSymmetryCombo(const std::vector<int> &v);
 	static QSpinBox * newSizeSpin();
 	static QSpinBox * newColorSpin();
-	static const QStringList symmetryStrings;
 signals:
 	void newImage(const ImageData &data);
 };
