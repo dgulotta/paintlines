@@ -237,6 +237,52 @@ iterfunc randfunc_p3(symgroup sg)
 	}
 }
 
+function<tuple<double,double>(double,double)> random_p3m1() {
+	int z=random_int(6);
+	switch(z) {
+		case 0:
+			return [] (double x, double y) { return make_tuple(x,y); };
+		case 1:
+			return [] (double x, double y) { return make_tuple(y,-x-y); };
+		case 2:
+			return [] (double x, double y) { return make_tuple(-x-y,x); };
+		case 3:
+			return [] (double x, double y) { return make_tuple(y,x); };
+		case 4:
+			return [] (double x, double y) { return make_tuple(x,-y-x); };
+		default:
+			return [] (double x, double y) { return make_tuple(-y-x,y); };
+	}
+}
+
+iterfunc randfunc_p31m(symgroup sg)
+{
+	if(random_bool()) {
+		int a1=random_range_inclusive(-1,1);
+		double a3=random_normal(.5), a4=random_normal(.5), a5=random_normal(.5), a6=random_normal(.5);
+		auto tr = random_p3m1();
+		return [=] (double x, double y) {
+			complex<double> ex=polar(1.,x), ey=polar(1.,y), ez=1./(ex*ey);
+			complex<double> eyz=ey/ez, ezx=ez/ex, exy=ex/ey;
+			complex<double> x1=(ezx-exy), y1=(exy-eyz);
+			return tr(a1*x+a3*(ey-ez).real()+a4*(2.*ex-ey-ez).imag()+a5*x1.real()+a6*x1.imag(),
+					a1*y+a3*(ez-ex).real()+a4*(2.*ey-ex-ez).imag()+a5*y1.real()+a6*y1.imag());
+		};
+	}
+	else {
+		double a0=random_angle(), b0=random_angle();
+		double a3=random_normal(1.), a4=random_normal(1.), a5=random_normal(1.);
+		double b3=random_normal(1.), b4=random_normal(1.), b5=random_normal(1.);
+		return [=] (double x, double y) {
+			complex<double> ex=polar(1.,x), ey=polar(1.,y), ez=1./(ex*ey);
+			complex<double> eyz=ey/ez, ezx=ez/ex, exy=ex/ey;
+			complex<double> s=eyz+ezx+exy;
+			double r = ex.real()+ey.real()+ez.real();
+			return make_tuple(a0+a3*r+a4*s.real()+a5*s.imag(),b0+b3*r+a4*s.real()+a5*s.imag());
+		};
+	}
+}
+
 iterfunc randfunc_p3m1(symgroup sg)
 {
 	if(random_bool()) {
@@ -244,22 +290,7 @@ iterfunc randfunc_p3m1(symgroup sg)
 		int a1=random_range_inclusive(-1,1);
 		double a3=random_normal(.5), a4=random_normal(.5), a5=random_normal(.5);
 		double a6=random_normal(.5);
-		function<tuple<double,double>(double,double)> tr;
-		int z=random_int(6);
-		switch(z) {
-			case 0:
-				tr = [] (double x, double y) { return make_tuple(x,y); };
-			case 1:
-				tr = [] (double x, double y) { return make_tuple(y,-x-y); };
-			case 2:
-				tr = [] (double x, double y) { return make_tuple(-x-y,x); };
-			case 3:
-				tr = [] (double x, double y) { return make_tuple(y,x); };
-			case 4:
-				tr = [] (double x, double y) { return make_tuple(x,-y-x); };
-			default:
-				tr = [] (double x, double y) { return make_tuple(-y-x,y); };
-		}
+		function<tuple<double,double>(double,double)> tr=random_p3m1();
 		return [=] (double x, double y) {
 			complex<double> ex=polar(1.,x), ey=polar(1.,y), ez=1./(ex*ey);
 			complex<double> eyz=ey/ez, ezx=ez/ex, exy=ex/ey;
@@ -319,6 +350,8 @@ iterfunc random_iterfunc(symgroup sg)
 		return randfunc_p2(sg);
 	case SYM_P3:
 		return randfunc_p3(sg);
+	case SYM_P31M:
+		return randfunc_p31m(sg);
 	case SYM_P3M1:
 		return randfunc_p3m1(sg);
 	case SYM_P4:
@@ -350,6 +383,7 @@ function<double(double,double)> distfunc(symgroup sg)
 	case SYM_PMG:
 		return [] (double x, double y) { return cos(x+y)-cos(x-y); };
 	case SYM_P3:
+	case SYM_P31M:
 	case SYM_P3M1:
 	case SYM_P6:
 		return [] (double x, double y) { return (cos(x)+cos(y)+cos(x+y)-.75)*(8./9.); };
