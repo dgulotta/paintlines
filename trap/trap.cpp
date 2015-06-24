@@ -28,6 +28,7 @@ using std::function;
 using std::make_tuple;
 using std::complex;
 using std::polar;
+using std::vector;
 
 #define PT(a,b) [=] (double x, double y) { double cx = cos(x), cy = cos(y), \
 	sx = sin(x), sy = sin(y); return make_tuple((a),(b)); }
@@ -237,36 +238,21 @@ iterfunc randfunc_p3(symgroup sg)
 	}
 }
 
-function<tuple<double,double>(double,double)> random_p3m1() {
-	int z=random_int(6);
-	switch(z) {
-		case 0:
-			return [] (double x, double y) { return make_tuple(x,y); };
-		case 1:
-			return [] (double x, double y) { return make_tuple(y,-x-y); };
-		case 2:
-			return [] (double x, double y) { return make_tuple(-x-y,x); };
-		case 3:
-			return [] (double x, double y) { return make_tuple(y,x); };
-		case 4:
-			return [] (double x, double y) { return make_tuple(x,-y-x); };
-		default:
-			return [] (double x, double y) { return make_tuple(-y-x,y); };
-	}
-}
+const vector<transformation<double>> p3m1_trans = generate_transforms(SYM_P3M1,0.);
+const vector<transformation<double>> p4m_trans = generate_transforms(SYM_P4M,0.);
 
 iterfunc randfunc_p31m(symgroup sg)
 {
 	if(random_bool()) {
 		int a1=random_range_inclusive(-1,1);
 		double a3=random_normal(.5), a4=random_normal(.5), a5=random_normal(.5), a6=random_normal(.5);
-		auto tr = random_p3m1();
+		auto tr = random_choice(p3m1_trans);
 		return [=] (double x, double y) {
 			complex<double> ex=polar(1.,x), ey=polar(1.,y), ez=1./(ex*ey);
 			complex<double> eyz=ey/ez, ezx=ez/ex, exy=ex/ey;
 			complex<double> x1=(ezx-exy), y1=(exy-eyz);
-			return tr(a1*x+a3*(ey-ez).real()+a4*(2.*ex-ey-ez).imag()+a5*x1.real()+a6*x1.imag(),
-					a1*y+a3*(ez-ex).real()+a4*(2.*ey-ex-ez).imag()+a5*y1.real()+a6*y1.imag());
+			return tr(make_tuple(a1*x+a3*(ey-ez).real()+a4*(2.*ex-ey-ez).imag()+a5*x1.real()+a6*x1.imag(),
+					a1*y+a3*(ez-ex).real()+a4*(2.*ey-ex-ez).imag()+a5*y1.real()+a6*y1.imag()));
 		};
 	}
 	else {
@@ -290,13 +276,13 @@ iterfunc randfunc_p3m1(symgroup sg)
 		int a1=random_range_inclusive(-1,1);
 		double a3=random_normal(.5), a4=random_normal(.5), a5=random_normal(.5);
 		double a6=random_normal(.5);
-		function<tuple<double,double>(double,double)> tr=random_p3m1();
+		auto tr=random_choice(p3m1_trans);
 		return [=] (double x, double y) {
 			complex<double> ex=polar(1.,x), ey=polar(1.,y), ez=1./(ex*ey);
 			complex<double> eyz=ey/ez, ezx=ez/ex, exy=ex/ey;
 			complex<double> x1 = 2.*ex-ey-ez;
 			complex<double> y1 = 2.*ey-ex-ez;
-			return tr(a0+a1*x+a3*x1.real()+a4*x1.imag()+a5*(ezx-exy).imag()+a6*(2.*eyz-exy-ezx).real(),a0+a1*y+a3*y1.real()+a4*y1.imag()+a5*(exy-eyz).imag()+a6*(2.*ezx-exy-eyz).real());
+			return tr(make_tuple(a0+a1*x+a3*x1.real()+a4*x1.imag()+a5*(ezx-exy).imag()+a6*(2.*eyz-exy-ezx).real(),a0+a1*y+a3*y1.real()+a4*y1.imag()+a5*(exy-eyz).imag()+a6*(2.*ezx-exy-eyz).real()));
 		};
 	}
 	else {
@@ -305,6 +291,32 @@ iterfunc randfunc_p3m1(symgroup sg)
 		double b3 = random_normal(1.), b4=random_normal(1.);
 		return PT(a0+a3*(sx+sy-(sx*cy+cx*sy))+a4*(cx+cy+(cx*cy-sx*sy)),
 				b0+b3*(sx+sy-(sx*cy+cx*sy))+b4*(cx+cy+(cx*cy-sx*sy)));
+	}
+}
+
+iterfunc randfunc_p6m(symgroup sg) {
+	if(random_bool()) {
+		int a1=random_range_inclusive(-1,1);
+		double a3=random_normal(1.), a4=random_normal(1.);
+		auto tr=random_choice(p3m1_trans);
+		return [=] (double x, double y) {
+			complex<double> ex=polar(1.,x), ey=polar(1.,y), ez=1./(ex*ey);
+			complex<double> eyz=ey/ez, ezx=ez/ex, exy=ex/ey;
+			return tr(make_tuple(a1*x+a3*(2*ex.imag()-ey.imag()-ez.imag())+a4*(ezx.imag()-exy.imag()),
+						a1*y+a3*(2*ey.imag()-ex.imag()-ez.imag())+a4*(exy.imag()-eyz.imag())));
+		};
+	}
+	else {
+		double a0=random_angle(), b0=random_angle();
+		double a3=random_normal(1.), a4=random_normal(1.);
+		double b3=random_normal(1.), b4=random_normal(1.);
+		return [=] (double x, double y) {
+			complex<double> ex=polar(1.,x), ey=polar(1.,y), ez=1./(ex*ey);
+			complex<double> eyz=ey/ez, ezx=ez/ex, exy=ex/ey;
+			double r1 = ex.real()+ey.real()+ez.real();
+			double r2 = eyz.real()+ezx.real()+exy.real();
+			return make_tuple(a0+a3*r1+a4*r2,b0+b3*r1+b4*r2);
+		};
 	}
 }
 
@@ -337,6 +349,33 @@ iterfunc randfunc_p4(symgroup sg)
 		return PT(a0-a1*x+a2*y-a5*sx+a6*sy,a0+a2*x+a1*y+a6*sx+a5*sy);
 }
 
+iterfunc randfunc_p4m(symgroup sg)
+{
+	if(random_bool()) {
+		auto tr = random_choice(p4m_trans);
+		double a0=random_torsion(2);
+		int a1=random_range_inclusive(-1,1);
+		double a3=random_normal(1.), a4=random_normal(1.), a5=random_normal(1.);
+		auto fn = PT(a0+a1*x+a3*sx+a4*sx*cy+a5*sx*cx,a0+a1*y+a3*sy+a4*sy*cx+a5*sy*cy);
+		return [=] (double x, double y) { return tr(fn(x,y)); };
+	}
+	else {
+		double a0=random_angle(), b0=random_angle();
+		double a3=random_normal(1.), a4=random_normal(1.);
+		double b3=random_normal(1.), b4=random_normal(1.);
+		return PT(a0+a3*(cx+cy)+a4*cx*cy,b0+b3*(cx+cy)+b4*cx*cy);
+	}
+}
+
+iterfunc randfunc_p4g(symgroup sg)
+{
+	double a0=random_torsion(2);
+	int a1=random_sign();
+	double a3=random_normal(1.), a4=random_normal(1.), a5=random_normal(1.);
+	auto tr = random_choice(p4m_trans);
+	auto fn = PT(a0+a1*x+a3*sy+a4*sx*cx+a5*sx*cy,a0+a1*y-a3*sx+a4*sy*cy+a5*sy*cx);
+	return [=] (double x, double y) { return tr(fn(x,y)); };
+}
 
 iterfunc random_iterfunc(symgroup sg)
 {
@@ -356,8 +395,14 @@ iterfunc random_iterfunc(symgroup sg)
 		return randfunc_p3m1(sg);
 	case SYM_P4:
 		return randfunc_p4(sg);
+	case SYM_P4G:
+		return randfunc_p4g(sg);
+	case SYM_P4M:
+		return randfunc_p4m(sg);
 	case SYM_P6:
 		return randfunc_p6(sg);
+	case SYM_P6M:
+		return randfunc_p6m(sg);
 	case SYM_PG:
 		return randfunc_pg(sg);
 	case SYM_PGG:
@@ -379,6 +424,7 @@ function<double(double,double)> distfunc(symgroup sg)
 	{
 	case SYM_PG:
 	case SYM_PGG:
+	case SYM_P4G:
 		return [] (double x, double y) { return cos(x+y)+cos(x-y); };
 	case SYM_PMG:
 		return [] (double x, double y) { return cos(x+y)-cos(x-y); };
@@ -386,6 +432,7 @@ function<double(double,double)> distfunc(symgroup sg)
 	case SYM_P31M:
 	case SYM_P3M1:
 	case SYM_P6:
+	case SYM_P6M:
 		return [] (double x, double y) { return (cos(x)+cos(y)+cos(x+y)-.75)*(8./9.); };
 	default:
 		return [] (double x, double y) { return cos(x)+cos(y); };
