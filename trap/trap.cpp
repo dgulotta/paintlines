@@ -454,9 +454,10 @@ void drawtrap(symmetric_canvas<color_t> &c)
 	for(int yy=0;yy<c.size();yy++)
 		for(int xx=0;xx<c.size();xx++) {
 		double x = xx*2*M_PI/c.size(), y = yy*2*M_PI/c.size(), dm=-2;
-		for(int i=0;i<100;i++) {
+		for(int i=0;i<20;i++) {
 			tie(x,y)=f(x,y);
-			dm = max(dm,d(x,y));
+			if(i>=5)
+				dm = max(dm,d(x,y));
 		}
 		uint8_t v=colorchop(64*(dm+2));
 		cc(xx,yy)=color_t(v,v,v);
