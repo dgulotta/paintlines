@@ -60,7 +60,7 @@ private:
 	int size;
 	symgroup group;
 	complex<double> *array;
-	std::vector<transformation> transformations;
+	std::vector<transformation<int>> transformations;
 	fftw_plan plan;
 	double phase;
 };

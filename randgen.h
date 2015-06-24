@@ -22,6 +22,7 @@
 #define _RANDGEN_H
 
 #include <random>
+#include <vector>
 
 void seed();
 
@@ -63,5 +64,8 @@ double random_levy_skew_sqrt(double alpha);
 bool random_bernoulli(double p);
 
 int random_poisson(double mu);
+
+template<typename T>
+T random_choice(const std::vector<T> &v) { return v[random_int(v.size())]; }
 
 #endif

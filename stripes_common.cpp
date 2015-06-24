@@ -27,7 +27,7 @@ using std::polar;
 
 complex<double> stripes_grid::get_symmetric(int x, int y) const {
 	complex<double> sum(0,0);
-	point p(x,y);
+	point<int> p(x,y);
 	int xn, yn;
 	for(auto &t : transformations) {
 		std::tie(xn,yn)=t(p);

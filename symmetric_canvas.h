@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013, 2015 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,24 +22,10 @@
 #define _SYMMETRIC_CANVAS_H
 
 #include "canvas.h"
+#include "symmetry.h"
 #include <algorithm>
 #include <tuple>
 #include <vector>
-
-typedef std::tuple<int,int> point;
-typedef std::function<point(const point &)> transformation;
-
-enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
-	SYM_P4, SYM_P4G, SYM_P4M, SYM_P6, SYM_P6M, SYM_PG, SYM_PGG, SYM_PM,
-	SYM_PMG, SYM_PMM};
-
-static const int num_symmetries[17] = { 2, 4, 1,
-	2, 3, 6, 6, 4, 8, 8, 6, 12, 2, 4, 2, 4, 4};
-
-static const bool sym_is_hexagonal[17] = { false, false, false, false, true, true,
-	true, false, false, false, true, true, false, false, false, false, false };
-
-std::vector<transformation> generate_transforms(symgroup sg, int sz);
 
 template<typename T>
 class symmetric_canvas_ref;
@@ -57,7 +43,7 @@ public:
 	symmetric_canvas_ref<T> operator () (int x, int y) { return symmetric_canvas_ref<T>(*this,x,y); }
 	const T & get(int x, int y) const { return base_canvas(x,y); }
 	void set(int x, int y, const T &t) {
-		point p = std::make_tuple(x,y);
+		point<int> p = std::make_tuple(x,y);
 		int xn, yn;
 		for(auto &f : _transforms) {
 			std::tie(xn,yn) = f(p);
@@ -68,7 +54,7 @@ public:
 	const canvas<T> & as_canvas() const { return base_canvas.as_canvas(); }
 	int size() const { return base_canvas.height(); }
 	symgroup group() const { return _group; }
-	const std::vector<transformation> & transforms() const { return _transforms; }
+	const std::vector<transformation<int>> & transforms() const { return _transforms; }
 	void unsafe_set_symmetry_group(symgroup g) {
 		_group = g;
 		_transforms = generate_transforms(g,size());
@@ -77,7 +63,7 @@ public:
 private:
 	symgroup _group;
 	wrap_canvas<T> base_canvas;
-	std::vector<transformation> _transforms;
+	std::vector<transformation<int>> _transforms;
 };
 
 template<typename T>

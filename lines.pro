@@ -19,6 +19,7 @@ HEADERS += canvas.h \
 	randomcolorwidget.h \
 	randomize.h \
 	randomizewidget.h \
+	symmetry.h \
 	symmetric_canvas.h \
 	ca/ca.h \
 	ca/cawidget.h \
@@ -45,7 +46,6 @@ SOURCES += converterwidget.cpp \
 	randomcolorwidget.cpp \
 	randomize.cpp \
 	randomizewidget.cpp \
-	symmetric_canvas.cpp \
 	ca/ca.cpp \
 	ca/cawidget.cpp \
 	converter/converters.cpp \

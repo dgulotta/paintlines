@@ -25,7 +25,6 @@
 
 #include "color.h"
 #include "imagedata.h"
-#include "symmetric_canvas.h"
 
 class QPushButton;
 class QSpinBox;
