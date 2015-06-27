@@ -26,6 +26,7 @@
 #include "paintclouds/cloudswidget.h"
 #include "paintlines/lineswidget.h"
 #include "trap/trapwidget.h"
+#include "trap/quasitrapwidget.h"
 #ifdef FFTWPROGS
 #include "paintsquiggles/squiggleswidget.h"
 #include "paintstripes/stripeswidget.h"
@@ -76,6 +77,7 @@ MainForm::MainForm()
 	actionLoader = addDesign("Import",loader);
 	addDesign("Lines",new LinesWidget);
 	addDesign("Orbit Trap",new TrapWidget);
+	addDesign("Quasiperiodic Orbit Trap",new QuasiTrapWidget);
 #ifdef FFTWPROGS
 	addDesign("Quasiperiodic Stripes",new QuasiStripesWidget);
 	addDesign("Squiggles",new SquigglesWidget);

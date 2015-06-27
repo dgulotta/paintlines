@@ -31,5 +31,6 @@ typedef std::function<std::tuple<double,double>(double,double)> iterfunc;
 iterfunc random_iterfunc(symgroup sg);
 
 void drawtrap(symmetric_canvas<color_t> &c);
+void drawquasitrap(canvas<color_t> &c,int symmetry,double quasiperiod);
 
 #endif

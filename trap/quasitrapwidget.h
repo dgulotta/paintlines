@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014-2015 by Daniel Gulotta                             *
+ *   Copyright (C) 2015 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,24 +18,28 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _TRAPWIDGET_H
-#define _TRAPWIDGET_H
+#ifndef _QUASITRAPWIDGET_H
+#define _QUASITRAPWIDGET_H
 
 #include "../color.h"
 #include "../imagegeneratorwidget.h"
-#include "../symmetric_canvas.h"
+#include "../canvas.h"
 
-class TrapWidget : public ImageGeneratorWidget
+#include <QDoubleSpinBox>
+
+class QuasiTrapWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
-	TrapWidget();
+	QuasiTrapWidget();
 private slots:
 	void draw();
 private:
-	QSpinBox *spinSize;
-	SymmetryCombo *comboSymmetry;
-	symmetric_canvas<color_t> img;
+	QSpinBox *spinHeight;
+	QSpinBox *spinWidth;
+	QDoubleSpinBox *spinQuasiperiod;
+	QComboBox *comboSymmetry;
+	canvas<color_t> img;
 };
 
 #endif

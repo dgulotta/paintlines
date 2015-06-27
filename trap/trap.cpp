@@ -33,8 +33,6 @@ using std::vector;
 #define PT(a,b) [=] (double x, double y) { double cx = cos(x), cy = cos(y), \
 	sx = sin(x), sy = sin(y); return make_tuple((a),(b)); }
 
-#include <cstdio>
-
 tuple<int,int,int,int> random_matrix(int cmax=1)
 {
 	int p,q,r,s,t,d;
@@ -462,4 +460,154 @@ void drawtrap(symmetric_canvas<color_t> &c)
 		uint8_t v=colorchop(64*(dm+2));
 		cc(xx,yy)=color_t(v,v,v);
 	}
+}
+
+typedef std::function<void(double &, double &, double &, double &)> qiterfunc;
+typedef std::function<double(double, double, double, double)> qdistfunc;
+typedef std::function<tuple<double,double,double,double>(double,double)> qembfunc;
+using std::conj;
+
+qiterfunc random_qiterfunc5()
+{
+	double a0=random_torsion(5);
+	int a1=random_range_inclusive(-1,1);
+	complex<double> a3(random_normal(.2),random_normal(.2));
+	complex<double> a4(random_normal(.2),random_normal(.2));
+	complex<double> a5(random_normal(.2),random_normal(.2));
+	complex<double> a6(random_normal(.2),random_normal(.2));
+	complex<double> a7(random_normal(.2),random_normal(.2));
+	bool flip = random_bool();
+	return [=] (double &x, double &y, double &z, double &w) {
+		complex<double> ex = polar(1.,x), ey=polar(1.,y), ez=polar(1.,z);
+		complex<double> ew = polar(1.,w), ev=conj(ex*ey*ez*ew);
+		double xn = a0 + a1 * x + (a3*(ex-ey)+a4*(ey-ez)+a5*(ez-ew)+a6*(ew-ev)+a7*(ev-ex)).real();
+		double yn = a0 + a1 * y + (a7*(ex-ey)+a3*(ey-ez)+a4*(ez-ew)+a5*(ew-ev)+a6*(ev-ex)).real();
+		double zn = a0 + a1 * z + (a6*(ex-ey)+a7*(ey-ez)+a3*(ez-ew)+a4*(ew-ev)+a5*(ev-ex)).real();
+		double wn = a0 + a1 * w + (a5*(ex-ey)+a6*(ey-ez)+a7*(ez-ew)+a3*(ew-ev)+a4*(ev-ex)).real();
+		if(flip) {
+			x=xn; y=yn; z=zn; w=wn;
+		}
+		else {
+			x=wn; y=zn; z=yn; w=xn;
+		}
+	};
+}
+
+qiterfunc random_qiterfunc8()
+{
+	double a0=random_torsion(2);
+	int a1=random_range_inclusive(-1,1);
+	bool flip=random_bool();
+	complex<double> a3(random_normal(.25),random_normal(.25));
+	complex<double> a4(random_normal(.25),random_normal(.25));
+	complex<double> a5(random_normal(.25),random_normal(.25));
+	complex<double> a6(random_normal(.25),random_normal(.25));
+	return [=] (double &x, double &y, double &z, double &w) {
+		complex<double> ex=polar(1.,x), ey=polar(1.,y);
+		complex<double> ez=polar(1.,z), ew=polar(1.,w);
+		complex<double> cx=conj(ex), cy=conj(ey), cz=conj(ez), cw=conj(ew);
+		double s=(ex.real()+ey.real()+ez.real()+ew.real())/4;
+		double xn = a0+a1*x+(a3*(ex-s)+a4*(ey-s)+a5*(ez-s)+a6*(ew-s)).real();
+		double yn = a0+a1*y+(a3*(ey-s)+a4*(ez-s)+a5*(ew-s)+a6*(cx-s)).real();
+		double zn = a0+a1*z+(a3*(ez-s)+a4*(ew-s)+a5*(cx-s)+a6*(cy-s)).real();
+		double wn = a0+a1*w+(a3*(ew-s)+a4*(cx-s)+a5*(cy-s)+a6*(cz-s)).real();
+		if(flip) {
+			x=xn; y=yn; z=zn; w=wn;
+		}
+		else {
+			x=wn; y=zn; z=yn; w=xn;
+		}
+	};
+}
+
+qiterfunc random_qiterfunc12()
+{
+	int a1=random_range_inclusive(-1,1);
+	bool flip=random_bool();
+	complex<double> a3(random_normal(.25),random_normal(.25));
+	complex<double> a4(random_normal(.25),random_normal(.25));
+	complex<double> a5(random_normal(.25),random_normal(.25));
+	complex<double> a6(random_normal(.25),random_normal(.25));
+	return [=] (double &x, double &y, double &z, double &w) {
+		complex<double> ex=polar(1.,x), ey=polar(1.,y);
+		complex<double> ez=polar(1.,z), ew=polar(1.,w);
+		complex<double> cx=conj(ex);
+		complex<double> ev=ez*cx, eu=ew*conj(ey);
+		double s=(ex.real()+ey.real()+ez.real()+ew.real()+ev.real()+eu.real())/6;
+		double xn=a1*x+(a3*(ex-s)+a4*(ey-s)+a5*(ez-s)+a6*(ew-s)).real();
+		double yn=a1*y+(a3*(ey-s)+a4*(ez-s)+a5*(ew-s)+a6*(ev-s)).real();
+		double zn=a1*z+(a3*(ez-s)+a4*(ew-s)+a5*(ev-s)+a6*(eu-s)).real();
+		double wn=a1*w+(a3*(ew-s)+a4*(ev-s)+a5*(eu-s)+a6*(cx-s)).real();
+		if(flip) {
+			x=xn; y=yn; z=zn; w=wn;
+		}
+		else {
+			x=wn; y=zn; z=yn; w=xn;
+		}
+	};
+}
+
+double qdistfunc5(double x, double y, double z, double w) {
+	return (cos(x)+cos(y)+cos(z)+cos(w)+cos(x+y+z+w))/5;
+}
+
+double qdistfunc8(double x, double y, double z, double w) {
+	return (cos(x)+cos(y)+cos(z)+cos(w))/4;
+}
+
+double qdistfunc12(double x, double y, double z, double w) {
+	return (cos(x)+cos(y)+cos(z)+cos(w)+cos(x-z)+cos(y-w))/6;
+}
+
+tuple<double,double,double,double> qembfunc5(double x, double y) {
+	return make_tuple(
+		0.30901699437494745*x+0.9510565162951535*y,
+		-0.8090169943749473*x+0.5877852522924732*y,
+		-0.8090169943749473*x-0.5877852522924732*y,
+		0.30901699437494745*x-0.9510565162951535*y);
+}
+
+tuple<double,double,double,double> qembfunc8(double x, double y) {
+	return make_tuple(x,M_SQRT1_2*(x+y),y,M_SQRT1_2*(y-x));
+}
+
+const double sq3_2 = sqrt(.75);
+
+tuple<double,double,double,double> qembfunc12(double x, double y) {
+	return make_tuple(x,sq3_2*x+.5*y,.5*x+sq3_2*y,y);
+}
+
+void drawquasitrap(canvas<color_t> &c, int symmetry, double quasiperiod)
+{
+	double xr=random_angle(), yr=random_angle(), zr=random_angle(), wr=random_angle();
+	double fct=2.*M_PI/quasiperiod;
+	qiterfunc f;
+	qembfunc e;
+	qdistfunc d;
+	if(symmetry==8) {
+		f = random_qiterfunc8();
+		e = qembfunc8;
+		d = qdistfunc8;
+	}
+	else if(symmetry==12) {
+		f = random_qiterfunc12();
+		e = qembfunc12;
+		d = qdistfunc12;
+	}
+	else {
+		f = random_qiterfunc5();
+		e = qembfunc5;
+		d = qdistfunc5;
+	}
+	for(int yy=0;yy<c.height();yy++)
+		for(int xx=0;xx<c.width();xx++) {
+			double x,y,z,w;
+			tie(x,y,z,w)=e(fct*xx,fct*yy);
+			x+=xr; y+=yr; z+=zr; w+=wr;
+			for(int i=0;i<15;i++)
+				f(x,y,z,w);
+			double dm = d(x,y,z,w);
+			uint8_t v=colorchop(128*(dm+1));
+			c(xx,yy)=color_t(v,v,v);
+		}
 }

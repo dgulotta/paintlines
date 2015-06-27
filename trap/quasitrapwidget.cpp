@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014-2015 by Daniel Gulotta                             *
+ *   Copyright (C) 2015 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,24 +18,43 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _TRAPWIDGET_H
-#define _TRAPWIDGET_H
+#include <QtWidgets>
+#include "../imagedata.h"
+#include "trap.h"
+#include "quasitrapwidget.h"
 
-#include "../color.h"
-#include "../imagegeneratorwidget.h"
-#include "../symmetric_canvas.h"
-
-class TrapWidget : public ImageGeneratorWidget
+QuasiTrapWidget::QuasiTrapWidget()
 {
-	Q_OBJECT
-public:
-	TrapWidget();
-private slots:
-	void draw();
-private:
-	QSpinBox *spinSize;
-	SymmetryCombo *comboSymmetry;
-	symmetric_canvas<color_t> img;
-};
+	QFormLayout *layout = new QFormLayout;
+	spinHeight = new QSpinBox();
+	spinHeight->setMinimum(1);
+	spinHeight->setMaximum(65536);
+	spinHeight->setValue(900);
+	layout->addRow(tr("Height"),spinHeight);
+	spinWidth = new QSpinBox();
+	spinWidth->setMinimum(1);
+	spinWidth->setMaximum(65536);
+	spinWidth->setValue(1600);
+	layout->addRow(tr("Width"),spinWidth);
+	spinQuasiperiod = new QDoubleSpinBox;
+	spinQuasiperiod->setMinimum(1);
+	spinQuasiperiod->setMaximum(65536);
+	spinQuasiperiod->setValue(100);
+	layout->addRow(tr("Quasiperiod"),spinQuasiperiod);
+	comboSymmetry = new QComboBox;
+	comboSymmetry->addItem("5",5);
+	comboSymmetry->addItem("8",8);
+	comboSymmetry->addItem("12",12);
+	layout->addRow(tr("Symmetry"),comboSymmetry);
+	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
+	layout->addRow(buttonDraw);
+	connect(buttonDraw,&QPushButton::clicked,this,&QuasiTrapWidget::draw);
+	setLayout(layout);
+}
 
-#endif
+void QuasiTrapWidget::draw()
+{
+	img=canvas<color_t>(spinWidth->value(),spinHeight->value());
+	drawquasitrap(img,comboSymmetry->currentData().toInt(),spinQuasiperiod->value());
+	emit newImage(ImageData(img));
+}
