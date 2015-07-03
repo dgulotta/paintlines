@@ -498,19 +498,14 @@ qiterfunc random_qiterfunc8()
 	double a0=random_torsion(2);
 	int a1=random_range_inclusive(-1,1);
 	bool flip=random_bool();
-	complex<double> a3(random_normal(.25),random_normal(.25));
-	complex<double> a4(random_normal(.25),random_normal(.25));
-	complex<double> a5(random_normal(.25),random_normal(.25));
-	complex<double> a6(random_normal(.25),random_normal(.25));
+	double a3=random_normal(.75), a4=random_normal(.75);
+	double a5=random_normal(.75), a6=random_normal(.75);
 	return [=] (double &x, double &y, double &z, double &w) {
-		complex<double> ex=polar(1.,x), ey=polar(1.,y);
-		complex<double> ez=polar(1.,z), ew=polar(1.,w);
-		complex<double> cx=conj(ex), cy=conj(ey), cz=conj(ez), cw=conj(ew);
-		double s=(ex.real()+ey.real()+ez.real()+ew.real())/4;
-		double xn = a0+a1*x+(a3*(ex-s)+a4*(ey-s)+a5*(ez-s)+a6*(ew-s)).real();
-		double yn = a0+a1*y+(a3*(ey-s)+a4*(ez-s)+a5*(ew-s)+a6*(cx-s)).real();
-		double zn = a0+a1*z+(a3*(ez-s)+a4*(ew-s)+a5*(cx-s)+a6*(cy-s)).real();
-		double wn = a0+a1*w+(a3*(ew-s)+a4*(cx-s)+a5*(cy-s)+a6*(cz-s)).real();
+		double sx=sin(x), sy=sin(y), sz=sin(z), sw=sin(w);
+		double xn = a0+a1*x+a3*sx+a4*sy+a5*sz+a6*sw;
+		double yn = a0+a1*y+a3*sy+a4*sz+a5*sw-a6*sx;
+		double zn = a0+a1*z+a3*sz+a4*sw-a5*sx-a6*sy;
+		double wn = a0+a1*w+a3*sw-a4*sx-a5*sy-a6*sz;
 		if(flip) {
 			x=xn; y=yn; z=zn; w=wn;
 		}
@@ -524,20 +519,15 @@ qiterfunc random_qiterfunc12()
 {
 	int a1=random_range_inclusive(-1,1);
 	bool flip=random_bool();
-	complex<double> a3(random_normal(.25),random_normal(.25));
-	complex<double> a4(random_normal(.25),random_normal(.25));
-	complex<double> a5(random_normal(.25),random_normal(.25));
-	complex<double> a6(random_normal(.25),random_normal(.25));
+	double a3=random_normal(.25), a4=random_normal(.25);
+	double a5=random_normal(.25), a6=random_normal(.25);
 	return [=] (double &x, double &y, double &z, double &w) {
-		complex<double> ex=polar(1.,x), ey=polar(1.,y);
-		complex<double> ez=polar(1.,z), ew=polar(1.,w);
-		complex<double> cx=conj(ex);
-		complex<double> ev=ez*cx, eu=ew*conj(ey);
-		double s=(ex.real()+ey.real()+ez.real()+ew.real()+ev.real()+eu.real())/6;
-		double xn=a1*x+(a3*(ex-s)+a4*(ey-s)+a5*(ez-s)+a6*(ew-s)).real();
-		double yn=a1*y+(a3*(ey-s)+a4*(ez-s)+a5*(ew-s)+a6*(ev-s)).real();
-		double zn=a1*z+(a3*(ez-s)+a4*(ew-s)+a5*(ev-s)+a6*(eu-s)).real();
-		double wn=a1*w+(a3*(ew-s)+a4*(ev-s)+a5*(eu-s)+a6*(cx-s)).real();
+		double sx=sin(x), sy=sin(y), sz=sin(z), sw=sin(w);
+		double szx=sin(z-x), swy=sin(w-y);
+		double xn=a1*x+a3*(sx+sz)+a4*(sy+sw)+a5*(sz+szx)+a6*(sw+swy);
+		double yn=a1*y+a3*(sy+sw)+a4*(sz+szx)+a5*(sw+swy)+a6*(szx-sx);
+		double zn=a1*z+a3*(sz+szx)+a4*(sw+swy)+a5*(szx-sx)+a6*(swy-sy);
+		double wn=a1*w+a3*(sw+swy)+a4*(szx-sx)+a5*(swy-sy)+a6*(-sx-sz);
 		if(flip) {
 			x=xn; y=yn; z=zn; w=wn;
 		}
