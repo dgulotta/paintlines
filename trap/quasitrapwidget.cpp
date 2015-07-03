@@ -44,6 +44,7 @@ QuasiTrapWidget::QuasiTrapWidget()
 	comboSymmetry = new QComboBox;
 	comboSymmetry->addItem("5",5);
 	comboSymmetry->addItem("8",8);
+	comboSymmetry->addItem("10",10);
 	comboSymmetry->addItem("12",12);
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));

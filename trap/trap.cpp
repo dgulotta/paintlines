@@ -493,6 +493,27 @@ qiterfunc random_qiterfunc5()
 	};
 }
 
+qiterfunc random_qiterfunc10()
+{
+	double a1=random_range_inclusive(-1,1);
+	double a3=random_normal(.5), a4=random_normal(.5);
+	double a5=random_normal(.5), a6=random_normal(.5);
+	bool flip = random_bool();
+	return [=] (double &x, double &y, double &z, double &w) {
+		double sx=sin(x), sy=sin(y), sz=sin(z), sw=sin(w), sv=-sin(x+y+z+w);
+		double xn=a1*x+a3*(sx-sy)+a4*(sy-sz)+a5*(sz-sw)+a6*(sw-sv);
+		double yn=a1*y+a3*(sy-sz)+a4*(sz-sw)+a5*(sw-sv)+a6*(sv-sx);
+		double zn=a1*z+a3*(sz-sw)+a4*(sw-sv)+a5*(sv-sx)+a6*(sx-sy);
+		double wn=a1*w+a3*(sw-sv)+a4*(sv-sx)+a5*(sx-sy)+a6*(sy-sz);
+		if(flip) {
+			x=xn; y=yn; z=zn; w=wn;
+		}
+		else {
+			x=wn; y=zn; z=yn; w=xn;
+		}
+	};
+}
+
 qiterfunc random_qiterfunc8()
 {
 	double a0=random_torsion(2);
@@ -578,6 +599,11 @@ void drawquasitrap(canvas<color_t> &c, int symmetry, double quasiperiod)
 		f = random_qiterfunc8();
 		e = qembfunc8;
 		d = qdistfunc8;
+	}
+	else if(symmetry==10) {
+		f = random_qiterfunc10();
+		e = qembfunc5;
+		d = qdistfunc5;
 	}
 	else if(symmetry==12) {
 		f = random_qiterfunc12();
