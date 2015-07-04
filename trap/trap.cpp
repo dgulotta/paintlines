@@ -438,11 +438,6 @@ function<double(double,double)> distfunc(symgroup sg)
 }
 
 using std::max;
-#define PT(a,b) [=] (double x, double y) { double cx = cos(x), cy = cos(y), \
-	sx = sin(x), sy = sin(y); return make_tuple((a),(b)); }
-
-using std::tie;
-using std::function;
 
 void drawtrap(symmetric_canvas<color_t> &c)
 {
@@ -476,7 +471,7 @@ qiterfunc random_qiterfunc5()
 	complex<double> a5(random_normal(.2),random_normal(.2));
 	complex<double> a6(random_normal(.2),random_normal(.2));
 	complex<double> a7(random_normal(.2),random_normal(.2));
-	bool flip = random_bool();
+	int flip = random_int(4);
 	return [=] (double &x, double &y, double &z, double &w) {
 		complex<double> ex = polar(1.,x), ey=polar(1.,y), ez=polar(1.,z);
 		complex<double> ew = polar(1.,w), ev=conj(ex*ey*ez*ew);
@@ -484,11 +479,11 @@ qiterfunc random_qiterfunc5()
 		double yn = a0 + a1 * y + (a7*(ex-ey)+a3*(ey-ez)+a4*(ez-ew)+a5*(ew-ev)+a6*(ev-ex)).real();
 		double zn = a0 + a1 * z + (a6*(ex-ey)+a7*(ey-ez)+a3*(ez-ew)+a4*(ew-ev)+a5*(ev-ex)).real();
 		double wn = a0 + a1 * w + (a5*(ex-ey)+a6*(ey-ez)+a7*(ez-ew)+a3*(ew-ev)+a4*(ev-ex)).real();
-		if(flip) {
-			x=xn; y=yn; z=zn; w=wn;
-		}
-		else {
-			x=wn; y=zn; z=yn; w=xn;
+		switch(flip) {
+			case 0: x=xn; y=yn; z=zn; w=wn; break;
+			case 1: x=yn; y=wn; z=xn; w=zn; break;
+			case 2: x=zn; y=xn; z=wn; w=yn; break;
+			default: x=wn; y=zn; z=yn; w=xn; break;
 		}
 	};
 }
@@ -498,18 +493,18 @@ qiterfunc random_qiterfunc10()
 	double a1=random_range_inclusive(-1,1);
 	double a3=random_normal(.5), a4=random_normal(.5);
 	double a5=random_normal(.5), a6=random_normal(.5);
-	bool flip = random_bool();
+	int flip = random_int(4);
 	return [=] (double &x, double &y, double &z, double &w) {
 		double sx=sin(x), sy=sin(y), sz=sin(z), sw=sin(w), sv=-sin(x+y+z+w);
 		double xn=a1*x+a3*(sx-sy)+a4*(sy-sz)+a5*(sz-sw)+a6*(sw-sv);
 		double yn=a1*y+a3*(sy-sz)+a4*(sz-sw)+a5*(sw-sv)+a6*(sv-sx);
 		double zn=a1*z+a3*(sz-sw)+a4*(sw-sv)+a5*(sv-sx)+a6*(sx-sy);
 		double wn=a1*w+a3*(sw-sv)+a4*(sv-sx)+a5*(sx-sy)+a6*(sy-sz);
-		if(flip) {
-			x=xn; y=yn; z=zn; w=wn;
-		}
-		else {
-			x=wn; y=zn; z=yn; w=xn;
+		switch(flip) {
+			case 0: x=xn; y=yn; z=zn; w=wn; break;
+			case 1: x=yn; y=wn; z=xn; w=zn; break;
+			case 2: x=zn; y=xn; z=wn; w=yn; break;
+			default: x=wn; y=zn; z=yn; w=xn; break;
 		}
 	};
 }
@@ -518,7 +513,7 @@ qiterfunc random_qiterfunc8()
 {
 	double a0=random_torsion(2);
 	int a1=random_range_inclusive(-1,1);
-	bool flip=random_bool();
+	int flip=random_int(4);
 	double a3=random_normal(.75), a4=random_normal(.75);
 	double a5=random_normal(.75), a6=random_normal(.75);
 	return [=] (double &x, double &y, double &z, double &w) {
@@ -527,11 +522,11 @@ qiterfunc random_qiterfunc8()
 		double yn = a0+a1*y+a3*sy+a4*sz+a5*sw-a6*sx;
 		double zn = a0+a1*z+a3*sz+a4*sw-a5*sx-a6*sy;
 		double wn = a0+a1*w+a3*sw-a4*sx-a5*sy-a6*sz;
-		if(flip) {
-			x=xn; y=yn; z=zn; w=wn;
-		}
-		else {
-			x=wn; y=zn; z=yn; w=xn;
+		switch(flip) {
+			case 0: x=xn; y=yn; z=zn; w=wn; break;
+			case 1: x=xn; y=wn; z=-zn; w=yn; break;
+			case 2: x=xn; y=-yn; z=zn; w=-wn; break;
+			default: x=xn; y=-wn; z=-zn; w=-yn; break;
 		}
 	};
 }
@@ -539,7 +534,7 @@ qiterfunc random_qiterfunc8()
 qiterfunc random_qiterfunc12()
 {
 	int a1=random_range_inclusive(-1,1);
-	bool flip=random_bool();
+	int flip=random_int(4);
 	double a3=random_normal(.25), a4=random_normal(.25);
 	double a5=random_normal(.25), a6=random_normal(.25);
 	return [=] (double &x, double &y, double &z, double &w) {
@@ -549,11 +544,11 @@ qiterfunc random_qiterfunc12()
 		double yn=a1*y+a3*(sy+sw)+a4*(sz+szx)+a5*(sw+swy)+a6*(szx-sx);
 		double zn=a1*z+a3*(sz+szx)+a4*(sw+swy)+a5*(szx-sx)+a6*(swy-sy);
 		double wn=a1*w+a3*(sw+swy)+a4*(szx-sx)+a5*(swy-sy)+a6*(-sx-sz);
-		if(flip) {
-			x=xn; y=yn; z=zn; w=wn;
-		}
-		else {
-			x=wn; y=zn; z=yn; w=xn;
+		switch(flip) {
+			case 0: x=xn; y=yn; z=zn; w=wn; break;
+			case 1: x=xn; y=wn-yn; z=xn-zn; w=wn; break;
+			case 2: x=xn; y=-yn; z=zn; w=-wn; break;
+			default: x=xn; y=yn-wn; z=xn-zn; w=-wn; break;
 		}
 	};
 }
