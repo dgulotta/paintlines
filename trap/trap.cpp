@@ -457,54 +457,107 @@ void drawtrap(symmetric_canvas<color_t> &c)
 	}
 }
 
-typedef std::function<void(double &, double &, double &, double &)> qiterfunc;
+typedef std::function<tuple<double,double,double,double>(double,double,double,double)> qiterfunc;
 typedef std::function<double(double, double, double, double)> qdistfunc;
 typedef std::function<tuple<double,double,double,double>(double,double)> qembfunc;
 using std::conj;
 
+#define QPT(a,b,c,d) [=] (double x, double y, double z, double w) { return make_tuple((a),(b),(c),(d)); }
+
+qiterfunc qrot10[10] = {
+	QPT(x,y,z,w),
+	QPT(-y,-z,-w,x+y+z+w),
+	QPT(z,w,-x-y-z-w,x),
+	QPT(-w,x+y+z+w,-x,-y),
+	QPT(-x-y-z-w,x,y,z),
+	QPT(-x,-y,-z,-w),
+	QPT(y,z,w,-x-y-z-w),
+	QPT(-z,-w,x+y+z+w,-x),
+	QPT(w,-x-y-z-w,x,y),
+	QPT(x+y+z+w,-x,-y,-z),
+};
+
+qiterfunc qrot8[8] = {
+	QPT(x,y,z,w),
+	QPT(y,z,w,-x),
+	QPT(z,w,-x,-y),
+	QPT(w,-x,-y,-z),
+	QPT(-x,-y,-z,-w),
+	QPT(-y,-z,-w,x),
+	QPT(-z,-w,x,y),
+	QPT(-w,x,y,z),
+};
+
+qiterfunc qrot12[12] = {
+	QPT(x,y,z,w),
+	QPT(y,z,w,z-x),
+	QPT(z,w,z-x,w-y),
+	QPT(w,z-x,w-y,-x),
+	QPT(z-x,w-y,-x,-y),
+	QPT(w-y,-x,-y,-z),
+	QPT(-x,-y,-z,-w),
+	QPT(-y,-z,-w,x-z),
+	QPT(-z,-w,x-z,y-w),
+	QPT(-w,x-z,y-w,x),
+	QPT(x-z,y-w,x,y),
+	QPT(y-w,x,y,z),
+};
+
 qiterfunc random_qiterfunc5()
 {
 	double a0=random_torsion(5);
-	int a1=random_range_inclusive(-1,1);
+	int z=random_int(11);
+	qiterfunc a1 = z<10 ? qrot10[z] : qiterfunc();
 	complex<double> a3(random_normal(.2),random_normal(.2));
 	complex<double> a4(random_normal(.2),random_normal(.2));
 	complex<double> a5(random_normal(.2),random_normal(.2));
 	complex<double> a6(random_normal(.2),random_normal(.2));
 	complex<double> a7(random_normal(.2),random_normal(.2));
 	int flip = random_int(4);
-	return [=] (double &x, double &y, double &z, double &w) {
+	return [=] (double x, double y, double z, double w) {
 		complex<double> ex = polar(1.,x), ey=polar(1.,y), ez=polar(1.,z);
 		complex<double> ew = polar(1.,w), ev=conj(ex*ey*ez*ew);
-		double xn = a0 + a1 * x + (a3*(ex-ey)+a4*(ey-ez)+a5*(ez-ew)+a6*(ew-ev)+a7*(ev-ex)).real();
-		double yn = a0 + a1 * y + (a7*(ex-ey)+a3*(ey-ez)+a4*(ez-ew)+a5*(ew-ev)+a6*(ev-ex)).real();
-		double zn = a0 + a1 * z + (a6*(ex-ey)+a7*(ey-ez)+a3*(ez-ew)+a4*(ew-ev)+a5*(ev-ex)).real();
-		double wn = a0 + a1 * w + (a5*(ex-ey)+a6*(ey-ez)+a7*(ez-ew)+a3*(ew-ev)+a4*(ev-ex)).real();
+		double xn = a0 + (a3*(ex-ey)+a4*(ey-ez)+a5*(ez-ew)+a6*(ew-ev)+a7*(ev-ex)).real();
+		double yn = a0 + (a7*(ex-ey)+a3*(ey-ez)+a4*(ez-ew)+a5*(ew-ev)+a6*(ev-ex)).real();
+		double zn = a0 + (a6*(ex-ey)+a7*(ey-ez)+a3*(ez-ew)+a4*(ew-ev)+a5*(ev-ex)).real();
+		double wn = a0 + (a5*(ex-ey)+a6*(ey-ez)+a7*(ez-ew)+a3*(ew-ev)+a4*(ev-ex)).real();
+		if(a1) {
+			double dx, dy, dz, dw;
+			tie(dx,dy,dz,dw)=a1(x,y,z,w);
+			xn+=dx; yn+=dy; zn+=dz; wn+=dw;
+		}
 		switch(flip) {
-			case 0: x=xn; y=yn; z=zn; w=wn; break;
-			case 1: x=yn; y=wn; z=xn; w=zn; break;
-			case 2: x=zn; y=xn; z=wn; w=yn; break;
-			default: x=wn; y=zn; z=yn; w=xn; break;
+			case 0: return make_tuple(xn,yn,zn,wn);
+			case 1: return make_tuple(yn,wn,xn,zn);
+			case 2: return make_tuple(zn,xn,wn,yn);
+			default: return make_tuple(wn,zn,yn,xn);
 		}
 	};
 }
 
 qiterfunc random_qiterfunc10()
 {
-	double a1=random_range_inclusive(-1,1);
+	int z=random_int(11);
+	qiterfunc a1 = z<10 ? qrot10[z] : qiterfunc();
 	double a3=random_normal(.5), a4=random_normal(.5);
 	double a5=random_normal(.5), a6=random_normal(.5);
 	int flip = random_int(4);
-	return [=] (double &x, double &y, double &z, double &w) {
+	return [=] (double x, double y, double z, double w) {
 		double sx=sin(x), sy=sin(y), sz=sin(z), sw=sin(w), sv=-sin(x+y+z+w);
-		double xn=a1*x+a3*(sx-sy)+a4*(sy-sz)+a5*(sz-sw)+a6*(sw-sv);
-		double yn=a1*y+a3*(sy-sz)+a4*(sz-sw)+a5*(sw-sv)+a6*(sv-sx);
-		double zn=a1*z+a3*(sz-sw)+a4*(sw-sv)+a5*(sv-sx)+a6*(sx-sy);
-		double wn=a1*w+a3*(sw-sv)+a4*(sv-sx)+a5*(sx-sy)+a6*(sy-sz);
+		double xn=a3*(sx-sy)+a4*(sy-sz)+a5*(sz-sw)+a6*(sw-sv);
+		double yn=a3*(sy-sz)+a4*(sz-sw)+a5*(sw-sv)+a6*(sv-sx);
+		double zn=a3*(sz-sw)+a4*(sw-sv)+a5*(sv-sx)+a6*(sx-sy);
+		double wn=a3*(sw-sv)+a4*(sv-sx)+a5*(sx-sy)+a6*(sy-sz);
+		if(a1) {
+			double dx, dy, dz, dw;
+			tie(dx,dy,dz,dw)=a1(x,y,z,w);
+			xn+=dx; yn+=dy; zn+=dz; wn+=dw;
+		}
 		switch(flip) {
-			case 0: x=xn; y=yn; z=zn; w=wn; break;
-			case 1: x=yn; y=wn; z=xn; w=zn; break;
-			case 2: x=zn; y=xn; z=wn; w=yn; break;
-			default: x=wn; y=zn; z=yn; w=xn; break;
+			case 0: return make_tuple(xn,yn,zn,wn);
+			case 1: return make_tuple(yn,wn,xn,zn);
+			case 2: return make_tuple(zn,xn,wn,yn);
+			default: return make_tuple(wn,zn,yn,xn);
 		}
 	};
 }
@@ -512,43 +565,55 @@ qiterfunc random_qiterfunc10()
 qiterfunc random_qiterfunc8()
 {
 	double a0=random_torsion(2);
-	int a1=random_range_inclusive(-1,1);
+	int z=random_int(9);
+	qiterfunc a1 = z<8 ? qrot8[z] : qiterfunc();
 	int flip=random_int(4);
 	double a3=random_normal(.75), a4=random_normal(.75);
 	double a5=random_normal(.75), a6=random_normal(.75);
-	return [=] (double &x, double &y, double &z, double &w) {
+	return [=] (double x, double y, double z, double w) {
 		double sx=sin(x), sy=sin(y), sz=sin(z), sw=sin(w);
-		double xn = a0+a1*x+a3*sx+a4*sy+a5*sz+a6*sw;
-		double yn = a0+a1*y+a3*sy+a4*sz+a5*sw-a6*sx;
-		double zn = a0+a1*z+a3*sz+a4*sw-a5*sx-a6*sy;
-		double wn = a0+a1*w+a3*sw-a4*sx-a5*sy-a6*sz;
+		double xn = a0+a3*sx+a4*sy+a5*sz+a6*sw;
+		double yn = a0+a3*sy+a4*sz+a5*sw-a6*sx;
+		double zn = a0+a3*sz+a4*sw-a5*sx-a6*sy;
+		double wn = a0+a3*sw-a4*sx-a5*sy-a6*sz;
+		if(a1) {
+			double dx, dy, dz, dw;
+			tie(dx,dy,dz,dw)=a1(x,y,z,w);
+			xn+=dx; yn+=dy; zn+=dz; wn+=dw;
+		}
 		switch(flip) {
-			case 0: x=xn; y=yn; z=zn; w=wn; break;
-			case 1: x=xn; y=wn; z=-zn; w=yn; break;
-			case 2: x=xn; y=-yn; z=zn; w=-wn; break;
-			default: x=xn; y=-wn; z=-zn; w=-yn; break;
+			case 0: return make_tuple(xn,yn,zn,wn);
+			case 1: return make_tuple(xn,wn,-zn,yn);
+			case 2: return make_tuple(xn,-yn,zn,-wn);
+			default: return make_tuple(xn,-wn,-zn,-yn);
 		}
 	};
 }
 
 qiterfunc random_qiterfunc12()
 {
-	int a1=random_range_inclusive(-1,1);
+	int z=random_int(13);
+	qiterfunc a1 = z<12 ? qrot12[z] : qiterfunc();
 	int flip=random_int(4);
 	double a3=random_normal(.25), a4=random_normal(.25);
 	double a5=random_normal(.25), a6=random_normal(.25);
-	return [=] (double &x, double &y, double &z, double &w) {
+	return [=] (double x, double y, double z, double w) {
 		double sx=sin(x), sy=sin(y), sz=sin(z), sw=sin(w);
 		double szx=sin(z-x), swy=sin(w-y);
-		double xn=a1*x+a3*(sx+sz)+a4*(sy+sw)+a5*(sz+szx)+a6*(sw+swy);
-		double yn=a1*y+a3*(sy+sw)+a4*(sz+szx)+a5*(sw+swy)+a6*(szx-sx);
-		double zn=a1*z+a3*(sz+szx)+a4*(sw+swy)+a5*(szx-sx)+a6*(swy-sy);
-		double wn=a1*w+a3*(sw+swy)+a4*(szx-sx)+a5*(swy-sy)+a6*(-sx-sz);
+		double xn=a3*(sx+sz)+a4*(sy+sw)+a5*(sz+szx)+a6*(sw+swy);
+		double yn=a3*(sy+sw)+a4*(sz+szx)+a5*(sw+swy)+a6*(szx-sx);
+		double zn=a3*(sz+szx)+a4*(sw+swy)+a5*(szx-sx)+a6*(swy-sy);
+		double wn=a3*(sw+swy)+a4*(szx-sx)+a5*(swy-sy)+a6*(-sx-sz);
+		if(a1) {
+			double dx, dy, dz, dw;
+			tie(dx,dy,dz,dw)=a1(x,y,z,w);
+			xn+=dx; yn+=dy; zn+=dz; wn+=dw;
+		}
 		switch(flip) {
-			case 0: x=xn; y=yn; z=zn; w=wn; break;
-			case 1: x=xn; y=wn-yn; z=xn-zn; w=wn; break;
-			case 2: x=xn; y=-yn; z=zn; w=-wn; break;
-			default: x=xn; y=yn-wn; z=xn-zn; w=-wn; break;
+			case 0: return make_tuple(xn,yn,zn,wn);
+			case 1: return make_tuple(xn,wn-yn,xn-zn,wn);
+			case 2: return make_tuple(xn,-yn,zn,-wn);
+			default: return make_tuple(xn,yn-wn,xn-zn,-wn);
 		}
 	};
 }
@@ -616,7 +681,7 @@ void drawquasitrap(canvas<color_t> &c, int symmetry, double quasiperiod)
 			tie(x,y,z,w)=e(fct*xx,fct*yy);
 			x+=xr; y+=yr; z+=zr; w+=wr;
 			for(int i=0;i<15;i++)
-				f(x,y,z,w);
+				tie(x,y,z,w)=f(x,y,z,w);
 			double dm = d(x,y,z,w);
 			uint8_t v=colorchop(128*(dm+1));
 			c(xx,yy)=color_t(v,v,v);
