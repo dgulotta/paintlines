@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG += qt warn_on release link_pkgconfig
+CONFIG += qt warn_on release link_pkgconfig c++11
 
 QT += widgets
 
@@ -100,9 +100,7 @@ packagesExist(fftw3) {
 		quasiperiodic_paintstripes/quasistripeswidget.cpp
 }
 
-*-g++* {
-    QMAKE_CXXFLAGS += --std=c++11
-}
+QMAKE_CXXFLAGS += -ffast-math
 
 unix {
   MOC_DIR = .moc
