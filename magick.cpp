@@ -18,10 +18,10 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <Magick++.h>
-
 #include "layer.h"
 #include "magick.h"
+
+#include <Magick++.h>
 
 using namespace Magick;
 
