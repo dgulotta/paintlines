@@ -47,6 +47,10 @@ QuasiTrapWidget::QuasiTrapWidget()
 	comboSymmetry->addItem("10",10);
 	comboSymmetry->addItem("12",12);
 	layout->addRow(tr("Symmetry"),comboSymmetry);
+	comboType = new QComboBox;
+	comboType->addItem("Trig");
+	comboType->addItem("Polynomial");
+	layout->addRow(tr("Type"),comboType);
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
 	connect(buttonDraw,&QPushButton::clicked,this,&QuasiTrapWidget::draw);
@@ -56,6 +60,7 @@ QuasiTrapWidget::QuasiTrapWidget()
 void QuasiTrapWidget::draw()
 {
 	img=canvas<color_t>(spinWidth->value(),spinHeight->value());
-	drawquasitrap(img,comboSymmetry->currentData().toInt(),spinQuasiperiod->value());
+	auto fn = comboType->currentIndex() ? drawquasitrap_poly : drawquasitrap;
+	fn(img,comboSymmetry->currentData().toInt(),spinQuasiperiod->value());
 	emit newImage(ImageData(img));
 }

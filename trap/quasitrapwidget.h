@@ -39,6 +39,7 @@ private:
 	QSpinBox *spinWidth;
 	QDoubleSpinBox *spinQuasiperiod;
 	QComboBox *comboSymmetry;
+	QComboBox *comboType;
 	canvas<color_t> img;
 };
 
