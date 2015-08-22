@@ -55,19 +55,8 @@ void paintstripes::paint(int sz, symgroup sym)
   	}
 	int i,j;
 	for(i=0;i<sz;i++)
-		for(j=0;j<sz;j++) {
-			if(i||j) {
-				double nn = pow(norm(i,j),-.6);
-				gridr(i,j)=std::polar(random_uniform()*nn,random_angle());
-				gridg(i,j)=std::polar(random_uniform()*nn,random_angle());
-				gridb(i,j)=std::polar(random_uniform()*nn,random_angle());
-			}
-			else {
-				gridr(i,j)=gridg(i,j)=gridb(i,j)=10.;
-			}
-			//tie(gridr(i,j),gridg(i,j),gridb(i,j))=
-			//random_levy_6d(levy_alpha,pow(norm(i,j),.6/*.5+1./levy_alpha*/));
-	}
+		for(j=0;j<sz;j++)
+			tie(gridr(i,j),gridg(i,j),gridb(i,j))=random_levy_6d(levy_alpha,pow(norm(i,j),.5+1./levy_alpha));
 	gridr.transform();
 	gridg.transform();
 	gridb.transform();
