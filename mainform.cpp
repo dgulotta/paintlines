@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
+ *   Copyright (C) 2008, 2013-2016 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -98,7 +98,7 @@ MainForm::MainForm()
 bool MainForm::saveAs()
 {
 	QString s=QFileDialog::getSaveFileName();
-	if(!s.isEmpty()) return lastData.pixmap.save(s);
+	if(!s.isEmpty()) return lastData.img.save(s);
 	return false;
 }
 
@@ -106,8 +106,8 @@ bool MainForm::saveLayers()
 {
 #ifdef MULTIPAGE
 	QString s=QFileDialog::getSaveFileName();
-	const QPixmap &pix = lastData.pixmap;
-	if(!s.isEmpty()) return save_multilayer(pix.width(),pix.height(),*(lastData.layers),s.toStdString());
+	const QImage &img = lastData.img;
+	if(!s.isEmpty()) return save_multilayer(img.width(),img.height(),*(lastData.layers),s.toStdString());
 #endif
 	return false;
 }
@@ -159,7 +159,7 @@ QPixmap MainForm::makePixmap(const canvas<color_t> &src)
 
 void ImageWidget::setPixmap(const ImageData &data)
 {
-	_pixmap = data.pixmap;
+	_pixmap = QPixmap::fromImage(data.img);
 	QPalette pal(palette());
 	pal.setBrush(QPalette::Background,_pixmap);
 	setPalette(pal);
@@ -177,5 +177,5 @@ void ImageWidget::recomputeTiling()
 
 void MainForm::copy()
 {
-	QApplication::clipboard()->setPixmap(lastData.pixmap);
+	QApplication::clipboard()->setImage(lastData.img);
 }

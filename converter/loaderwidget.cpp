@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
+ *   Copyright (C) 2013-2016 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -43,6 +43,9 @@ bool LoaderWidget::open(const QImage &img)
 		QMessageBox::information(this,"converter",tr("The image size must be even."));
 		return false;
 	}
+	bool ok;
+	int grp=img.text("SymmetryGroup").toInt(&ok);
+	if(ok) comboSymmetry->setCurrentIndex(grp);
 	image = symmetric_canvas<color_t>(img.height(),(symgroup)comboSymmetry->group());
 	canvas<color_t> &base_image = image.unsafe_get_canvas();
 	for(int j=0;j<img.height();j++)

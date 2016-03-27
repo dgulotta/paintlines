@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 by Daniel Gulotta                                  *
+ *   Copyright (C) 2014, 2016 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -22,7 +22,7 @@
 #define _IMAGEDATA_H
 
 #include <vector>
-#include <QPixmap>
+#include <QImage>
 
 class color_t;
 class layer;
@@ -35,15 +35,14 @@ class canvas;
 
 struct ImageData
 {
-	ImageData(const QPixmap &pix, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
-		const std::vector<layer> *l=nullptr, const ImageData *p=nullptr)
-		: pixmap(pix), tileable(t), sym_canvas(sc), layers(l), parent(p) {}
-	ImageData() : ImageData(QPixmap()) {}
+	ImageData(const QImage &i, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
+		const std::vector<layer> *l=nullptr, const ImageData *p=nullptr);
+	ImageData() : ImageData(QImage()) {}
 	ImageData(const canvas<color_t> &c, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
 		const std::vector<layer> *l=nullptr, const ImageData *p=nullptr);
 	ImageData(const wrap_canvas<color_t> &wc, const ImageData *p=nullptr);
 	ImageData(const symmetric_canvas<color_t> &sc, const std::vector<layer> *l=nullptr);
-	QPixmap pixmap;
+	QImage img;
 	bool tileable;
 	const symmetric_canvas<color_t> *sym_canvas;
 	const std::vector<layer> *layers;

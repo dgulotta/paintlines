@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 by Daniel Gulotta                                  *
+ *   Copyright (C) 2014, 2016 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,9 +23,16 @@
 #include "mainform.h"
 #include "symmetric_canvas.h"
 
+ImageData::ImageData(const QImage &i, bool t, const symmetric_canvas<color_t> *sc,
+		const std::vector<layer> *l, const ImageData *p)
+: img(i), tileable(t), sym_canvas(sc), layers(l), parent(p)
+{
+	if(sc) img.setText("SymmetryGroup",QString::number(sc->group()));
+}
+
 ImageData::ImageData(const canvas<color_t> &c, bool t, const symmetric_canvas<color_t> *sc,
 		const std::vector<layer> *l, const ImageData *p)
-:ImageData(MainForm::makePixmap(c),t,sc,l,p) {}
+:ImageData(MainForm::makeImage(c),t,sc,l,p) {}
 
 ImageData::ImageData(const wrap_canvas<color_t> &wc, const ImageData *p)
 :ImageData(wc.as_canvas(),true,nullptr,nullptr,p) {}
