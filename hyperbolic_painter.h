@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005-2008, 2013 by Daniel Gulotta                       *
+ *   Copyright (C) 2005-2008, 2013, 2016 by Daniel Gulotta                 *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -32,102 +32,81 @@ static const double ZMAX = 50;
 
 struct hyperbolic_coord
 {
-  hyperbolic_coord() {}
-  hyperbolic_coord(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {}
-  double x;
-  double y;
-  double z;
+	hyperbolic_coord(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {}
+	double x;
+	double y;
+	double z;
 };
 
 inline double operator * (const hyperbolic_coord &a, const hyperbolic_coord &b)
 {
-  return a.z*b.z-a.x*b.x-a.y*b.y;
+	return a.z*b.z-a.x*b.x-a.y*b.y;
 }
 
 inline hyperbolic_coord operator * (double a, const hyperbolic_coord &b)
 {
-  hyperbolic_coord ans;
-  ans.x=a*b.x;
-  ans.y=a*b.y;
-  ans.z=a*b.z;
-  return ans;
+	return hyperbolic_coord(a*b.x,a*b.y,a*b.z);
 }
 
 inline hyperbolic_coord operator * (const hyperbolic_coord &a, double b)
 {
-  return b*a;
+	return b*a;
 }
 
 inline hyperbolic_coord operator / (const hyperbolic_coord &a, double b)
 {
-  hyperbolic_coord ans;
-  ans.x=a.x/b;
-  ans.y=a.y/b;
-  ans.z=a.z/b;
-  return ans;
+	return hyperbolic_coord(a.x/b,a.y/b,a.z/b);
 }
 
 inline hyperbolic_coord operator + (const hyperbolic_coord &a,
-				    const hyperbolic_coord &b)
+		const hyperbolic_coord &b)
 {
-  hyperbolic_coord ans;
-  ans.x=a.x+b.x;
-  ans.y=a.y+b.y;
-  ans.z=a.z+b.z;
-  return ans;
+	return hyperbolic_coord(a.x+b.x,a.y+b.y,a.z+b.z);
 }
 
 inline hyperbolic_coord operator - (const hyperbolic_coord &a)
 {
-  hyperbolic_coord ans;
-  ans.x=-a.x;
-  ans.y=-a.y;
-  ans.z=-a.z;
-  return ans;
+	return hyperbolic_coord(-a.x,-a.y,-a.z);
 }
 
 inline hyperbolic_coord operator - (const hyperbolic_coord &a,
-				    const hyperbolic_coord &b)
+		const hyperbolic_coord &b)
 {
-  hyperbolic_coord ans;
-  ans.x=a.x-b.x;
-  ans.y=a.y-b.y;
-  ans.z=a.z-b.z;
-  return ans;
+	return hyperbolic_coord(a.x-b.x,a.y-b.y,a.z-b.z);
 }
 
 inline hyperbolic_coord & operator *= (hyperbolic_coord &a,double b)
 {
-  a.x*=b;
-  a.y*=b;
-  a.z*=b;
-  return a;
+	a.x*=b;
+	a.y*=b;
+	a.z*=b;
+	return a;
 }
 
 inline hyperbolic_coord & operator /= (hyperbolic_coord &a,double b)
 {
-  a.x/=b;
-  a.y/=b;
-  a.z/=b;
-  return a;
+	a.x/=b;
+	a.y/=b;
+	a.z/=b;
+	return a;
 }
 
 inline hyperbolic_coord & operator += (hyperbolic_coord &a,
-				       const hyperbolic_coord &b)
+		const hyperbolic_coord &b)
 {
-  a.x+=b.x;
-  a.y+=b.y;
-  a.z+=b.z;
-  return a;
+	a.x+=b.x;
+	a.y+=b.y;
+	a.z+=b.z;
+	return a;
 }
 
 inline hyperbolic_coord & operator -= (hyperbolic_coord &a,
-				       const hyperbolic_coord &b)
+		const hyperbolic_coord &b)
 {
-  a.x-=b.x;
-  a.y-=b.y;
-  a.z-=b.z;
-  return a;
+	a.x-=b.x;
+	a.y-=b.y;
+	a.z-=b.z;
+	return a;
 }
 
 hyperbolic_coord normalize(const hyperbolic_coord &c);
@@ -136,20 +115,22 @@ hyperbolic_coord & inplace_normalize(hyperbolic_coord &c);
 
 hyperbolic_coord cross(const hyperbolic_coord &a, const hyperbolic_coord &b);
 
+hyperbolic_coord midpoint(const hyperbolic_coord &a, const hyperbolic_coord &b);
+
 struct planar_coord
 {
-  planar_coord() {}
-  planar_coord(double _x, double _y) : x(_x), y(_y) {}
-  double x;
-  double y;
+	planar_coord() {}
+	planar_coord(double _x, double _y) : x(_x), y(_y) {}
+	double x;
+	double y;
 };
 
 struct screen_coord
 {
-  screen_coord() {}
-  screen_coord(int _x, int _y) : x(_x), y(_y) {}
-  int x;
-  int y;
+	screen_coord() {}
+	screen_coord(int _x, int _y) : x(_x), y(_y) {}
+	int x;
+	int y;
 };
 
 planar_coord poincare_projection(const hyperbolic_coord &hc);
@@ -164,67 +145,51 @@ enum projtype {POINCARE, KLEIN};
 
 class hyperbolic_transformation
 {
- public:
-  static const hyperbolic_transformation identity;
-  static hyperbolic_transformation reflection(const hyperbolic_coord &c);
-  static hyperbolic_transformation rotation_180(const hyperbolic_coord &c);
-  static hyperbolic_transformation rotation_origin(double a);
-  static hyperbolic_transformation rotation(double a, const hyperbolic_coord &c);
-  static hyperbolic_transformation glide_reflection(const hyperbolic_coord &c);
-  static hyperbolic_transformation translation(const hyperbolic_coord &e1, const hyperbolic_coord &e2);
-  hyperbolic_transformation() {}
-  hyperbolic_transformation(double _xx, double _xy, double _xz, double _yx,
-			    double _yy, double _yz, double _zx, double _zy,
-			    double _zz)
-    : xx(_xx), xy(_xy), xz(_xz), yx(_yx), yy(_yy), yz(_yz), zx(_zx), zy(_zy),
-    zz(_zz) {}
-  hyperbolic_transformation(const hyperbolic_transformation &t)
-    : xx(t.xx), xy(t.xy), xz(t.xz), yx(t.yx), yy(t.yy), yz(t.yz), zx(t.zx),
-    zy(t.zy), zz(t.zz) {}
-  hyperbolic_transformation & operator = (const hyperbolic_transformation &t) {
-    xx=t.xx;xy=t.xy;xz=t.xz;yx=t.yx;yy=t.yy;yz=t.yz;zx=t.zx;zy=t.zy;zz=t.zz;
-    return *this;
-  }
-  ~hyperbolic_transformation() {}
-  inline hyperbolic_coord operator () (const hyperbolic_coord &c) const {
-    hyperbolic_coord ans;
-    ans.x=xx*c.x+xy*c.y+xz*c.z;
-    ans.y=yx*c.x+yy*c.y+yz*c.z;
-    ans.z=zx*c.x+zy*c.y+zz*c.z;
-    return ans;
-  }
-  inline hyperbolic_coord inverse(const hyperbolic_coord &c) const {
-    hyperbolic_coord ans;
-    ans.x=xx*c.x+yx*c.y-zx*c.z;
-    ans.y=xy*c.x+yy*c.y-zy*c.z;
-    ans.z=-xz*c.x-yz*c.y+zz*c.z;
-    return ans;
-  }
-  inline hyperbolic_transformation inverse() const {
-  	return hyperbolic_transformation(xx,yx,-zx,xy,yy,-zy,-xz,-yz,zz);
-  }
-  inline bool is_flip() const {
-  	return xx*yy*zz+xy*yz*zx+xz*zy*yx
-		-xx*yz*zy-xz*zx*yy-xy*yx*zz<0;
-  }
-  double xx, xy, xz, yx, yy, yz, zx, zy, zz;
-  // it would probably be faster to use opengl for this
+	public:
+		static const hyperbolic_transformation identity;
+		static hyperbolic_transformation reflection(const hyperbolic_coord &c);
+		static hyperbolic_transformation rotation_180(const hyperbolic_coord &c);
+		static hyperbolic_transformation rotation_origin(double a);
+		static hyperbolic_transformation rotation(double a, const hyperbolic_coord &c);
+		static hyperbolic_transformation glide_reflection(const hyperbolic_coord &c);
+		static hyperbolic_transformation translation(const hyperbolic_coord &e1, const hyperbolic_coord &e2);
+		hyperbolic_transformation(double _xx, double _xy, double _xz, double _yx,
+				double _yy, double _yz, double _zx, double _zy,
+				double _zz)
+			: xx(_xx), xy(_xy), xz(_xz), yx(_yx), yy(_yy), yz(_yz), zx(_zx), zy(_zy),
+			zz(_zz) {}
+		hyperbolic_coord operator () (const hyperbolic_coord &c) const {
+			return hyperbolic_coord(xx*c.x+xy*c.y+xz*c.z,
+				yx*c.x+yy*c.y+yz*c.z,zx*c.x+zy*c.y+zz*c.z);
+		}
+		hyperbolic_coord inverse(const hyperbolic_coord &c) const {
+			return hyperbolic_coord(xx*c.x+yx*c.y-zx*c.z,
+				xy*c.x+yy*c.y-zy*c.z,-xz*c.x-yz*c.y+zz*c.z);
+		}
+		hyperbolic_transformation inverse() const {
+			return hyperbolic_transformation(xx,yx,-zx,xy,yy,-zy,-xz,-yz,zz);
+		}
+		bool is_flip() const {
+			return xx*yy*zz+xy*yz*zx+xz*zy*yx
+				-xx*yz*zy-xz*zx*yy-xy*yx*zz<0;
+		}
+		double xx, xy, xz, yx, yy, yz, zx, zy, zz;
+		// it would probably be faster to use opengl for this
 };
 
-inline hyperbolic_transformation operator *
+	inline hyperbolic_transformation operator *
 (const hyperbolic_transformation &t1, const hyperbolic_transformation &t2)
 {
-  hyperbolic_transformation ans;
-  ans.xx=t1.xx*t2.xx+t1.xy*t2.yx+t1.xz*t2.zx;
-  ans.xy=t1.xx*t2.xy+t1.xy*t2.yy+t1.xz*t2.zy;
-  ans.xz=t1.xx*t2.xz+t1.xy*t2.yz+t1.xz*t2.zz;
-  ans.yx=t1.yx*t2.xx+t1.yy*t2.yx+t1.yz*t2.zx;
-  ans.yy=t1.yx*t2.xy+t1.yy*t2.yy+t1.yz*t2.zy;
-  ans.yz=t1.yx*t2.xz+t1.yy*t2.yz+t1.yz*t2.zz;
-  ans.zx=t1.zx*t2.xx+t1.zy*t2.yx+t1.zz*t2.zx;
-  ans.zy=t1.zx*t2.xy+t1.zy*t2.yy+t1.zz*t2.zy;
-  ans.zz=t1.zx*t2.xz+t1.zy*t2.yz+t1.zz*t2.zz;
-  return ans;
+	return hyperbolic_transformation(
+		t1.xx*t2.xx+t1.xy*t2.yx+t1.xz*t2.zx,
+		t1.xx*t2.xy+t1.xy*t2.yy+t1.xz*t2.zy,
+		t1.xx*t2.xz+t1.xy*t2.yz+t1.xz*t2.zz,
+		t1.yx*t2.xx+t1.yy*t2.yx+t1.yz*t2.zx,
+		t1.yx*t2.xy+t1.yy*t2.yy+t1.yz*t2.zy,
+		t1.yx*t2.xz+t1.yy*t2.yz+t1.yz*t2.zz,
+		t1.zx*t2.xx+t1.zy*t2.yx+t1.zz*t2.zx,
+		t1.zx*t2.xy+t1.zy*t2.yy+t1.zz*t2.zy,
+		t1.zx*t2.xz+t1.zy*t2.yz+t1.zz*t2.zz);
 }
 
 enum flip_type { FLIP_ALL, FLIP_ALTERNATING, FLIP_RANDOM };
@@ -251,47 +216,54 @@ struct generator {
 };
 
 class hyperbolic_symmetry_group {
-public:
-	hyperbolic_symmetry_group(const std::vector<generator> &g, const hyperbolic_coord &pt, flip_type f=FLIP_ALL); 
-	template <typename F>
-	std::function<void(const hyperbolic_coord &)> symmetrize(const F &f);
-	hyperbolic_coord random_symmetry(const hyperbolic_coord &c);
-	hyperbolic_coord fundamental_domain_point(const hyperbolic_coord &hc) { return std::get<0>((this->*fdfunc)(hc)); }
-	static hyperbolic_symmetry_group * group_sabc(int n1, int n2, int n3, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_a222(int a, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_2sab(int a, int b, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_22sa(int a, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_ab2(int n1, int n2, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_asb(int n1, int n2, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_a2x(int a, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_sax(int a, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_asbc(int a, int b, int c, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_sabcd(int a, int b, int c, int d, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_a2sb(int a, int b, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_abc(int a, int b, int c, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_sasb(int a, int b, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_axx(int a, flip_type f=FLIP_ALL);
-	static hyperbolic_symmetry_group * group_ao(int a, flip_type f=FLIP_ALL);
-private:
-	std::vector<generator> generators;
-	std::vector<hyperbolic_transformation> transformations;
-	std::vector<hyperbolic_transformation> flips;
-	std::tuple<hyperbolic_coord,bool> fundamental_domain(const hyperbolic_coord &hc);
-	std::tuple<hyperbolic_coord,bool> fundamental_domain_alternating(const hyperbolic_coord &hc);
-	std::tuple<hyperbolic_coord,bool> fundamental_domain_random(const hyperbolic_coord &hc);
-	std::unordered_map<long,bool> random_flips;
-	decltype(&hyperbolic_symmetry_group::fundamental_domain) fdfunc;
+	public:
+		struct group_spec {
+			group_spec() : pt(0,0,0) {}
+			group_spec(const std::vector<generator> &g, const hyperbolic_coord &p):
+				gens(g), pt(p) {}
+			bool valid() { return !gens.empty(); }
+			std::vector<generator> gens;
+			hyperbolic_coord pt;
+		};
+
+		hyperbolic_symmetry_group(const group_spec &s, flip_type f=FLIP_ALL);
+		template <typename F>
+			std::function<void(const hyperbolic_coord &)> symmetrize(const F &f);
+		hyperbolic_coord random_symmetry(const hyperbolic_coord &c);
+		hyperbolic_coord fundamental_domain_point(const hyperbolic_coord &hc) { return std::get<0>((this->*fdfunc)(hc)); }
+
+		static group_spec group_sabc(int a, int b, int c);
+		static group_spec group_a222(int a);
+		static group_spec group_2sab(int a, int b);
+		static group_spec group_22sa(int a);
+		static group_spec group_ab2(int n1, int n2);
+		static group_spec group_asb(int n1, int n2);
+		static group_spec group_a2x(int a);
+		static group_spec group_sax(int a);
+		static group_spec group_asbc(int a, int b, int c);
+		static group_spec group_sabcd(int a, int b, int c, int d);
+		static group_spec group_a2sb(int a, int b);
+		static group_spec group_abc(int a, int b, int c);
+		static group_spec group_sasb(int a, int b);
+		static group_spec group_axx(int a);
+		static group_spec group_ao(int a);
+	private:
+		std::vector<generator> generators;
+		std::vector<hyperbolic_transformation> transformations;
+		std::vector<hyperbolic_transformation> flips;
+		std::tuple<hyperbolic_coord,bool> fundamental_domain(const hyperbolic_coord &hc);
+		std::tuple<hyperbolic_coord,bool> fundamental_domain_alternating(const hyperbolic_coord &hc);
+		std::tuple<hyperbolic_coord,bool> fundamental_domain_random(const hyperbolic_coord &hc);
+		std::unordered_map<long,bool> random_flips;
+		decltype(&hyperbolic_symmetry_group::fundamental_domain) fdfunc;
 };
-
-
 
 template<typename F>
 std::function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(const F &f) {
 	return [this,f](const hyperbolic_coord &hc) {
-		hyperbolic_coord c;
-		bool b;
-		std::tie(c,b) = (this->*fdfunc)(hc);
-		if(b)
+		auto s = (this->*fdfunc)(hc);
+		hyperbolic_coord c=std::get<0>(s);
+		if(std::get<1>(s))
 			for(auto &t : flips)
 				f(t(c));
 		else
@@ -302,16 +274,16 @@ std::function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetr
 
 class coord_converter
 {
-public:
-	coord_converter(int sz) : size(sz) {}
-	screen_coord toscreen(const planar_coord &p) {
-		return screen_coord(size*(p.x+1.)/2.,size*(p.y+1.)/2.);
-	}
-	planar_coord fromscreen(const screen_coord &s) {
-  		return planar_coord((2*s.x+1.)/size-1,(2*s.y+1.)/size-1);
-  	}
-private:
-	int size;
+	public:
+		coord_converter(int sz) : size(sz) {}
+		screen_coord toscreen(const planar_coord &p) {
+			return screen_coord(size*(p.x+1.)/2.,size*(p.y+1.)/2.);
+		}
+		planar_coord fromscreen(const screen_coord &s) {
+			return planar_coord((2*s.x+1.)/size-1,(2*s.y+1.)/size-1);
+		}
+	private:
+		int size;
 };
 
 #endif

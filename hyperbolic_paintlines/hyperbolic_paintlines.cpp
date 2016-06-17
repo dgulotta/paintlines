@@ -59,8 +59,8 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
 		layers[i].pixels=active_grid=&(grids[i]);
 		layers[i].pastel=false;
 		layers[i].color=default_color_generator();
-		hyperbolic_coord c;
-		hyperbolic_coord c2;
+		hyperbolic_coord c(0,0,1);
+		hyperbolic_coord c2(0,0,1);
 		do {
 			double z=1.+random_exponential(1);
 			double r=sqrt(z*z-1.);

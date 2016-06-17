@@ -68,92 +68,92 @@ coord_transformer quadrilateral_transformer(const hyperbolic_quadrilateral &q, d
 
 canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype pt, int newsize)
 {
-	hyperbolic_symmetry_group *sg;
+	hyperbolic_symmetry_group::group_spec spec;
 	coord_transformer trans;
 	int size = img.size();
 	canvas<color_t> newimg(newsize,newsize);
 	switch(img.group()) {
 	case SYM_CM:
-		sg = hyperbolic_symmetry_group::group_sax(2);
+		spec = hyperbolic_symmetry_group::group_sax(2);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(M_PI/6,M_PI/6),0,size,size,size,0,0);
 		break;
 	case SYM_CMM:
-		sg = hyperbolic_symmetry_group::group_2sab(3,2);
+		spec = hyperbolic_symmetry_group::group_2sab(3,2);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(M_PI/3,M_PI/4),.5*size,.5*size,size,0,0,0);
 		break;
 	case SYM_P1:
-		sg = hyperbolic_symmetry_group::group_ao(2);
+		spec = hyperbolic_symmetry_group::group_ao(2);
 		trans = quadrilateral_transformer(hyperbolic_quadrilateral_square(M_PI/4),0,0,0,size,size,size,size,0);
 		break;
 	case SYM_P2:
-		sg = hyperbolic_symmetry_group::group_a222(3);
+		spec = hyperbolic_symmetry_group::group_a222(3);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/9,2*M_PI/9),0,0,0,size,size,0);
 		break;
 	case SYM_P3:
-		sg = hyperbolic_symmetry_group::group_abc(3,3,4);
+		spec = hyperbolic_symmetry_group::group_abc(3,3,4);
 		trans = quadrilateral_transformer(hyperbolic_quadrilateral_kite(2*M_PI/3,M_PI/4,2*M_PI/3),size/3.,size/3.,size,0,2*size/3.,-size/3.,0,0);
 		break;
 	case SYM_P31M:
-		sg = hyperbolic_symmetry_group::group_asb(3,4);
+		spec = hyperbolic_symmetry_group::group_asb(3,4);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/3,M_PI/8),size/3.,size/3.,size,0,0,0);
 		break;
 	case SYM_P3M1:
-		sg = hyperbolic_symmetry_group::group_sabc(4,3,3);
+		spec = hyperbolic_symmetry_group::group_sabc(4,3,3);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(M_PI/4,M_PI/3),0,0,size/3.,size/3.,2*size/3.,-size/3.);
 		break;
 	case SYM_P4:
-		sg = hyperbolic_symmetry_group::group_ab2(5,4);
+		spec = hyperbolic_symmetry_group::group_ab2(5,4);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/5,M_PI/4),0,0,.5*size,.5*size,.5*size,-.5*size);
 		break;
 	case SYM_P4G:
-		sg = hyperbolic_symmetry_group::group_asb(5,2);
+		spec = hyperbolic_symmetry_group::group_asb(5,2);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/5,M_PI/4),0,0,0,.5*size,.5*size,0);
 		break;
 	case SYM_P4M:
-		sg = hyperbolic_symmetry_group::group_sabc(5,4,2);
+		spec = hyperbolic_symmetry_group::group_sabc(5,4,2);
 		trans = triangle_transformer(hyperbolic_triangle(M_PI/5,M_PI/4,M_PI/2),0,0,.5*size,.5*size,.5*size,0);
 		break;
 	case SYM_P6:
-		sg = hyperbolic_symmetry_group::group_ab2(7,3);
+		spec = hyperbolic_symmetry_group::group_ab2(7,3);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/7,M_PI/3),0,0,size/3.,size/3.,2*size/3.,-size/3.);
 		break;
 	case SYM_P6M:
-		sg = hyperbolic_symmetry_group::group_sabc(7,3,2);
+		spec = hyperbolic_symmetry_group::group_sabc(7,3,2);
 		trans = triangle_transformer(hyperbolic_triangle(M_PI/7,M_PI/3,M_PI/2),0,0,size/3.,size/3.,.5*size,0);
 		break;
 	case SYM_PG:
-		sg = hyperbolic_symmetry_group::group_axx(2);
+		spec = hyperbolic_symmetry_group::group_axx(2);
 		trans = quadrilateral_transformer(hyperbolic_quadrilateral_square(M_PI/4),.5*size,.5*size,size,0,.5*size,-.5*size,0,0);
 		break;
 	case SYM_PGG:
-		sg = hyperbolic_symmetry_group::group_a2x(3);
+		spec = hyperbolic_symmetry_group::group_a2x(3);
 		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/9,2*M_PI/9),0,0,.5*size,.5*size,.5*size,-.5*size);
 		break;
 	case SYM_PM:
-		sg = hyperbolic_symmetry_group::group_sasb(1,2);
+		spec = hyperbolic_symmetry_group::group_sasb(1,2);
 		trans = quadrilateral_transformer(hyperbolic_quadrilateral_trapezoid(M_PI/2,M_PI/4),0,0,0,size,.5*size,size,.5*size,0);
 		break;
 	case SYM_PMG:
-		sg = hyperbolic_symmetry_group::group_a2sb(3,1);
+		spec = hyperbolic_symmetry_group::group_a2sb(3,1);
 		trans = quadrilateral_transformer(hyperbolic_quadrilateral_kite(2*M_PI/3,M_PI/3,M_PI/3),0,.5*size,.25*size,.75*size,.25*size,-.25*size,-.25*size,.25*size);
 		break;
 	case SYM_PMM:
-		sg = hyperbolic_symmetry_group::group_sabcd(3,2,2,2);
+		spec = hyperbolic_symmetry_group::group_sabcd(3,2,2,2);
 		trans = quadrilateral_transformer(hyperbolic_quadrilateral(M_PI/3,M_PI/2,M_PI/2,M_PI/2),0,0,0,.5*size,.5*size,.5*size,.5*size,0);
 		break;
 	}
+	hyperbolic_symmetry_group sg(spec);
 	auto iproj = (pt==KLEIN)?&inverse_klein_projection:&inverse_poincare_projection;
 	coord_converter conv(newsize);
 	for(int j=0;j<newsize;j++)
 		for(int i=0;i<newsize;i++) {
 			planar_coord pc = conv.fromscreen(screen_coord(i,j));
 			if(pc.x*pc.x+pc.y*pc.y>=.999) continue;
-			hyperbolic_coord hc = sg->fundamental_domain_point((*iproj)(pc));
+			hyperbolic_coord hc = sg.fundamental_domain_point((*iproj)(pc));
 			double xd,yd;
 			tie(xd,yd)=trans(hc);
 			newimg(i,j)=combine_colors(img.as_wrap_canvas(),interpolate_linear(xd,yd));
 		}
-	delete sg;
 	return newimg;
 }
 

@@ -22,6 +22,7 @@
 #define _CANVAS_H
 
 #include <algorithm>
+#include <functional>
 #include <vector>
 
 inline int mod(int x, int y) 

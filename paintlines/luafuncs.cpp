@@ -123,16 +123,16 @@ void run_lua_rule(const char *filename, const char *funcname, symmetric_canvas<u
 	prepare_lua_environment(L,gen);
 	if(luaL_dofile(L,filename))
 	{
-		lua_errors.push_back(lua_tostring(L,-1));
+		lua_errors.emplace_back(lua_tostring(L,-1));
 		return;
 	}
 	lua_getglobal(L,funcname);
 	if(lua_isnil(L,-1)) {
-		lua_errors.push_back("invalid function name");
+		lua_errors.emplace_back("invalid function name");
 		return;
 	}
 	if(lua_pcall(L,0,0,0)) {
-		lua_errors.push_back(lua_tostring(L,-1));
+		lua_errors.emplace_back(lua_tostring(L,-1));
 		return;
 	}
 }

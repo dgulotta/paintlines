@@ -1,7 +1,7 @@
 TEMPLATE	= app
 LANGUAGE	= C++
 
-CONFIG += qt warn_on release link_pkgconfig c++11
+CONFIG += qt warn_on release link_pkgconfig c++14
 
 QT += widgets
 

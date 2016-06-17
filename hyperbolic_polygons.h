@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013, 2016 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,39 +25,19 @@
 
 class hyperbolic_triangle {
 public:
-	hyperbolic_triangle(double _a1, double _a2, double _a3)
-		:a1(_a1), a2(_a2), a3(_a3), sin1(sin(_a1)), cos1(cos(_a1)), sin2(sin(_a2)),
-		cos2(cos(_a2)), sin3(sin(_a3)), cos3(cos(_a3)), x1(0), y1(0), z1(1)
-	{
-		z2=(cos3+cos1*cos2)/(sin1*sin2);
-		x2=sqrt(z2*z2-1);
-		y2=0;
-		z3=(cos2+cos1*cos3)/(sin1*sin3);
-		double r3=sqrt(z3*z3-1);
-		x3=r3*cos1;
-		y3=r3*sin1;
-		e1=normalize(cross(hyperbolic_coord(x2,y2,z2),hyperbolic_coord(x3,y3,z3)));
-	}
+	hyperbolic_triangle(double a1, double a2, double a3)
+		: hyperbolic_triangle(a1,a2,a3,compute_coords(a1,a2,a3)) {}
 
 	hyperbolic_coord edge1() const { return e1; }
-	
-	hyperbolic_coord edge2() const { return hyperbolic_coord(-sin1,cos1,0); }
-	
-	hyperbolic_coord edge3() const { return hyperbolic_coord(0,-1,0); }
-	
-	hyperbolic_coord mid1() const { return normalize(hyperbolic_coord(x2+x3,y2+y3,z2+z3)); }
-	
-	hyperbolic_coord mid2() const { return normalize(hyperbolic_coord(x1+x3,y1+y3,z1+z3)); }
-	
-	hyperbolic_coord mid3() const { return normalize(hyperbolic_coord(x1+x2,y1+y2,z1+z2)); }
-
-	hyperbolic_coord vertex1() const { return hyperbolic_coord(x1,y1,z1); }
-
-	hyperbolic_coord vertex2() const { return hyperbolic_coord(x2,y2,z2); }
-
-	hyperbolic_coord vertex3() const { return hyperbolic_coord(x3,y3,z3); }
-
-	hyperbolic_coord interior_point() const { return normalize(hyperbolic_coord(x1+x2+x3,y1+y2+y3,z1+z2+z3)); }
+	hyperbolic_coord edge2() const { return e2; }
+	hyperbolic_coord edge3() const { return e3; }
+	hyperbolic_coord mid1() const { return midpoint(v2,v3); }
+	hyperbolic_coord mid2() const { return midpoint(v1,v3); }
+	hyperbolic_coord mid3() const { return midpoint(v1,v2); }
+	hyperbolic_coord vertex1() const { return v1; }
+	hyperbolic_coord vertex2() const { return v2; }
+	hyperbolic_coord vertex3() const { return v3; }
+	hyperbolic_coord interior_point() const { return normalize(v1+v2+v3); }
 
 	hyperbolic_transformation reflection1() { 
 		return hyperbolic_transformation::reflection(edge1());
@@ -107,9 +87,30 @@ public:
 		return generator(rot180_3(),edge3());
 	}
 protected:
-	double a1, a2, a3, sin1, cos1, sin2, cos2, sin3, cos3;
-	double x1, y1, z1, x2, y2, z2, x3, y3, z3;
-	hyperbolic_coord e1;
+	double a1,a2,a3;
+	hyperbolic_coord e1,e2,e3,v1,v2,v3;
+private:
+	static std::tuple<hyperbolic_coord,hyperbolic_coord,hyperbolic_coord,
+		hyperbolic_coord,hyperbolic_coord,hyperbolic_coord> compute_coords(double a1, double a2, double a3) {
+		double s1=sin(a1), c1=cos(a1), s2=sin(a2), c2=cos(a2), s3=sin(a3), c3=cos(a3);
+		double z2=(c3+c1*c2)/(s1*s2);
+		hyperbolic_coord v2(sqrt(z2*z2-1),0,z2);
+		double z3=(c2+c1*c3)/(s1*s3);
+		double r3=sqrt(z3*z3-1);
+		hyperbolic_coord v3(r3*c1,r3*s1,z3);
+		return std::make_tuple(
+			normalize(cross(v2,v3)),
+			hyperbolic_coord(-s1,c1,0),
+			hyperbolic_coord(0,-1,0),
+			hyperbolic_coord(0,0,1),
+			v2,
+			v3);
+	}
+	hyperbolic_triangle(double _a1, double _a2, double _a3,
+		const std::tuple<hyperbolic_coord,hyperbolic_coord,hyperbolic_coord,
+		hyperbolic_coord,hyperbolic_coord,hyperbolic_coord> &t)
+		: a1(_a1), a2(_a2), a3(_a3), e1(std::get<0>(t)), e2(std::get<1>(t)), e3(std::get<2>(t)),
+			v1(std::get<3>(t)), v2(std::get<4>(t)), v3(std::get<5>(t)) {}
 };
 
 class hyperbolic_triangle_isoceles : public hyperbolic_triangle {
@@ -146,20 +147,7 @@ public:
 class hyperbolic_quadrilateral {
 public:
 	hyperbolic_quadrilateral(double _a1, double _a2, double _a3, double _a4)
-		: a1(_a1), a2(_a2), a3(_a3), a4(_a4)
-	{
-		double c1 = cos(a1/2), c2 = cos(a2/2), c3 = cos(a3/2), c4=cos(a4/2);
-		double z = 2*sqrt((c1*c2+c3*c4)*(c1*c3+c2*c4)*(c1*c4+c2*c3)/
-			((c1+c2+c3-c4)*(c1+c2-c3+c4)*(c1-c2+c3+c4)*(-c1+c2+c3+c4)));
-		c1/=z; c2/=z; c3/=z; c4/=z;
-		double r = sqrt(z*z-1);
-		double c1d=1-2*c1*c1, c2d=1-2*c2*c2, c3d=1-2*c3*c3, c4d=1-2*c4*c4;
-		double s1d=2*c1*sqrt(1-c1*c1), s2d=2*c2*sqrt(1-c2*c2), s3d=2*c3*sqrt(1-c3*c3), s4d=2*c4*sqrt(1-c4*c4);
-		e1 = hyperbolic_coord(z,0,r);
-		e2 = hyperbolic_coord(z*c1d,z*s1d,r);
-		e3 = hyperbolic_coord(e2.x*c2d-e2.y*s2d,e2.x*s2d+e2.y*c2d,r);
-		e4 = hyperbolic_coord(z*c4d,-z*s4d,r);
-	}
+		: hyperbolic_quadrilateral(_a1,_a2,_a3,_a4,compute_coords(_a1,_a2,_a3,_a4)) {}
 
 	hyperbolic_coord interior_point() { return hyperbolic_coord(0,0,1); }
 
@@ -173,7 +161,7 @@ public:
 	hyperbolic_coord vertex3() const { return normalize(cross(e3,e4)); }
 	hyperbolic_coord vertex4() const { return normalize(cross(e4,e1)); }
 
-	hyperbolic_coord mid1() const { return normalize(vertex1()+vertex4()); }
+	hyperbolic_coord mid1() const { return midpoint(vertex1(),vertex4()); }
 	hyperbolic_coord mid2() const { return normalize(vertex2()+vertex1()); }
 	hyperbolic_coord mid3() const { return normalize(vertex3()+vertex2()); }
 	hyperbolic_coord mid4() const { return normalize(vertex4()+vertex3()); }
@@ -192,9 +180,28 @@ public:
 	generator reflection4_gen() { return generator(hyperbolic_transformation::reflection(e4),e4); }
 	generator rot180_4_gen() { return generator(rot180_4(),e4); }
 protected:
-	double a1, a2, a3, a4;
+	double a1,a2,a3,a4;
 	hyperbolic_coord e1, e2, e3, e4;
-};
+private:
+	static std::tuple<hyperbolic_coord,hyperbolic_coord,hyperbolic_coord,hyperbolic_coord>
+			compute_coords(double a1, double a2, double a3, double a4) {
+		double c1 = cos(a1/2), c2 = cos(a2/2), c3 = cos(a3/2), c4=cos(a4/2);
+		double z = 2*sqrt((c1*c2+c3*c4)*(c1*c3+c2*c4)*(c1*c4+c2*c3)/
+			((c1+c2+c3-c4)*(c1+c2-c3+c4)*(c1-c2+c3+c4)*(-c1+c2+c3+c4)));
+		c1/=z; c2/=z; c3/=z; c4/=z;
+		double r = sqrt(z*z-1);
+		double c1d=1-2*c1*c1, c2d=1-2*c2*c2, c3d=1-2*c3*c3, c4d=1-2*c4*c4;
+		double s1d=2*c1*sqrt(1-c1*c1), s2d=2*c2*sqrt(1-c2*c2), s3d=2*c3*sqrt(1-c3*c3), s4d=2*c4*sqrt(1-c4*c4);
+		hyperbolic_coord e2(z*c1d,z*s1d,r);
+		return std::make_tuple(
+			hyperbolic_coord(z,0,r),
+			e2,
+			hyperbolic_coord(e2.x*c2d-e2.y*s2d,e2.x*s2d+e2.y*c2d,r),
+			hyperbolic_coord(z*c4d,-z*s4d,r));
+	}
+	hyperbolic_quadrilateral(double _a1, double _a2, double _a3, double _a4,
+		const std::tuple<hyperbolic_coord,hyperbolic_coord,hyperbolic_coord,hyperbolic_coord> &t)
+		: a1(_a1), a2(_a2), a3(_a3), a4(_a4), e1(std::get<0>(t)), e2(std::get<1>(t)), e3(std::get<2>(t)), e4(std::get<3>(t)) {}};
 
 class hyperbolic_quadrilateral_kite : public hyperbolic_quadrilateral {
 public:

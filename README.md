@@ -6,8 +6,8 @@ a program for drawing tileable images consisting of lines and dots
 Installation instructions
 =========================
 Paintlines requires the following software:
-* A C++ compiler that supports C++11
-* Qt 5
+* A C++ compiler that supports C++14 (gcc >=4.9 and clang >= 3.4 should work)
+* Qt 5.4 or newer
 * pkg-config
 
 The following software is optional:
