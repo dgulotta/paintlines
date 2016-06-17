@@ -38,23 +38,22 @@ void paintsquiggles::paint(int sz, symgroup sym)
 		l.color = generate_color();
 		l.pastel = false;
 	}
-	std::vector<std::future<stripes_grid *>> futures((layers.size()+1)/2);
+	std::vector<std::future<void>> futures((layers.size()+1)/2);
 	std::random_device rd;
 	for(int i=0;i<futures.size();i++) {
 		// fftw_malloc is not thread safe, so allocate the grid beforehand
-		stripes_grid *g = new stripes_grid(sz,sym);
+		auto g = std::make_unique<stripes_grid>(sz,sym);
 		auto seed = rd();
-		futures[i] = std::async(std::launch::async,[&,i,g,seed]() {
+		futures[i] = std::async(std::launch::async,[this,i,g=std::move(g),seed]() {
 			std::default_random_engine rng(seed);
 			if(2*i+1<layers.size())
 				fill_two(grids[2*i],grids[2*i+1],rng,levy_alpha,exponent,thickness,sharpness,*g);
 			else
 				fill_one(grids[2*i],rng,levy_alpha,exponent,thickness,sharpness,*g);
-			return g;
 		});
 	}
 	for(auto &f : futures)
-		delete f.get();
+		f.wait();
 	image=symmetric_canvas<color_t>(sz,sym,black);
 	merge(image.unsafe_get_canvas(),layers);
 }

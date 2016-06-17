@@ -36,7 +36,6 @@ public:
 	const canvas<color_t> & get_image() { return image.as_canvas(); }
 	const symmetric_canvas<color_t> & get_symmetric_image() { return image; }
 private:
-	void fill(const std::function<void(int,int,uint8_t)> &set, const stripes_grid &g, double intensity);
 	symmetric_canvas<color_t> image;
 	double levy_alpha;
 };

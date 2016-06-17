@@ -60,19 +60,16 @@ void paintstripes::paint(int sz, symgroup sym)
 	gridr.transform();
 	gridg.transform();
 	gridb.transform();
-	double s = gridr.intensity()+gridg.intensity()+gridb.intensity();
+	double factor = sqrt((gridr.intensity()+gridg.intensity()+gridb.intensity())/3)/(sz*64);
 	image = symmetric_canvas<color_t>(sz,sym);
-	canvas<color_t> & c = const_cast<canvas<color_t> &>(image.as_canvas());
-	fill([&](int x,int y,uint8_t v) { c(x,y).red=v; },gridr,s);
-	fill([&](int x,int y,uint8_t v) { c(x,y).green=v; },gridg,s);
-	fill([&](int x,int y,uint8_t v) { c(x,y).blue=v; },gridb,s);
-}
-
-void paintstripes::fill(const std::function<void(int,int,uint8_t)> &set, const stripes_grid &g, double intensity)
-{
-	int i,j, size=g.get_size();
-	double norm=sqrt(intensity/3)/(size*64);
-	for(j=0;j<size;j++)
-		for(i=0;i<size;i++)
-			set(i,j,colorchop(128.+g.get_symmetric(i,j).real()/norm));
+	canvas<color_t> & c = image.unsafe_get_canvas();
+	auto normalize = [factor] (const stripes_grid &g,int i,int j) -> uint8_t {
+		return colorchop(128.+g.get_symmetric(i,j).real()/factor);
+	};
+	for(j=0;j<sz;j++)
+		for(i=0;i<sz;i++) {
+			c(i,j).red=normalize(gridr,i,j);
+			c(i,j).green=normalize(gridg,i,j);
+			c(i,j).blue=normalize(gridb,i,j);
+		}
 }
