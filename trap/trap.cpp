@@ -236,8 +236,8 @@ iterfunc randfunc_p3(symgroup sg)
 	}
 }
 
-const vector<transformation<double>> p3m1_trans = generate_transforms(symgroup::P3M1,0.);
-const vector<transformation<double>> p4m_trans = generate_transforms(symgroup::P4M,0.);
+const vector<transformation<double>> p3m1_trans = transformation<double>::group(symgroup::P3M1,0.);
+const vector<transformation<double>> p4m_trans = transformation<double>::group(symgroup::P4M,0.);
 
 iterfunc randfunc_p31m(symgroup sg)
 {

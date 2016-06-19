@@ -21,23 +21,24 @@
 #ifndef _STRIPES_COMMON_H
 #define _STRIPES_COMMON_H
 
-#include <fftw3.h>
 #include <algorithm>
 #include <cmath>
 #include <complex>
 #include <memory>
 #include <functional>
 #include "symmetric_canvas.h"
+#include "fftw_cxx.h"
 
 using std::complex;
 
 class stripes_grid {
 public:
-	stripes_grid(int sz, symgroup sg) : size(sz),
+	stripes_grid(int sz, symgroup sg) :
+		size(sz),
 		group(sg),
-		array(reinterpret_cast<complex<double> *>(fftw_alloc_complex(size*size))),
+		array(allocate_complex(sz*sz)),
 		plan(fftw_plan_dft_2d(size,size,farray(),farray(),FFTW_BACKWARD,FFTW_ESTIMATE)),
-		transformations(generate_transforms(sg,sz)) {}
+		transformations(transformation<int>::group(sg,sz)) {}
 	complex<double> & operator () (int x, int y) { return array[mod(x,size)+size*mod(y,size)];}
 	const complex<double> operator () (int x, int y) const { return array[mod(x,size)+size*mod(y,size)];}
 	complex<double> get_symmetric(int x, int y) const;
@@ -48,19 +49,11 @@ public:
 	typedef double (*proj_t)(const complex<double> &);
 	double intensity(const std::function<double(const complex<double> &)> &proj=(proj_t)&std::real) const;
 private:
-	class fc_deleter {
-	public:
-		void operator () (complex<double> *p) { fftw_free(reinterpret_cast<void *>(p)); }
-	};
-	class fp_deleter {
-	public:
-		void operator () (fftw_plan p) { fftw_destroy_plan(p); }
-	};
 	fftw_complex * farray() { return reinterpret_cast<fftw_complex *>(array.get()); }
 	int size;
 	symgroup group;
-	std::unique_ptr<complex<double>[],fc_deleter> array;
-	std::unique_ptr<std::remove_pointer_t<fftw_plan>,fp_deleter> plan;
+	std::unique_ptr<complex<double>[],fftw_free_deleter> array;
+	std::unique_ptr<std::remove_pointer_t<fftw_plan>,fftw_plan_deleter> plan;
 	std::vector<transformation<int>> transformations;
 };
 

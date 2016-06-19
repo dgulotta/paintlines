@@ -40,7 +40,7 @@ void paintsquiggles::paint(int sz, symgroup sym)
 	}
 	std::vector<std::future<void>> futures((layers.size()+1)/2);
 	std::random_device rd;
-	for(int i=0;i<futures.size();i++) {
+	for(size_t i=0;i<futures.size();i++) {
 		// fftw_malloc is not thread safe, so allocate the grid beforehand
 		auto g = std::make_unique<stripes_grid>(sz,sym);
 		auto seed = rd();
@@ -62,10 +62,9 @@ typedef std::function<complex<double>(const std::function<double()> &)> dtocx;
 
 void fill(const stripes_grid &grid,canvas<uint8_t> &pix,const function<double(const complex<double> &)> &proj,double thickness,double sharpness)
 {
-	int size = pix.height();
 	double norm=grid.intensity(proj);
 	norm=sqrt(norm)/(grid.get_size()*64);
-	double height, alpha;
+	double height;
 	int i, j;
 	for(j=0;j<grid.get_size();j++)
 		for(i=0;i<grid.get_size();i++) {

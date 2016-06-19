@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013, 2015 by Daniel Gulotta                            *
+ *   Copyright (C) 2013, 2015-2016 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,9 +24,6 @@
 template<typename T>
 using point = std::tuple<T,T>;
 
-template<typename T>
-using transformation = std::function<point<T>(const point<T> &)>;
-
 enum class symgroup {CM, CMM, P1, P2, P3, P31M, P3M1,
 	P4, P4G, P4M, P6, P6M, PG, PGG, PM,
 	PMG, PMM};
@@ -41,79 +38,124 @@ static const bool _sym_is_hexagonal[17] = { false, false, false, false, true, tr
 
 inline bool sym_is_hexagonal(symgroup g) { return _sym_is_hexagonal[static_cast<int>(g)]; }
 
-#define TRB(xn,yn) (const point<T> &t) { T x=std::get<0>(t), y=std::get<1>(t); return std::make_tuple(xn,yn); }
-#define TR(xn,yn) [=] TRB(xn,yn)
-#define TRDEC(name,xn,yn) template<typename T> point<T> name TRB(xn,yn)
-
-TRDEC(id,x,y);
-TRDEC(rot60,-y,x+y);
-TRDEC(rot90,-y,x);
-TRDEC(rot120,-x-y,x);
-TRDEC(rot180,-x,-y);
-TRDEC(rot240,y,-x-y);
-TRDEC(rot270,y,-x);
-TRDEC(rot300,x+y,-x);
-TRDEC(flipH,-x,y);
-TRDEC(flipV,x,-y);
-TRDEC(flipD1,y,x);
-TRDEC(flipD2,-y,-x);
-TRDEC(flipD3,-x-y,y);
-TRDEC(flipD4,x+y,-y);
-TRDEC(flipD5,x,-x-y);
-TRDEC(flipD6,-x,x+y);
-
 template<typename T>
-transformation<T> flipD1Off(T offset) { return TR(offset+y,offset+x); }
-template<typename T>
-transformation<T> flipD2Off(T offset) { return TR(offset-y,offset-x); }
-template<typename T>
-transformation<T> glideX(T glide, T offset) { return TR(glide+x,offset-y); }
-template<typename T>
-transformation<T> glideY(T glide, T offset) { return TR(offset-x,glide+y); }
-
-#undef TRB
-#undef TR
-#undef TRDEC
+struct transformation {
+	point<T> operator () (const point<T> &p) const {
+		return std::make_tuple(
+			xx*std::get<0>(p)+xy*std::get<1>(p)+x1,
+			yx*std::get<0>(p)+yy*std::get<1>(p)+y1);
+	}
+	T xx, xy, x1, yx, yy, y1;
+	static const transformation<T> id;
+	static const transformation<T> rot60;
+	static const transformation<T> rot90;
+	static const transformation<T> rot120;
+	static const transformation<T> rot180;
+	static const transformation<T> rot240;
+	static const transformation<T> rot270;
+	static const transformation<T> rot300;
+	static const transformation<T> flipH;
+	static const transformation<T> flipV;
+	static const transformation<T> flipD1;
+	static const transformation<T> flipD2;
+	static const transformation<T> flipD3;
+	static const transformation<T> flipD4;
+	static const transformation<T> flipD5;
+	static const transformation<T> flipD6;
+	static transformation<T> flipD1Off(T offset) { return {0,1,offset,1,0,offset}; }
+	static transformation<T> flipD2Off(T offset) { return {0,-1,offset,-1,0,offset}; }
+	static transformation<T> glideX(T glide, T offset) { return {1,0,glide,0,-1,offset}; }
+	static transformation<T> glideY(T glide, T offset) { return {-1,0,offset,0,1,glide}; }
+	static std::vector<transformation<T>> group(symgroup g, T sz);
+};
 
 template<typename T>
-std::vector<transformation<T>> generate_transforms(symgroup sg, T sz)
+const transformation<T> transformation<T>::id{1,0,0,0,1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::rot60{0,-1,0,1,1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::rot90{0,-1,0,1,0,0};
+
+template<typename T>
+const transformation<T> transformation<T>::rot120{-1,-1,0,1,0,0};
+
+template<typename T>
+const transformation<T> transformation<T>::rot180{-1,0,0,0,-1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::rot240{0,1,0,-1,-1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::rot270{0,1,0,-1,0,0};
+
+template<typename T>
+const transformation<T> transformation<T>::rot300{1,1,0,-1,0,0};
+
+template<typename T>
+const transformation<T> transformation<T>::flipH{-1,0,0,0,1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::flipV{1,0,0,0,-1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::flipD1{0,1,0,1,0,0};
+
+template<typename T>
+const transformation<T> transformation<T>::flipD2{0,-1,0,-1,0,0};
+
+template<typename T>
+const transformation<T> transformation<T>::flipD3{-1,-1,0,0,1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::flipD4{1,1,0,0,-1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::flipD5{1,0,0,-1,-1,0};
+
+template<typename T>
+const transformation<T> transformation<T>::flipD6{-1,0,0,1,1,0};
+
+template<typename T>
+std::vector<transformation<T>> transformation<T>::group(symgroup sg, T sz)
 {
 	T h = sz/2;
 	switch(sg) {
 	case symgroup::CM:
-		return {id<T>,flipD1<T>};
+		return {id,flipD1};
 	case symgroup::CMM:
-		return {id<T>,rot180<T>,flipD1<T>,flipD2<T>};
+		return {id,rot180,flipD1,flipD2};
 	case symgroup::P1:
-		return {id<T>};
+		return {id};
 	case symgroup::P2:
-		return {id<T>,rot180<T>};
+		return {id,rot180};
 	case symgroup::P3:
-		return {id<T>,rot120<T>,rot240<T>};
+		return {id,rot120,rot240};
 	case symgroup::P31M:
-		return {id<T>,rot120<T>,rot240<T>,flipD2<T>,flipD4<T>,flipD6<T>};
+		return {id,rot120,rot240,flipD2,flipD4,flipD6};
 	case symgroup::P3M1:
-		return {id<T>,rot120<T>,rot240<T>,flipD1<T>,flipD3<T>,flipD5<T>};
+		return {id,rot120,rot240,flipD1,flipD3,flipD5};
 	case symgroup::P4:
-		return {id<T>,rot90<T>,rot180<T>,rot270<T>};
+		return {id,rot90,rot180,rot270};
 	case symgroup::P4G:
-		return {id<T>,rot90<T>,rot180<T>,rot270<T>,glideX(h,h),glideY(h,h),flipD1Off(h),flipD2Off(h)};
+		return {id,rot90,rot180,rot270,glideX(h,h),glideY(h,h),flipD1Off(h),flipD2Off(h)};
 	case symgroup::P4M:
-		return {id<T>,rot90<T>,rot180<T>,rot270<T>,flipV<T>,flipH<T>,flipD1<T>,flipD2<T>};
+		return {id,rot90,rot180,rot270,flipV,flipH,flipD1,flipD2};
 	case symgroup::P6:
-		return {id<T>,rot60<T>,rot120<T>,rot180<T>,rot240<T>,rot300<T>};
+		return {id,rot60,rot120,rot180,rot240,rot300};
 	case symgroup::P6M:
-		return {id<T>,rot60<T>,rot120<T>,rot180<T>,rot240<T>,rot300<T>,flipD1<T>,flipD2<T>,flipD3<T>,flipD4<T>,flipD5<T>,flipD6<T>};
+		return {id,rot60,rot120,rot180,rot240,rot300,flipD1,flipD2,flipD3,flipD4,flipD5,flipD6};
 	case symgroup::PG:
-		return {id<T>,glideX(h,h)};
+		return {id,glideX(h,h)};
 	case symgroup::PGG:
-		return {id<T>,rot180<T>,glideX(h,h),glideY(h,h)};
+		return {id,rot180,glideX(h,h),glideY(h,h)};
 	case symgroup::PM:
-		return {id<T>,flipH<T>};
+		return {id,flipH};
 	case symgroup::PMG:
-		return {id<T>,rot180<T>,glideX(h,(T)0),glideY((T)0,h)};
+		return {id,rot180,glideX(h,0),glideY(0,h)};
 	case symgroup::PMM:
-		return {id<T>,rot180<T>,flipV<T>,flipH<T>};
+		return {id,rot180,flipV,flipH};
 	}
 }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
+ *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,12 +21,13 @@
 #ifndef _STRIPESWIDGET_H
 #define _STRIPESWIDGET_H
 
+#include "../color.h"
 #include "../imagegeneratorwidget.h"
+#include "../symmetric_canvas.h"
 
 class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;
-class paintstripes;
 
 class StripesWidget : public ImageGeneratorWidget
 {
@@ -39,7 +40,7 @@ protected:
 	QSpinBox *spinSize;
 	SymmetryCombo *comboSymmetry;
 	QDoubleSpinBox *spinAlpha;
-	paintstripes *stripes;
+	symmetric_canvas<color_t> img;
 };
 
 #endif

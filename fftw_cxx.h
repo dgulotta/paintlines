@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2005, 2013, 2016 by Daniel Gulotta                      *
+ *   Copyright (C) 2016 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,12 +18,35 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _PAINTSTRIPES_H
-#define _PAINTSTRIPES_H
+#ifndef _FFTW_CXX_H
+#define _FFTW_CXX_H
 
-#include "../color.h"
-#include "../symmetric_canvas.h"
+#include <complex>
+#include <new>
+#include <fftw3.h>
 
-symmetric_canvas<color_t> paint_stripes(int sz, symgroup sym, double alpha);
+template <typename T>
+T * check_alloc(T *t)
+{
+	if(t)
+		return t;
+	else
+		throw std::bad_alloc();
+}
+
+inline std::complex<double> * allocate_complex(size_t s)
+{
+	return reinterpret_cast<std::complex<double> *>(check_alloc(fftw_alloc_complex(s)));
+}
+
+struct fftw_free_deleter
+{
+	void operator () (std::complex<double> *p) { fftw_free(static_cast<void *>(p)); }
+};
+
+struct fftw_plan_deleter
+{
+	void operator () (fftw_plan p) { fftw_destroy_plan(p); }
+};
 
 #endif

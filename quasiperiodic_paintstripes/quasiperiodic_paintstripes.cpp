@@ -68,7 +68,6 @@ void quasiperiodic_paintstripes::paint(int sz, int fftsz)
 
 void quasiperiodic_paintstripes::fill(const std::function<void(int,int,uint8_t)> &set)
 {
-	double mag[2],  n(0.);
 	double norm;
 	int a,b,c,d, i, j;
 	array[0]=array[1]=0.;

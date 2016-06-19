@@ -8,6 +8,7 @@ QT += widgets
 HEADERS += canvas.h \
 	color.h \
 	converterwidget.h \
+	fftw_cxx.h \
 	hyperbolic_painter.h \
 	hyperbolic_polygons.h \
 	imagedata.h \

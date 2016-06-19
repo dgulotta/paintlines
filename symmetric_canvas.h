@@ -35,7 +35,7 @@ class symmetric_canvas
 {
 public:
 	symmetric_canvas() : symmetric_canvas(0,symgroup::P1) {}
-	symmetric_canvas(int s, symgroup g) : _group(g), base_canvas(s,s), _transforms(generate_transforms(g,s)) {}
+	symmetric_canvas(int s, symgroup g) : _group(g), base_canvas(s,s), _transforms(transformation<int>::group(g,s)) {}
 	symmetric_canvas(int s, symgroup g, const T &t) : symmetric_canvas(s,g) {
 		std::fill(base_canvas.begin(),base_canvas.end(),t);
 	}
@@ -57,7 +57,7 @@ public:
 	const std::vector<transformation<int>> & transforms() const { return _transforms; }
 	void unsafe_set_symmetry_group(symgroup g) {
 		_group = g;
-		_transforms = generate_transforms(g,size());
+		_transforms = transformation<int>::group(g,size());
 	}
 	canvas<T> & unsafe_get_canvas() { return base_canvas.as_canvas(); }
 private:

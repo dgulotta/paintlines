@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
+ *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -36,10 +36,8 @@ StripesWidget::StripesWidget()
 	spinAlpha->setMaximum(2.);
 	spinAlpha->setValue(1.);
 	layout->addRow(tr("Alpha"),spinAlpha);
-	stripes=new paintstripes;
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	stripes = new paintstripes;
 	setLayout(layout);
 	connect(buttonDraw,&QPushButton::clicked,this,&StripesWidget::draw);
 }
@@ -50,8 +48,7 @@ void StripesWidget::draw()
 		QMessageBox::information(this,"paintstripes",tr("The size must be even."));
 		return;
 	}
-	stripes->set_alpha(spinAlpha->value());
-	stripes->paint(spinSize->value(),(symgroup)comboSymmetry->group());
-	ImageData data(stripes->get_symmetric_image());
+	img=paint_stripes(spinSize->value(),(symgroup)comboSymmetry->group(),spinAlpha->value());
+	ImageData data(img);
 	emit newImage(data);
 }
