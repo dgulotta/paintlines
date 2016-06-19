@@ -41,7 +41,7 @@ public:
 	paintlines_layer_generator(symmetric_canvas<uint8_t> &g) : grid(&g) {}
 	int size() const { return grid->size(); }
 	symgroup group() const { return grid->group(); }
-	bool is_hexagonal() { return sym_is_hexagonal[(int)group()]; }
+	bool is_hexagonal() { return sym_is_hexagonal(group()); }
 	static void generate_smootharc(symmetric_canvas<uint8_t> &g);
 	static void generate_smoothline2_beads(symmetric_canvas<uint8_t> &g);
 	static void generate_smoothline2(symmetric_canvas<uint8_t> &g);

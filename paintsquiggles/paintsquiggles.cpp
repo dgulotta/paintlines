@@ -79,7 +79,7 @@ void generate(stripes_grid &grid, const dtocx &gen,
 {
 	grid.clear();
 	int i,j, size=grid.get_size();
-	auto norm = grid.norm();
+	stripes_grid_norm norm(size,grid.get_group());
 	auto randfunc = [&] () { return random_levy_1d(alpha,1.,rng); };
 	for(j=0;j<size;j++)
 		for(i=0;i<size;i++)

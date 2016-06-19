@@ -185,22 +185,22 @@ hyperbolic_symmetry_group::hyperbolic_symmetry_group(const group_spec &s,flip_ty
 			if(it->inside(p)) continue;
 			if(!all_of(generators.begin(),it,bind(&generator::inside,_1,p))) continue;
 			queue.push_back(t);
-			if(f==FLIP_ALL||
-					(f==FLIP_ALTERNATING&&!t.is_flip())||
-					(f==FLIP_RANDOM&&random_bool()))
+			if(f==flip_type::ALL||
+					(f==flip_type::ALTERNATING&&!t.is_flip())||
+					(f==flip_type::RANDOM&&random_bool()))
 				transformations.push_back(t);
 			else
 				flips.push_back(t);
 		}
 	}
 	switch(f) {
-		case FLIP_ALL:
+		case flip_type::ALL:
 			fdfunc=&hyperbolic_symmetry_group::fundamental_domain;
 			break;
-		case FLIP_ALTERNATING:
+		case flip_type::ALTERNATING:
 			fdfunc=&hyperbolic_symmetry_group::fundamental_domain_alternating;
 			break;
-		case FLIP_RANDOM:
+		case flip_type::RANDOM:
 			fdfunc=&hyperbolic_symmetry_group::fundamental_domain_random;
 	}
 }

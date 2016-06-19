@@ -21,6 +21,7 @@
 #ifndef _HYPERBOLIC_POLYGONS_H
 #define _HYPERBOLIC_POLYGONS_H
 
+#include <array>
 #include "hyperbolic_painter.h"
 
 class hyperbolic_triangle {
@@ -90,27 +91,25 @@ protected:
 	double a1,a2,a3;
 	hyperbolic_coord e1,e2,e3,v1,v2,v3;
 private:
-	static std::tuple<hyperbolic_coord,hyperbolic_coord,hyperbolic_coord,
-		hyperbolic_coord,hyperbolic_coord,hyperbolic_coord> compute_coords(double a1, double a2, double a3) {
+	static std::array<hyperbolic_coord,6> compute_coords(double a1, double a2, double a3) {
 		double s1=sin(a1), c1=cos(a1), s2=sin(a2), c2=cos(a2), s3=sin(a3), c3=cos(a3);
 		double z2=(c3+c1*c2)/(s1*s2);
 		hyperbolic_coord v2(sqrt(z2*z2-1),0,z2);
 		double z3=(c2+c1*c3)/(s1*s3);
 		double r3=sqrt(z3*z3-1);
 		hyperbolic_coord v3(r3*c1,r3*s1,z3);
-		return std::make_tuple(
+		return {
 			normalize(cross(v2,v3)),
 			hyperbolic_coord(-s1,c1,0),
 			hyperbolic_coord(0,-1,0),
 			hyperbolic_coord(0,0,1),
 			v2,
-			v3);
+			v3};
 	}
 	hyperbolic_triangle(double _a1, double _a2, double _a3,
-		const std::tuple<hyperbolic_coord,hyperbolic_coord,hyperbolic_coord,
-		hyperbolic_coord,hyperbolic_coord,hyperbolic_coord> &t)
-		: a1(_a1), a2(_a2), a3(_a3), e1(std::get<0>(t)), e2(std::get<1>(t)), e3(std::get<2>(t)),
-			v1(std::get<3>(t)), v2(std::get<4>(t)), v3(std::get<5>(t)) {}
+		const std::array<hyperbolic_coord,6> &t)
+		: a1(_a1), a2(_a2), a3(_a3), e1(t[0]), e2(t[1]), e3(t[2]),
+			v1(t[3]), v2(t[4]), v3(t[5]) {}
 };
 
 class hyperbolic_triangle_isoceles : public hyperbolic_triangle {
@@ -183,8 +182,7 @@ protected:
 	double a1,a2,a3,a4;
 	hyperbolic_coord e1, e2, e3, e4;
 private:
-	static std::tuple<hyperbolic_coord,hyperbolic_coord,hyperbolic_coord,hyperbolic_coord>
-			compute_coords(double a1, double a2, double a3, double a4) {
+	static std::array<hyperbolic_coord,4> compute_coords(double a1, double a2, double a3, double a4) {
 		double c1 = cos(a1/2), c2 = cos(a2/2), c3 = cos(a3/2), c4=cos(a4/2);
 		double z = 2*sqrt((c1*c2+c3*c4)*(c1*c3+c2*c4)*(c1*c4+c2*c3)/
 			((c1+c2+c3-c4)*(c1+c2-c3+c4)*(c1-c2+c3+c4)*(-c1+c2+c3+c4)));
@@ -193,15 +191,16 @@ private:
 		double c1d=1-2*c1*c1, c2d=1-2*c2*c2, c3d=1-2*c3*c3, c4d=1-2*c4*c4;
 		double s1d=2*c1*sqrt(1-c1*c1), s2d=2*c2*sqrt(1-c2*c2), s3d=2*c3*sqrt(1-c3*c3), s4d=2*c4*sqrt(1-c4*c4);
 		hyperbolic_coord e2(z*c1d,z*s1d,r);
-		return std::make_tuple(
+		return {
 			hyperbolic_coord(z,0,r),
 			e2,
 			hyperbolic_coord(e2.x*c2d-e2.y*s2d,e2.x*s2d+e2.y*c2d,r),
-			hyperbolic_coord(z*c4d,-z*s4d,r));
+			hyperbolic_coord(z*c4d,-z*s4d,r)};
 	}
 	hyperbolic_quadrilateral(double _a1, double _a2, double _a3, double _a4,
-		const std::tuple<hyperbolic_coord,hyperbolic_coord,hyperbolic_coord,hyperbolic_coord> &t)
-		: a1(_a1), a2(_a2), a3(_a3), a4(_a4), e1(std::get<0>(t)), e2(std::get<1>(t)), e3(std::get<2>(t)), e4(std::get<3>(t)) {}};
+		const std::array<hyperbolic_coord,4> &t)
+		: a1(_a1), a2(_a2), a3(_a3), a4(_a4), e1(t[0]), e2(t[1]), e3(t[2]), e4(t[3]) {}
+};
 
 class hyperbolic_quadrilateral_kite : public hyperbolic_quadrilateral {
 public:

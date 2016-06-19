@@ -150,7 +150,7 @@ void paintclouds::paint(int size, symgroup sym)
 	grid=symmetric_canvas<color_t>(size,sym);
 	int halfsize=size/2;
 	switch(sym) {
-	case SYM_CM:
+	case symgroup::CM:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri(d+1,d+1);
@@ -167,7 +167,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,size,0,size,size,0,0);
 		break;
 	}
-	case SYM_CMM:
+	case symgroup::CMM:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri(d+1,d+1);
@@ -182,7 +182,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,halfsize,halfsize,0,0,size,0);
 		break;
 	}
-	case SYM_P1:
+	case symgroup::P1:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri1(d+1,d+1), tri2(d+1,d+1);
@@ -205,7 +205,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri2,size,size,size,0,0,size);
 		break;
 	}
-	case SYM_P2:
+	case symgroup::P2:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri(d+1,d+1);
@@ -226,7 +226,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,0,0,size,0,0,size);
 		break;
 	}
-	case SYM_P3:
+	case symgroup::P3:
 	{
 		int d = tri_size((2*size+1)/3);
 		canvas<color_t> tri1(d+1,d+1), tri2(d+1,d+1);
@@ -247,7 +247,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri2,0,0,size,size,-size,2*size,3);
 		break;
 	}
-	case SYM_P31M:
+	case symgroup::P31M:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri(d+1,d+1);
@@ -255,7 +255,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,size,size,3*size,0,0,3*size,3);
 		break;
 	}
-	case SYM_P3M1:
+	case symgroup::P3M1:
 	{
 		int d = tri_size((2*size+1)/3);
 		canvas<color_t> tri(d+1,d+1);
@@ -263,7 +263,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,0,0,size,size,2*size,-size,3);
 		break;
 	}
-	case SYM_P4:
+	case symgroup::P4:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri(d+1,d+1);
@@ -271,7 +271,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,halfsize,halfsize,size,0,0,0);
 		break;
 	}
-	case SYM_P4G:
+	case symgroup::P4G:
 	{
 		int d = tri_size(halfsize);
 		canvas<color_t> tri(d+1,d+1);
@@ -279,7 +279,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,0,0,0,halfsize,halfsize,0);
 		break;
 	}
-	case SYM_P4M:
+	case symgroup::P4M:
 	{
 		int d = tri_size(halfsize);
 		canvas<color_t> tri(d+1,d+1);
@@ -287,7 +287,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,0,0,halfsize,0,halfsize,halfsize);
 		break;
 	}
-	case SYM_P6:
+	case symgroup::P6:
 	{
 		int d = tri_size((2*size+1)/3);
 		canvas<color_t> tri(d+1,d+1);
@@ -295,7 +295,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,0,0,size,size,2*size,-size,3);
 		break;
 	}
-	case SYM_P6M:
+	case symgroup::P6M:
 	{
 		int d = tri_size((2*size+1)/3);
 		canvas<color_t> tri(d+1,d+1);
@@ -303,7 +303,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,0,0,2*size,2*size,3*size,0,6);
 		break;
 	}
-	case SYM_PG:
+	case symgroup::PG:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri(d+1,d+1);
@@ -321,7 +321,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,2*size,3*size,0,-size,4*size,-size,4);
 		break;
 	}
-	case SYM_PGG:
+	case symgroup::PGG:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri(d+1,d+1);
@@ -337,7 +337,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,halfsize,0,0,-halfsize,0,halfsize);
 		break;
 	}
-	case SYM_PM:
+	case symgroup::PM:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri1(d+1,d+1), tri2(d+1,d+2);
@@ -359,7 +359,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri2,0,0,halfsize,-halfsize,halfsize,halfsize);
 		break;
 	}
-	case SYM_PMG:
+	case symgroup::PMG:
 	{
 		int d = tri_size(size);
 		canvas<color_t> tri(d+1,d+1);
@@ -377,7 +377,7 @@ void paintclouds::paint(int size, symgroup sym)
 		copy(grid,tri,3*size,3*size,size,size,size,5*size,4);
 		break;
 	}
-	case SYM_PMM:
+	case symgroup::PMM:
 	{
 		int d = tri_size(halfsize);
 		canvas<color_t> tri1(d+1,d+1), tri2(d+1,d+1);

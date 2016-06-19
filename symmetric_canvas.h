@@ -34,7 +34,7 @@ template<typename T>
 class symmetric_canvas
 {
 public:
-	symmetric_canvas() : symmetric_canvas(0,SYM_P1) {}
+	symmetric_canvas() : symmetric_canvas(0,symgroup::P1) {}
 	symmetric_canvas(int s, symgroup g) : _group(g), base_canvas(s,s), _transforms(generate_transforms(g,s)) {}
 	symmetric_canvas(int s, symgroup g, const T &t) : symmetric_canvas(s,g) {
 		std::fill(base_canvas.begin(),base_canvas.end(),t);

@@ -24,7 +24,7 @@
 #include <vector>
 #include <QImage>
 
-class color_t;
+struct color_t;
 class layer;
 template<typename T>
 class symmetric_canvas;

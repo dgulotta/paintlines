@@ -236,8 +236,8 @@ iterfunc randfunc_p3(symgroup sg)
 	}
 }
 
-const vector<transformation<double>> p3m1_trans = generate_transforms(SYM_P3M1,0.);
-const vector<transformation<double>> p4m_trans = generate_transforms(SYM_P4M,0.);
+const vector<transformation<double>> p3m1_trans = generate_transforms(symgroup::P3M1,0.);
+const vector<transformation<double>> p4m_trans = generate_transforms(symgroup::P4M,0.);
 
 iterfunc randfunc_p31m(symgroup sg)
 {
@@ -379,37 +379,37 @@ iterfunc random_iterfunc(symgroup sg)
 {
 	switch(sg)
 	{
-	case SYM_CM:
+	case symgroup::CM:
 		return randfunc_cm(sg);
-	case SYM_CMM:
+	case symgroup::CMM:
 		return randfunc_cmm(sg);
-	case SYM_P2:
+	case symgroup::P2:
 		return randfunc_p2(sg);
-	case SYM_P3:
+	case symgroup::P3:
 		return randfunc_p3(sg);
-	case SYM_P31M:
+	case symgroup::P31M:
 		return randfunc_p31m(sg);
-	case SYM_P3M1:
+	case symgroup::P3M1:
 		return randfunc_p3m1(sg);
-	case SYM_P4:
+	case symgroup::P4:
 		return randfunc_p4(sg);
-	case SYM_P4G:
+	case symgroup::P4G:
 		return randfunc_p4g(sg);
-	case SYM_P4M:
+	case symgroup::P4M:
 		return randfunc_p4m(sg);
-	case SYM_P6:
+	case symgroup::P6:
 		return randfunc_p6(sg);
-	case SYM_P6M:
+	case symgroup::P6M:
 		return randfunc_p6m(sg);
-	case SYM_PG:
+	case symgroup::PG:
 		return randfunc_pg(sg);
-	case SYM_PGG:
+	case symgroup::PGG:
 		return randfunc_pgg(sg);
-	case SYM_PM:
+	case symgroup::PM:
 		return randfunc_pm(sg);
-	case SYM_PMG:
+	case symgroup::PMG:
 		return randfunc_pmg(sg);
-	case SYM_PMM:
+	case symgroup::PMM:
 		return randfunc_pmm(sg);
 	default:
 		return randfunc_p1(sg);
@@ -420,17 +420,17 @@ function<double(double,double)> distfunc(symgroup sg)
 {
 	switch(sg)
 	{
-	case SYM_PG:
-	case SYM_PGG:
-	case SYM_P4G:
+	case symgroup::PG:
+	case symgroup::PGG:
+	case symgroup::P4G:
 		return [] (double x, double y) { return cos(x+y)+cos(x-y); };
-	case SYM_PMG:
+	case symgroup::PMG:
 		return [] (double x, double y) { return cos(x+y)-cos(x-y); };
-	case SYM_P3:
-	case SYM_P31M:
-	case SYM_P3M1:
-	case SYM_P6:
-	case SYM_P6M:
+	case symgroup::P3:
+	case symgroup::P31M:
+	case symgroup::P3M1:
+	case symgroup::P6:
+	case symgroup::P6M:
 		return [] (double x, double y) { return (cos(x)+cos(y)+cos(x+y)-.75)*(8./9.); };
 	default:
 		return [] (double x, double y) { return cos(x)+cos(y); };
@@ -472,7 +472,7 @@ typedef std::function<double(double, double, double, double)> qdistfunc;
 typedef std::function<tuple<double,double,double,double>(double,double)> qembfunc;
 using std::conj;
 
-#define QPT(a,b,c,d) [=] (double x, double y, double z, double w) { return make_tuple((a),(b),(c),(d)); }
+#define QPT(a,b,c,d) [] (double x, double y, double z, double w) { return make_tuple((a),(b),(c),(d)); }
 
 qiterfunc qrot10[10] = {
 	QPT(x,y,z,w),

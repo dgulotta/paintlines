@@ -413,31 +413,31 @@ void randomize(int xtiles, int ytiles, symgroup sg, int size, const function<voi
 		}
 	};
 	switch(sg) {
-	case SYM_CM:
-	case SYM_P1:
-	case SYM_PM:
+	case symgroup::CM:
+	case symgroup::P1:
+	case symgroup::PM:
 		randomize_p1(xtiles,ytiles,size,copy_func);
 		break;
-	case SYM_PG:
+	case symgroup::PG:
 		randomize_pg(xtiles,ytiles,size,copy_func);
 		break;
-	case SYM_CMM:
-	case SYM_P2:
-	case SYM_PGG:
-	case SYM_PMG:
-	case SYM_PMM:
+	case symgroup::CMM:
+	case symgroup::P2:
+	case symgroup::PGG:
+	case symgroup::PMG:
+	case symgroup::PMM:
 		randomize_p2(xtiles,ytiles,size,copy_func);
 		break;
-	case SYM_P3:
-	case SYM_P3M1:
-	case SYM_P31M:
-	case SYM_P6:
-	case SYM_P6M:
+	case symgroup::P3:
+	case symgroup::P3M1:
+	case symgroup::P31M:
+	case symgroup::P6:
+	case symgroup::P6M:
 		randomize_p3(xtiles,ytiles,size,copy_func);
 		break;
-	case SYM_P4:
-	case SYM_P4G:
-	case SYM_P4M:
+	case symgroup::P4:
+	case symgroup::P4G:
+	case symgroup::P4M:
 		randomize_p4(xtiles,ytiles,size,copy_func);
 	}
 }

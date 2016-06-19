@@ -27,15 +27,19 @@ using point = std::tuple<T,T>;
 template<typename T>
 using transformation = std::function<point<T>(const point<T> &)>;
 
-enum symgroup {SYM_CM, SYM_CMM, SYM_P1, SYM_P2, SYM_P3, SYM_P31M, SYM_P3M1,
-	SYM_P4, SYM_P4G, SYM_P4M, SYM_P6, SYM_P6M, SYM_PG, SYM_PGG, SYM_PM,
-	SYM_PMG, SYM_PMM};
+enum class symgroup {CM, CMM, P1, P2, P3, P31M, P3M1,
+	P4, P4G, P4M, P6, P6M, PG, PGG, PM,
+	PMG, PMM};
 
-static const int num_symmetries[17] = { 2, 4, 1,
+static const int _num_symmetries[17] = { 2, 4, 1,
 	2, 3, 6, 6, 4, 8, 8, 6, 12, 2, 4, 2, 4, 4};
 
-static const bool sym_is_hexagonal[17] = { false, false, false, false, true, true,
+inline int num_symmetries(symgroup g) { return _num_symmetries[static_cast<int>(g)]; }
+
+static const bool _sym_is_hexagonal[17] = { false, false, false, false, true, true,
 	true, false, false, false, true, true, false, false, false, false, false };
+
+inline bool sym_is_hexagonal(symgroup g) { return _sym_is_hexagonal[static_cast<int>(g)]; }
 
 #define TRB(xn,yn) (const point<T> &t) { T x=std::get<0>(t), y=std::get<1>(t); return std::make_tuple(xn,yn); }
 #define TR(xn,yn) [=] TRB(xn,yn)
@@ -76,39 +80,39 @@ std::vector<transformation<T>> generate_transforms(symgroup sg, T sz)
 {
 	T h = sz/2;
 	switch(sg) {
-	case SYM_CM:
+	case symgroup::CM:
 		return {id<T>,flipD1<T>};
-	case SYM_CMM:
+	case symgroup::CMM:
 		return {id<T>,rot180<T>,flipD1<T>,flipD2<T>};
-	case SYM_P1:
+	case symgroup::P1:
 		return {id<T>};
-	case SYM_P2:
+	case symgroup::P2:
 		return {id<T>,rot180<T>};
-	case SYM_P3:
+	case symgroup::P3:
 		return {id<T>,rot120<T>,rot240<T>};
-	case SYM_P31M:
+	case symgroup::P31M:
 		return {id<T>,rot120<T>,rot240<T>,flipD2<T>,flipD4<T>,flipD6<T>};
-	case SYM_P3M1:
+	case symgroup::P3M1:
 		return {id<T>,rot120<T>,rot240<T>,flipD1<T>,flipD3<T>,flipD5<T>};
-	case SYM_P4:
+	case symgroup::P4:
 		return {id<T>,rot90<T>,rot180<T>,rot270<T>};
-	case SYM_P4G:
+	case symgroup::P4G:
 		return {id<T>,rot90<T>,rot180<T>,rot270<T>,glideX(h,h),glideY(h,h),flipD1Off(h),flipD2Off(h)};
-	case SYM_P4M:
+	case symgroup::P4M:
 		return {id<T>,rot90<T>,rot180<T>,rot270<T>,flipV<T>,flipH<T>,flipD1<T>,flipD2<T>};
-	case SYM_P6:
+	case symgroup::P6:
 		return {id<T>,rot60<T>,rot120<T>,rot180<T>,rot240<T>,rot300<T>};
-	case SYM_P6M:
+	case symgroup::P6M:
 		return {id<T>,rot60<T>,rot120<T>,rot180<T>,rot240<T>,rot300<T>,flipD1<T>,flipD2<T>,flipD3<T>,flipD4<T>,flipD5<T>,flipD6<T>};
-	case SYM_PG:
+	case symgroup::PG:
 		return {id<T>,glideX(h,h)};
-	case SYM_PGG:
+	case symgroup::PGG:
 		return {id<T>,rot180<T>,glideX(h,h),glideY(h,h)};
-	case SYM_PM:
+	case symgroup::PM:
 		return {id<T>,flipH<T>};
-	case SYM_PMG:
+	case symgroup::PMG:
 		return {id<T>,rot180<T>,glideX(h,(T)0),glideY((T)0,h)};
-	case SYM_PMM:
+	case symgroup::PMM:
 		return {id<T>,rot180<T>,flipV<T>,flipH<T>};
 	}
 }

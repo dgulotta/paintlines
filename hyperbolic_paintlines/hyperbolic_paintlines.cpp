@@ -43,11 +43,11 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
 	double dist;
 	image=canvas<color_t>(sz,sz);
 	switch(pt) {
-	case POINCARE:
+	case projtype::POINCARE:
 		proj=&poincare_projection;
 		dist=1.+.01/sz;
 		break;
-	case KLEIN:
+	case projtype::KLEIN:
 		proj=&klein_projection;
 		dist=1.+.005/sz;
 	}
@@ -69,7 +69,7 @@ void hyperbolic_paintlines::paint(int sz, hyperbolic_symmetry_group &sym)
 			c2=sym.random_symmetry(c);
 		} while(c.z>=25.||c2.z>=25.);
 		drawsmoothline(c,normalize(c2),.02,dist);
-		if(pt==POINCARE)
+		if(pt==projtype::POINCARE)
 			fill_poincare();
 		else
 			fill_klein();

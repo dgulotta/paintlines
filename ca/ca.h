@@ -21,8 +21,6 @@
 #ifndef _CA_H
 #define _CA_H
 
-#include <deque>
-#include <functional>
 #include <tuple>
 #include <vector>
 #include "../canvas.h"

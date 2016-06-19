@@ -115,7 +115,7 @@ static const int fractal_prob[13] = { 0, 40, 40, 38, 37, 0, 35, 0, 34, 0, 0, 0, 
 void paintlines_layer_generator::generate_cluster2(symmetric_canvas<uint8_t> &g)
 {
 	paintlines_layer_generator gen(g);
-	gen.drawfractal(random_int(g.size()),random_int(g.size()),g.size(),fractal_prob[num_symmetries[g.group()]]);
+	gen.drawfractal(random_int(g.size()),random_int(g.size()),g.size(),fractal_prob[num_symmetries(g.group())]);
 }
 
 void paintlines_layer_generator::generate_open_string(symmetric_canvas<uint8_t> &g)
@@ -129,7 +129,7 @@ void paintlines_layer_generator::generate_swirl(symmetric_canvas<uint8_t> &g)
 	paintlines_layer_generator gen(g);
 	do {
 		gen.drawswirl();
-	} while(random_int(20)>=num_symmetries[g.group()]);
+	} while(random_int(20)>=num_symmetries(g.group()));
 }
 
 void paintlines_layer_generator::generate_orbit(symmetric_canvas<uint8_t> &g)
@@ -656,7 +656,7 @@ static const double orbit_stdev = sqrt(1.5);
 
 void paintlines_layer_generator::drawgranules() {
 	double x = random_int(size()), y = random_int(size());
-	int m = random_poisson(size()*size()/(10.*num_symmetries[group()]));
+	int m = random_poisson(size()*size()/(10.*num_symmetries(group())));
 	for(int i=0;i<m;i++) {
 		double z = random_normal(3.);
 		x+=random_normal(1.)/z;
@@ -675,7 +675,7 @@ void paintlines_layer_generator::draworbit() {
 			q[i][j]=random_angle();
 			dq[i][j]=random_normal(orbit_stdev);
 		}
-	for(t=12./num_symmetries[group()];t>=0;t-=swirl_eps) {
+	for(t=12./num_symmetries(group());t>=0;t-=swirl_eps) {
 		for(i=0;i<3;i++) {
 			drawdotsymmetric(q[i][0]*size()/(2*M_PI),q[i][1]*size()/(2*M_PI),5,1.);
 		}

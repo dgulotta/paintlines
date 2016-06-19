@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013, 2016 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -36,22 +36,6 @@ complex<double> stripes_grid::get_symmetric(int x, int y) const {
 	return sum;
 }
 
-function<double(int,int)> stripes_grid::norm_hexagonal(int sz) {
-	double p=2.*M_PI/sz;
-	return [p] (int x, int y) {
-		if(x==0&&y==0) x=1;
-		return 1./(3.-cos(p*x)-cos(p*y)-cos(p*(x-y)));
-	};
-}
-
-function<double(int,int)> stripes_grid::norm_orthogonal(int sz) {
-	double p=2.*M_PI/sz;
-	return [p] (int x, int y) {
-		if(x==0&&y==0) x=1;
-		return 1./(2.-cos(p*x)-cos(p*y));
-	};
-}
-
 double stripes_grid::intensity(const function<double(const complex<double> &)> &proj) const {
 	double s=0;
 	int i, j;
@@ -61,4 +45,13 @@ double stripes_grid::intensity(const function<double(const complex<double> &)> &
 			s+=d*d;
 		}
 	return s;
+}
+
+double stripes_grid_norm::operator () (int x, int y) const
+{
+	if (x==0&&y==0) x=1;
+	if (hexagonal)
+		return 1./(3.-cos(phase*x)-cos(phase*y)-cos(phase*(x-y)));
+	else
+		return 1./(2.-cos(phase*x)-cos(phase*y));
 }

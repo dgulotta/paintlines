@@ -27,7 +27,7 @@ ImageData::ImageData(const QImage &i, bool t, const symmetric_canvas<color_t> *s
 		const std::vector<layer> *l, const ImageData *p)
 : img(i), tileable(t), sym_canvas(sc), layers(l), parent(p)
 {
-	if(sc) img.setText("SymmetryGroup",QString::number(sc->group()));
+	if(sc) img.setText("SymmetryGroup",QString::number(static_cast<int>(sc->group())));
 }
 
 ImageData::ImageData(const canvas<color_t> &c, bool t, const symmetric_canvas<color_t> *sc,

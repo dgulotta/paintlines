@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013, 2016 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <cmath>
 #include <complex>
+#include <memory>
 #include <functional>
 #include "symmetric_canvas.h"
 
@@ -34,36 +35,42 @@ class stripes_grid {
 public:
 	stripes_grid(int sz, symgroup sg) : size(sz),
 		group(sg),
-		array((complex<double> *)fftw_malloc(sizeof(complex<double>)*size*size)),
-		transformations(generate_transforms(sg,sz)),
-		plan(fftw_plan_dft_2d(size,size,(fftw_complex *)array,(fftw_complex *)array,FFTW_BACKWARD,FFTW_ESTIMATE)),
-		phase(2*M_PI/size) {}
-	~stripes_grid() {
-		fftw_destroy_plan(plan);
-		fftw_free(array);
-	}
+		array(reinterpret_cast<complex<double> *>(fftw_alloc_complex(size*size))),
+		plan(fftw_plan_dft_2d(size,size,farray(),farray(),FFTW_BACKWARD,FFTW_ESTIMATE)),
+		transformations(generate_transforms(sg,sz)) {}
 	complex<double> & operator () (int x, int y) { return array[mod(x,size)+size*mod(y,size)];}
 	const complex<double> operator () (int x, int y) const { return array[mod(x,size)+size*mod(y,size)];}
 	complex<double> get_symmetric(int x, int y) const;
-	void clear() { std::fill(array,array+size*size,complex<double>(0,0)); }
-	static std::function<double(int,int)> norm_hexagonal(int sz);
-	static std::function<double(int,int)> norm_orthogonal(int sz);
-	std::function<double(int,int)> norm() {
-		return sym_is_hexagonal[group]?norm_hexagonal(size):norm_orthogonal(size);
-	}
-	void transform() { fftw_execute(plan); }
+	void clear() { std::fill(array.get(),array.get()+size*size,complex<double>(0,0)); }
+	void transform() { fftw_execute(plan.get()); }
 	int get_size() const { return size; }
 	symgroup get_group() { return group; }
 	typedef double (*proj_t)(const complex<double> &);
 	double intensity(const std::function<double(const complex<double> &)> &proj=(proj_t)&std::real) const;
 private:
+	class fc_deleter {
+	public:
+		void operator () (complex<double> *p) { fftw_free(reinterpret_cast<void *>(p)); }
+	};
+	class fp_deleter {
+	public:
+		void operator () (fftw_plan p) { fftw_destroy_plan(p); }
+	};
+	fftw_complex * farray() { return reinterpret_cast<fftw_complex *>(array.get()); }
 	int size;
 	symgroup group;
-	complex<double> *array;
+	std::unique_ptr<complex<double>[],fc_deleter> array;
+	std::unique_ptr<std::remove_pointer_t<fftw_plan>,fp_deleter> plan;
 	std::vector<transformation<int>> transformations;
-	fftw_plan plan;
-	double phase;
 };
 
+class stripes_grid_norm {
+public:
+	stripes_grid_norm(int sz, symgroup sg) : phase(2*M_PI/sz), hexagonal(sym_is_hexagonal(sg)) {}
+	double operator () (int x, int y) const;
+private:
+	double phase;
+	bool hexagonal;
+};
 
 #endif

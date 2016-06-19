@@ -65,7 +65,7 @@ int l_drawdotsymmetric(lua_State *L)
 
 int l_num_symmetries(lua_State *L)
 {
-	lua_pushinteger(L,num_symmetries[get_lg(L)->group()]);
+	lua_pushinteger(L,num_symmetries(get_lg(L)->group()));
 	return 1;
 }
 
@@ -99,9 +99,9 @@ void prepare_lua_environment(lua_State *L, paintlines_layer_generator &gen)
 	lua_setglobal(L,"drawdotsymmetric");
 	lua_pushinteger(L,gen.size());
 	lua_setglobal(L,"size");
-	lua_pushinteger(L,gen.group());
+	lua_pushinteger(L,static_cast<int>(gen.group()));
 	lua_setglobal(L,"group");
-	lua_pushinteger(L,num_symmetries[gen.group()]);
+	lua_pushinteger(L,num_symmetries(gen.group()));
 	lua_setglobal(L,"num_symmetries");
 	lua_pushboolean(L,gen.is_hexagonal());
 	lua_setglobal(L,"hexagonal");
@@ -153,7 +153,7 @@ std::vector<std::string> function_names(lua_State *L)
 std::vector<std::string> get_lua_functions(const char *filename)
 {
 	lua_stateptr L;
-	symmetric_canvas<uint8_t> c(2,SYM_P1);
+	symmetric_canvas<uint8_t> c(2,symgroup::P1);
 	paintlines_layer_generator gen(c);
 	prepare_lua_environment(L,gen);
 	auto hide = function_names(L);

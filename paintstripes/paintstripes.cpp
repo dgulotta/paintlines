@@ -41,18 +41,7 @@ tuple<cpx,cpx,cpx> random_levy_6d(double alpha, double scale) {
 void paintstripes::paint(int sz, symgroup sym)
 {
 	stripes_grid gridr(sz,sym), gridg(sz,sym), gridb(sz,sym);
-	std::function<double(int,int)> norm;
-	switch(sym) {
-	case SYM_P3:
-	case SYM_P31M:
-	case SYM_P3M1:
-	case SYM_P6:
-	case SYM_P6M:
-    	norm=stripes_grid::norm_hexagonal(sz);
-		break;
-	default:
-		norm=stripes_grid::norm_orthogonal(sz);
-  	}
+	stripes_grid_norm norm(sz,sym);
 	int i,j;
 	for(i=0;i<sz;i++)
 		for(j=0;j<sz;j++)
