@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
+ *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,25 +21,30 @@
 #ifndef _CLOUDSWIDGET_H
 #define _CLOUDSWIDGET_H
 
+#include "../color.h"
 #include "../imagegeneratorwidget.h"
+#include "../symmetric_canvas.h"
 
 class QMouseEvent;
 class RandomizeWidget;
-class paintclouds;
 
 class ColorButton : public QWidget
 {
-  Q_OBJECT
+Q_OBJECT
 public:
-  ColorButton(QWidget *parent=0) : QWidget(parent) {
-    setAutoFillBackground(true);
-  }
-  ColorButton(QColor col, QWidget *parent=0) : QWidget(parent) {
-    setPalette(QPalette(col));
-    setAutoFillBackground(true);
-  }
+	ColorButton(QWidget *parent=0) : QWidget(parent) {
+		setAutoFillBackground(true);
+	}
+	ColorButton(QColor col, QWidget *parent=0) : QWidget(parent) {
+		setPalette(QPalette(col));
+		setAutoFillBackground(true);
+	}
+	color_t color() {
+		QColor c = palette().color(QPalette::Window);
+		return color_t(c.red(),c.green(),c.blue());
+	}
 protected:
-  virtual void mousePressEvent(QMouseEvent *event);
+	virtual void mousePressEvent(QMouseEvent *);
 };
 
 class CloudsWidget : public ImageGeneratorWidget
@@ -56,7 +61,7 @@ protected:
 	ColorButton *color2;
 	ColorButton *color3;
 	QComboBox *comboRandom;
-	paintclouds *clouds;
+	symmetric_canvas<color_t> canvas;
 };
 
 #endif

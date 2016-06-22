@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
+ *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -24,7 +24,7 @@
 #include "../randomizewidget.h"
 #include "cloudswidget.h"
 
-void ColorButton::mousePressEvent(QMouseEvent *event)
+void ColorButton::mousePressEvent(QMouseEvent *)
 {
   QColor col=QColorDialog::getColor(palette().color(QPalette::Window));
   if(col.isValid()) {
@@ -53,16 +53,15 @@ CloudsWidget::CloudsWidget()
 	layout->addRow(tr("Color 3"),color3);
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	clouds = new paintclouds;
 	setLayout(layout);
 	connect(buttonDraw,&QPushButton::clicked,this,&CloudsWidget::draw);
 }
 
-static double (*(randfuncs[4]))(double) = {
-	&paintclouds::rand_cauchy,
-	&paintclouds::rand_normal,
-	&paintclouds::rand_exp_cos,
-	&paintclouds::rand_sechsquare
+static clouds_randfunc randfuncs[] = {
+	&clouds_rand_cauchy,
+	&clouds_rand_normal,
+	&clouds_rand_exp_cos,
+	&clouds_rand_sechsquare
 };
 
 void CloudsWidget::draw()
@@ -72,14 +71,8 @@ void CloudsWidget::draw()
 		return;
 	}
 	symgroup sg=symgroup(comboSymmetry->group());
-	QColor c=color1->palette().color(QPalette::Window);
-    clouds->set_color1(c.red(),c.green(),c.blue());
-    c=color2->palette().color(QPalette::Window);
-    clouds->set_color2(c.red(),c.green(),c.blue());
-    c=color3->palette().color(QPalette::Window);
-    clouds->set_color3(c.red(),c.green(),c.blue());
-	clouds->set_randfunc(randfuncs[comboRandom->currentIndex()]);
-    clouds->paint(spinSize->value(),sg);
-	ImageData data(clouds->get_symmetric_image());
+	canvas=paint_clouds(spinSize->value(),sg,color1->color(),color2->color(),
+		color3->color(),randfuncs[comboRandom->currentIndex()]);
+	ImageData data(canvas);
 	emit newImage(data);
 }
