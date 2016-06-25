@@ -25,6 +25,7 @@
 #include <QWidget>
 #include <QComboBox>
 #include <vector>
+#include "symmetry.h"
 
 class QSpinBox;
 class ImageData;
@@ -34,8 +35,8 @@ class SymmetryCombo : public QComboBox
 	Q_OBJECT
 public:
 	SymmetryCombo(bool random=true);
-	SymmetryCombo(const std::vector<int> &groups,bool random=true);
-	int group();
+	SymmetryCombo(const std::vector<symgroup> &groups,bool random=true);
+	symgroup group();
 	static const QStringList symmetryStrings;
 };
 

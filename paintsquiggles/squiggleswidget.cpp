@@ -55,8 +55,6 @@ SquigglesWidget::SquigglesWidget()
 	newColorButton = new QPushButton(tr("Change Colors"));
 	layout->addRow(newColorButton);
 	newColorButton->setEnabled(false);
-	squiggles=new paintsquiggles;
-	squiggles->set_color_generator(std::bind(&RandomColorWidget::generate,colorWidget));
 	setLayout(layout);
 	connect(buttonDraw,&QPushButton::clicked,this,&SquigglesWidget::draw);
 	connect(newColorButton,&QPushButton::clicked,this,&SquigglesWidget::resetColors);
@@ -68,21 +66,31 @@ void SquigglesWidget::draw()
 		QMessageBox::information(this,"paintsquiggles",tr("The size must be even."));
 		return;
 	}
-	squiggles->set_alpha(spinAlpha->value());
-	squiggles->set_exponent(spinExponent->value());
-	squiggles->set_ncolors(spinColors->value());
-	squiggles->set_thickness(spinThickness->value());
-	squiggles->set_sharpness(spinSharpness->value());
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
-	squiggles->paint(spinSize->value(),(symgroup)comboSymmetry->group());
+	grids=paint_squiggles(spinColors->value(),
+		spinSize->value(),
+		comboSymmetry->group(),
+		spinAlpha->value(),
+		spinExponent->value(),
+		spinThickness->value(),
+		spinSharpness->value());
+	layers.resize(grids.size());
+	for(size_t i=0;i<grids.size();i++) {
+		layers[i].pixels=&(grids[i].as_canvas());
+		layers[i].pastel=false;
+	}
+	image=symmetric_canvas<color_t>(spinSize->value(),comboSymmetry->group());
 	updateImage();
 	newColorButton->setEnabled(true);
 }
 
 void SquigglesWidget::updateImage()
 {
-	ImageData data(squiggles->get_symmetric_image(),&(squiggles->get_layers()));
+	for(size_t i=0;i<grids.size();i++)
+		layers[i].color=colorWidget->generate();
+	merge(image.unsafe_get_canvas(),layers);
+	ImageData data(image,&layers);
 	emit newImage(data);
 }
 
@@ -90,6 +98,6 @@ void SquigglesWidget::resetColors()
 {
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
-	squiggles->choose_new_colors();
+	image.fill(black);
 	updateImage();
 }

@@ -60,6 +60,7 @@ public:
 		_transforms = transformation<int>::group(g,size());
 	}
 	canvas<T> & unsafe_get_canvas() { return base_canvas.as_canvas(); }
+	void fill(const T &t) { std::fill(base_canvas.begin(),base_canvas.end(),t); }
 private:
 	symgroup _group;
 	wrap_canvas<T> base_canvas;

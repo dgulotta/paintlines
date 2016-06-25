@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014 by Daniel Gulotta                       *
+ *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,14 +21,17 @@
 #ifndef _SQUIGGLESWIDGET_H
 #define _SQUIGGLESWIDGET_H
 
+#include <vector>
+#include "../color.h"
 #include "../imagegeneratorwidget.h"
+#include "../layer.h"
+#include "../symmetric_canvas.h"
 
 class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
 class RandomColorWidget;
-class paintsquiggles;
 
 class SquigglesWidget : public ImageGeneratorWidget
 {
@@ -49,7 +52,9 @@ protected:
 	QDoubleSpinBox *spinSharpness;
 	RandomColorWidget *colorWidget;
 	QPushButton *newColorButton;
-	paintsquiggles *squiggles;
+	std::vector<symmetric_canvas<uint8_t>> grids;
+	std::vector<layer> layers;
+	symmetric_canvas<color_t> image;
 };
 
 #endif

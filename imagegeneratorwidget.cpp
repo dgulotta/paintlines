@@ -30,20 +30,22 @@ SymmetryCombo::SymmetryCombo(bool random)
 		addItem("Random",-1);
 }
 
-SymmetryCombo::SymmetryCombo(const std::vector<int> &v, bool random)
+SymmetryCombo::SymmetryCombo(const std::vector<symgroup> &v, bool random)
 {
-	for(int g : v)
-		addItem(symmetryStrings[g],g);
+	for(auto g : v) {
+		int n=static_cast<int>(g);
+		addItem(symmetryStrings[n],n);
+	}
 	if(random)
 		addItem("Random",-1);
 }
 
-int SymmetryCombo::group()
+symgroup SymmetryCombo::group()
 {
 	int g=currentData().toInt();
 	if(g<0)
-		return itemData(random_int(count()-1)).toInt();
-	return g;
+		g=itemData(random_int(count()-1)).toInt();
+	return static_cast<symgroup>(g);
 }
 
 const QStringList SymmetryCombo::symmetryStrings = {
