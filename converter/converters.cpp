@@ -143,13 +143,12 @@ canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype p
 		break;
 	}
 	hyperbolic_symmetry_group sg(spec);
-	auto iproj = (pt==projtype::KLEIN)?&inverse_klein_projection:&inverse_poincare_projection;
 	coord_converter conv(newsize);
 	for(int j=0;j<newsize;j++)
 		for(int i=0;i<newsize;i++) {
 			planar_coord pc = conv.fromscreen(screen_coord(i,j));
 			if(pc.x*pc.x+pc.y*pc.y>=.999) continue;
-			hyperbolic_coord hc = sg.fundamental_domain_point((*iproj)(pc));
+			hyperbolic_coord hc = sg.fundamental_domain_point(inverse_projection(pc,pt));
 			double xd,yd;
 			tie(xd,yd)=trans(hc);
 			newimg(i,j)=combine_colors(img.as_wrap_canvas(),interpolate_linear(xd,yd));

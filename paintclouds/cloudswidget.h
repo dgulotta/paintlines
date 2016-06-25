@@ -35,9 +35,8 @@ public:
 	ColorButton(QWidget *parent=0) : QWidget(parent) {
 		setAutoFillBackground(true);
 	}
-	ColorButton(QColor col, QWidget *parent=0) : QWidget(parent) {
+	ColorButton(QColor col, QWidget *parent=0) : ColorButton(parent) {
 		setPalette(QPalette(col));
-		setAutoFillBackground(true);
 	}
 	color_t color() {
 		QColor c = palette().color(QPalette::Window);

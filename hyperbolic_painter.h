@@ -133,15 +133,10 @@ struct screen_coord
 	int y;
 };
 
-planar_coord poincare_projection(const hyperbolic_coord &hc);
-
-planar_coord klein_projection(const hyperbolic_coord &hc);
-
-hyperbolic_coord inverse_poincare_projection(const planar_coord &pc);
-
-hyperbolic_coord inverse_klein_projection(const planar_coord &pc);
-
 enum class projtype {POINCARE, KLEIN};
+
+planar_coord projection(const hyperbolic_coord &hc, projtype pt);
+hyperbolic_coord inverse_projection(const planar_coord &hc, projtype pt);
 
 class hyperbolic_transformation
 {
@@ -210,9 +205,9 @@ struct generator {
 	 * each generator.
 	 */
 	generator(const hyperbolic_transformation &t, const hyperbolic_coord &e) : trans(t), edge(e), is_flip(t.is_flip()) {}
-	bool inside(const hyperbolic_coord &hc) { return edge*hc+1.e-15>=0; }
-	hyperbolic_coord operator () (const hyperbolic_coord &hc) { return trans(hc); }
-	hyperbolic_transformation right_multiply(const hyperbolic_transformation &t) { return t*trans; }
+	bool inside(const hyperbolic_coord &hc) const { return edge*hc+1.e-15>=0; }
+	hyperbolic_coord operator () (const hyperbolic_coord &hc) const { return trans(hc); }
+	hyperbolic_transformation right_multiply(const hyperbolic_transformation &t) const { return t*trans; }
 };
 
 class hyperbolic_symmetry_group {
@@ -228,9 +223,9 @@ class hyperbolic_symmetry_group {
 
 		hyperbolic_symmetry_group(const group_spec &s, flip_type f=flip_type::ALL);
 		template <typename F>
-			std::function<void(const hyperbolic_coord &)> symmetrize(const F &f);
-		hyperbolic_coord random_symmetry(const hyperbolic_coord &c);
-		hyperbolic_coord fundamental_domain_point(const hyperbolic_coord &hc) { return std::get<0>((this->*fdfunc)(hc)); }
+			std::function<void(const hyperbolic_coord &)> symmetrize(const F &f) const;
+		hyperbolic_coord random_symmetry(const hyperbolic_coord &c) const;
+		hyperbolic_coord fundamental_domain_point(const hyperbolic_coord &hc) const { return std::get<0>((this->*fdfunc)(hc)); }
 
 		static group_spec group_sabc(int a, int b, int c);
 		static group_spec group_a222(int a);
@@ -251,15 +246,15 @@ class hyperbolic_symmetry_group {
 		std::vector<generator> generators;
 		std::vector<hyperbolic_transformation> transformations;
 		std::vector<hyperbolic_transformation> flips;
-		std::tuple<hyperbolic_coord,bool> fundamental_domain(const hyperbolic_coord &hc);
-		std::tuple<hyperbolic_coord,bool> fundamental_domain_alternating(const hyperbolic_coord &hc);
-		std::tuple<hyperbolic_coord,bool> fundamental_domain_random(const hyperbolic_coord &hc);
-		std::unordered_map<long,bool> random_flips;
+		std::tuple<hyperbolic_coord,bool> fundamental_domain(const hyperbolic_coord &hc) const;
+		std::tuple<hyperbolic_coord,bool> fundamental_domain_alternating(const hyperbolic_coord &hc) const;
+		std::tuple<hyperbolic_coord,bool> fundamental_domain_random(const hyperbolic_coord &hc) const;
+		mutable std::unordered_map<long,bool> random_flips;
 		decltype(&hyperbolic_symmetry_group::fundamental_domain) fdfunc;
 };
 
 template<typename F>
-std::function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(const F &f) {
+std::function<void(const hyperbolic_coord &)> hyperbolic_symmetry_group::symmetrize(const F &f) const {
 	return [this,f](const hyperbolic_coord &hc) {
 		auto s = (this->*fdfunc)(hc);
 		hyperbolic_coord c=std::get<0>(s);

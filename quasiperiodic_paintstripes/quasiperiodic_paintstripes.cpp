@@ -30,8 +30,6 @@ const double px[4] = {1.,.30901699437494742411,-.80901699437494742409,
 const double py[4] = {0.,.95105651629515357211,.58778525229247312918,
 		      -.58778525229247312918};
 
-using std::copy;
-
 void random_levy_2d(double *d,double alpha,double scale)
 {
 	if(scale==0.) {

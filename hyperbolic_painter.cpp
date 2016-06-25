@@ -124,11 +124,11 @@ hyperbolic_transformation hyperbolic_transformation::glide_reflection(const hype
 		z-d*c.z*c.z);
 }
 
-hyperbolic_transformation translation_helper(const hyperbolic_coord &e1, const hyperbolic_coord &e2,double o)
+hyperbolic_transformation hyperbolic_transformation::translation(const hyperbolic_coord &e1, const hyperbolic_coord &e2)
 {
 	hyperbolic_coord e = cross(e2,e1);
 	double c = e1*e2;
-	double d = 1/(c+o);
+	double d = 1/(c+1);
 	return hyperbolic_transformation(
 		c - d * e.x * e.x,
 		-e.z - d * e.x * e.y,
@@ -138,36 +138,26 @@ hyperbolic_transformation translation_helper(const hyperbolic_coord &e1, const h
 		-e.x + d * e.y * e.z,
 		e.y - d * e.z * e.x,
 		-e.x - d * e.z * e.y,
-		c + d * e.z * e.z);
+		c + d * e.z * e.z);	
 }
 
-hyperbolic_transformation hyperbolic_transformation::translation(const hyperbolic_coord &e1, const hyperbolic_coord &e2)
+planar_coord projection(const hyperbolic_coord &hc,projtype pt)
 {
-	return translation_helper(e1,e2,1);
+	double denom=(pt==projtype::POINCARE)?(1+hc.z):hc.z;
+	return planar_coord(hc.x/denom,hc.y/denom);
 }
 
-planar_coord poincare_projection(const hyperbolic_coord &hc)
+hyperbolic_coord inverse_projection(const planar_coord &pc,projtype pt)
 {
-	return planar_coord(hc.x/(1+hc.z),hc.y/(1+hc.z));
+	if(pt==projtype::POINCARE) {
+		double r = (1-pc.x*pc.x-pc.y*pc.y)/2;
+		return hyperbolic_coord(pc.x/r,pc.y/r,(1-r)/r);
+	}
+	else {
+		double r = sqrt(1-pc.x*pc.x-pc.y*pc.y);
+		return hyperbolic_coord(pc.x/r,pc.y/r,1/r);
+	}
 }
-
-planar_coord klein_projection(const hyperbolic_coord &hc)
-{
-	return planar_coord(hc.x/hc.z,hc.y/hc.z);
-}
-
-hyperbolic_coord inverse_poincare_projection(const planar_coord &pc)
-{
-	double r = (1-pc.x*pc.x-pc.y*pc.y)/2;
-	return hyperbolic_coord(pc.x/r,pc.y/r,(1-r)/r);
-}
-
-hyperbolic_coord inverse_klein_projection(const planar_coord &pc)
-{
-	double r = sqrt(1-pc.x*pc.x-pc.y*pc.y);
-	return hyperbolic_coord(pc.x/r,pc.y/r,1/r);
-}
-
 
 hyperbolic_symmetry_group::hyperbolic_symmetry_group(const group_spec &s,flip_type f)
 : generators(s.gens)
@@ -205,12 +195,12 @@ hyperbolic_symmetry_group::hyperbolic_symmetry_group(const group_spec &s,flip_ty
 	}
 }
 
-hyperbolic_coord hyperbolic_symmetry_group::random_symmetry(const hyperbolic_coord &c) {
+hyperbolic_coord hyperbolic_symmetry_group::random_symmetry(const hyperbolic_coord &c) const {
 	double i=random_uniform();
 	return transformations[pow(transformations.size(),i)](c);
 }
 
-tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain(const hyperbolic_coord &hc) {
+tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain(const hyperbolic_coord &hc) const {
 	hyperbolic_coord c(hc);
 	bool any=true;
 	while(any) {
@@ -226,7 +216,7 @@ tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain(const
 	return make_tuple(c,false);
 }
 
-tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_alternating(const hyperbolic_coord &hc) {
+tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_alternating(const hyperbolic_coord &hc) const {
 	hyperbolic_coord c(hc);
 	bool any=true;
 	bool flip=false;
@@ -244,7 +234,7 @@ tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_alter
 	return make_tuple(c,flip);
 }
 
-tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_random(const hyperbolic_coord &hc) {
+tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_random(const hyperbolic_coord &hc) const {
 	hyperbolic_coord c(hc);
 	bool any=true;
 	long index=0;

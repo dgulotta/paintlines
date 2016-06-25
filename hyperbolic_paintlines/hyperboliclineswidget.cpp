@@ -86,7 +86,6 @@ HyperbolicLinesWidget::HyperbolicLinesWidget()
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
 	setLayout(layout);
-	lines = new hyperbolic_paintlines;
 	connect(comboSymmetry,(void (QComboBox::*)(int))&QComboBox::currentIndexChanged,this,&HyperbolicLinesWidget::symmetryChanged);
 	connect(buttonDraw,&QPushButton::clicked,this,&HyperbolicLinesWidget::draw);
 }
@@ -145,11 +144,24 @@ void HyperbolicLinesWidget::draw()
 	if(spec.valid()) {
 		hyperbolic_symmetry_group sg(spec,ft);
 		double t = spinThickness->value();
-		lines->set_thickness(5*t,5*t*t,spinSharpness->value());
-		lines->set_projtype((projtype)comboModel->currentIndex());
-		lines->set_ncolors(spinColors->value());
-		lines->paint(spinSize->value(),sg);
-		emit newImage(ImageData(lines->get_image(),false,nullptr,&(lines->get_layers())));
+		hyperbolic_lines_param params{
+			spinSize->value(),
+			5*t,
+			5*t*t,
+			spinSharpness->value(),
+			static_cast<projtype>(comboModel->currentIndex())
+		};
+		grids.resize(spinColors->value());
+		generate(grids.begin(),grids.end(),[&sg,&params] () { return paint_hyperbolic_lines(sg,params); });
+		layers.resize(grids.size());
+		for(int i=0;i<grids.size();i++) {
+			layers[i].pixels=&(grids[i]);
+			layers[i].color=default_color_generator();
+			layers[i].pastel=false;
+		}
+		canvas<color_t> img(spinSize->value(),spinSize->value());
+		merge(img,layers);
+		emit newImage(ImageData(img,false,nullptr,&layers));
 	}
 	else QMessageBox::information(this,"Hyperbolic Paintlines",tr("The chosen group is not hyperbolic.  Try increasing the parameters."));
 }

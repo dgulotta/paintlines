@@ -22,6 +22,8 @@
 #define _HYPERBOLICLINESWIDGET_H
 
 #include "../imagegeneratorwidget.h"
+#include "../canvas.h"
+#include "../layer.h"
 
 #include <QSpinBox>
 
@@ -78,8 +80,9 @@ protected:
 	QDoubleSpinBox *spinThickness;
 	QDoubleSpinBox *spinSharpness;
 	QBoxLayout *parameterLayout;
-	hyperbolic_paintlines *lines;
 	std::vector<std::vector<SymmetryGroupToken>> tokens;
+	std::vector<canvas<uint8_t>> grids;
+	std::vector<layer> layers;
 };
 
 #endif
