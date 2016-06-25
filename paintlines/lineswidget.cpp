@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013-2014 by Daniel Gulotta                             *
+ *   Copyright (C) 2013-2014, 2016 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,10 +18,13 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <algorithm>
 #include <QtWidgets>
 #include "../imagedata.h"
 #include "../randomcolorwidget.h"
 #include "lineswidget.h"
+#include "paintlines.h"
+#include "randgen.h"
 #ifdef LUARULES
 #include "luafuncs.h"
 #endif
@@ -71,25 +74,23 @@ LinesWidget::LinesWidget()
 		rules.push_back(w);
 		connect(this,&LinesWidget::addRule,w,&PaintRuleWidget::addRule);
 	}
-	emit addRule("Arc",paintlines_layer_generator::generate_smootharc);
-	emit addRule("Beads",paintlines_layer_generator::generate_smoothline2_beads);
-	emit addRule("Cluster",paintlines_layer_generator::generate_cluster);
-	emit addRule("Flower",paintlines_layer_generator::generate_flower);
-	emit addRule("Fractal",paintlines_layer_generator::generate_cluster2);
-	emit addRule("Granules",paintlines_layer_generator::generate_granules);
-	emit addRule("Line",paintlines_layer_generator::generate_smoothline2);
-	emit addRule("Loop",paintlines_layer_generator::generate_smoothline5);
-	emit addRule("Orbit",paintlines_layer_generator::generate_orbit);
-	emit addRule("Star",paintlines_layer_generator::generate_star);
-	emit addRule("String",paintlines_layer_generator::generate_open_string);
-	emit addRule("Swirl",paintlines_layer_generator::generate_swirl);
-	emit addRule("Tree",paintlines_layer_generator::generate_tree);
+	emit addRule("Arc",generate_smootharc);
+	emit addRule("Beads",generate_smoothline2_beads);
+	emit addRule("Cluster",generate_cluster);
+	emit addRule("Flower",generate_flower);
+	emit addRule("Fractal",generate_cluster2);
+	emit addRule("Granules",generate_granules);
+	emit addRule("Line",generate_smoothline2);
+	emit addRule("Loop",generate_smoothline5);
+	emit addRule("Orbit",generate_orbit);
+	emit addRule("Star",generate_star);
+	emit addRule("String",generate_open_string);
+	emit addRule("Swirl",generate_swirl);
+	emit addRule("Tree",generate_tree);
 	colorWidget = new RandomColorWidget;
 	layout->addRow(colorWidget);
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	lines = new paintlines;
-	lines->set_color_generator(std::bind(&RandomColorWidget::generate,colorWidget));
 	setLayout(layout);
 	connect(buttonDraw,&QPushButton::clicked,this,&LinesWidget::draw);
 }
@@ -115,15 +116,28 @@ void LinesWidget::draw() {
 		QMessageBox::information(this,"paintlines",tr("The size must be even."));
 		return;
 	}
-	std::vector<paintrule> rule_list;
-	for(int i=0;i<rules.size();i++)
-		rule_list.push_back(rules[i]->rule());
-	lines->set_rules(rule_list);
-	lines->set_ncolors(spinColors->value());
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
-	lines->paint(spinSize->value(),(symgroup)comboSymmetry->group());
-	ImageData data(lines->get_symmetric_image(),&(lines->get_layers()));
+	int sum=0;
+	std::vector<int> cum_weights(rules.size());
+	std::vector<paintrule> rule_list;
+	for(size_t i=0;i<rules.size();i++) {
+		sum+=rules[i]->rule().weight;
+		cum_weights[i]=sum;
+	}
+	grids.resize(spinColors->value());
+	layers.resize(spinColors->value());
+	for(size_t i=0;i<grids.size();i++) {
+		auto rule=rules[*std::upper_bound(cum_weights.begin(),cum_weights.end(),random_int(sum))]->rule();
+		grids[i]=symmetric_canvas<uint8_t>(spinSize->value(),comboSymmetry->group());
+		rule.func(grids[i]);
+		layers[i].pixels=&(grids[i].unsafe_get_canvas());
+		layers[i].color=colorWidget->generate();
+		layers[i].pastel=rule.pastel;
+	}
+	image=symmetric_canvas<color_t>(spinSize->value(),comboSymmetry->group());
+	merge(image.unsafe_get_canvas(),layers);
+	ImageData data(image,&layers);
 	emit newImage(data);
 	checkLuaErrors();
 }

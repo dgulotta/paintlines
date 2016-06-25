@@ -21,9 +21,13 @@
 #ifndef _LINESWIDGET_H
 #define _LINESWIDGET_H
 
+#include <functional>
 #include <QMetaType>
 #include "../imagegeneratorwidget.h"
-#include "paintlines.h"
+#include "../layer.h"
+#include "../symmetric_canvas.h"
+
+using paintfunc = std::function<void(symmetric_canvas<uint8_t> &)>;
 
 Q_DECLARE_METATYPE(paintfunc);
 
@@ -31,6 +35,13 @@ class QCheckBox;
 class QComboBox;
 class QSpinBox;
 class RandomColorWidget;
+
+struct paintrule
+{
+	paintfunc func;
+	bool pastel;
+	int weight;
+};
 
 class PaintRuleWidget : public QWidget
 {
@@ -63,7 +74,9 @@ protected:
 	SymmetryCombo *comboSymmetry;
 	std::vector<PaintRuleWidget *> rules;
 	RandomColorWidget *colorWidget;
-	paintlines *lines;
+	std::vector<symmetric_canvas<uint8_t>> grids;
+	std::vector<layer> layers;
+	symmetric_canvas<color_t> image;
 };
 
 #endif

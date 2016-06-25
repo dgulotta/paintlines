@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2003-2005, 2013-2014 by Daniel Gulotta                  *
+ *   Copyright (C) 2003-2005, 2013-2014, 2016 by Daniel Gulotta            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,12 +19,11 @@
  ***************************************************************************/
 
 #include "paintlines.h"
+#include "../color.h"
 #include "../randgen.h"
-#include <algorithm>
 #include <cmath>
 #include <queue>
 
-using std::lower_bound;
 using std::cos;
 using std::sin;
 using std::log;
@@ -50,81 +49,53 @@ void paintlines_layer_generator::randomnormal_orthogonal(double &x, double &y, d
   y+=random_normal(v);
 }
 
-void paintlines::paint(int sz, symgroup sym)
-{
-	size=sz;
-	sg=sym;
-	grids.clear();
-	grids.resize(ncolors,symmetric_canvas<uint8_t>(sz,sym,0));
-	layers.resize(ncolors);
-	for(int i=0;i<ncolors;i++) {
-		layer &l = layers[i];
-		auto it=lower_bound(rules.begin(),rules.end(),random_int(rules.back().weight)+1);
-		auto &gr = grids[i];
-		active_grid=&gr;
-		l.pixels=&(gr.as_canvas());
-		l.color=generate_color();
-		l.pastel=it->pastel;
-		it->func(gr);
-	}
-	image=symmetric_canvas<color_t>(sz,sym,black);
-	merge(image.unsafe_get_canvas(),layers);
-}
-
 tuple<int,int,int,int> random_endpoints(int size,int wrap=2)
 {
 	int i = random_int(size), j = random_int(size);
 	return make_tuple(i,j,i+random_range_inclusive(-wrap,wrap)*size,j+random_range_inclusive(-wrap,wrap)*size);
 }
 
-void paintlines_layer_generator::generate_smootharc(symmetric_canvas<uint8_t> &g)
+void generate_smootharc(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
 	auto t = random_endpoints(g.size());
-	gen.drawsmootharc(get<0>(t),get<1>(t),get<2>(t),get<3>(t),.8,2000.,1.);
+	paintlines_layer_generator(g).drawsmootharc(get<0>(t),get<1>(t),get<2>(t),get<3>(t),.8,2000.,1.);
 }
 
-void paintlines_layer_generator::generate_smoothline2_beads(symmetric_canvas<uint8_t> &g)
+void generate_smoothline2_beads(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
 	auto t = random_endpoints(g.size());
-	gen.drawsmoothline2(get<0>(t),get<1>(t),get<2>(t),get<3>(t),25000.,100.);
+	paintlines_layer_generator(g).drawsmoothline2(get<0>(t),get<1>(t),get<2>(t),get<3>(t),25000.,100.);
 }
 
-void paintlines_layer_generator::generate_smoothline2(symmetric_canvas<uint8_t> &g)
+void generate_smoothline2(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
 	auto t = random_endpoints(g.size());
-	gen.drawsmoothline2(get<0>(t),get<1>(t),get<2>(t),get<3>(t),25000.,1.);
+	paintlines_layer_generator(g).drawsmoothline2(get<0>(t),get<1>(t),get<2>(t),get<3>(t),25000.,1.);
 }
 
-void paintlines_layer_generator::generate_cluster(symmetric_canvas<uint8_t> &g)
+void generate_cluster(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
-	gen.drawcluster(random_int(g.size()),random_int(g.size()),4000.,4);
+	paintlines_layer_generator(g).drawcluster(random_int(g.size()),random_int(g.size()),4000.,4);
 }
 
-void paintlines_layer_generator::generate_flower(symmetric_canvas<uint8_t> &g)
+void generate_flower(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
-	gen.drawflower(random_int(g.size()),random_int(g.size()),.1,50);
+	paintlines_layer_generator(g).drawflower(random_int(g.size()),random_int(g.size()),.1,50);
 }
 
 static const int fractal_prob[13] = { 0, 40, 40, 38, 37, 0, 35, 0, 34, 0, 0, 0, 32 };
 
-void paintlines_layer_generator::generate_cluster2(symmetric_canvas<uint8_t> &g)
+void generate_cluster2(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
-	gen.drawfractal(random_int(g.size()),random_int(g.size()),g.size(),fractal_prob[num_symmetries(g.group())]);
+	paintlines_layer_generator(g).drawfractal(random_int(g.size()),random_int(g.size()),g.size(),fractal_prob[num_symmetries(g.group())]);
 }
 
-void paintlines_layer_generator::generate_open_string(symmetric_canvas<uint8_t> &g)
+void generate_open_string(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
-	gen.drawopenstring();
+	paintlines_layer_generator(g).drawopenstring();
 }
 
-void paintlines_layer_generator::generate_swirl(symmetric_canvas<uint8_t> &g)
+void generate_swirl(symmetric_canvas<uint8_t> &g)
 {
 	paintlines_layer_generator gen(g);
 	do {
@@ -132,37 +103,32 @@ void paintlines_layer_generator::generate_swirl(symmetric_canvas<uint8_t> &g)
 	} while(random_int(20)>=num_symmetries(g.group()));
 }
 
-void paintlines_layer_generator::generate_orbit(symmetric_canvas<uint8_t> &g)
+void generate_orbit(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
-	gen.draworbit();
+	paintlines_layer_generator(g).draworbit();
 }
 
-void paintlines_layer_generator::generate_tree(symmetric_canvas<uint8_t> &g)
+void generate_tree(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
-	gen.drawtree();
+	paintlines_layer_generator(g).drawtree();
 }
 
-void paintlines_layer_generator::generate_smoothline5(symmetric_canvas<uint8_t> &g)
+void generate_smoothline5(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
 	auto t = random_endpoints(g.size(),1);
 	double vx = random_normal(g.size()), vy = random_normal(g.size());
-	gen.drawsmoothline5(get<0>(t),get<1>(t),vx,vy,get<2>(t),get<3>(t),
+	paintlines_layer_generator(g).drawsmoothline5(get<0>(t),get<1>(t),vx,vy,get<2>(t),get<3>(t),
 		vx,vy,75000.,1.);
 }
 
-void paintlines_layer_generator::generate_granules(symmetric_canvas<uint8_t>  &g)
+void generate_granules(symmetric_canvas<uint8_t>  &g)
 {
-	paintlines_layer_generator gen(g);
-	gen.drawgranules();
+	paintlines_layer_generator(g).drawgranules();
 }
 
-void paintlines_layer_generator::generate_star(symmetric_canvas<uint8_t> &g)
+void generate_star(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator gen(g);
-	gen.drawstar();
+	paintlines_layer_generator(g).drawstar();
 }
 
 void paintlines_layer_generator::drawdotsymmetric(int x, int y, int radius,double brightness)
