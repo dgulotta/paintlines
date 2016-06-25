@@ -36,6 +36,10 @@ struct color_t
 	uint8_t blue;
 };
 
+inline uint8_t & red_part(color_t &c) { return c.red; }
+inline uint8_t & green_part(color_t &c) { return c.green; }
+inline uint8_t & blue_part(color_t &c) { return c.blue; }
+
 static const color_t black = color_t(0,0,0);
 static const color_t white = color_t(255,255,255);
 

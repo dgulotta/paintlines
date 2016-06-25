@@ -26,7 +26,6 @@
 class QSpinBox;
 class QDoubleSpinBox;
 class QPushButton;
-class quasiperiodic_paintstripes;
 
 class QuasiStripesWidget : public ImageGeneratorWidget
 {
@@ -39,7 +38,6 @@ protected:
 	QSpinBox *spinSize;
 	QSpinBox *spinQuasiSize;
 	QDoubleSpinBox *spinAlpha;
-	quasiperiodic_paintstripes *stripes;
 };
 
 #endif

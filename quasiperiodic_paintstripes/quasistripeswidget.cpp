@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2014 by Daniel Gulotta                            *
+ *   Copyright (C) 2008, 2014, 2016 by Daniel Gulotta                      *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -44,14 +44,13 @@ QuasiStripesWidget::QuasiStripesWidget()
 	layout->addRow(tr("Alpha"),spinAlpha);
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	stripes = new quasiperiodic_paintstripes;
 	setLayout(layout);
 	connect(buttonDraw,&QPushButton::clicked,this,&QuasiStripesWidget::draw);
 }
 
 void QuasiStripesWidget::draw()
 {
-	stripes->set_alpha(spinAlpha->value());
-	stripes->paint(spinSize->value(),spinQuasiSize->value());
-	emit newImage(ImageData(stripes->get_image()));
+	canvas<color_t> img=paint_quasiperiodic_stripes(spinSize->value(),
+		spinQuasiSize->value(),spinAlpha->value());
+	emit newImage(img);
 }

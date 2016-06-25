@@ -39,9 +39,10 @@ inline std::complex<double> * allocate_complex(size_t s)
 	return reinterpret_cast<std::complex<double> *>(check_alloc(fftw_alloc_complex(s)));
 }
 
+template<typename T>
 struct fftw_free_deleter
 {
-	void operator () (std::complex<double> *p) { fftw_free(static_cast<void *>(p)); }
+	void operator () (T *p) { fftw_free(static_cast<void *>(p)); }
 };
 
 struct fftw_plan_deleter

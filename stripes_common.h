@@ -52,7 +52,7 @@ private:
 	fftw_complex * farray() { return reinterpret_cast<fftw_complex *>(array.get()); }
 	int size;
 	symgroup group;
-	std::unique_ptr<complex<double>[],fftw_free_deleter> array;
+	std::unique_ptr<complex<double>[],fftw_free_deleter<complex<double>>> array;
 	std::unique_ptr<std::remove_pointer_t<fftw_plan>,fftw_plan_deleter> plan;
 	std::vector<transformation<int>> transformations;
 };
