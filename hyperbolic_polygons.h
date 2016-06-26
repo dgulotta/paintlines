@@ -87,11 +87,11 @@ public:
 	hyperbolic_transformation rotation() { return hyperbolic_transformation::rotation_origin(a1); }
 
 	generator rotation2_gen() {
-		return generator(rotation(),edge2());
+		return generator(rotation().inverse(),edge2());
 	}
 
 	generator rotation3_gen() {
-		return generator(rotation().inverse(),edge3());
+		return generator(rotation(),edge3());
 	}
 
 	hyperbolic_transformation glide_reflection() {

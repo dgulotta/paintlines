@@ -90,7 +90,7 @@ hyperbolic_transformation hyperbolic_transformation::rotation_180(const hyperbol
 hyperbolic_transformation hyperbolic_transformation::rotation_origin(double a)
 {
 	double c=cos(a), s=sin(a);
-	return hyperbolic_transformation(c,s,0,-s,c,0,0,0,1);
+	return hyperbolic_transformation(c,-s,0,s,c,0,0,0,1);
 }
 
 hyperbolic_transformation hyperbolic_transformation::rotation(double a, const hyperbolic_coord &h)
