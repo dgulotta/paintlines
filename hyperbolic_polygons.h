@@ -24,6 +24,16 @@
 #include <array>
 #include "hyperbolic_painter.h"
 
+inline generator reflection_gen(const hyperbolic_coord &e)
+{
+	return generator(hyperbolic_transformation::reflection(e),e);
+}
+
+inline generator rot180_gen(const hyperbolic_coord &m, const hyperbolic_coord &e)
+{
+	return generator(hyperbolic_transformation::rotation_180(m),e);
+}
+
 class hyperbolic_triangle {
 public:
 	hyperbolic_triangle(double a1, double a2, double a3)
@@ -40,53 +50,12 @@ public:
 	hyperbolic_coord vertex3() const { return v3; }
 	hyperbolic_coord interior_point() const { return normalize(v1+v2+v3); }
 
-	hyperbolic_transformation reflection1() { 
-		return hyperbolic_transformation::reflection(edge1());
-	}
-	
-	hyperbolic_transformation reflection2() {
-		return hyperbolic_transformation::reflection(edge2());
-	}
-	
-	hyperbolic_transformation reflection3() {
-		return hyperbolic_transformation::reflection(edge3());
-	}
-	
-	hyperbolic_transformation rot180_1() {
-		return hyperbolic_transformation::rotation_180(mid1());
-	}
-	
-	hyperbolic_transformation rot180_2() {
-		return hyperbolic_transformation::rotation_180(mid2());
-	}
-	
-	hyperbolic_transformation rot180_3() {
-		return hyperbolic_transformation::rotation_180(mid3());
-	}
-
-	generator reflection1_gen() {
-		return generator(reflection1(),edge1());
-	}
-
-	generator reflection2_gen() {
-		return generator(reflection2(),edge2());
-	}
-
-	generator reflection3_gen() {
-		return generator(reflection3(),edge3());
-	}
-
-	generator rot180_1_gen() {
-		return generator(rot180_1(),edge1());
-	}
-
-	generator rot180_2_gen() {
-		return generator(rot180_2(),edge2());
-	}
-
-	generator rot180_3_gen() {
-		return generator(rot180_3(),edge3());
-	}
+	generator reflection1_gen() { return reflection_gen(edge1()); }
+	generator reflection2_gen() { return reflection_gen(edge2()); }
+	generator reflection3_gen() { return reflection_gen(edge3()); }
+	generator rot180_1_gen() { return rot180_gen(mid1(),edge1()); }
+	generator rot180_2_gen() { return rot180_gen(mid2(),edge2()); }
+	generator rot180_3_gen() { return rot180_gen(mid3(),edge3()); }
 protected:
 	double a1,a2,a3;
 	hyperbolic_coord e1,e2,e3,v1,v2,v3;
@@ -161,23 +130,15 @@ public:
 	hyperbolic_coord vertex4() const { return normalize(cross(e4,e1)); }
 
 	hyperbolic_coord mid1() const { return midpoint(vertex1(),vertex4()); }
-	hyperbolic_coord mid2() const { return normalize(vertex2()+vertex1()); }
-	hyperbolic_coord mid3() const { return normalize(vertex3()+vertex2()); }
-	hyperbolic_coord mid4() const { return normalize(vertex4()+vertex3()); }
+	hyperbolic_coord mid2() const { return midpoint(vertex2(),vertex1()); }
+	hyperbolic_coord mid3() const { return midpoint(vertex3(),vertex2()); }
+	hyperbolic_coord mid4() const { return midpoint(vertex4(),vertex3()); }
 
-	hyperbolic_transformation reflection1() { return hyperbolic_transformation::reflection(e1); } 
-	hyperbolic_transformation reflection2() { return hyperbolic_transformation::reflection(e2); }
-
-	hyperbolic_transformation rot180_4() {
-		hyperbolic_coord p = normalize(cross(e4,e1)), q = normalize(cross(e3,e4));
-		return hyperbolic_transformation::rotation_180(normalize(p+q));
-	}
-
-	generator reflection1_gen() { return generator(reflection1(),e1); }
-	generator reflection2_gen() { return generator(reflection2(),e2); }
-	generator reflection3_gen() { return generator(hyperbolic_transformation::reflection(e3),e3); }
-	generator reflection4_gen() { return generator(hyperbolic_transformation::reflection(e4),e4); }
-	generator rot180_4_gen() { return generator(rot180_4(),e4); }
+	generator reflection1_gen() { return reflection_gen(edge1()); }
+	generator reflection2_gen() { return reflection_gen(edge2()); }
+	generator reflection3_gen() { return reflection_gen(edge3()); }
+	generator reflection4_gen() { return reflection_gen(edge4()); }
+	generator rot180_4_gen() { return rot180_gen(mid4(),edge4()); }
 protected:
 	double a1,a2,a3,a4;
 	hyperbolic_coord e1, e2, e3, e4;

@@ -216,7 +216,6 @@ class hyperbolic_symmetry_group {
 			group_spec() : pt(0,0,0) {}
 			group_spec(const std::vector<generator> &g, const hyperbolic_coord &p):
 				gens(g), pt(p) {}
-			bool valid() { return !gens.empty(); }
 			std::vector<generator> gens;
 			hyperbolic_coord pt;
 		};
@@ -242,6 +241,7 @@ class hyperbolic_symmetry_group {
 		static group_spec group_sasb(int a, int b);
 		static group_spec group_axx(int a);
 		static group_spec group_ao(int a);
+		static group_spec group_2sabc(int a,int b,int c);
 	private:
 		std::vector<generator> generators;
 		std::vector<hyperbolic_transformation> transformations;

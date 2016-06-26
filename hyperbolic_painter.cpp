@@ -261,10 +261,12 @@ tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_rando
 	}
 }
 
+const char * bad_param_str = "Bad parameters for hyperbolic group";
+
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sabc(int a, int b, int c)
 {
 	if(a*b+a*c+b*c>=a*b*c)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	hyperbolic_triangle t(M_PI/a,M_PI/b,M_PI/c);
 	return group_spec({
 			t.reflection1_gen(),
@@ -276,7 +278,7 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sabc(int 
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_a222(int a)
 {
 	if(a<=2)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	double q = 2*M_PI/(3*a);
 	hyperbolic_triangle t(q,q,q);
 	return group_spec({
@@ -289,7 +291,7 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_a222(int 
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_2sab(int a, int b)
 {
 	if(a+b>=a*b)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	hyperbolic_triangle_isoceles t(M_PI/a,M_PI_2/b);
 	return group_spec({
 			t.rot180_1_gen(),
@@ -312,7 +314,7 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_22sa(int 
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_ab2(int a, int b)
 {
 	if(2*(a+b)>=a*b)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	hyperbolic_triangle_isoceles t(2*M_PI/a,M_PI/b);
 	return group_spec({
 			t.rot180_1_gen(),
@@ -324,7 +326,7 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_ab2(int a
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_asb(int a, int b)
 {
 	if(a+2*b>=a*b)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	hyperbolic_triangle_isoceles t(2*M_PI/a,M_PI_2/b);
 	return group_spec({
 			t.reflection1_gen(),
@@ -336,7 +338,7 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_asb(int a
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_a2x(int a)
 {
 	if(a<=2)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	double q=2*M_PI/(3*a);
 	hyperbolic_triangle_isoceles t(q,q);
 	return group_spec({
@@ -360,9 +362,8 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sax(int a
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_asbc(int a, int b, int c)
 {
 	if(a*b+a*c+2*b*c>=2*a*b*c)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	hyperbolic_quadrilateral_kite t(2*M_PI/a,M_PI_2/b,M_PI/c);
-	generator g1 = t.rotation1_gen(), g2 = t.rotation2_gen(), g3 = t.reflection3_gen(), g4 = t.reflection4_gen();
 	return group_spec({
 			t.rotation1_gen(),
 			t.rotation2_gen(),
@@ -374,7 +375,7 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_asbc(int 
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sabcd(int a, int b, int c, int d)
 {
 	if(a*b*c+a*b*d+a*c*d+b*c*d>=2*a*b*c*d)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	hyperbolic_quadrilateral q(M_PI/a,M_PI/b,M_PI/c,M_PI/d);
 	return group_spec({
 			q.reflection1_gen(),
@@ -387,7 +388,7 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sabcd(int
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_a2sb(int a, int b)
 {
 	if(a+2*b>=2*a*b)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	hyperbolic_quadrilateral_kite q(2*M_PI/a,M_PI/(3*b),M_PI/(3*b));
 	return group_spec({
 			q.rotation1_gen(),
@@ -400,7 +401,7 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_a2sb(int 
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_abc(int a, int b, int c)
 {
 	if(a*b*c<=a*b+b*c+c*a)
-		return group_spec();
+		throw std::domain_error(bad_param_str);
 	hyperbolic_quadrilateral_kite q(2*M_PI/a,M_PI/c,2*M_PI/b);
 	return group_spec({
 			q.rotation1_gen(),
@@ -419,7 +420,6 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sasb(int 
 			q.translation3_gen(),
 			q.reflection4_gen()
 			},q.interior_point());
-	return group_spec();
 }
 
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_axx(int a)
@@ -431,7 +431,6 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_axx(int a
 			q.glide3_gen(),
 			q.glide4_gen(),
 			},q.interior_point());
-	return group_spec();
 }
 
 hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_ao(int a)
@@ -442,5 +441,16 @@ hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_ao(int a)
 			q.translation2_gen(),
 			q.translation3_gen(),
 			q.translation4_gen(),
+			},q.interior_point());
+}
+
+hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_2sabc(int a,int b,int c)
+{
+	hyperbolic_quadrilateral q(M_PI/a,M_PI/b,M_PI_2/c,M_PI_2/c);
+	return group_spec({
+			q.reflection1_gen(),
+			q.reflection2_gen(),
+			q.reflection3_gen(),
+			q.rot180_4_gen(),
 			},q.interior_point());
 }
