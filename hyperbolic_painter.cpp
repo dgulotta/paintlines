@@ -108,9 +108,45 @@ hyperbolic_transformation hyperbolic_transformation::rotation(double a, const hy
 		c+(1-c)*h.z*h.z);
 }
 
+hyperbolic_transformation hyperbolic_transformation::rotation(const hyperbolic_coord &from, const hyperbolic_coord &to)
+{
+	hyperbolic_coord cr=cross(to,from);
+	double c=from*to;
+	double d=1/(1+c);
+	return hyperbolic_transformation(
+		c-d*cr.x*cr.x,
+		-d*cr.x*cr.y-cr.z,
+		d*cr.x*cr.z+cr.y,
+		-d*cr.y*cr.x+cr.z,
+		c-d*cr.y*cr.y,
+		d*cr.y*cr.z-cr.x,
+		-d*cr.z*cr.x+cr.y,
+		-d*cr.z*cr.y-cr.x,
+		c+d*cr.z*cr.z);
+}
+
 hyperbolic_transformation hyperbolic_transformation::glide_reflection(const hyperbolic_coord &c)
 {
 	double z=sqrt(1-c*c);
+	double d=1/(1-z);
+	return hyperbolic_transformation(
+		z+d*c.x*c.x,
+		-c.z+d*c.x*c.y,
+		c.y-d*c.x*c.z,
+		c.z+d*c.y*c.x,
+		z+d*c.y*c.y,
+		-c.x-d*c.y*c.z,
+		c.y+d*c.z*c.x,
+		-c.x+d*c.z*c.y,
+		z-d*c.z*c.z);
+}
+
+// this should be the same as the above, except for rounding
+// this version seems to trigger numerical instability issues
+hyperbolic_transformation hyperbolic_transformation::glide_reflection(const hyperbolic_coord &from, const hyperbolic_coord &to)
+{
+	hyperbolic_coord c=cross(from,to);
+	double z=from*to;
 	double d=1/(1-z);
 	return hyperbolic_transformation(
 		z+d*c.x*c.x,

@@ -146,7 +146,9 @@ class hyperbolic_transformation
 		static hyperbolic_transformation rotation_180(const hyperbolic_coord &c);
 		static hyperbolic_transformation rotation_origin(double a);
 		static hyperbolic_transformation rotation(double a, const hyperbolic_coord &c);
+		static hyperbolic_transformation rotation(const hyperbolic_coord &from, const hyperbolic_coord &to);
 		static hyperbolic_transformation glide_reflection(const hyperbolic_coord &c);
+		static hyperbolic_transformation glide_reflection(const hyperbolic_coord &from, const hyperbolic_coord &to);
 		static hyperbolic_transformation translation(const hyperbolic_coord &e1, const hyperbolic_coord &e2);
 		hyperbolic_transformation(double _xx, double _xy, double _xz, double _yx,
 				double _yy, double _yz, double _zx, double _zy,
@@ -172,7 +174,7 @@ class hyperbolic_transformation
 		// it would probably be faster to use opengl for this
 };
 
-	inline hyperbolic_transformation operator *
+inline hyperbolic_transformation operator *
 (const hyperbolic_transformation &t1, const hyperbolic_transformation &t2)
 {
 	return hyperbolic_transformation(

@@ -34,6 +34,11 @@ inline generator rot180_gen(const hyperbolic_coord &m, const hyperbolic_coord &e
 	return generator(hyperbolic_transformation::rotation_180(m),e);
 }
 
+inline generator rotation_gen(const hyperbolic_coord &e1, const hyperbolic_coord &e2)
+{
+	return generator(hyperbolic_transformation::rotation(e1,e2),e1);
+}
+
 class hyperbolic_triangle {
 public:
 	hyperbolic_triangle(double a1, double a2, double a3)
@@ -84,15 +89,9 @@ private:
 class hyperbolic_triangle_isoceles : public hyperbolic_triangle {
 public:
 	hyperbolic_triangle_isoceles(double _a1, double _a2) : hyperbolic_triangle(_a1,_a2,_a2) {}
-	hyperbolic_transformation rotation() { return hyperbolic_transformation::rotation_origin(a1); }
 
-	generator rotation2_gen() {
-		return generator(rotation().inverse(),edge2());
-	}
-
-	generator rotation3_gen() {
-		return generator(rotation(),edge3());
-	}
+	generator rotation2_gen() { return rotation_gen(edge2(),edge3()); }
+	generator rotation3_gen() { return rotation_gen(edge3(),edge2()); }
 
 	hyperbolic_transformation glide_reflection() {
 		return hyperbolic_transformation::glide_reflection(cross(mid3(),mid2()));
@@ -167,20 +166,10 @@ class hyperbolic_quadrilateral_kite : public hyperbolic_quadrilateral {
 public:
 	hyperbolic_quadrilateral_kite(double _a1, double _a2, double _a3) : hyperbolic_quadrilateral(_a1,_a2,_a3,_a2) {}
 
-	hyperbolic_transformation rotation1() {
-		hyperbolic_coord p = normalize(cross(e2,e1));
-		return hyperbolic_transformation::rotation(a1,p);
-	}
-
-	hyperbolic_transformation rotation3() {
-		hyperbolic_coord p = normalize(cross(e4,e3));
-		return hyperbolic_transformation::rotation(a3,p);
-	}
-
-	generator rotation1_gen() { return generator(rotation1(),e1); }
-	generator rotation2_gen() { return generator(rotation1().inverse(),e2); }
-	generator rotation3_gen() { return generator(rotation3(),e3); }
-	generator rotation4_gen() { return generator(rotation3().inverse(),e4); }
+	generator rotation1_gen() { return rotation_gen(edge1(),edge2()); }
+	generator rotation2_gen() { return rotation_gen(edge2(),edge1()); }
+	generator rotation3_gen() { return rotation_gen(edge3(),edge4()); }
+	generator rotation4_gen() { return rotation_gen(edge4(),edge3()); }
 	generator glide1_gen() { return generator(hyperbolic_transformation::glide_reflection(cross(mid2(),mid1())),e1); }
 	generator glide2_gen() { return generator(hyperbolic_transformation::glide_reflection(cross(mid1(),mid2())),e2); }
 	generator glide3_gen() { return generator(hyperbolic_transformation::glide_reflection(cross(mid4(),mid3())),e3); }
