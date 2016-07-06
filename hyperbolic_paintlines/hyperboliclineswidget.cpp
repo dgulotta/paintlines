@@ -93,58 +93,58 @@ HyperbolicLinesWidget::HyperbolicLinesWidget()
 
 void HyperbolicLinesWidget::draw()
 {
-	hyperbolic_symmetry_group::group_spec spec;
+	std::vector<generator> spec;
 	flip_type ft = (flip_type)comboSubset->currentIndex();
 	const auto &t = tokens[comboSymmetry->currentIndex()];
 	try {
 		switch(comboSymmetry->currentIndex()) {
 			case 0:
-				spec=hyperbolic_symmetry_group::group_sax(t[1].value);
+				spec=group_sax(t[1].value);
 				break;
 			case 1:
-				spec=hyperbolic_symmetry_group::group_2sab(t[2].value,t[3].value);
+				spec=group_2sab(t[2].value,t[3].value);
 				break;
 			case 2:
-				spec=hyperbolic_symmetry_group::group_a222(t[0].value);
+				spec=group_a222(t[0].value);
 				break;
 			case 3:
-				spec=hyperbolic_symmetry_group::group_ab2(t[0].value,t[1].value);
+				spec=group_ab2(t[0].value,t[1].value);
 				break;
 			case 4:
-				spec=hyperbolic_symmetry_group::group_asb(t[0].value,t[2].value);
+				spec=group_asb(t[0].value,t[2].value);
 				break;
 			case 5:
-				spec=hyperbolic_symmetry_group::group_sabc(t[1].value,t[2].value,t[3].value);
+				spec=group_sabc(t[1].value,t[2].value,t[3].value);
 				break;
 			case 6:
-				spec=hyperbolic_symmetry_group::group_a2x(t[0].value);
+				spec=group_a2x(t[0].value);
 				break;
 			case 7:
-				spec=hyperbolic_symmetry_group::group_22sa(t[3].value);
+				spec=group_22sa(t[3].value);
 				break;
 			case 8:
-				spec=hyperbolic_symmetry_group::group_asbc(t[0].value,t[2].value,t[3].value);
+				spec=group_asbc(t[0].value,t[2].value,t[3].value);
 				break;
 			case 9:
-				spec=hyperbolic_symmetry_group::group_sabcd(t[1].value,t[2].value,t[3].value,t[4].value);
+				spec=group_sabcd(t[1].value,t[2].value,t[3].value,t[4].value);
 				break;
 			case 10:
-				spec=hyperbolic_symmetry_group::group_a2sb(t[0].value,t[3].value);
+				spec=group_a2sb(t[0].value,t[3].value);
 				break;
 			case 11:
-				spec=hyperbolic_symmetry_group::group_sasb(t[1].value,t[3].value);
+				spec=group_sasb(t[1].value,t[3].value);
 				break;
 			case 12:
-				spec=hyperbolic_symmetry_group::group_ao(t[0].value);
+				spec=group_ao(t[0].value);
 				break;
 			case 13:
-				spec=hyperbolic_symmetry_group::group_abc(t[0].value,t[1].value,t[2].value);
+				spec=group_abc(t[0].value,t[1].value,t[2].value);
 				break;
 			case 14:
-				spec=hyperbolic_symmetry_group::group_axx(t[0].value);
+				spec=group_axx(t[0].value);
 				break;
 			case 15:
-				spec=hyperbolic_symmetry_group::group_2sabc(t[2].value,t[3].value,t[4].value);
+				spec=group_2sabc(t[2].value,t[3].value,t[4].value);
 		}
 	} catch(const std::domain_error &) {
 		QMessageBox::information(this,"Hyperbolic Paintlines",tr("The chosen group is not hyperbolic.  Try increasing the parameters."));

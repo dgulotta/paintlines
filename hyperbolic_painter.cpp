@@ -195,16 +195,25 @@ hyperbolic_coord inverse_projection(const planar_coord &pc,projtype pt)
 	}
 }
 
-hyperbolic_symmetry_group::hyperbolic_symmetry_group(const group_spec &s,flip_type f)
-: generators(s.gens)
+hyperbolic_coord interior_point(const vector<generator> &gens)
+{
+	hyperbolic_coord c(0,0,0);
+	for(size_t i=0;i<gens.size();i++)
+		c+=cross(gens[i].edge,gens[(i+1)%gens.size()].edge);
+	return normalize(c);
+}
+
+hyperbolic_symmetry_group::hyperbolic_symmetry_group(const vector<generator> &gens,flip_type f)
+: generators(gens)
 {
 	vector<hyperbolic_transformation> queue;
 	queue.push_back(hyperbolic_transformation::identity);
 	transformations.push_back(hyperbolic_transformation::identity);
+	hyperbolic_coord ip = interior_point(gens);
 	for(int i=0;i<queue.size();i++) {
 		for(auto it = generators.begin();it!=generators.end();++it) {
-			hyperbolic_transformation t = it->right_multiply(queue[i]);
-			hyperbolic_coord p=t.inverse(s.pt);
+			hyperbolic_transformation t = queue[i]*(it->trans);
+			hyperbolic_coord p=t.inverse(ip);
 			//if(p.z>ZMAX) continue;
 			//if(any_of(generators.begin(),generators.end(),[&](generator &g) { return abs(t(g.edge).z)>ZMAX;})) continue;
 			if(abs(t.zz)>ZMAX) continue;
@@ -236,20 +245,18 @@ hyperbolic_coord hyperbolic_symmetry_group::random_symmetry(const hyperbolic_coo
 	return transformations[pow(transformations.size(),i)](c);
 }
 
-tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain(const hyperbolic_coord &hc) const {
-	hyperbolic_coord c(hc);
-	bool any=true;
-	while(any) {
-		any=false;
-		for(auto &t: generators) {
-			if(!t.inside(c)) {
-				c=t(c);
-				any=true;
-				break;
-			}
-		}
+hyperbolic_coord fundamental_domain_point(const std::vector<generator> &gens, hyperbolic_coord c)
+{
+	while(true) {
+		auto it=find_if_not(gens.begin(),gens.end(),bind(&generator::inside,_1,c));
+		if(it==gens.end())
+			return c;
+		c=it->trans(c);
 	}
-	return make_tuple(c,false);
+}
+
+tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain(const hyperbolic_coord &hc) const {
+	return make_tuple(fundamental_domain_point(generators,hc),false);
 }
 
 tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_alternating(const hyperbolic_coord &hc) const {
@@ -260,7 +267,7 @@ tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_alter
 		any=false;
 		for(auto &t: generators) {
 			if(!t.inside(c)) {
-				c=t(c);
+				c=t.trans(c);
 				flip^=t.is_flip;
 				any=true;
 				break;
@@ -280,7 +287,7 @@ tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_rando
 		for(auto &t: generators) {
 			++i;
 			if(!t.inside(c)) {
-				c=t(c);
+				c=t.trans(c);
 				index=index*(generators.size()+1)+i;
 				any=true;
 				break;
@@ -299,194 +306,194 @@ tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_rando
 
 const char * bad_param_str = "Bad parameters for hyperbolic group";
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sabc(int a, int b, int c)
+std::vector<generator> group_sabc(int a, int b, int c)
 {
 	if(a*b+a*c+b*c>=a*b*c)
 		throw std::domain_error(bad_param_str);
 	hyperbolic_triangle t(M_PI/a,M_PI/b,M_PI/c);
-	return group_spec({
-			t.reflection1_gen(),
-			t.reflection2_gen(),
-			t.reflection3_gen()
-			},t.interior_point());
+	return {
+		t.reflection1_gen(),
+		t.reflection2_gen(),
+		t.reflection3_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_a222(int a)
+std::vector<generator> group_a222(int a)
 {
 	if(a<=2)
 		throw std::domain_error(bad_param_str);
 	double q = 2*M_PI/(3*a);
 	hyperbolic_triangle t(q,q,q);
-	return group_spec({
-			t.rot180_1_gen(),
-			t.rot180_2_gen(),
-			t.rot180_3_gen()
-			},t.interior_point());
+	return {
+		t.rot180_1_gen(),
+		t.rot180_2_gen(),
+		t.rot180_3_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_2sab(int a, int b)
+std::vector<generator> group_2sab(int a, int b)
 {
 	if(a+b>=a*b)
 		throw std::domain_error(bad_param_str);
 	hyperbolic_triangle_isoceles t(M_PI/a,M_PI_2/b);
-	return group_spec({
-			t.rot180_1_gen(),
-			t.reflection2_gen(),
-			t.reflection3_gen()
-			},t.interior_point());
+	return {
+		t.rot180_1_gen(),
+		t.reflection2_gen(),
+		t.reflection3_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_22sa(int a)
+std::vector<generator> group_22sa(int a)
 {
 	double q=M_PI/(3*a);
 	hyperbolic_triangle t(q,q,q);
-	return group_spec({
-			t.reflection1_gen(),
-			t.rot180_2_gen(),
-			t.rot180_3_gen()
-			},t.interior_point());
+	return {
+		t.reflection1_gen(),
+		t.rot180_2_gen(),
+		t.rot180_3_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_ab2(int a, int b)
+std::vector<generator> group_ab2(int a, int b)
 {
 	if(2*(a+b)>=a*b)
 		throw std::domain_error(bad_param_str);
 	hyperbolic_triangle_isoceles t(2*M_PI/a,M_PI/b);
-	return group_spec({
-			t.rot180_1_gen(),
-			t.rotation2_gen(),
-			t.rotation3_gen()
-			},t.interior_point());
+	return {
+		t.rot180_1_gen(),
+		t.rotation2_gen(),
+		t.rotation3_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_asb(int a, int b)
+std::vector<generator> group_asb(int a, int b)
 {
 	if(a+2*b>=a*b)
 		throw std::domain_error(bad_param_str);
 	hyperbolic_triangle_isoceles t(2*M_PI/a,M_PI_2/b);
-	return group_spec({
-			t.reflection1_gen(),
-			t.rotation2_gen(),
-			t.rotation3_gen()
-			},t.interior_point());
+	return {
+		t.reflection1_gen(),
+		t.rotation2_gen(),
+		t.rotation3_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_a2x(int a)
+std::vector<generator> group_a2x(int a)
 {
 	if(a<=2)
 		throw std::domain_error(bad_param_str);
 	double q=2*M_PI/(3*a);
 	hyperbolic_triangle_isoceles t(q,q);
-	return group_spec({
-			t.rot180_1_gen(),
-			t.glide2_gen(),
-			t.glide3_gen()
-			},t.interior_point());
+	return {
+		t.rot180_1_gen(),
+		t.glide2_gen(),
+		t.glide3_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sax(int a)
+std::vector<generator> group_sax(int a)
 {
 	double q=M_PI/(3*a);
 	hyperbolic_triangle_isoceles t(q,q);
-	return group_spec({
-			t.reflection1_gen(),
-			t.glide2_gen(),
-			t.glide3_gen()
-			},t.interior_point());
+	return {
+		t.reflection1_gen(),
+		t.glide2_gen(),
+		t.glide3_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_asbc(int a, int b, int c)
+std::vector<generator> group_asbc(int a, int b, int c)
 {
 	if(a*b+a*c+2*b*c>=2*a*b*c)
 		throw std::domain_error(bad_param_str);
 	hyperbolic_quadrilateral_kite t(2*M_PI/a,M_PI_2/b,M_PI/c);
-	return group_spec({
-			t.rotation1_gen(),
-			t.rotation2_gen(),
-			t.reflection3_gen(),
-			t.reflection4_gen()
-			},t.interior_point());
+	return {
+		t.rotation1_gen(),
+		t.rotation2_gen(),
+		t.reflection3_gen(),
+		t.reflection4_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sabcd(int a, int b, int c, int d)
+std::vector<generator> group_sabcd(int a, int b, int c, int d)
 {
 	if(a*b*c+a*b*d+a*c*d+b*c*d>=2*a*b*c*d)
 		throw std::domain_error(bad_param_str);
 	hyperbolic_quadrilateral q(M_PI/a,M_PI/b,M_PI/c,M_PI/d);
-	return group_spec({
-			q.reflection1_gen(),
-			q.reflection2_gen(),
-			q.reflection3_gen(),
-			q.reflection4_gen()
-			},q.interior_point());
+	return {
+		q.reflection1_gen(),
+		q.reflection2_gen(),
+		q.reflection3_gen(),
+		q.reflection4_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_a2sb(int a, int b)
+std::vector<generator> group_a2sb(int a, int b)
 {
 	if(a+2*b>=2*a*b)
 		throw std::domain_error(bad_param_str);
 	hyperbolic_quadrilateral_kite q(2*M_PI/a,M_PI/(3*b),M_PI/(3*b));
-	return group_spec({
-			q.rotation1_gen(),
-			q.rotation2_gen(),
-			q.reflection3_gen(),
-			q.rot180_4_gen()
-			},q.interior_point());
+	return {
+		q.rotation1_gen(),
+		q.rotation2_gen(),
+		q.reflection3_gen(),
+		q.rot180_4_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_abc(int a, int b, int c)
+std::vector<generator> group_abc(int a, int b, int c)
 {
 	if(a*b*c<=a*b+b*c+c*a)
 		throw std::domain_error(bad_param_str);
 	hyperbolic_quadrilateral_kite q(2*M_PI/a,M_PI/c,2*M_PI/b);
-	return group_spec({
-			q.rotation1_gen(),
-			q.rotation2_gen(),
-			q.rotation3_gen(),
-			q.rotation4_gen()
-			},q.interior_point());
+	return {
+		q.rotation1_gen(),
+		q.rotation2_gen(),
+		q.rotation3_gen(),
+		q.rotation4_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_sasb(int a, int b)
+std::vector<generator> group_sasb(int a, int b)
 {
 	hyperbolic_quadrilateral_trapezoid q(M_PI_2/a,M_PI_2/b);
-	return group_spec({
-			q.translation1_gen(),
-			q.reflection2_gen(),
-			q.translation3_gen(),
-			q.reflection4_gen()
-			},q.interior_point());
+	return {
+		q.translation1_gen(),
+		q.reflection2_gen(),
+		q.translation3_gen(),
+		q.reflection4_gen()
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_axx(int a)
+std::vector<generator> group_axx(int a)
 {
 	hyperbolic_quadrilateral_kite q(M_PI_2/a,M_PI_2/a,M_PI_2/a);
-	return group_spec({
-			q.glide1_gen(),
-			q.glide2_gen(),
-			q.glide3_gen(),
-			q.glide4_gen(),
-			},q.interior_point());
+	return {
+		q.glide1_gen(),
+		q.glide2_gen(),
+		q.glide3_gen(),
+		q.glide4_gen(),
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_ao(int a)
+std::vector<generator> group_ao(int a)
 {
 	hyperbolic_quadrilateral_square q(M_PI_2/a);
-	return group_spec({
-			q.translation1_gen(),
-			q.translation2_gen(),
-			q.translation3_gen(),
-			q.translation4_gen(),
-			},q.interior_point());
+	return {
+		q.translation1_gen(),
+		q.translation2_gen(),
+		q.translation3_gen(),
+		q.translation4_gen(),
+	};
 }
 
-hyperbolic_symmetry_group::group_spec hyperbolic_symmetry_group::group_2sabc(int a,int b,int c)
+std::vector<generator> group_2sabc(int a,int b,int c)
 {
 	hyperbolic_quadrilateral q(M_PI/a,M_PI/b,M_PI_2/c,M_PI_2/c);
-	return group_spec({
-			q.reflection1_gen(),
-			q.reflection2_gen(),
-			q.reflection3_gen(),
-			q.rot180_4_gen(),
-			},q.interior_point());
+	return {
+		q.reflection1_gen(),
+		q.reflection2_gen(),
+		q.reflection3_gen(),
+		q.rot180_4_gen()
+	};
 }

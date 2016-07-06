@@ -53,7 +53,6 @@ public:
 	hyperbolic_coord vertex1() const { return v1; }
 	hyperbolic_coord vertex2() const { return v2; }
 	hyperbolic_coord vertex3() const { return v3; }
-	hyperbolic_coord interior_point() const { return normalize(v1+v2+v3); }
 
 	generator reflection1_gen() { return reflection_gen(edge1()); }
 	generator reflection2_gen() { return reflection_gen(edge2()); }
@@ -115,8 +114,6 @@ class hyperbolic_quadrilateral {
 public:
 	hyperbolic_quadrilateral(double _a1, double _a2, double _a3, double _a4)
 		: hyperbolic_quadrilateral(_a1,_a2,_a3,_a4,compute_coords(_a1,_a2,_a3,_a4)) {}
-
-	hyperbolic_coord interior_point() { return hyperbolic_coord(0,0,1); }
 
 	hyperbolic_coord edge1() const { return e1; }
 	hyperbolic_coord edge2() const { return e2; }

@@ -208,42 +208,33 @@ struct generator {
 	 */
 	generator(const hyperbolic_transformation &t, const hyperbolic_coord &e) : trans(t), edge(e), is_flip(t.is_flip()) {}
 	bool inside(const hyperbolic_coord &hc) const { return edge*hc+1.e-15>=0; }
-	hyperbolic_coord operator () (const hyperbolic_coord &hc) const { return trans(hc); }
-	hyperbolic_transformation right_multiply(const hyperbolic_transformation &t) const { return t*trans; }
 };
+
+hyperbolic_coord fundamental_domain_point(const std::vector<generator> &gens, hyperbolic_coord c);
+
+std::vector<generator> group_sabc(int a, int b, int c);
+std::vector<generator> group_a222(int a);
+std::vector<generator> group_2sab(int a, int b);
+std::vector<generator> group_22sa(int a);
+std::vector<generator> group_ab2(int n1, int n2);
+std::vector<generator> group_asb(int n1, int n2);
+std::vector<generator> group_a2x(int a);
+std::vector<generator> group_sax(int a);
+std::vector<generator> group_asbc(int a, int b, int c);
+std::vector<generator> group_sabcd(int a, int b, int c, int d);
+std::vector<generator> group_a2sb(int a, int b);
+std::vector<generator> group_abc(int a, int b, int c);
+std::vector<generator> group_sasb(int a, int b);
+std::vector<generator> group_axx(int a);
+std::vector<generator> group_ao(int a);
+std::vector<generator> group_2sabc(int a,int b,int c);
 
 class hyperbolic_symmetry_group {
 	public:
-		struct group_spec {
-			group_spec() : pt(0,0,0) {}
-			group_spec(const std::vector<generator> &g, const hyperbolic_coord &p):
-				gens(g), pt(p) {}
-			std::vector<generator> gens;
-			hyperbolic_coord pt;
-		};
-
-		hyperbolic_symmetry_group(const group_spec &s, flip_type f=flip_type::ALL);
+		hyperbolic_symmetry_group(const std::vector<generator> &s, flip_type f=flip_type::ALL);
 		template <typename F>
 			std::function<void(const hyperbolic_coord &)> symmetrize(const F &f) const;
 		hyperbolic_coord random_symmetry(const hyperbolic_coord &c) const;
-		hyperbolic_coord fundamental_domain_point(const hyperbolic_coord &hc) const { return std::get<0>((this->*fdfunc)(hc)); }
-
-		static group_spec group_sabc(int a, int b, int c);
-		static group_spec group_a222(int a);
-		static group_spec group_2sab(int a, int b);
-		static group_spec group_22sa(int a);
-		static group_spec group_ab2(int n1, int n2);
-		static group_spec group_asb(int n1, int n2);
-		static group_spec group_a2x(int a);
-		static group_spec group_sax(int a);
-		static group_spec group_asbc(int a, int b, int c);
-		static group_spec group_sabcd(int a, int b, int c, int d);
-		static group_spec group_a2sb(int a, int b);
-		static group_spec group_abc(int a, int b, int c);
-		static group_spec group_sasb(int a, int b);
-		static group_spec group_axx(int a);
-		static group_spec group_ao(int a);
-		static group_spec group_2sabc(int a,int b,int c);
 	private:
 		std::vector<generator> generators;
 		std::vector<hyperbolic_transformation> transformations;
