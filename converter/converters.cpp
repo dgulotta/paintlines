@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013, 2016 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 #include "../color.h"
-#include "../hyperbolic_painter.h"
+#include "../hyperbolic_group.h"
 #include "../hyperbolic_polygons.h"
 #include "../interpolate.h"
 #include "../symmetric_canvas.h"
@@ -34,11 +34,11 @@ using std::tuple;
 
 typedef function<tuple<double,double>(const hyperbolic_coord &)> coord_transformer;
 
-coord_transformer triangle_transformer(const hyperbolic_triangle &t, double x1, double y1, double x2, double y2, double x3, double y3)
+coord_transformer triangle_transformer(const hyperbolic_polygon &t, double x1, double y1, double x2, double y2, double x3, double y3)
 {
-	hyperbolic_coord e1n = t.edge1()/(t.edge1()*t.vertex1());
-	hyperbolic_coord e2n = t.edge2()/(t.edge2()*t.vertex2());
-	hyperbolic_coord e3n = t.edge3()/(t.edge3()*t.vertex3());
+	hyperbolic_coord e1n = t.edge(2)/(t.edge(2)*t.vertex(1));
+	hyperbolic_coord e2n = t.edge(0)/(t.edge(0)*t.vertex(2));
+	hyperbolic_coord e3n = t.edge(1)/(t.edge(1)*t.vertex(0));
 	return [=] (const hyperbolic_coord &c) {
 		double d1 = e1n * c, d2 = e2n * c, d3 = e3n * c;
 		double d = d1+d2+d3;
@@ -47,14 +47,14 @@ coord_transformer triangle_transformer(const hyperbolic_triangle &t, double x1, 
 	};
 }
 
-coord_transformer quadrilateral_transformer(const hyperbolic_quadrilateral &q, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
+coord_transformer quadrilateral_transformer(const hyperbolic_polygon &q, double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
 {
-	hyperbolic_coord ea1 = cross(q.vertex4(),q.vertex1());
-	hyperbolic_coord eb1 = cross(q.vertex3(),q.vertex1())+cross(q.vertex4(),q.vertex2());
-	hyperbolic_coord ec1 = cross(q.vertex3(),q.vertex2());
-	hyperbolic_coord ea2 = cross(q.vertex1(),q.vertex2());
-	hyperbolic_coord eb2 = cross(q.vertex1(),q.vertex3())+cross(q.vertex4(),q.vertex2());
-	hyperbolic_coord ec2 = cross(q.vertex4(),q.vertex3());
+	hyperbolic_coord ea1 = cross(q.vertex(0),q.vertex(1));
+	hyperbolic_coord eb1 = cross(q.vertex(3),q.vertex(1))+cross(q.vertex(0),q.vertex(2));
+	hyperbolic_coord ec1 = cross(q.vertex(3),q.vertex(2));
+	hyperbolic_coord ea2 = cross(q.vertex(1),q.vertex(2));
+	hyperbolic_coord eb2 = cross(q.vertex(1),q.vertex(3))+cross(q.vertex(0),q.vertex(2));
+	hyperbolic_coord ec2 = cross(q.vertex(0),q.vertex(3));
 	return [=] (const hyperbolic_coord &c) {
 		double a1 = ea1*c, b1 = eb1*c, c1=ec1*c;
 		double a2 = ea2*c, b2 = eb2*c, c2=ec2*c;
@@ -68,78 +68,96 @@ coord_transformer quadrilateral_transformer(const hyperbolic_quadrilateral &q, d
 
 canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype pt, int newsize)
 {
-	std::vector<generator> gens;
+	fundamental_domain_family fdf;
+	fundamental_domain fd;
 	coord_transformer trans;
 	int size = img.size();
 	canvas<color_t> newimg(newsize,newsize);
 	switch(img.group()) {
 	case symgroup::CM:
-		gens = group_sax(2);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(M_PI/6,M_PI/6),0,size,size,size,0,0);
+		fdf = fundamental_domain_family({{1,true},{0,true},{2,true}});
+		fd = fdf.domain({2});
+		trans = triangle_transformer(fd.polygon,0,size,size,size,0,0);
 		break;
 	case symgroup::CMM:
-		gens = group_2sab(3,2);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(M_PI/3,M_PI/4),.5*size,.5*size,size,0,0,0);
+		fdf = fundamental_domain_family({{0,true},{1,true},{2,false}});
+		fd = fdf.domain({3,2});
+		trans = triangle_transformer(fd.polygon,.5*size,.5*size,size,0,0,0);
 		break;
 	case symgroup::P1:
-		gens = group_ao(2);
-		trans = quadrilateral_transformer(hyperbolic_quadrilateral_square(M_PI/4),0,0,0,size,size,size,size,0);
+		fdf = fundamental_domain_family({{2,false},{3,false},{0,false},{1,false}});
+		fd = fdf.domain({2});
+		trans = quadrilateral_transformer(fd.polygon,0,0,0,size,size,size,size,0);
 		break;
 	case symgroup::P2:
-		gens = group_a222(3);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/9,2*M_PI/9),0,0,0,size,size,0);
+		fdf = fundamental_domain_family({{0,false},{1,false},{2,false}});
+		fd = fdf.domain({3});
+		trans = triangle_transformer(fd.polygon,0,0,0,size,size,0);
 		break;
 	case symgroup::P3:
-		gens = group_abc(3,3,4);
-		trans = quadrilateral_transformer(hyperbolic_quadrilateral_kite(2*M_PI/3,M_PI/4,2*M_PI/3),size/3.,size/3.,size,0,2*size/3.,-size/3.,0,0);
+		fdf = fundamental_domain_family({{1,false},{0,false},{3,false},{2,false}});
+		fd = fdf.domain({3,3,4});
+		trans = quadrilateral_transformer(fd.polygon,size/3.,size/3.,size,0,2*size/3.,-size/3.,0,0);
 		break;
 	case symgroup::P31M:
-		gens = group_asb(3,4);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/3,M_PI/8),size/3.,size/3.,size,0,0,0);
+		fdf = fundamental_domain_family({{1,false},{0,false},{2,true}});
+		fd = fdf.domain({3,4});
+		trans = triangle_transformer(fd.polygon,size/3.,size/3.,size,0,0,0);
 		break;
 	case symgroup::P3M1:
-		gens = group_sabc(4,3,3);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(M_PI/4,M_PI/3),0,0,size/3.,size/3.,2*size/3.,-size/3.);
+		fdf = fundamental_domain_family({{0,true},{1,true},{2,true}});
+		fd = fdf.domain({4,3,3});
+		trans = triangle_transformer(fd.polygon,0,0,size/3.,size/3.,2*size/3.,-size/3.);
 		break;
 	case symgroup::P4:
-		gens = group_ab2(5,4);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/5,M_PI/4),0,0,.5*size,.5*size,.5*size,-.5*size);
+		fdf = fundamental_domain_family({{1,false},{0,false},{2,false}});
+		fd = fdf.domain({5,4});
+		trans = triangle_transformer(fd.polygon,0,0,.5*size,.5*size,.5*size,-.5*size);
 		break;
 	case symgroup::P4G:
-		gens = group_asb(5,2);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/5,M_PI/4),0,0,0,.5*size,.5*size,0);
+		fdf = fundamental_domain_family({{1,false},{0,false},{2,true}});
+		fd = fdf.domain({5,2});
+		trans = triangle_transformer(fd.polygon,0,0,0,.5*size,.5*size,0);
 		break;
 	case symgroup::P4M:
-		gens = group_sabc(5,4,2);
-		trans = triangle_transformer(hyperbolic_triangle(M_PI/5,M_PI/4,M_PI/2),0,0,.5*size,.5*size,.5*size,0);
+		fdf = fundamental_domain_family({{0,true},{1,true},{2,true}});
+		fd = fdf.domain({2,4,5});
+		trans = triangle_transformer(fd.polygon,0,0,.5*size,.5*size,.5*size,0);
 		break;
 	case symgroup::P6:
-		gens = group_ab2(7,3);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/7,M_PI/3),0,0,size/3.,size/3.,2*size/3.,-size/3.);
+		fdf = fundamental_domain_family({{1,false},{0,false},{2,false}});
+		fd = fdf.domain({3,7});
+		trans = triangle_transformer(fd.polygon,0,0,size/3.,size/3.,2*size/3.,-size/3.);
 		break;
 	case symgroup::P6M:
-		gens = group_sabc(7,3,2);
-		trans = triangle_transformer(hyperbolic_triangle(M_PI/7,M_PI/3,M_PI/2),0,0,size/3.,size/3.,.5*size,0);
+		fdf = fundamental_domain_family({{0,true},{1,true},{2,true}});
+		fd = fdf.domain({2,3,7});
+		trans = triangle_transformer(fd.polygon,0,0,size/3.,size/3.,.5*size,0);
 		break;
 	case symgroup::PG:
-		gens = group_axx(2);
-		trans = quadrilateral_transformer(hyperbolic_quadrilateral_square(M_PI/4),.5*size,.5*size,size,0,.5*size,-.5*size,0,0);
+		fdf = fundamental_domain_family({{1,true},{0,true},{3,true},{2,true}});
+		fd = fdf.domain({2});
+		trans = quadrilateral_transformer(fd.polygon,.5*size,.5*size,size,0,.5*size,-.5*size,0,0);
 		break;
 	case symgroup::PGG:
-		gens = group_a2x(3);
-		trans = triangle_transformer(hyperbolic_triangle_isoceles(2*M_PI/9,2*M_PI/9),0,0,.5*size,.5*size,.5*size,-.5*size);
+		fdf = fundamental_domain_family({{1,true},{0,true},{2,false}});
+		fd = fdf.domain({3});
+		trans = triangle_transformer(fd.polygon,0,0,.5*size,.5*size,.5*size,-.5*size);
 		break;
 	case symgroup::PM:
-		gens = group_sasb(1,2);
-		trans = quadrilateral_transformer(hyperbolic_quadrilateral_trapezoid(M_PI/2,M_PI/4),0,0,0,size,.5*size,size,.5*size,0);
+		fdf = fundamental_domain_family({{2,false},{1,true},{0,false},{3,true}});
+		fd = fdf.domain({1,2});
+		trans = quadrilateral_transformer(fd.polygon,0,0,0,size,.5*size,size,.5*size,0);
 		break;
 	case symgroup::PMG:
-		gens = group_a2sb(3,1);
-		trans = quadrilateral_transformer(hyperbolic_quadrilateral_kite(2*M_PI/3,M_PI/3,M_PI/3),0,.5*size,.25*size,.75*size,.25*size,-.25*size,-.25*size,.25*size);
+		fdf = fundamental_domain_family({{1,false},{0,false},{2,true},{3,false}});
+		fd = fdf.domain({3,1});
+		trans = quadrilateral_transformer(fd.polygon,0,.5*size,.25*size,.75*size,.25*size,-.25*size,-.25*size,.25*size);
 		break;
 	case symgroup::PMM:
-		gens = group_sabcd(3,2,2,2);
-		trans = quadrilateral_transformer(hyperbolic_quadrilateral(M_PI/3,M_PI/2,M_PI/2,M_PI/2),0,0,0,.5*size,.5*size,.5*size,.5*size,0);
+		fdf = fundamental_domain_family({{0,true},{1,true},{2,true},{3,true}});
+		fd = fdf.domain({3,2,2,2});
+		trans = quadrilateral_transformer(fd.polygon,0,0,0,.5*size,.5*size,.5*size,.5*size,0);
 		break;
 	}
 	coord_converter conv(newsize);
@@ -147,7 +165,7 @@ canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype p
 		for(int i=0;i<newsize;i++) {
 			planar_coord pc = conv.fromscreen(screen_coord(i,j));
 			if(pc.x*pc.x+pc.y*pc.y>=.999) continue;
-			hyperbolic_coord hc = fundamental_domain_point(gens,inverse_projection(pc,pt));
+			hyperbolic_coord hc = fundamental_domain_point(fd.generators,inverse_projection(pc,pt));
 			double xd,yd;
 			tie(xd,yd)=trans(hc);
 			newimg(i,j)=combine_colors(img.as_wrap_canvas(),interpolate_linear(xd,yd));

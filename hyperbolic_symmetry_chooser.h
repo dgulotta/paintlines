@@ -18,25 +18,45 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _HYPERBOLIC_POLYGONS_H
-#define _HYPERBOLIC_POLYGONS_H
+#ifndef _HYPERBOLIC_SYMMETRY_CHOOSER_H
+#define _HYPERBOLIC_SYMMETRY_CHOOSER_H
 
+#include <string>
 #include <vector>
-#include "hyperbolic.h"
+#include <QWidget>
+#include "hyperbolic_group.h"
 
-class hyperbolic_polygon
+class QComboBox;
+class QSpinBox;
+class QStackedLayout;
+
+class HyperbolicSymmetryItem : public QWidget
 {
+	Q_OBJECT
 public:
-	hyperbolic_polygon() {}
-	hyperbolic_polygon(double a1, double a2, double a3);
-	hyperbolic_polygon(double a1, double a2, double a3, double a4);
-	hyperbolic_coord edge(int n) const;
-	hyperbolic_coord vertex(int n) const;
-	hyperbolic_transformation trans(int n1, int n2,bool flip) const;
+	HyperbolicSymmetryItem(const fundamental_domain_family &fdf,const std::vector<int> &defaults);
+	fundamental_domain domain() const;
+	fundamental_domain_family domain_family() const { return family; }
+	QString group_name() const { return name; }
 private:
-	std::vector<planar_coord> dirs;
-	double rcosh;
-	double rsinh;
+	std::vector<QSpinBox *> spins;
+	fundamental_domain_family family;
+	QString name;
+};
+
+class HyperbolicSymmetryChooser : public QWidget
+{
+	Q_OBJECT
+public:
+	HyperbolicSymmetryChooser(QWidget *parent=nullptr);
+	fundamental_domain domain() const { return currentItem()->domain(); }
+	fundamental_domain_family domain_family() const { return currentItem()->domain_family(); }
+	void add(const fundamental_domain_family &fdf,const std::vector<int> &defaults);
+	void addDefaultItems();
+private:
+	QComboBox *familyCombo;
+	QStackedLayout *itemStack;
+	HyperbolicSymmetryItem * currentItem() const;
 };
 
 #endif

@@ -9,8 +9,10 @@ HEADERS += canvas.h \
 	color.h \
 	converterwidget.h \
 	fftw_cxx.h \
-	hyperbolic_painter.h \
+	hyperbolic.h \
+	hyperbolic_group.h \
 	hyperbolic_polygons.h \
+	hyperbolic_symmetry_chooser.h \
 	imagedata.h \
 	imagegeneratorwidget.h \
 	interpolate.h \
@@ -37,7 +39,10 @@ HEADERS += canvas.h \
 	trap/quasitrapwidget.h
 
 SOURCES += converterwidget.cpp \
-	hyperbolic_painter.cpp \
+	hyperbolic.cpp \
+	hyperbolic_group.cpp \
+	hyperbolic_polygons.cpp \
+	hyperbolic_symmetry_chooser.cpp \
 	imagedata.cpp \
 	imagegeneratorwidget.cpp \
 	interpolate.cpp \

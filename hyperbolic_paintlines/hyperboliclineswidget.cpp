@@ -19,53 +19,22 @@
  ***************************************************************************/
 
 #include <QtWidgets>
-#include <sstream>
 
+#include "../hyperbolic_symmetry_chooser.h"
 #include "../imagedata.h"
 #include "hyperboliclineswidget.h"
 #include "hyperbolic_paintlines.h"
 
 HyperbolicLinesWidget::HyperbolicLinesWidget()
 {
-	tokens = {
-		{ '*',{2,2},'x' },
-		{ '2','*',{3,2},{2,2} },
-		{ {3,3},'2','2','2' },
-		{ {5,3}, {4,3}, '2' },
-		{ {5,3}, '*', {2,2} },
-		{ '*', {5,2}, {4,2}, {2,2} },
-		{ {3,3}, '2', 'x' },
-		{ '2', '2', '*', {2,2} },
-		{ {3,2}, '*', {2,2}, {2,2} },
-		{ '*', {3,2}, {2,2}, {2,2}, {2,2} },
-		{ {3,2}, '2', '*', {1,1} },
-		{ '*', {2,1}, '*', {1,1} },
-		{ {2,2}, 'o' },
-		{ {5,2}, {4,2}, {2,2} },
-		{ {2,2}, 'x', 'x' },
-		{ '2', '*', {2,2}, {2,2}, {2,2} },
-	};
 	QFormLayout *layout = new QFormLayout;
 	comboModel = new QComboBox;
 	comboModel->addItem(tr("Poincare"));
 	comboModel->addItem(tr("Klein"));
 	layout->addRow(tr("Model"),comboModel);
-	comboSymmetry = new QComboBox;
-	for(auto &v : tokens) {
-		std::ostringstream s;
-		char next = 'a';
-		for(auto &t : v) {
-			if(t.type=='#')
-				s << (next++);
-			else
-				s << t.type;
-		}
-		comboSymmetry->addItem(s.str().c_str());
-	}
-	layout->addRow(tr("Symmetry"),comboSymmetry);
-	parameterLayout = new QHBoxLayout;
-	layout->addRow(parameterLayout);
-	symmetryChanged(0);
+	chooser = new HyperbolicSymmetryChooser;
+	chooser->addDefaultItems();
+	layout->addRow(chooser);
 	comboSubset=new QComboBox;
 	comboSubset->addItem(tr("All"));
 	comboSubset->addItem(tr("Det > 0"));
@@ -87,70 +56,20 @@ HyperbolicLinesWidget::HyperbolicLinesWidget()
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
 	setLayout(layout);
-	connect(comboSymmetry,(void (QComboBox::*)(int))&QComboBox::currentIndexChanged,this,&HyperbolicLinesWidget::symmetryChanged);
 	connect(buttonDraw,&QPushButton::clicked,this,&HyperbolicLinesWidget::draw);
 }
 
 void HyperbolicLinesWidget::draw()
 {
-	std::vector<generator> spec;
-	flip_type ft = (flip_type)comboSubset->currentIndex();
-	const auto &t = tokens[comboSymmetry->currentIndex()];
+	flip_type ft = static_cast<flip_type>(comboSubset->currentIndex());
+	fundamental_domain fd;
 	try {
-		switch(comboSymmetry->currentIndex()) {
-			case 0:
-				spec=group_sax(t[1].value);
-				break;
-			case 1:
-				spec=group_2sab(t[2].value,t[3].value);
-				break;
-			case 2:
-				spec=group_a222(t[0].value);
-				break;
-			case 3:
-				spec=group_ab2(t[0].value,t[1].value);
-				break;
-			case 4:
-				spec=group_asb(t[0].value,t[2].value);
-				break;
-			case 5:
-				spec=group_sabc(t[1].value,t[2].value,t[3].value);
-				break;
-			case 6:
-				spec=group_a2x(t[0].value);
-				break;
-			case 7:
-				spec=group_22sa(t[3].value);
-				break;
-			case 8:
-				spec=group_asbc(t[0].value,t[2].value,t[3].value);
-				break;
-			case 9:
-				spec=group_sabcd(t[1].value,t[2].value,t[3].value,t[4].value);
-				break;
-			case 10:
-				spec=group_a2sb(t[0].value,t[3].value);
-				break;
-			case 11:
-				spec=group_sasb(t[1].value,t[3].value);
-				break;
-			case 12:
-				spec=group_ao(t[0].value);
-				break;
-			case 13:
-				spec=group_abc(t[0].value,t[1].value,t[2].value);
-				break;
-			case 14:
-				spec=group_axx(t[0].value);
-				break;
-			case 15:
-				spec=group_2sabc(t[2].value,t[3].value,t[4].value);
-		}
+		fd=chooser->domain();
 	} catch(const std::domain_error &) {
 		QMessageBox::information(this,"Hyperbolic Paintlines",tr("The chosen group is not hyperbolic.  Try increasing the parameters."));
 		return;
 	}
-	hyperbolic_symmetry_group sg(spec,ft);
+	hyperbolic_symmetry_group sg(fd.generators,ft);
 	double th = spinThickness->value();
 	hyperbolic_lines_param params{
 		spinSize->value(),
@@ -170,19 +89,4 @@ void HyperbolicLinesWidget::draw()
 	canvas<color_t> img(spinSize->value(),spinSize->value());
 	merge(img,layers);
 	emit newImage(ImageData(img,false,nullptr,&layers));
-}
-
-void HyperbolicLinesWidget::symmetryChanged(int n)
-{
-	QLayoutItem *item;
-	while((item = parameterLayout->takeAt(0))!=nullptr) {
-		delete item->widget();
-		delete item;
-	}
-	for(auto &t : tokens[n]) {
-		if(t.type=='#')
-			parameterLayout->addWidget(new SymmetrySpin(t));
-		else
-			parameterLayout->addWidget(new QLabel(QString(t.type)));
-	}
 }

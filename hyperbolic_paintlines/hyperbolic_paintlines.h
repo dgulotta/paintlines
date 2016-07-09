@@ -23,7 +23,7 @@
 
 #include "../canvas.h"
 #include "../color.h"
-#include "../hyperbolic_painter.h"
+#include "../hyperbolic_group.h"
 #include "../layer.h"
 
 struct hyperbolic_lines_param
