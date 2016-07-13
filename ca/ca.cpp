@@ -63,7 +63,7 @@ void ca::set(int x, int y, int s)
 void ca::wakeup(int x, int y)
 {
 	if(!in_queue.get(x,y,1)) {
-		awake.push_back(make_tuple(x,y));
+		awake.emplace_back(x,y);
 		in_queue.set(x,y,1);
 	}
 }

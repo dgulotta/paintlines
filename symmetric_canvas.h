@@ -43,7 +43,7 @@ public:
 	symmetric_canvas_ref<T> operator () (int x, int y) { return symmetric_canvas_ref<T>(*this,x,y); }
 	const T & get(int x, int y) const { return base_canvas(x,y); }
 	void set(int x, int y, const T &t) {
-		point<int> p = std::make_tuple(x,y);
+		point<int> p(x,y);
 		int xn, yn;
 		for(auto &f : _transforms) {
 			std::tie(xn,yn) = f(p);

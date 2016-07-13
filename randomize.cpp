@@ -76,7 +76,7 @@ vector<tuple<int,int>> rectangle(int xmin, int ymin, int xmax, int ymax) {
 	int x,y;
 	for(x=xmin;x<=xmax;x++)
 		for(y=ymin;y<=ymax;y++)
-			v.push_back(make_tuple(x,y));
+			v.emplace_back(x,y);
 	return v;
 }
 
@@ -91,7 +91,7 @@ vector<tuple<int,int>> triangle(int x1, int y1, int x2, int y2, int x3, int y3, 
 			long a2 = x1*(scale*y-y3)+scale*x*(y3-y1)+x3*(y1-scale*y);
 			long a3 = x1*(y2-scale*y)+x2*(scale*y-y1)+scale*x*(y1-y2);
 			if(a1*a2>=0&&a1*a3>=0&&a2*a3>=0)
-				v.push_back(make_tuple(x,y));
+				v.emplace_back(x,y);
 		}
 	return v;
 }

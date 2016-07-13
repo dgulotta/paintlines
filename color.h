@@ -30,7 +30,6 @@ struct color_t
 {
 	color_t() : red(0), green(0), blue(0) {}
 	color_t(uint8_t r, uint8_t g, uint8_t b) : red(r), green(g), blue(b) {}
-	std::tuple<uint8_t,uint8_t,uint8_t> as_tuple() const { return std::make_tuple(red,green,blue); }
 	uint8_t red;
 	uint8_t green;
 	uint8_t blue;
@@ -40,8 +39,8 @@ inline uint8_t & red_part(color_t &c) { return c.red; }
 inline uint8_t & green_part(color_t &c) { return c.green; }
 inline uint8_t & blue_part(color_t &c) { return c.blue; }
 
-static const color_t black = color_t(0,0,0);
-static const color_t white = color_t(255,255,255);
+static const color_t black(0,0,0);
+static const color_t white(255,255,255);
 
 template<typename T>
 uint8_t colorchop(T x)
