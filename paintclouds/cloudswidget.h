@@ -51,6 +51,7 @@ class CloudsWidget : public ImageGeneratorWidget
 	Q_OBJECT
 public:
 	CloudsWidget();
+	static QComboBox * newComboRandom();
 protected slots:
 	void draw();
 protected:

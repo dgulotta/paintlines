@@ -31,6 +31,7 @@ HEADERS += canvas.h \
 	hyperbolic_paintlines/hyperboliclineswidget.h \
 	hyperbolic_paintlines/hyperbolic_paintlines.h \
 	paintclouds/cloudswidget.h \
+	paintclouds/hyperboliccloudswidget.h \
 	paintclouds/paintclouds.h \
 	paintlines/lineswidget.h \
 	paintlines/paintlines.h \
@@ -60,6 +61,7 @@ SOURCES += converterwidget.cpp \
 	hyperbolic_paintlines/hyperbolic_paintlines.cpp \
 	hyperbolic_paintlines/hyperboliclineswidget.cpp \
 	paintclouds/cloudswidget.cpp \
+	paintclouds/hyperboliccloudswidget.cpp \
 	paintclouds/paintclouds.cpp \
 	paintlines/paintlines.cpp \
 	paintlines/lineswidget.cpp \

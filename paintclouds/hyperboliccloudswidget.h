@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 by Daniel Gulotta                                  *
+ *   Copyright (C) 2016 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,34 +18,31 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#ifndef _INTERPOLATE_H
-#define _INTERPOLATE_H
+#ifndef _HYPERBOLICCLOUDSWIDGET_H
+#define _HYPERBOLICCLOUDSWIDGET_H
 
-#include "canvas.h"
-#include "color.h"
+#include "../imagegeneratorwidget.h"
 
-typedef std::vector<std::tuple<int,int,double>> interpolation_list;
+class ColorButton;
+class HyperbolicSymmetryChooser;
+class QComboBox;
+class QSpinBox;
 
-interpolation_list interpolate_linear(double x, double y);
-
-interpolation_list interpolate_cubic(double x, double y);
-
-interpolation_list interpolate_closest(double x, double y);
-
-template<typename Grid>
-color_t combine_colors(const Grid &c, const interpolation_list &l)
+class HyperbolicCloudsWidget : public ImageGeneratorWidget
 {
-	double v, r=0, g=0, b=0;
-	int x, y;
-	color_t col;
-	for(auto &t : l) {
-		std::tie(x,y,v)=t;
-		col = c(x,y);
-		r+=v*col.red;
-		g+=v*col.green;
-		b+=v*col.blue;
-	}
-	return color_t(colorchop(r),colorchop(g),colorchop(b));
-}
+	Q_OBJECT
+public:
+	HyperbolicCloudsWidget();
+protected slots:
+	void draw();
+protected:
+	QComboBox *comboModel;
+	HyperbolicSymmetryChooser *chooser;
+	QSpinBox *spinSize;
+	ColorButton *color1;
+	ColorButton *color2;
+	ColorButton *color3;
+	QComboBox *comboRandom;
+};
 
 #endif

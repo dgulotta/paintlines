@@ -24,6 +24,7 @@
 #include "converter/loaderwidget.h"
 #include "hyperbolic_paintlines/hyperboliclineswidget.h"
 #include "paintclouds/cloudswidget.h"
+#include "paintclouds/hyperboliccloudswidget.h"
 #include "paintlines/lineswidget.h"
 #include "trap/trapwidget.h"
 #include "trap/quasitrapwidget.h"
@@ -72,6 +73,7 @@ MainForm::MainForm()
 	QAction *actionTile = menuView->addAction(tr("&Tile"));
 	addDesign("Cellular Automata",new CAWidget);
 	addDesign("Clouds",new CloudsWidget);
+	addDesign("Hyperbolic Clouds",new HyperbolicCloudsWidget);
 	addDesign("Hyperbolic Lines",new HyperbolicLinesWidget);
 	loader = new LoaderWidget;
 	actionLoader = addDesign("Import",loader);

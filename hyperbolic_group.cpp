@@ -298,5 +298,5 @@ fundamental_domain fundamental_domain_family::domain(const vector<int> &rots) co
 	vector<generator> gens;
 	for(int i=0;i<edges.size();i++)
 		gens.emplace_back(p.trans(i,edges[i].opposite,edges[i].flip),p.edge(i));
-	return fundamental_domain{gens,p};
+	return fundamental_domain{gens,p,this};
 }

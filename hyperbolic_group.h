@@ -50,10 +50,13 @@ struct generator {
 
 hyperbolic_coord fundamental_domain_point(const std::vector<generator> &gens, hyperbolic_coord c);
 
+class fundamental_domain_family;
+
 struct fundamental_domain
 {
 	std::vector<generator> generators;
 	hyperbolic_polygon polygon;
+	const fundamental_domain_family *family;
 };
 
 class fundamental_domain_family
@@ -62,6 +65,7 @@ public:
 	struct side {
 		int opposite;
 		bool flip;
+		bool operator == (const side &s) const { return opposite==s.opposite&&flip==s.flip; }
 	};
 	fundamental_domain_family() {}
 	fundamental_domain_family(const std::vector<side> &e);
@@ -73,6 +77,7 @@ public:
 	int rot180s() const;
 	bool orientable() const;
 	int loops() const;
+	const std::vector<side> & get_edges() const { return edges; }
 	fundamental_domain domain(const std::vector<int> &rotations) const;
 private:
 	enum class edge_type { ROT180, MIRROR, ROT_TRANS, GLIDE };

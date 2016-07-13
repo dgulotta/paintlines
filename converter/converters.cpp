@@ -23,6 +23,7 @@
 #include "../hyperbolic_polygons.h"
 #include "../interpolate.h"
 #include "../symmetric_canvas.h"
+#include "converters.h"
 
 #include <functional>
 #include <tuple>
@@ -32,7 +33,7 @@ using std::make_tuple;
 using std::tie;
 using std::tuple;
 
-typedef function<tuple<double,double>(const hyperbolic_coord &)> coord_transformer;
+typedef function<point<double>(const hyperbolic_coord &)> coord_transformer;
 
 coord_transformer triangle_transformer(const hyperbolic_polygon &t, double x1, double y1, double x2, double y2, double x3, double y3)
 {
@@ -72,7 +73,6 @@ canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype p
 	fundamental_domain fd;
 	coord_transformer trans;
 	int size = img.size();
-	canvas<color_t> newimg(newsize,newsize);
 	switch(img.group()) {
 	case symgroup::CM:
 		fdf = fundamental_domain_family({{1,true},{0,true},{2,true}});
@@ -160,17 +160,7 @@ canvas<color_t> make_hyperbolic(const symmetric_canvas<color_t> &img, projtype p
 		trans = quadrilateral_transformer(fd.polygon,0,0,0,.5*size,.5*size,.5*size,.5*size,0);
 		break;
 	}
-	coord_converter conv(newsize);
-	for(int j=0;j<newsize;j++)
-		for(int i=0;i<newsize;i++) {
-			planar_coord pc = conv.fromscreen(screen_coord(i,j));
-			if(pc.x*pc.x+pc.y*pc.y>=.999) continue;
-			hyperbolic_coord hc = fundamental_domain_point(fd.generators,inverse_projection(pc,pt));
-			double xd,yd;
-			tie(xd,yd)=trans(hc);
-			newimg(i,j)=combine_colors(img.as_wrap_canvas(),interpolate_linear(xd,yd));
-		}
-	return newimg;
+	return copy_hyperbolic(img,pt,newsize,fd,trans,interpolate_linear);
 }
 
 const double short_factor = pow(4./3.,.25);

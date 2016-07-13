@@ -22,21 +22,6 @@
 
 using std::make_tuple;
 
-color_t combine_colors(const wrap_canvas<color_t> &c, const interpolation_list &l)
-{
-	double v, r=0, g=0, b=0;
-	int x, y;
-	color_t col;
-	for(auto &t : l) {
-		std::tie(x,y,v)=t;
-		col = c(x,y);
-		r+=v*col.red;
-		g+=v*col.green;
-		b+=v*col.blue;
-	}
-	return color_t(colorchop(r),colorchop(g),colorchop(b));
-}
-
 interpolation_list interpolate_linear(double x, double y)
 {
 	int x0 = int(floor(x)), y0 = int(floor(y));
@@ -81,3 +66,7 @@ interpolation_list interpolate_cubic(double x, double y)
 	};
 }
 
+interpolation_list interpolate_closest(double x, double y)
+{
+	return { make_tuple(int(round(x)),int(round(y)),1.) };
+}

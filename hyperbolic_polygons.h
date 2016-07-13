@@ -33,6 +33,9 @@ public:
 	hyperbolic_coord edge(int n) const;
 	hyperbolic_coord vertex(int n) const;
 	hyperbolic_transformation trans(int n1, int n2,bool flip) const;
+	auto num_sides() const { return dirs.size(); }
+	double cosh_radius() const { return rcosh; }
+	double sinh_radius() const { return rsinh; }
 private:
 	std::vector<planar_coord> dirs;
 	double rcosh;

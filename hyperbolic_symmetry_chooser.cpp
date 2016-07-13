@@ -22,6 +22,7 @@
 #include <functional>
 #include <QtWidgets>
 #include "hyperbolic_symmetry_chooser.h"
+#include "paintclouds/paintclouds.h"
 
 using namespace std::placeholders;
 
@@ -102,22 +103,23 @@ void HyperbolicSymmetryChooser::add(const fundamental_domain_family &fdf,
 
 void HyperbolicSymmetryChooser::addDefaultItems()
 {
-	add({{1,true},{0,true},{2,true}},{2});
-	add({{0,true},{1,true},{2,false}},{3,2});
-	add({{0,false},{1,false},{2,false}},{3});
-	add({{1,false},{0,false},{2,false}},{5,4});
-	add({{1,false},{0,false},{2,true}},{5,2});
-	add({{0,true},{1,true},{2,true}},{5,4,2});
-	add({{1,true},{0,true},{2,false}},{3});
-	add({{0,false},{1,false},{2,true}},{2});
-	add({{1,false},{0,false},{2,true},{3,true}},{3,2,2});
-	add({{0,true},{1,true},{2,true},{3,true}},{3,2,2,2});
-	add({{1,false},{0,false},{2,true},{3,false}},{3,1});
-	add({{2,false},{1,true},{0,false},{3,true}},{2,1});
-	add({{2,false},{3,false},{0,false},{1,false}},{2});
-	add({{1,false},{0,false},{3,false},{2,false}},{2,5,4});
-	add({{1,true},{0,true},{3,true},{2,true}},{2});
-	add({{0,true},{1,true},{2,true},{3,false}},{2,2,2});
+	auto csg = clouds_supported_groups();
+	add(csg[0],{2});
+	add(csg[1],{3,2});
+	add(csg[2],{3});
+	add(csg[3],{5,4});
+	add(csg[4],{5,2});
+	add(csg[5],{5,4,2});
+	add(csg[6],{3});
+	add(csg[7],{2});
+	add(csg[8],{3,2,2});
+	add(csg[9],{3,2,2,2});
+	add(csg[10],{3,1});
+	add(csg[11],{2,1});
+	add(csg[12],{2});
+	add(csg[13],{5,2,4});
+	add(csg[14],{2});
+	add(csg[15],{2,2,2});
 }
 
 HyperbolicSymmetryItem * HyperbolicSymmetryChooser::currentItem() const

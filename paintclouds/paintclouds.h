@@ -22,6 +22,7 @@
 #define _PAINTCLOUDS_H
 
 #include "../color.h"
+#include "../hyperbolic_group.h"
 #include "../symmetric_canvas.h"
 
 double clouds_rand_exp_cos(double a);
@@ -33,5 +34,10 @@ using clouds_randfunc = double (*)(double);
 
 symmetric_canvas<color_t> paint_clouds(int size, symgroup sym, color_t col1, color_t col2,
 	color_t col3,clouds_randfunc r);
+
+canvas<color_t> paint_hyperbolic_clouds(int size, const fundamental_domain &fd,
+	projtype pt, color_t col1, color_t col2, color_t col3,clouds_randfunc r);
+
+std::vector<std::vector<fundamental_domain_family::side>> clouds_supported_groups();
 
 #endif

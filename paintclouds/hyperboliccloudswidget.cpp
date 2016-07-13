@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
+ *   Copyright (C) 2016 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,37 +19,28 @@
  ***************************************************************************/
 
 #include <QtWidgets>
-
-#include "paintclouds.h"
-#include "../randomizewidget.h"
 #include "cloudswidget.h"
+#include "paintclouds.h"
+#include "hyperboliccloudswidget.h"
+#include "../hyperbolic_symmetry_chooser.h"
+#include "../imagedata.h"
 
-void ColorButton::mousePressEvent(QMouseEvent *)
-{
-  QColor col=QColorDialog::getColor(palette().color(QPalette::Window));
-  if(col.isValid()) {
-    setPalette(col);
-  }
-}
-
-QComboBox * CloudsWidget::newComboRandom()
-{
-	QComboBox *comboRandom = new QComboBox;
-	comboRandom->addItem(tr("Cauchy"));
-	comboRandom->addItem(tr("Normal"));
-	comboRandom->addItem(tr("Pseudo-Exponential"));
-	comboRandom->addItem(tr("Sech^2"));
-	return comboRandom;
-}
-
-CloudsWidget::CloudsWidget()
+HyperbolicCloudsWidget::HyperbolicCloudsWidget()
 {
 	QFormLayout *layout = new QFormLayout;
-	spinSize = newSizeSpin();
+	comboModel = new QComboBox;
+	comboModel->addItem(tr("Poincare"));
+	comboModel->addItem(tr("Klein"));
+	layout->addRow(tr("Model"),comboModel);
+	chooser = new HyperbolicSymmetryChooser;
+	chooser->addDefaultItems();
+	layout->addRow(chooser);
+	spinSize=new QSpinBox;
+	spinSize->setMinimum(1);
+	spinSize->setMaximum(65536);
+	spinSize->setValue(256);
 	layout->addRow(tr("Size"),spinSize);
-	comboSymmetry = new SymmetryCombo();
-	layout->addRow(tr("Symmetry"),comboSymmetry);
-	comboRandom = newComboRandom();
+	comboRandom = CloudsWidget::newComboRandom();
 	layout->addRow(tr("Distribution"),comboRandom);
 	color1 = new ColorButton(qRgb(255,255,0));
 	layout->addRow(tr("Color 1"),color1);
@@ -60,7 +51,7 @@ CloudsWidget::CloudsWidget()
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
 	setLayout(layout);
-	connect(buttonDraw,&QPushButton::clicked,this,&CloudsWidget::draw);
+	connect(buttonDraw,&QPushButton::clicked,this,&HyperbolicCloudsWidget::draw);
 }
 
 static clouds_randfunc randfuncs[] = {
@@ -70,15 +61,17 @@ static clouds_randfunc randfuncs[] = {
 	&clouds_rand_sechsquare
 };
 
-void CloudsWidget::draw()
+void HyperbolicCloudsWidget::draw()
 {
-	if(spinSize->value()%2!=0) {
-		QMessageBox::information(this,"paintclouds",tr("The size must be even."));
+	fundamental_domain fd;
+	try {
+		fd=chooser->domain();
+	} catch(const std::domain_error &) {
+		QMessageBox::information(this,"Hyperbolic Paintlines",tr("The chosen group is not hyperbolic.  Try increasing the parameters."));
 		return;
 	}
-	symgroup sg=symgroup(comboSymmetry->group());
-	canvas=paint_clouds(spinSize->value(),sg,color1->color(),color2->color(),
-		color3->color(),randfuncs[comboRandom->currentIndex()]);
-	ImageData data(canvas);
-	emit newImage(data);
+	canvas<color_t> img=paint_hyperbolic_clouds(spinSize->value(),fd,
+		static_cast<projtype>(comboModel->currentIndex()),color1->color(),
+		color2->color(),color3->color(),randfuncs[comboRandom->currentIndex()]);
+	emit newImage(ImageData(img));
 }
