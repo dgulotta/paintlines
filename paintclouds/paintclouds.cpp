@@ -400,6 +400,46 @@ canvas<color_t> quad_2sabc(int sz,color_t col1,color_t col2,color_t col3,clouds_
 	return tri;
 }
 
+canvas<color_t> quad_abx(int sz,color_t col1,color_t col2,color_t col3,clouds_randfunc r)
+{
+	int d=tri_size(sz);
+	canvas<color_t> tri(d+1,d+1);
+	tri(0,0)=col1;
+	tri(d,d)=tri(d,0)=col2;
+	tri(d,d/2)=col3;
+	fill_line(tri,0,0,d,0,r);
+	fill_line(tri,d,0,d,d/2,r);
+	fill_line(tri,d,d/2,d,d,r);
+	for(int i=0;i<=d;i++) {
+		tri(0,i)=tri(i,0);
+		tri(i,d)=tri(d,d-i);
+	}
+	fill_line(tri,d,0,0,d,r);
+	fill_tri(tri,r,true);
+	return tri;
+}
+
+canvas<color_t> quad_ab22(int sz,color_t col1,color_t col2,color_t col3,clouds_randfunc r)
+{
+	int d=tri_size(sz);
+	canvas<color_t> tri(d+1,d+1);
+	tri(0,0)=col1;
+	tri(d,0)=col2;
+	tri(d,d/2)=tri(d/2,d)=col3;
+	fill_line(tri,0,0,d,0,r);
+	for(int i=0;i<=d;i++)
+		tri(0,i)=tri(i,0);
+	fill_line(tri,d,0,d,d/2,r);
+	fill_line(tri,0,d,d/2,d,r);
+	for(int i=0;i<=d/2;i++) {
+		tri(d,d-i)=tri(d,i);
+		tri(d-i,d)=tri(i,d);
+	}
+	fill_line(tri,d,0,0,d,r);
+	fill_tri(tri,r,true);
+	return tri;
+}
+
 symmetric_canvas<color_t> paint_clouds(int size, symgroup sym, color_t col1, color_t col2,
 	color_t col3,clouds_randfunc r)
 {
@@ -555,6 +595,12 @@ canvas<color_t> paint_hyperbolic_clouds(int size, const fundamental_domain &fd,
 	case 15:
 		tri = quad_2sabc(trisize,col1,col2,col3,r);
 		break;
+	case 16:
+		tri = quad_abx(trisize,col1,col2,col3,r);
+		break;
+	case 17:
+		tri = quad_ab22(trisize,col1,col2,col3,r);
+		break;
 	default:
 		throw std::logic_error("Not supported");
 	};
@@ -586,5 +632,7 @@ std::vector<std::vector<fundamental_domain_family::side>> clouds_supported_group
 		{{3,false},{2,false},{1,false},{0,false}},
 		{{1,true},{0,true},{3,true},{2,true}},
 		{{0,true},{1,true},{2,true},{3,false}},
+		{{1,false},{0,false},{3,true},{2,true}},
+		{{1,false},{0,false},{2,false},{3,false}},
 	};
 }

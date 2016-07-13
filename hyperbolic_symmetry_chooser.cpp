@@ -120,6 +120,8 @@ void HyperbolicSymmetryChooser::addDefaultItems()
 	add(csg[13],{5,2,4});
 	add(csg[14],{2});
 	add(csg[15],{2,2,2});
+	add(csg[16],{3,3});
+	add(csg[17],{3,3});
 }
 
 HyperbolicSymmetryItem * HyperbolicSymmetryChooser::currentItem() const
