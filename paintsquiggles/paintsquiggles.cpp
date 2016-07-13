@@ -79,6 +79,8 @@ vector<symmetric_canvas<uint8_t>> paint_squiggles(size_t ncolors, size_t size, s
 {
 	vector<symmetric_canvas<uint8_t>> grids(ncolors);
 	vector<std::future<void>> futures((ncolors+1)/2);
+	vector<stripes_grid> stripes_grids;
+	stripes_grids.reserve(futures.size());
 	std::random_device rd;
 	for(size_t i=0;i<futures.size();i++) {
 		symmetric_canvas<uint8_t> *grid1=&(grids[2*i]), *grid2;
@@ -88,11 +90,11 @@ vector<symmetric_canvas<uint8_t>> paint_squiggles(size_t ncolors, size_t size, s
 			(*grid2)=symmetric_canvas<uint8_t>(size,sg);
 		}
 		else grid2=nullptr;
-		auto g = std::make_unique<stripes_grid>(size,sg);
+		stripes_grids.emplace_back(size,sg);
 		auto seed=rd();
-		futures[i]=std::async(std::launch::async,[g=std::move(g),grid1,grid2,seed,alpha,exponent,thickness,sharpness]() {
+		futures[i]=std::async(std::launch::async,[&g=stripes_grids.back(),grid1,grid2,seed,alpha,exponent,thickness,sharpness]() {
 			std::default_random_engine rng(seed);
-			fill(grid1,grid2,rng,alpha,exponent,thickness,sharpness,*g);
+			fill(grid1,grid2,rng,alpha,exponent,thickness,sharpness,g);
 		});
 	}
 	for(auto &f : futures)
