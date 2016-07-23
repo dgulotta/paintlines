@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013 by Daniel Gulotta                                  *
+ *   Copyright (C) 2013, 2016 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,13 +23,12 @@
 #include <random>
 
 using namespace std;
-using std::chrono::system_clock;
 
-static default_random_engine rnd;
+struct seeded_rng : public default_random_engine {
+	seeded_rng() : default_random_engine(std::random_device()()) {}
+};
 
-void seed() {
-	rnd.seed(system_clock::now().time_since_epoch().count());
-}
+thread_local seeded_rng rnd;
 
 int random_int(int n)
 {
@@ -81,11 +80,6 @@ double random_sechsquare(double width)
 	return width*log(a/(1-a));
 }
 
-double random_levy_1d(double alpha, double scale)
-{
-	return random_levy_1d(alpha,scale,rnd);
-}
-
 double random_levy_skew_sqrt(double alpha) {
 	if(alpha==1) return 1;
 	double u, v;
@@ -105,4 +99,14 @@ bool random_bernoulli(double p)
 int random_poisson(double mu)
 {
 	return poisson_distribution<>(mu)(rnd);
+}
+
+double random_levy_1d(double alpha, double scale)
+{
+	double u, v, t, s;
+	u = std::uniform_real_distribution<double>(-M_PI_2,M_PI_2)(rnd);
+	v = std::exponential_distribution<double>(1)(rnd);
+	t = scale*sin(alpha*u)/pow(cos(u),1/alpha);
+	s = pow(cos((1-alpha)*u)/v,(1-alpha)/alpha);
+	return t*s;
 }

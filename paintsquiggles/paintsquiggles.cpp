@@ -28,18 +28,15 @@ using std::fill;
 using std::function;
 using std::vector;
 
-typedef std::function<complex<double>(const std::function<double()> &)> dtocx;
-
-void generate(stripes_grid &grid, const dtocx &gen,
-	std::default_random_engine &rng, double alpha, double exponent)
+void generate(stripes_grid &grid, const std::function<complex<double>()> &gen,
+	double alpha, double exponent)
 {
 	grid.clear();
 	int i,j, size=grid.get_size();
 	stripes_grid_norm norm(size,grid.get_group());
-	auto randfunc = [&] () { return random_levy_1d(alpha,1.,rng); };
 	for(j=0;j<size;j++)
 		for(i=0;i<size;i++)
-			grid(i,j) = gen(randfunc);
+			grid(i,j) = gen();
 	grid.transform();
 	for(j=0;j<size;j++)
 		for(i=0;i<size;i++)
@@ -61,17 +58,18 @@ void fill(const stripes_grid &grid,canvas<uint8_t> &pix,const function<double(co
 }
 
 void fill(symmetric_canvas<uint8_t> *grid1,symmetric_canvas<uint8_t> *grid2,
-	std::default_random_engine &rng, double alpha, double exponent,
-	double thickness, double sharpness,stripes_grid &sgr)
+	double alpha, double exponent, double thickness, double sharpness,stripes_grid &sgr)
 {
-	if(grid2) {
-		generate(sgr,[] (const function<double()> &f) { return complex<double>(f(),f()); },rng,alpha,exponent);
-		fill(sgr,grid2->unsafe_get_canvas(),(stripes_grid::proj_t)std::imag,thickness,sharpness);
-	}
-	else {
-		generate(sgr,[] (const function<double()> &f) { return complex<double>(f(),0); },rng,alpha,exponent);
-	}
+	auto gen1 = std::bind(random_levy_1d,alpha,1.);
+	function<complex<double>()> gen;
+	if(grid2)
+		gen = [&gen1] () { return complex<double>(gen1(),gen1()); };
+	else
+		gen = [&gen1] () { return complex<double>(gen1(),0); };
+	generate(sgr,gen,alpha,exponent);
 	fill(sgr,grid1->unsafe_get_canvas(),(stripes_grid::proj_t)std::real,thickness,sharpness);
+	if(grid2)
+		fill(sgr,grid2->unsafe_get_canvas(),(stripes_grid::proj_t)std::imag,thickness,sharpness);
 }
 
 vector<symmetric_canvas<uint8_t>> paint_squiggles(size_t ncolors, size_t size, symgroup sg,
@@ -81,7 +79,6 @@ vector<symmetric_canvas<uint8_t>> paint_squiggles(size_t ncolors, size_t size, s
 	vector<std::future<void>> futures((ncolors+1)/2);
 	vector<stripes_grid> stripes_grids;
 	stripes_grids.reserve(futures.size());
-	std::random_device rd;
 	for(size_t i=0;i<futures.size();i++) {
 		symmetric_canvas<uint8_t> *grid1=&(grids[2*i]), *grid2;
 		(*grid1)=symmetric_canvas<uint8_t>(size,sg);
@@ -91,10 +88,8 @@ vector<symmetric_canvas<uint8_t>> paint_squiggles(size_t ncolors, size_t size, s
 		}
 		else grid2=nullptr;
 		stripes_grids.emplace_back(size,sg);
-		auto seed=rd();
-		futures[i]=std::async(std::launch::async,[&g=stripes_grids.back(),grid1,grid2,seed,alpha,exponent,thickness,sharpness]() {
-			std::default_random_engine rng(seed);
-			fill(grid1,grid2,rng,alpha,exponent,thickness,sharpness,g);
+		futures[i]=std::async(std::launch::async,[&g=stripes_grids.back(),grid1,grid2,alpha,exponent,thickness,sharpness]() {
+			fill(grid1,grid2,alpha,exponent,thickness,sharpness,g);
 		});
 	}
 	for(auto &f : futures)

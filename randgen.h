@@ -46,17 +46,6 @@ double random_normal(double stdev);
 
 double random_sechsquare(double width);
 
-template<typename RNG>
-double random_levy_1d(double alpha, double scale, RNG &r)
-{
-	double u, v, t, s;
-	u = std::uniform_real_distribution<double>(-M_PI_2,M_PI_2)(r);
-	v = std::exponential_distribution<double>(1)(r);
-	t = scale*sin(alpha*u)/pow(cos(u),1/alpha);
-	s = pow(cos((1-alpha)*u)/v,(1-alpha)/alpha);
-	return t*s;
-}
-
 double random_levy_1d(double alpha, double scale);
 
 double random_levy_skew_sqrt(double alpha);

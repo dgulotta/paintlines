@@ -7,7 +7,6 @@
 
 int main( int argc, char ** argv )
 {
-	seed();
 #ifdef MULTIPAGE
 	Magick::InitializeMagick(nullptr);
 #endif
