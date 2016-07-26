@@ -21,6 +21,7 @@
 #ifndef _CONVERTERWIDGET_H
 #define _CONVERTERWIDGET_H
 
+#include "imagedata.h"
 #include "imagegeneratorwidget.h"
 #include "mainform.h"
 

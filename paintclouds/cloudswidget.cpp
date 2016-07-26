@@ -21,8 +21,8 @@
 #include <QtWidgets>
 
 #include "paintclouds.h"
-#include "../randomizewidget.h"
 #include "cloudswidget.h"
+#include "../imagedata.h"
 
 void ColorButton::mousePressEvent(QMouseEvent *)
 {
@@ -77,8 +77,7 @@ void CloudsWidget::draw()
 		return;
 	}
 	symgroup sg=symgroup(comboSymmetry->group());
-	canvas=paint_clouds(spinSize->value(),sg,color1->color(),color2->color(),
+	auto canvas=paint_clouds(spinSize->value(),sg,color1->color(),color2->color(),
 		color3->color(),randfuncs[comboRandom->currentIndex()]);
-	ImageData data(canvas);
-	emit newImage(data);
+	emit newImage(ImageData(std::move(canvas)));
 }

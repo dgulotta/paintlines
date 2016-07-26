@@ -21,9 +21,7 @@
 #ifndef _TRAPWIDGET_H
 #define _TRAPWIDGET_H
 
-#include "../color.h"
 #include "../imagegeneratorwidget.h"
-#include "../symmetric_canvas.h"
 
 class TrapWidget : public ImageGeneratorWidget
 {
@@ -35,7 +33,6 @@ private slots:
 private:
 	QSpinBox *spinSize;
 	SymmetryCombo *comboSymmetry;
-	symmetric_canvas<color_t> img;
 };
 
 #endif

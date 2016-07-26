@@ -119,6 +119,5 @@ void CAWidget::draw()
 void CAWidget::cont()
 {
 	ca_sim->run_for(spinTurns->value());
-	ImageData data(ca_sim->get_diff_image(spinIntensity->value()));
-	emit newImage(data);
+	emit newImage(ImageData(ca_sim->get_diff_image(spinIntensity->value())));
 }

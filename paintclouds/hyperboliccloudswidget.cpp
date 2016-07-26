@@ -73,5 +73,5 @@ void HyperbolicCloudsWidget::draw()
 	canvas<color_t> img=paint_hyperbolic_clouds(spinSize->value(),fd,
 		static_cast<projtype>(comboModel->currentIndex()),color1->color(),
 		color2->color(),color3->color(),randfuncs[comboRandom->currentIndex()]);
-	emit newImage(ImageData(img));
+	emit newImage(ImageData(std::move(img)));
 }

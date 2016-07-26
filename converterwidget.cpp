@@ -62,11 +62,15 @@ void ConverterWidget::makeConnections(MainForm *f)
 
 void ConverterWidget::imageUpdated(const ImageData &data)
 {
-	if(data.parent==nullptr) {
-		restoreData=data;
+	if(data.original) {
 		buttonRestore->setEnabled(false);
-		buttonHexStretch->setEnabled(data.sym_canvas!=nullptr);
-		buttonHyperbolic->setEnabled(data.sym_canvas!=nullptr);
+		const auto *sc = data.img.sym_view;
+		if(sc)
+			restoreData=data;
+		else
+			restoreData.img.data.reset();
+		buttonHexStretch->setEnabled((bool)sc);
+		buttonHyperbolic->setEnabled((bool)sc);
 	}
 	else
 		buttonRestore->setEnabled(true);
@@ -79,10 +83,13 @@ void ConverterWidget::restore()
 
 void ConverterWidget::hexagonalStretch()
 {
-	emit newImage(ImageData(hexagonal_stretch(*(restoreData.sym_canvas)),&restoreData));
+	auto img = hexagonal_stretch(*(restoreData.img.sym_view));
+	emit newImage(ImageData(std::move(img),nullptr,false));
 }
 
 void ConverterWidget::makeHyperbolic()
 {
-	emit newImage(ImageData(make_hyperbolic(*(restoreData.sym_canvas),(projtype)comboModel->currentIndex(),spinSize->value()),false,nullptr,nullptr,&restoreData));
+	auto img = make_hyperbolic(*(restoreData.img.sym_view),
+		(projtype)comboModel->currentIndex(),spinSize->value());
+	emit newImage(ImageData(std::move(img),nullptr,false));
 }

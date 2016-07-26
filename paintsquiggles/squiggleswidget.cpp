@@ -80,24 +80,22 @@ void SquigglesWidget::draw()
 		layers[i].pixels=&(grids[i].as_canvas());
 		layers[i].pastel=false;
 	}
-	image=symmetric_canvas<color_t>(spinSize->value(),comboSymmetry->group());
 	updateImage();
 	newColorButton->setEnabled(true);
 }
 
 void SquigglesWidget::updateImage()
 {
+	symmetric_canvas<color_t> image(spinSize->value(),comboSymmetry->group());
 	for(size_t i=0;i<grids.size();i++)
 		layers[i].color=colorWidget->generate();
 	merge(image.unsafe_get_canvas(),layers);
-	ImageData data(image,&layers);
-	emit newImage(data);
+	emit newImage(ImageData(std::move(image),&layers));
 }
 
 void SquigglesWidget::resetColors()
 {
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
-	image.fill(black);
 	updateImage();
 }

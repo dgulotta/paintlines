@@ -21,14 +21,16 @@
 #ifndef _RANDOMIZEWIDGET_H
 #define _RANDOMIZEWIDGET_H
 
+#include <memory>
 #include <QWidget>
-
-#include "color.h"
-#include "imagedata.h"
 
 class QPushButton;
 class QSpinBox;
-class ImageData;
+struct color_t;
+struct ImageData;
+
+template<typename T>
+class symmetric_canvas;
 
 class RandomizeWidget : public QWidget
 {
@@ -41,8 +43,7 @@ public slots:
 	void imageUpdated(const ImageData &data);
 	void randomize();
 private:
-	ImageData receivedData;
-	ImageData usedData;
+	std::shared_ptr<symmetric_canvas<color_t>> img;
 	QPushButton *buttonRandomize;
 	QSpinBox *spinXTiles;
 	QSpinBox *spinYTiles;

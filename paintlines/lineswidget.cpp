@@ -135,10 +135,9 @@ void LinesWidget::draw() {
 		layers[i].color=colorWidget->generate();
 		layers[i].pastel=rule.pastel;
 	}
-	image=symmetric_canvas<color_t>(spinSize->value(),comboSymmetry->group());
+	symmetric_canvas<color_t> image(spinSize->value(),comboSymmetry->group());
 	merge(image.unsafe_get_canvas(),layers);
-	ImageData data(image,&layers);
-	emit newImage(data);
+	emit newImage(ImageData(std::move(image),&layers));
 	checkLuaErrors();
 }
 

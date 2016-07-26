@@ -23,10 +23,8 @@
 
 #include "../color.h"
 #include "../imagegeneratorwidget.h"
-#include "../symmetric_canvas.h"
 
 class QMouseEvent;
-class RandomizeWidget;
 
 class ColorButton : public QWidget
 {
@@ -61,7 +59,6 @@ protected:
 	ColorButton *color2;
 	ColorButton *color3;
 	QComboBox *comboRandom;
-	symmetric_canvas<color_t> canvas;
 };
 
 #endif

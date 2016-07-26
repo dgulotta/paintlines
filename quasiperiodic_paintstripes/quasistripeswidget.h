@@ -25,7 +25,6 @@
 
 class QSpinBox;
 class QDoubleSpinBox;
-class QPushButton;
 
 class QuasiStripesWidget : public ImageGeneratorWidget
 {

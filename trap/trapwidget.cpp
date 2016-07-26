@@ -38,7 +38,7 @@ TrapWidget::TrapWidget()
 
 void TrapWidget::draw()
 {
-	img=symmetric_canvas<color_t>(spinSize->value(),(symgroup)comboSymmetry->group());
+	symmetric_canvas<color_t> img(spinSize->value(),(symgroup)comboSymmetry->group());
 	drawtrap(img);
-	emit newImage(ImageData(img));
+	emit newImage(ImageData(std::move(img)));
 }

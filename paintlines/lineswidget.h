@@ -76,7 +76,6 @@ protected:
 	RandomColorWidget *colorWidget;
 	std::vector<symmetric_canvas<uint8_t>> grids;
 	std::vector<layer> layers;
-	symmetric_canvas<color_t> image;
 };
 
 #endif

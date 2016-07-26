@@ -88,5 +88,5 @@ void HyperbolicLinesWidget::draw()
 	}
 	canvas<color_t> img(spinSize->value(),spinSize->value());
 	merge(img,layers);
-	emit newImage(ImageData(img,false,nullptr,&layers));
+	emit newImage(ImageData(std::move(img),&layers));
 }

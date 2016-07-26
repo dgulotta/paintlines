@@ -22,9 +22,9 @@
 #define _MAINFORM_H
 
 #include <vector>
+#include <QImage>
 #include <QLabel>
 #include <QMainWindow>
-#include "imagedata.h"
 
 class ImageGeneratorWidget;
 class LoaderWidget;
@@ -32,14 +32,13 @@ class QActionGroup;
 class QComboBox;
 class QDragEnterEvent;
 class QDropEvent;
-class QPixmap;
-class QSpinBox;
 class QStackedWidget;
+struct ImageData;
+struct layer;
 
 class ImageWidget : public QLabel
 {
 	Q_OBJECT
-	Q_PROPERTY(QPixmap pixmap READ pixmap)
 	Q_PROPERTY(bool tiled READ tiled WRITE setTiled)
 public:
 	ImageWidget()
@@ -47,15 +46,22 @@ public:
 		{
 			setAlignment(Qt::AlignLeft|Qt::AlignTop);
 		}
-	const QPixmap *pixmap() const { return &_pixmap; }
-	QSize minimumSizeHint() const { return _pixmap.size(); }
+	QSize minimumSizeHint() const { return pix.size(); }
 	bool tiled() const { return tilingEnabled; }
 public slots:
-	void setPixmap(const ImageData &data);
+	void setImage(const ImageData &data);
 	void setTiled(bool b) { tilingEnabled = b;  recomputeTiling(); }
+	bool saveAs();
+	bool saveLayers();
+	void copy();
+signals:
+	void enableSave(bool);
+	void enableSaveLayers(bool);
 private:
 	void recomputeTiling();
-	QPixmap _pixmap;
+	std::vector<layer> *layers;
+	QPixmap pix;
+	QImage img;
 	bool imageIsTileable;
 	bool tilingEnabled;
 };
@@ -65,16 +71,9 @@ class MainForm : public QMainWindow
 	Q_OBJECT
 public:
 	MainForm();
-	static QImage makeImage(const canvas<color_t> &src);
-	static QPixmap makePixmap(const canvas<color_t> &src);
 signals:
 	void newImage(const ImageData &data);
-protected slots:
-	bool saveAs();
-	bool saveLayers();
-	void processNewImage(const ImageData &data);
-	void copy();
-protected:
+private:
 	QAction *addDesign(const QString &name, ImageGeneratorWidget *w);
 	void dragEnterEvent(QDragEnterEvent *event);
 	void dropEvent(QDropEvent *event);
@@ -83,11 +82,8 @@ protected:
 	LoaderWidget *loader;
 	QAction *actionLoader;
 	QMenu *menuDesign;
-	QAction *actionSaveAs;
-	QAction *actionSaveLayers;
 	QActionGroup *designActions;
 	QDockWidget *designsDock;
-	ImageData lastData;
 };
 
 #endif

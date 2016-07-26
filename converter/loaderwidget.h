@@ -21,10 +21,13 @@
 #ifndef _LOADERWIDGET_H
 #define _LOADERWIDGET_H
 
-#include "../color.h"
+#include <memory>
 #include "../imagegeneratorwidget.h"
-#include "../symmetric_canvas.h"
 
+template<typename T>
+class symmetric_canvas;
+
+struct color_t;
 class QDragEnterEvent;
 class QDropEvent;
 class QMimeData;
@@ -47,7 +50,7 @@ protected:
 	bool open(const QImage &img);
 	SymmetryCombo *comboSymmetry;
 	QPushButton *buttonPaste;
-	symmetric_canvas<color_t> image;
+	std::shared_ptr<symmetric_canvas<color_t>> image;
 };
 
 #endif

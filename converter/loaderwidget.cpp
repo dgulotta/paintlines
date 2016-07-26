@@ -19,8 +19,9 @@
  ***************************************************************************/
 
 #include <QtWidgets>
-#include "../imagedata.h"
 #include "loaderwidget.h"
+#include "../imagedata.h"
+#include "../symmetric_canvas.h"
 
 void LoaderWidget::openFile()
 {
@@ -43,16 +44,18 @@ bool LoaderWidget::open(const QImage &img)
 		QMessageBox::information(this,"converter",tr("The image size must be even."));
 		return false;
 	}
-	bool ok;
-	int grp=img.text("SymmetryGroup").toInt(&ok);
-	if(ok) comboSymmetry->setCurrentIndex(grp);
-	image = symmetric_canvas<color_t>(img.height(),(symgroup)comboSymmetry->group());
-	canvas<color_t> &base_image = image.unsafe_get_canvas();
+	image = std::make_shared<symmetric_canvas<color_t>>(
+		img.height(),(symgroup)comboSymmetry->group());
+	canvas<color_t> &base_image = image->unsafe_get_canvas();
 	for(int j=0;j<img.height();j++)
 		for(int i=0;i<img.width();i++) {
 			QRgb pix = img.pixel(i,j);
 			base_image(i,j)=color_t(qRed(pix),qGreen(pix),qBlue(pix));
 		}
+	bool ok;
+	int grp=img.text("SymmetryGroup").toInt(&ok);
+	if(ok) comboSymmetry->setCurrentIndex(grp);
+	symmetryChanged((int)comboSymmetry->group());
 	emit newImage(ImageData(image));
 	return true;
 }
@@ -76,7 +79,7 @@ LoaderWidget::LoaderWidget()
 
 void LoaderWidget::symmetryChanged(int n)
 {
-	image.unsafe_set_symmetry_group((symgroup)n);
+	if(image) image->unsafe_set_symmetry_group((symgroup)n);
 }
 
 std::function<QImage()> LoaderWidget::mimeToImage(const QMimeData *mime)

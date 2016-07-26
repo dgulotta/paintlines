@@ -21,32 +21,46 @@
 #ifndef _IMAGEDATA_H
 #define _IMAGEDATA_H
 
+#include <memory>
 #include <vector>
 #include <QImage>
 
-struct color_t;
-class layer;
+#include "color.h"
+#include "symmetric_canvas.h"
+
+struct layer;
+
 template<typename T>
-class symmetric_canvas;
-template<typename T>
-class wrap_canvas;
-template<typename T>
-class canvas;
+struct CanvasView
+{
+	CanvasView() : canvas_view(nullptr), wrap_view(nullptr), sym_view(nullptr) {}
+	template<typename U,typename=std::enable_if_t<!std::is_convertible<U,std::shared_ptr<void>>::value>>
+	explicit CanvasView(U &&c) : CanvasView(std::make_shared<U>(std::forward<U>(c))) {}
+	CanvasView(const std::shared_ptr<canvas<T>> &p) : data(p),
+		canvas_view(p.get()), wrap_view(nullptr), sym_view(nullptr) {}
+	CanvasView(const std::shared_ptr<wrap_canvas<T>> &p) : data(p),
+		canvas_view(&(p->as_canvas())), wrap_view(p.get()), sym_view(nullptr) {}
+	CanvasView(const std::shared_ptr<symmetric_canvas<T>> &p) : data(p),
+		canvas_view(&(p->as_canvas())), wrap_view(&(p->as_wrap_canvas())),
+		sym_view(p.get()) {}
+	std::shared_ptr<void> data;
+	const canvas<T> *canvas_view;
+	const wrap_canvas<T> *wrap_view;
+	const symmetric_canvas<T> *sym_view;
+};
+
+QImage makeImage(const CanvasView<color_t> &v);
 
 struct ImageData
 {
-	ImageData(const QImage &i, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
-		const std::vector<layer> *l=nullptr, const ImageData *p=nullptr);
-	ImageData() : ImageData(QImage()) {}
-	ImageData(const canvas<color_t> &c, bool t=false, const symmetric_canvas<color_t> *sc=nullptr,
-		const std::vector<layer> *l=nullptr, const ImageData *p=nullptr);
-	ImageData(const wrap_canvas<color_t> &wc, const ImageData *p=nullptr);
-	ImageData(const symmetric_canvas<color_t> &sc, const std::vector<layer> *l=nullptr);
-	QImage img;
-	bool tileable;
-	const symmetric_canvas<color_t> *sym_canvas;
-	const std::vector<layer> *layers;
-	const ImageData *parent;
+	ImageData() : layers(nullptr), original(true) {}
+	template<typename U>
+	explicit ImageData(U &&c, std::vector<layer> *l=nullptr,
+		bool o=true) : img(std::forward<U>(c)), layers(l), original(o) {}
+	CanvasView<color_t> img;
+	std::vector<layer> *layers;
+	bool original;
+	// layers should probably also have shared ownership
 };
 
 #endif

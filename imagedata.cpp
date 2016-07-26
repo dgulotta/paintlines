@@ -20,22 +20,18 @@
 
 #include "imagedata.h"
 #include "color.h"
-#include "mainform.h"
-#include "symmetric_canvas.h"
 
-ImageData::ImageData(const QImage &i, bool t, const symmetric_canvas<color_t> *sc,
-		const std::vector<layer> *l, const ImageData *p)
-: img(i), tileable(t), sym_canvas(sc), layers(l), parent(p)
+QImage makeImage(const CanvasView<color_t> &v)
 {
-	if(sc) img.setText("SymmetryGroup",QString::number(static_cast<int>(sc->group())));
+	const auto &src = *(v.canvas_view);
+	QImage image(src.width(),src.height(),QImage::Format_RGB32);
+	for(int j=0;j<src.height();j++)
+		for(int i=0;i<src.width();i++) {
+			color_t col = src(i,j);
+			image.setPixel(i,j,qRgb(col.red,col.green,col.blue));
+		}
+	if(v.sym_view)
+		image.setText("SymmetryGroup",QString::number(
+			static_cast<int>(v.sym_view->group())));
+	return image;
 }
-
-ImageData::ImageData(const canvas<color_t> &c, bool t, const symmetric_canvas<color_t> *sc,
-		const std::vector<layer> *l, const ImageData *p)
-:ImageData(MainForm::makeImage(c),t,sc,l,p) {}
-
-ImageData::ImageData(const wrap_canvas<color_t> &wc, const ImageData *p)
-:ImageData(wc.as_canvas(),true,nullptr,nullptr,p) {}
-
-ImageData::ImageData(const symmetric_canvas<color_t> &sc, const std::vector<layer> *l)
-:ImageData(sc.as_canvas(),true,&sc,l,nullptr) {}

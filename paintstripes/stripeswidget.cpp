@@ -48,7 +48,6 @@ void StripesWidget::draw()
 		QMessageBox::information(this,"paintstripes",tr("The size must be even."));
 		return;
 	}
-	img=paint_stripes(spinSize->value(),(symgroup)comboSymmetry->group(),spinAlpha->value());
-	ImageData data(img);
-	emit newImage(data);
+	auto img=paint_stripes(spinSize->value(),(symgroup)comboSymmetry->group(),spinAlpha->value());
+	emit newImage(ImageData(std::move(img)));
 }

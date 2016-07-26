@@ -25,8 +25,6 @@
 #include "../canvas.h"
 #include "../layer.h"
 
-#include <QSpinBox>
-
 class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;

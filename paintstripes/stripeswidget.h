@@ -21,11 +21,8 @@
 #ifndef _STRIPESWIDGET_H
 #define _STRIPESWIDGET_H
 
-#include "../color.h"
 #include "../imagegeneratorwidget.h"
-#include "../symmetric_canvas.h"
 
-class QComboBox;
 class QSpinBox;
 class QDoubleSpinBox;
 
@@ -40,7 +37,6 @@ protected:
 	QSpinBox *spinSize;
 	SymmetryCombo *comboSymmetry;
 	QDoubleSpinBox *spinAlpha;
-	symmetric_canvas<color_t> img;
 };
 
 #endif

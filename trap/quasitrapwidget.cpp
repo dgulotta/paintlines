@@ -62,5 +62,5 @@ void QuasiTrapWidget::draw()
 	img=canvas<color_t>(spinWidth->value(),spinHeight->value());
 	auto fn = comboType->currentIndex() ? drawquasitrap_poly : drawquasitrap;
 	fn(img,comboSymmetry->currentData().toInt(),spinQuasiperiod->value());
-	emit newImage(ImageData(img));
+	emit newImage(ImageData(std::move(img)));
 }

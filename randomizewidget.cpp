@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <QtWidgets>
+#include "imagedata.h"
 #include "randomize.h"
 #include "randomizewidget.h"
 
@@ -45,9 +46,13 @@ RandomizeWidget::RandomizeWidget(QWidget *parent)
 
 void RandomizeWidget::imageUpdated(const ImageData &data)
 {
-	if(data.parent==nullptr) {
-		receivedData=data;
-		buttonRandomize->setEnabled(data.sym_canvas!=nullptr);
+	if(data.original) {
+		const auto *sc = data.img.sym_view;
+		if(sc)
+			img=std::static_pointer_cast<symmetric_canvas<color_t>>(data.img.data);
+		else
+			img.reset();
+		buttonRandomize->setEnabled((bool)sc);
 	}
 }
 
@@ -55,7 +60,6 @@ void RandomizeWidget::randomize()
 {
 	int xtiles = spinXTiles->value();
 	int ytiles = spinYTiles->value();
-	usedData = receivedData;
-	auto img = ::randomize(xtiles,ytiles,*(usedData.sym_canvas));
-	emit newImage(ImageData(img,&usedData));
+	auto newimg = ::randomize(xtiles,ytiles,*img);
+	emit newImage(ImageData(std::move(newimg),nullptr,false));
 }

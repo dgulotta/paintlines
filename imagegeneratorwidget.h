@@ -28,7 +28,7 @@
 #include "symmetry.h"
 
 class QSpinBox;
-class ImageData;
+struct ImageData;
 
 class SymmetryCombo : public QComboBox
 {

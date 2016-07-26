@@ -52,5 +52,5 @@ void QuasiStripesWidget::draw()
 {
 	canvas<color_t> img=paint_quasiperiodic_stripes(spinSize->value(),
 		spinQuasiSize->value(),spinAlpha->value());
-	emit newImage(img);
+	emit newImage(ImageData(std::move(img)));
 }

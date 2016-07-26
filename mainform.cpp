@@ -23,6 +23,7 @@
 #include "ca/cawidget.h"
 #include "converter/loaderwidget.h"
 #include "hyperbolic_paintlines/hyperboliclineswidget.h"
+#include "imagedata.h"
 #include "paintclouds/cloudswidget.h"
 #include "paintclouds/hyperboliccloudswidget.h"
 #include "paintlines/lineswidget.h"
@@ -61,15 +62,15 @@ MainForm::MainForm()
 	QMenu *menuFile = menuBar()->addMenu(tr("&File"));
 	menuDesign = menuBar()->addMenu(tr("&Design"));
 	QMenu *menuView = menuBar()->addMenu(tr("&View"));
-	actionSaveAs = menuFile->addAction("&Save As");
+	QAction *actionSaveAs = menuFile->addAction("&Save As");
 	actionSaveAs->setEnabled(false);
-	actionSaveLayers = menuFile->addAction(tr("Save Individual &Layers"));
+	QAction *actionSaveLayers = menuFile->addAction(tr("Save Individual &Layers"));
 	actionSaveLayers->setEnabled(false);
 #ifndef MULTIPAGE
 	actionSaveLayers->setVisible(false);
 #endif
-	menuFile->addAction(tr("&Copy"),this,SLOT(copy()));
-	menuFile->addAction(tr("E&xit"),this,SLOT(close()));
+	menuFile->addAction(tr("&Copy"),imageWidget,&ImageWidget::copy);
+	menuFile->addAction(tr("E&xit"),this,&MainForm::close);
 	QAction *actionTile = menuView->addAction(tr("&Tile"));
 	addDesign("Cellular Automata",new CAWidget);
 	addDesign("Clouds",new CloudsWidget);
@@ -86,10 +87,11 @@ MainForm::MainForm()
 	addDesign("Stripes",new StripesWidget);
 #endif
 	converterWidget->makeConnections(this);
-	connect(this,&MainForm::newImage,imageWidget,&ImageWidget::setPixmap);
-	connect(this,&MainForm::newImage,this,&MainForm::processNewImage);
-	connect(actionSaveAs,&QAction::triggered,this,&MainForm::saveAs);
-	connect(actionSaveLayers,&QAction::triggered,this,&MainForm::saveLayers);
+	connect(this,&MainForm::newImage,imageWidget,&ImageWidget::setImage);
+	connect(actionSaveAs,&QAction::triggered,imageWidget,&ImageWidget::saveAs);
+	connect(actionSaveLayers,&QAction::triggered,imageWidget,&ImageWidget::saveLayers);
+	connect(imageWidget,&ImageWidget::enableSave,actionSaveAs,&QAction::setEnabled);
+	connect(imageWidget,&ImageWidget::enableSaveLayers,actionSaveLayers,&QAction::setEnabled);
 	connect(actionTile,&QAction::toggled,imageWidget,&ImageWidget::setTiled);
 	actionTile->setCheckable(true);
 	actionTile->setChecked(true);
@@ -97,28 +99,20 @@ MainForm::MainForm()
 	setAcceptDrops(true);
 }
 
-bool MainForm::saveAs()
+bool ImageWidget::saveAs()
 {
 	QString s=QFileDialog::getSaveFileName();
-	if(!s.isEmpty()) return lastData.img.save(s);
+	if(!s.isEmpty()) return img.save(s);
 	return false;
 }
 
-bool MainForm::saveLayers()
+bool ImageWidget::saveLayers()
 {
 #ifdef MULTIPAGE
 	QString s=QFileDialog::getSaveFileName();
-	const QImage &img = lastData.img;
-	if(!s.isEmpty()) return save_multilayer(img.width(),img.height(),*(lastData.layers),s.toStdString());
+	if(!s.isEmpty()) return save_multilayer(img.width(),img.height(),*layers,s.toStdString());
 #endif
 	return false;
-}
-
-void MainForm::processNewImage(const ImageData &data)
-{
-	actionSaveAs->setEnabled(true);
-	actionSaveLayers->setEnabled(data.layers!=nullptr);
-	lastData=data;
 }
 
 QAction *MainForm::addDesign(const QString &name, ImageGeneratorWidget *w)
@@ -143,41 +137,28 @@ void MainForm::dropEvent(QDropEvent *event)
 		actionLoader->trigger();	
 }
 
-QImage MainForm::makeImage(const canvas<color_t> &src)
+void ImageWidget::setImage(const ImageData &data)
 {
-	QImage image(src.width(),src.height(),QImage::Format_RGB32);
-	for(int j=0;j<src.height();j++)
-		for(int i=0;i<src.width();i++) {
-			color_t col = src(i,j);
-      		image.setPixel(i,j,qRgb(col.red,col.green,col.blue));
-		}
-	return image;
-}
-
-QPixmap MainForm::makePixmap(const canvas<color_t> &src)
-{
-	return QPixmap::fromImage(makeImage(src));
-}
-
-void ImageWidget::setPixmap(const ImageData &data)
-{
-	_pixmap = QPixmap::fromImage(data.img);
+	img = makeImage(data.img);
+	pix = QPixmap::fromImage(img);
 	QPalette pal(palette());
-	pal.setBrush(QPalette::Background,_pixmap);
+	pal.setBrush(QPalette::Background,pix);
 	setPalette(pal);
-	imageIsTileable = data.tileable;
+	imageIsTileable = (bool)(data.img.wrap_view);
 	recomputeTiling();
 	updateGeometry();
+	emit enableSave(true);
+	emit enableSaveLayers(data.layers!=nullptr);
 }
 
 void ImageWidget::recomputeTiling()
 {
 	bool b = tilingEnabled&&imageIsTileable;
 	setAutoFillBackground(b);
-	QLabel::setPixmap(b?QPixmap():_pixmap);
+	setPixmap(b?QPixmap():pix);
 }
 
-void MainForm::copy()
+void ImageWidget::copy()
 {
-	QApplication::clipboard()->setImage(lastData.img);
+	QApplication::clipboard()->setImage(img);
 }
