@@ -119,16 +119,12 @@ void LinesWidget::draw() {
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
 	int sum=0;
-	std::vector<int> cum_weights(rules.size());
-	std::vector<paintrule> rule_list;
-	for(size_t i=0;i<rules.size();i++) {
-		sum+=rules[i]->rule().weight;
-		cum_weights[i]=sum;
-	}
+	std::vector<int> weights(rules.size());
+	transform(rules.begin(),rules.end(),weights.begin(),[] (auto &r) { return r->rule().weight; });
 	grids.resize(spinColors->value());
 	layers.resize(spinColors->value());
 	for(size_t i=0;i<grids.size();i++) {
-		auto rule=rules[*std::upper_bound(cum_weights.begin(),cum_weights.end(),random_int(sum))]->rule();
+		auto rule=rules[random_weighted(weights)]->rule();
 		grids[i]=symmetric_canvas<uint8_t>(spinSize->value(),comboSymmetry->group());
 		rule.func(grids[i]);
 		layers[i].pixels=&(grids[i].unsafe_get_canvas());

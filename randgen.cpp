@@ -110,3 +110,8 @@ double random_levy_1d(double alpha, double scale)
 	s = pow(cos((1-alpha)*u)/v,(1-alpha)/alpha);
 	return t*s;
 }
+
+int random_weighted(const vector<int> &v)
+{
+	return discrete_distribution<>(v.begin(),v.end())(rnd);
+}
