@@ -19,7 +19,6 @@
  ***************************************************************************/
 
 #include <algorithm>
-#include <future>
 #include "../randgen.h"
 #include "../stripes_common.h"
 #include "paintsquiggles.h"
@@ -76,10 +75,11 @@ vector<symmetric_canvas<uint8_t>> paint_squiggles(size_t ncolors, size_t size, s
 	double alpha, double exponent, double thickness, double sharpness)
 {
 	vector<symmetric_canvas<uint8_t>> grids(ncolors);
-	vector<std::future<void>> futures((ncolors+1)/2);
 	vector<stripes_grid> stripes_grids;
-	stripes_grids.reserve(futures.size());
-	for(size_t i=0;i<futures.size();i++) {
+	for(size_t i=0;i<ncolors;i+=2)
+		stripes_grids.emplace_back(size,sg);
+	# pragma omp parallel for
+	for(size_t i=0;i<stripes_grids.size();i++) {
 		symmetric_canvas<uint8_t> *grid1=&(grids[2*i]), *grid2;
 		(*grid1)=symmetric_canvas<uint8_t>(size,sg);
 		if(2*i+1<ncolors) {
@@ -87,12 +87,7 @@ vector<symmetric_canvas<uint8_t>> paint_squiggles(size_t ncolors, size_t size, s
 			(*grid2)=symmetric_canvas<uint8_t>(size,sg);
 		}
 		else grid2=nullptr;
-		stripes_grids.emplace_back(size,sg);
-		futures[i]=std::async(std::launch::async,[&g=stripes_grids.back(),grid1,grid2,alpha,exponent,thickness,sharpness]() {
-			fill(grid1,grid2,alpha,exponent,thickness,sharpness,g);
-		});
+		fill(grid1,grid2,alpha,exponent,thickness,sharpness,stripes_grids[i]);
 	}
-	for(auto &f : futures)
-		f.wait();
 	return grids;
 }

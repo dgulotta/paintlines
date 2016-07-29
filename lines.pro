@@ -114,7 +114,12 @@ packagesExist(fftw3) {
 		quasiperiodic_paintstripes/quasistripeswidget.cpp
 }
 
-QMAKE_CXXFLAGS += -ffast-math
+QMAKE_CXXFLAGS += -ffast-math -fopenmp
+QMAKE_LFLAGS += -fopenmp
+
+linux-clang {
+	DEFINES += _OPENMP=201107
+}
 
 unix {
   MOC_DIR = .moc
