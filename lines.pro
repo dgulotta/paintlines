@@ -82,9 +82,15 @@ contains(DEFINES,MULTIPAGE) {
 	SOURCES += magick.cpp
 }
 
-packagesExist(lua) {
+packagesExist(luajit) {
+	PKGCONFIG += luajit
+	DEFINES += LUARULES
+} else: packagesExist(lua) {
 	PKGCONFIG += lua
 	DEFINES += LUARULES
+}
+
+contains(DEFINES,LUARULES) {
 	HEADERS += paintlines/luafuncs.h
 	SOURCES += paintlines/luafuncs.cpp
 }
