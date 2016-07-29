@@ -73,9 +73,9 @@ void HyperbolicLinesWidget::draw()
 	double th = spinThickness->value();
 	hyperbolic_lines_param params{
 		spinSize->value(),
-			5*th,
-			5*th*th,
-			spinSharpness->value(),
+			(float)(5*th),
+			(float)(5*th*th),
+			(float)(spinSharpness->value()),
 			static_cast<projtype>(comboModel->currentIndex())
 	};
 	grids.resize(spinColors->value());

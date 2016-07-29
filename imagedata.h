@@ -36,11 +36,11 @@ struct CanvasView
 	CanvasView() : canvas_view(nullptr), wrap_view(nullptr), sym_view(nullptr) {}
 	template<typename U,typename=std::enable_if_t<!std::is_convertible<U,std::shared_ptr<void>>::value>>
 	explicit CanvasView(U &&c) : CanvasView(std::make_shared<U>(std::forward<U>(c))) {}
-	CanvasView(const std::shared_ptr<canvas<T>> &p) : data(p),
+	CanvasView(std::shared_ptr<canvas<T>> p) : data(p),
 		canvas_view(p.get()), wrap_view(nullptr), sym_view(nullptr) {}
-	CanvasView(const std::shared_ptr<wrap_canvas<T>> &p) : data(p),
+	CanvasView(std::shared_ptr<wrap_canvas<T>> p) : data(p),
 		canvas_view(&(p->as_canvas())), wrap_view(p.get()), sym_view(nullptr) {}
-	CanvasView(const std::shared_ptr<symmetric_canvas<T>> &p) : data(p),
+	CanvasView(std::shared_ptr<symmetric_canvas<T>> p) : data(p),
 		canvas_view(&(p->as_canvas())), wrap_view(&(p->as_wrap_canvas())),
 		sym_view(p.get()) {}
 	std::shared_ptr<void> data;
