@@ -118,7 +118,6 @@ void LinesWidget::draw() {
 	}
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
-	int sum=0;
 	std::vector<int> weights(rules.size());
 	transform(rules.begin(),rules.end(),weights.begin(),[] (auto &r) { return r->rule().weight; });
 	grids.resize(spinColors->value());

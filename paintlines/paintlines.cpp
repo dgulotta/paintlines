@@ -80,7 +80,7 @@ void generate_cluster(symmetric_canvas<uint8_t> &g)
 
 void generate_flower(symmetric_canvas<uint8_t> &g)
 {
-	paintlines_layer_generator(g).drawflower(random_int(g.size()),random_int(g.size()),.1,50);
+	paintlines_layer_generator(g).drawflower(random_int(g.size()),random_int(g.size()),50);
 }
 
 static const int fractal_prob[13] = { 0, 40, 40, 38, 37, 0, 35, 0, 34, 0, 0, 0, 32 };
@@ -551,7 +551,7 @@ void paintlines_layer_generator::drawsmootharc(double x1, double y1, double x2, 
   if(dx*dx+dy*dy>=dist) drawsmootharc(mx,my,x2,y2,k/2.,var,dist);
 }
 
-void paintlines_layer_generator::drawflower(double x, double y, double var, int steps)
+void paintlines_layer_generator::drawflower(double x, double y, int steps)
 {
   int n=3.+random_exponential(10);
   int i;

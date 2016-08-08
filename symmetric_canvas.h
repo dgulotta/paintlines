@@ -74,8 +74,8 @@ public:
 	operator const T & () const { return c.get(x,y); }
 	symmetric_canvas_ref & operator = (const T &t) { c.set(x,y,t); return *this; }
 private:
-	int x, y;
 	symmetric_canvas<T> &c;
+	int x, y;
 };
 
 #endif

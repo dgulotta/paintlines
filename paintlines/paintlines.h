@@ -49,7 +49,7 @@ public:
 	void drawsmoothline2(double x1, double y1, double x2, double y2,
 			double var, double dist);
 	void drawcluster(double x, double y, double var, int maxdepth);
-	void drawflower(double x, double y, double var, int steps);
+	void drawflower(double x, double y, int steps);
 	void drawopenstring();
 	void drawswirl();
 	void draworbit();

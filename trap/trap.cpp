@@ -53,7 +53,7 @@ double random_torsion(int n)
 	else return random_int(n)*(2*M_PI/n);
 }
 
-iterfunc randfunc_p1(symgroup sg)
+iterfunc randfunc_p1()
 {
 	double a0=random_angle(), a3=random_normal(1.), a4=random_normal(1.);
 	double a5=random_normal(1.), a6=random_normal(1.);
@@ -65,7 +65,7 @@ iterfunc randfunc_p1(symgroup sg)
 		b0+b1*x+b2*y+b3*cx+b4*sx+b5*cy+b6*sy);
 }
 
-iterfunc randfunc_p2(symgroup sg)
+iterfunc randfunc_p2()
 {
 	if(random_bool()) {
 		double a0=random_torsion(2), a4=random_normal(1.), a6=random_normal(1.);
@@ -81,7 +81,7 @@ iterfunc randfunc_p2(symgroup sg)
 	}
 }
 
-iterfunc randfunc_cm(symgroup sg)
+iterfunc randfunc_cm()
 {
 	if(random_bool()) {
 		double a0=random_angle(), a3=random_normal(1.), a4=random_normal(1.);
@@ -107,7 +107,7 @@ iterfunc randfunc_cm(symgroup sg)
 	}
 }
 
-iterfunc randfunc_cmm(symgroup sg)
+iterfunc randfunc_cmm()
 {
 	if(random_bool()) {
 		double a0=random_torsion(2), a4=random_normal(1.), a6=random_normal(1.);
@@ -125,7 +125,7 @@ iterfunc randfunc_cmm(symgroup sg)
 	}
 }
 
-iterfunc randfunc_pm(symgroup sg)
+iterfunc randfunc_pm()
 {
 	if(random_bool()) {
 		double a0=random_torsion(2);
@@ -145,7 +145,7 @@ iterfunc randfunc_pm(symgroup sg)
 	}
 }
 
-iterfunc randfunc_pmg(symgroup sg)
+iterfunc randfunc_pmg()
 {
 	if(random_bool()) {
 		double a0=random_torsion(2), b0=random_torsion(2);
@@ -161,7 +161,7 @@ iterfunc randfunc_pmg(symgroup sg)
 	}
 }
 
-iterfunc randfunc_pmm(symgroup sg)
+iterfunc randfunc_pmm()
 {
 	if(random_bool()) {
 		double a0=random_torsion(2), b0=random_torsion(2);
@@ -181,7 +181,7 @@ iterfunc randfunc_pmm(symgroup sg)
 	}
 }
 
-iterfunc randfunc_pg(symgroup sg)
+iterfunc randfunc_pg()
 {
 	int a1=random_sign(), b2=random_range_inclusive(-1,1);
 	double a0=random_angle(), a6=random_normal(1.);
@@ -190,7 +190,7 @@ iterfunc randfunc_pg(symgroup sg)
 	return PT(a0+a1*x+a6*sy,b0+b2*y+b3*cx+b4*sx+b5*cy);
 }
 
-iterfunc randfunc_pgg(symgroup sg)
+iterfunc randfunc_pgg()
 {
 	int a1=random_sign(), b2=random_sign();
 	double a0=random_torsion(2), a6=random_normal(1.);
@@ -215,7 +215,7 @@ const int mat6[7][4] = {
 
 const double sq1_3 = sqrt(1./3.);
 
-iterfunc randfunc_p3(symgroup sg)
+iterfunc randfunc_p3()
 {
 	int z=random_int(7);
 	const int *m=mat6[z];
@@ -239,7 +239,7 @@ iterfunc randfunc_p3(symgroup sg)
 const vector<transformation<double>> p3m1_trans = transformation<double>::group(symgroup::P3M1,0.);
 const vector<transformation<double>> p4m_trans = transformation<double>::group(symgroup::P4M,0.);
 
-iterfunc randfunc_p31m(symgroup sg)
+iterfunc randfunc_p31m()
 {
 	if(random_bool()) {
 		int a1=random_range_inclusive(-1,1);
@@ -256,7 +256,7 @@ iterfunc randfunc_p31m(symgroup sg)
 	else {
 		double a0=random_angle(), b0=random_angle();
 		double a3=random_normal(1.), a4=random_normal(1.), a5=random_normal(1.);
-		double b3=random_normal(1.), b4=random_normal(1.), b5=random_normal(1.);
+		double b3=random_normal(1.);
 		return [=] (double x, double y) {
 			complex<double> ex=polar(1.,x), ey=polar(1.,y), ez=1./(ex*ey);
 			complex<double> eyz=ey/ez, ezx=ez/ex, exy=ex/ey;
@@ -267,7 +267,7 @@ iterfunc randfunc_p31m(symgroup sg)
 	}
 }
 
-iterfunc randfunc_p3m1(symgroup sg)
+iterfunc randfunc_p3m1()
 {
 	if(random_bool()) {
 		double a0=random_torsion(3);
@@ -292,7 +292,7 @@ iterfunc randfunc_p3m1(symgroup sg)
 	}
 }
 
-iterfunc randfunc_p6m(symgroup sg) {
+iterfunc randfunc_p6m() {
 	if(random_bool()) {
 		int a1=random_range_inclusive(-1,1);
 		double a3=random_normal(1.), a4=random_normal(1.);
@@ -318,7 +318,7 @@ iterfunc randfunc_p6m(symgroup sg) {
 	}
 }
 
-iterfunc randfunc_p6(symgroup sg)
+iterfunc randfunc_p6()
 {
 	int z=random_int(7);
 	const int *m=mat6[z];
@@ -333,7 +333,7 @@ iterfunc randfunc_p6(symgroup sg)
 	}
 }
 
-iterfunc randfunc_p4(symgroup sg)
+iterfunc randfunc_p4()
 {
 	int a1, a2;
 	do {
@@ -347,7 +347,7 @@ iterfunc randfunc_p4(symgroup sg)
 		return PT(a0-a1*x+a2*y-a5*sx+a6*sy,a0+a2*x+a1*y+a6*sx+a5*sy);
 }
 
-iterfunc randfunc_p4m(symgroup sg)
+iterfunc randfunc_p4m()
 {
 	if(random_bool()) {
 		auto tr = random_choice(p4m_trans);
@@ -365,7 +365,7 @@ iterfunc randfunc_p4m(symgroup sg)
 	}
 }
 
-iterfunc randfunc_p4g(symgroup sg)
+iterfunc randfunc_p4g()
 {
 	double a0=random_torsion(2);
 	int a1=random_sign();
@@ -380,39 +380,39 @@ iterfunc random_iterfunc(symgroup sg)
 	switch(sg)
 	{
 	case symgroup::CM:
-		return randfunc_cm(sg);
+		return randfunc_cm();
 	case symgroup::CMM:
-		return randfunc_cmm(sg);
+		return randfunc_cmm();
 	case symgroup::P2:
-		return randfunc_p2(sg);
+		return randfunc_p2();
 	case symgroup::P3:
-		return randfunc_p3(sg);
+		return randfunc_p3();
 	case symgroup::P31M:
-		return randfunc_p31m(sg);
+		return randfunc_p31m();
 	case symgroup::P3M1:
-		return randfunc_p3m1(sg);
+		return randfunc_p3m1();
 	case symgroup::P4:
-		return randfunc_p4(sg);
+		return randfunc_p4();
 	case symgroup::P4G:
-		return randfunc_p4g(sg);
+		return randfunc_p4g();
 	case symgroup::P4M:
-		return randfunc_p4m(sg);
+		return randfunc_p4m();
 	case symgroup::P6:
-		return randfunc_p6(sg);
+		return randfunc_p6();
 	case symgroup::P6M:
-		return randfunc_p6m(sg);
+		return randfunc_p6m();
 	case symgroup::PG:
-		return randfunc_pg(sg);
+		return randfunc_pg();
 	case symgroup::PGG:
-		return randfunc_pgg(sg);
+		return randfunc_pgg();
 	case symgroup::PM:
-		return randfunc_pm(sg);
+		return randfunc_pm();
 	case symgroup::PMG:
-		return randfunc_pmg(sg);
+		return randfunc_pmg();
 	case symgroup::PMM:
-		return randfunc_pmm(sg);
+		return randfunc_pmm();
 	default:
-		return randfunc_p1(sg);
+		return randfunc_p1();
 	}
 }
 

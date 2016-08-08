@@ -29,7 +29,7 @@ using std::function;
 using std::vector;
 
 void generate(stripes_grid &grid, const std::function<complex<double>()> &gen,
-	double alpha, double exponent)
+	double exponent)
 {
 	grid.clear();
 	int i,j, size=grid.get_size();
@@ -53,7 +53,7 @@ void fill(const stripes_grid &grid,canvas<uint8_t> &pix,const function<double(co
 	for(j=0;j<grid.get_size();j++)
 		for(i=0;i<grid.get_size();i++) {
 			height=proj(grid.get_symmetric(i,j))/norm;
-			pix(i,j)=255.99/(pow(abs(height)/(10.*thickness),sharpness)+1.);
+			pix(i,j)=255.99/(pow(std::abs(height)/(10.*thickness),sharpness)+1.);
 		}
 }
 
@@ -66,7 +66,7 @@ void fill(symmetric_canvas<uint8_t> *grid1,symmetric_canvas<uint8_t> *grid2,
 		gen = [&gen1] () { return complex<double>(gen1(),gen1()); };
 	else
 		gen = [&gen1] () { return complex<double>(gen1(),0); };
-	generate(sgr,gen,alpha,exponent);
+	generate(sgr,gen,exponent);
 	fill(sgr,grid1->unsafe_get_canvas(),(stripes_grid::proj_t)std::real,thickness,sharpness);
 	if(grid2)
 		fill(sgr,grid2->unsafe_get_canvas(),(stripes_grid::proj_t)std::imag,thickness,sharpness);

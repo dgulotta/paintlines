@@ -171,12 +171,12 @@ void randomize_p1(int xtiles, int ytiles, int size, const copy_func_t &copy)
 		}
 }
 
-tuple<int,int> pg_move1(int ke, int le, int kc, int lc)
+tuple<int,int> pg_move1(int ke, int le, int kc, int)
 {
 	return make_tuple(2*kc-ke,le);
 }
 
-tuple<int,int> pg_move2(int ke, int le, int kc, int lc)
+tuple<int,int> pg_move2(int ke, int le, int, int lc)
 {
 	return make_tuple(ke,2*lc-le);
 }
@@ -208,7 +208,7 @@ void randomize_pg(int xtiles, int ytiles, int size, const copy_func_t &copy)
 	auto put1 = [&c1] (int ke, int le, int kc, int lc) {
 		c1(ke,le)=make_tuple(ke-kc,le-lc);
 	};
-	auto put2 = [&c2,&v] (int ke, int le, int kc, int lc) {
+	auto put2 = [&c2,&v] (int ke, int le, int, int) {
 		c2(ke,le)=v;
 	};
 	for(k=1;k<4*xtiles;k+=2)
