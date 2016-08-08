@@ -145,6 +145,7 @@ void ImageWidget::setImage(const ImageData &data)
 	pal.setBrush(QPalette::Background,pix);
 	setPalette(pal);
 	imageIsTileable = (bool)(data.img.wrap_view);
+	layers=data.layers;
 	recomputeTiling();
 	updateGeometry();
 	emit enableSave(true);
