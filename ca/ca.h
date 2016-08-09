@@ -108,7 +108,7 @@ private:
 class ca
 {
 public:
-	ca(int w, int h, const rule &r) : grid1(w,h), grid2(w,h), current(&grid1), old(&grid2),
+	ca(int w, int h, const rule &r) : current(w,h), old(w,h),
 		in_queue(w,h), first_on(w,h), next_on(w,h), turn(1), therule(r) {}
 	void set(int x, int y, int s);
 	void run_until(int tstop);
@@ -120,10 +120,8 @@ private:
 	void wakeup_adjacent(int x, int y);
 	int get_state(int x, int y);
 	void process(int x, int y);
-	ca_canvas<uint8_t> grid1;
-	ca_canvas<uint8_t> grid2;
-	ca_canvas<uint8_t> *current;
-	ca_canvas<uint8_t> *old;
+	ca_canvas<uint8_t> current;
+	ca_canvas<uint8_t> old;
 	ca_canvas<uint8_t> in_queue;
 	ca_canvas<int> first_on;
 	canvas<int> next_on;

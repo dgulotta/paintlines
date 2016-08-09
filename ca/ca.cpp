@@ -55,7 +55,7 @@ const rule rule::ebbandflow(1,1,17,{3,6},{0,1,2,4,7,8});
 
 void ca::set(int x, int y, int s)
 {
-	current->set(x,y,s);
+	current.set(x,y,s);
 	wakeup(x,y);
 	wakeup_adjacent(x,y);
 }
@@ -83,12 +83,12 @@ void ca::wakeup_adjacent(int x, int y)
 void ca::process(int x, int y)
 {
 	if(turn<next_on(x,y)) {
-		current->set(x,y,0);
+		current.set(x,y,0);
 		return;
 	}
-	int s=therule.get_new_state(*old,x,y);
-	current->set(x,y,s);
-	if((!s)&&old->get(x,y)) {
+	int s=therule.get_new_state(old,x,y);
+	current.set(x,y,s);
+	if((!s)&&old.get(x,y)) {
 		next_on(x,y)=turn+therule.get_dead_steps();
 	}
 	else if(s&&first_on.get(x,y)==0) {
