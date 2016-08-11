@@ -57,7 +57,7 @@ void PaintRuleWidget::addRule(const QString &s, const paintfunc &f)
 LinesWidget::LinesWidget()
 {
 	QFormLayout *layout = new QFormLayout;
-	spinSize = newSizeSpin();
+	spinSize = new SizeSpin(2);
 	layout->addRow(tr("Size"),spinSize);
 	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
@@ -112,10 +112,6 @@ bool LinesWidget::checkLuaErrors()
 }
 
 void LinesWidget::draw() {
-	if(spinSize->value()%2!=0) {
-		QMessageBox::information(this,"paintlines",tr("The size must be even."));
-		return;
-	}
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintlines",tr("Failed to load color palette image"));
 	std::vector<int> weights(rules.size());

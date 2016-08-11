@@ -68,13 +68,21 @@ const QStringList SymmetryCombo::symmetryStrings = {
 	tr("PMM (*2222)"),
 };
 
-QSpinBox * ImageGeneratorWidget::newSizeSpin() {
-	QSpinBox *spinSize = new QSpinBox;
-	spinSize->setMinimum(2);
-	spinSize->setMaximum(65536);
-	spinSize->setSingleStep(2);
-	spinSize->setValue(256);
-	return spinSize;
+SizeSpin::SizeSpin(int step)
+{
+	setMinimum(step);
+	setMaximum(65536);
+	setSingleStep(step);
+	setValue(256);
+}
+
+int SizeSpin::valueFromText(const QString &text) const
+{
+	int val=QSpinBox::valueFromText(text);
+	int rem=val%singleStep();
+	if(rem)
+		val+=singleStep()-rem;
+	return val;
 }
 
 QSpinBox * ImageGeneratorWidget::newColorSpin() {

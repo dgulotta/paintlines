@@ -27,10 +27,7 @@
 QuasiStripesWidget::QuasiStripesWidget()
 {
 	QFormLayout *layout = new QFormLayout;
-	spinSize = new QSpinBox;
-	spinSize->setMinimum(1);
-	spinSize->setMaximum(65536);
-	spinSize->setValue(256);
+	spinSize = new SizeSpin;
 	layout->addRow(tr("Size"),spinSize);
 	spinQuasiSize = new QSpinBox;
 	spinQuasiSize->setMinimum(1);

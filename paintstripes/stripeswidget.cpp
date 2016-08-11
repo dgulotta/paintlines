@@ -27,7 +27,7 @@
 StripesWidget::StripesWidget()
 {
 	QFormLayout *layout = new QFormLayout;
-	spinSize = newSizeSpin();
+	spinSize = new SizeSpin(2);
 	layout->addRow(tr("Size"),spinSize);
 	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
@@ -44,10 +44,6 @@ StripesWidget::StripesWidget()
 
 void StripesWidget::draw()
 {
-	if(spinSize->value()%2!=0) {
-		QMessageBox::information(this,"paintstripes",tr("The size must be even."));
-		return;
-	}
 	auto img=paint_stripes(spinSize->value(),(symgroup)comboSymmetry->group(),spinAlpha->value());
 	emit newImage(ImageData(std::move(img)));
 }

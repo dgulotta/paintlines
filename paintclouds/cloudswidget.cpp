@@ -45,7 +45,7 @@ QComboBox * CloudsWidget::newComboRandom()
 CloudsWidget::CloudsWidget()
 {
 	QFormLayout *layout = new QFormLayout;
-	spinSize = newSizeSpin();
+	spinSize = new SizeSpin(2);
 	layout->addRow(tr("Size"),spinSize);
 	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
@@ -72,10 +72,6 @@ static clouds_randfunc randfuncs[] = {
 
 void CloudsWidget::draw()
 {
-	if(spinSize->value()%2!=0) {
-		QMessageBox::information(this,"paintclouds",tr("The size must be even."));
-		return;
-	}
 	symgroup sg=symgroup(comboSymmetry->group());
 	auto canvas=paint_clouds(spinSize->value(),sg,color1->color(),color2->color(),
 		color3->color(),randfuncs[comboRandom->currentIndex()]);

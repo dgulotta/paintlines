@@ -40,10 +40,7 @@ HyperbolicLinesWidget::HyperbolicLinesWidget()
 	comboSubset->addItem(tr("Det > 0"));
 	comboSubset->addItem(tr("Random"));
 	layout->addRow(tr("Subset"),comboSubset);
-	spinSize=new QSpinBox;
-	spinSize->setMinimum(1);
-	spinSize->setMaximum(65536);
-	spinSize->setValue(256);
+	spinSize=new SizeSpin;
 	layout->addRow(tr("Size"),spinSize);
 	spinColors=newColorSpin();
 	layout->addRow(tr("Colors"),spinColors);

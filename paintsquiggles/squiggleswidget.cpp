@@ -28,7 +28,7 @@
 SquigglesWidget::SquigglesWidget()
 {
 	QFormLayout *layout = new QFormLayout;
-	spinSize = newSizeSpin();
+	spinSize = new SizeSpin(2);
 	layout->addRow(tr("Size"),spinSize);
 	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
@@ -62,10 +62,6 @@ SquigglesWidget::SquigglesWidget()
 
 void SquigglesWidget::draw()
 {
-	if(spinSize->value()%2!=0) {
-		QMessageBox::information(this,"paintsquiggles",tr("The size must be even."));
-		return;
-	}
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
 	grids=paint_squiggles(spinColors->value(),

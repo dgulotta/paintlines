@@ -35,10 +35,7 @@ HyperbolicCloudsWidget::HyperbolicCloudsWidget()
 	chooser = new HyperbolicSymmetryChooser;
 	chooser->addDefaultItems();
 	layout->addRow(chooser);
-	spinSize=new QSpinBox;
-	spinSize->setMinimum(1);
-	spinSize->setMaximum(65536);
-	spinSize->setValue(256);
+	spinSize=new SizeSpin;
 	layout->addRow(tr("Size"),spinSize);
 	comboRandom = CloudsWidget::newComboRandom();
 	layout->addRow(tr("Distribution"),comboRandom);

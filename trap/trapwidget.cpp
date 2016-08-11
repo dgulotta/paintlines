@@ -26,7 +26,7 @@
 TrapWidget::TrapWidget()
 {
 	QFormLayout *layout = new QFormLayout;
-	spinSize = newSizeSpin();
+	spinSize = new SizeSpin(2);
 	layout->addRow(tr("Size"),spinSize);
 	comboSymmetry = new SymmetryCombo;
 	layout->addRow(tr("Symmetry"),comboSymmetry);

@@ -24,10 +24,10 @@
 #include <QStringList>
 #include <QWidget>
 #include <QComboBox>
+#include <QSpinBox>
 #include <vector>
 #include "symmetry.h"
 
-class QSpinBox;
 struct ImageData;
 
 class SymmetryCombo : public QComboBox
@@ -40,11 +40,19 @@ public:
 	static const QStringList symmetryStrings;
 };
 
+class SizeSpin : public QSpinBox
+{
+	Q_OBJECT
+public:
+	SizeSpin(int step=1);
+protected:
+	int valueFromText(const QString &text) const;
+};
+
 class ImageGeneratorWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	static QSpinBox * newSizeSpin();
 	static QSpinBox * newColorSpin();
 signals:
 	void newImage(const ImageData &data);
