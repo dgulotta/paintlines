@@ -70,52 +70,52 @@ struct transformation {
 };
 
 template<typename T>
-const transformation<T> transformation<T>::id{1,0,0,0,1,0};
+const transformation<T> transformation<T>::id={1,0,0,0,1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::rot60{0,-1,0,1,1,0};
+const transformation<T> transformation<T>::rot60={0,-1,0,1,1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::rot90{0,-1,0,1,0,0};
+const transformation<T> transformation<T>::rot90={0,-1,0,1,0,0};
 
 template<typename T>
-const transformation<T> transformation<T>::rot120{-1,-1,0,1,0,0};
+const transformation<T> transformation<T>::rot120={-1,-1,0,1,0,0};
 
 template<typename T>
-const transformation<T> transformation<T>::rot180{-1,0,0,0,-1,0};
+const transformation<T> transformation<T>::rot180={-1,0,0,0,-1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::rot240{0,1,0,-1,-1,0};
+const transformation<T> transformation<T>::rot240={0,1,0,-1,-1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::rot270{0,1,0,-1,0,0};
+const transformation<T> transformation<T>::rot270={0,1,0,-1,0,0};
 
 template<typename T>
-const transformation<T> transformation<T>::rot300{1,1,0,-1,0,0};
+const transformation<T> transformation<T>::rot300={1,1,0,-1,0,0};
 
 template<typename T>
-const transformation<T> transformation<T>::flipH{-1,0,0,0,1,0};
+const transformation<T> transformation<T>::flipH={-1,0,0,0,1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::flipV{1,0,0,0,-1,0};
+const transformation<T> transformation<T>::flipV={1,0,0,0,-1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::flipD1{0,1,0,1,0,0};
+const transformation<T> transformation<T>::flipD1={0,1,0,1,0,0};
 
 template<typename T>
-const transformation<T> transformation<T>::flipD2{0,-1,0,-1,0,0};
+const transformation<T> transformation<T>::flipD2={0,-1,0,-1,0,0};
 
 template<typename T>
-const transformation<T> transformation<T>::flipD3{-1,-1,0,0,1,0};
+const transformation<T> transformation<T>::flipD3={-1,-1,0,0,1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::flipD4{1,1,0,0,-1,0};
+const transformation<T> transformation<T>::flipD4={1,1,0,0,-1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::flipD5{1,0,0,-1,-1,0};
+const transformation<T> transformation<T>::flipD5={1,0,0,-1,-1,0};
 
 template<typename T>
-const transformation<T> transformation<T>::flipD6{-1,0,0,1,1,0};
+const transformation<T> transformation<T>::flipD6={-1,0,0,1,1,0};
 
 template<typename T>
 std::vector<transformation<T>> transformation<T>::group(symgroup sg, T sz)

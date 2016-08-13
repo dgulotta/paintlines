@@ -21,6 +21,7 @@
 #ifndef _LOADERWIDGET_H
 #define _LOADERWIDGET_H
 
+#include <functional>
 #include <memory>
 #include "../imagegeneratorwidget.h"
 

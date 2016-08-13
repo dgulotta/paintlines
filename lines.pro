@@ -114,9 +114,16 @@ packagesExist(fftw3) {
 		quasiperiodic_paintstripes/quasistripeswidget.cpp
 }
 
-QMAKE_CXXFLAGS += -ffast-math
+gcc|clang {
+	QMAKE_CXXFLAGS += -ffast-math
+}
 
 unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
+}
+
+msvc {
+	DEFINES += _USE_MATH_DEFINES
+	QMAKE_CXXFLAGS += /fp:fast
 }
