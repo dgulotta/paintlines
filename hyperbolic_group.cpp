@@ -118,6 +118,7 @@ tuple<hyperbolic_coord,bool> hyperbolic_symmetry_group::fundamental_domain_rando
 			}
 		}
 	}
+	std::lock_guard<std::mutex> lock(mutex);
 	const auto &it = random_flips.find(index);
 	if(it!=random_flips.end())
 		return make_tuple(c,it->second);

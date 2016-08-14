@@ -112,7 +112,13 @@ packagesExist(fftw3) {
 }
 
 gcc|clang {
-	QMAKE_CXXFLAGS += -ffast-math
+	QMAKE_CXXFLAGS += -ffast-math -fopenmp
+	QMAKE_LFLAGS += -fopenmp
+}
+
+linux-clang {
+	DEFINES += _OPENMP=201107
+	QMAKE_CXXFLAGS += -Wno-macro-redefined
 }
 
 unix {
@@ -122,5 +128,5 @@ unix {
 
 msvc {
 	DEFINES += _USE_MATH_DEFINES
-	QMAKE_CXXFLAGS += /fp:fast
+	QMAKE_CXXFLAGS += /fp:fast /openmp
 }

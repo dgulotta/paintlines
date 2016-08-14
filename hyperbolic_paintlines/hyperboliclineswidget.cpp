@@ -56,7 +56,9 @@ HyperbolicLinesWidget::HyperbolicLinesWidget()
 			(float)(spinSharpness->value()),
 			comboModel.value()};
 		grids.resize(spinColors->value());
-		generate(grids.begin(),grids.end(),[&sg,&params] () { return paint_hyperbolic_lines(sg,params); });
+		#pragma omp parallel for
+		for(int i=0; i<grids.size(); i++)
+			grids[i]=paint_hyperbolic_lines(sg,params);
 		layers.resize(grids.size());
 		for(int i=0;i<grids.size();i++) {
 			layers[i].pixels=&(grids[i]);

@@ -444,6 +444,7 @@ void drawtrap(symmetric_canvas<color_t> &c)
 	canvas<color_t> &cc=c.unsafe_get_canvas();
 	iterfunc f = random_iterfunc(c.group());
 	auto d = distfunc(c.group());
+	# pragma omp parallel for
 	for(int yy=0;yy<c.size();yy++)
 		for(int xx=0;xx<c.size();xx++) {
 		double x = xx*2*M_PI/c.size(), y = yy*2*M_PI/c.size(), dm=-2;
@@ -784,6 +785,7 @@ void drawquasitrap_poly(canvas<color_t> &c, int symmetry, double quasiperiod)
 		e = qembfunc5;
 		d = qpdistfunc5;
 	}
+	#pragma omp parallel for
 	for(int yy=0;yy<c.height();yy++)
 		for(int xx=0;xx<c.width();xx++) {
 			double x,y,z,w;
@@ -825,6 +827,7 @@ void drawquasitrap(canvas<color_t> &c, int symmetry, double quasiperiod)
 		e = qembfunc5;
 		d = qdistfunc5;
 	}
+	# pragma omp parallel for
 	for(int yy=0;yy<c.height();yy++)
 		for(int xx=0;xx<c.width();xx++) {
 			double x,y,z,w;
