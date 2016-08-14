@@ -62,14 +62,13 @@ bool LoaderWidget::open(const QImage &img)
 
 LoaderWidget::LoaderWidget()
 {
-	QFormLayout *layout = new QFormLayout;
+	QFormLayout *layout = this->layout();
 	comboSymmetry = new SymmetryCombo(false);
 	layout->addRow(tr("Symmetry"),comboSymmetry);
 	QPushButton *buttonOpen = new QPushButton(tr("Open file"));
 	layout->addRow(buttonOpen);
 	buttonPaste = new QPushButton(tr("Paste from clipboard"));
 	layout->addRow(buttonPaste);
-	setLayout(layout);
 	connect(QApplication::clipboard(),&QClipboard::dataChanged,this,&LoaderWidget::checkPasteEnabled);
 	connect(buttonOpen,&QPushButton::clicked,this,&LoaderWidget::openFile);
 	connect(buttonPaste,&QPushButton::clicked,this,&LoaderWidget::paste);

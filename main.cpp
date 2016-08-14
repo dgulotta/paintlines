@@ -1,6 +1,5 @@
 #include <QApplication>
 #include "mainform.h"
-#include "randgen.h"
 #ifdef MULTIPAGE
 #include <Magick++.h>
 #endif

@@ -80,8 +80,7 @@ fundamental_domain HyperbolicSymmetryItem::domain() const
 	return family.domain(values);
 }
 
-HyperbolicSymmetryChooser::HyperbolicSymmetryChooser(QWidget *parent)
-:QWidget(parent)
+HyperbolicSymmetryChooser::HyperbolicSymmetryChooser(bool add_default)
 {
 	familyCombo = new QComboBox;
 	itemStack = new QStackedLayout;
@@ -91,6 +90,8 @@ HyperbolicSymmetryChooser::HyperbolicSymmetryChooser(QWidget *parent)
 	layout->addLayout(itemStack);
 	setLayout(layout);
 	connect(familyCombo,(void(QComboBox::*)(int))&QComboBox::activated,itemStack,&QStackedLayout::setCurrentIndex);
+	if(add_default)
+		addDefaultItems();
 }
 
 void HyperbolicSymmetryChooser::add(const fundamental_domain_family &fdf,

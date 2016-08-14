@@ -18,36 +18,24 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtWidgets>
-
-#include "../imagedata.h"
+#include <QDoubleSpinBox>
+#include "../inputwidgets.h"
 #include "quasiperiodic_paintstripes.h"
 #include "quasistripeswidget.h"
 
 QuasiStripesWidget::QuasiStripesWidget()
 {
-	QFormLayout *layout = new QFormLayout;
-	spinSize = new SizeSpin;
-	layout->addRow(tr("Size"),spinSize);
-	spinQuasiSize = new QSpinBox;
-	spinQuasiSize->setMinimum(1);
-	spinQuasiSize->setMaximum(256);
-	spinQuasiSize->setValue(16);
-	layout->addRow(tr("Quasiperiod"),spinQuasiSize);
-	spinAlpha = new QDoubleSpinBox;
-	spinAlpha->setMinimum(.01);
-	spinAlpha->setMaximum(2.);
-	spinAlpha->setValue(1.);
-	layout->addRow(tr("Alpha"),spinAlpha);
-	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
-	layout->addRow(buttonDraw);
-	setLayout(layout);
-	connect(buttonDraw,&QPushButton::clicked,this,&QuasiStripesWidget::draw);
-}
-
-void QuasiStripesWidget::draw()
-{
-	canvas<color_t> img=paint_quasiperiodic_stripes(spinSize->value(),
-		spinQuasiSize->value(),spinAlpha->value());
-	emit newImage(ImageData(std::move(img)));
+	auto sz = new SizeSpin;
+	layout()->addRow("Size",sz);
+	auto qsz = new QSpinBox;
+	qsz->setRange(1,256);
+	qsz->setValue(16);
+	layout()->addRow("Quasiperiod",qsz);
+	auto alpha = new QDoubleSpinBox;
+	alpha->setRange(.01,2.);
+	alpha->setValue(1.);
+	addGenerator("Draw",[=] () {
+		return paint_quasiperiodic_stripes(sz->value(),qsz->value(),
+			alpha->value());
+	});
 }

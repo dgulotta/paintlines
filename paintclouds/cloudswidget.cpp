@@ -18,62 +18,57 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtWidgets>
-
 #include "paintclouds.h"
 #include "cloudswidget.h"
-#include "../imagedata.h"
+#include "../hyperbolic_symmetry_chooser.h"
+#include "../inputwidgets.h"
 
-void ColorButton::mousePressEvent(QMouseEvent *)
-{
-  QColor col=QColorDialog::getColor(palette().color(QPalette::Window));
-  if(col.isValid()) {
-    setPalette(col);
-  }
-}
+Q_DECLARE_METATYPE(clouds_randfunc);
 
-QComboBox * CloudsWidget::newComboRandom()
-{
-	QComboBox *comboRandom = new QComboBox;
-	comboRandom->addItem(tr("Cauchy"));
-	comboRandom->addItem(tr("Normal"));
-	comboRandom->addItem(tr("Pseudo-Exponential"));
-	comboRandom->addItem(tr("Sech^2"));
-	return comboRandom;
-}
+std::vector<std::pair<const char *,clouds_randfunc>> randfuncs = {
+	{"Cauchy",&clouds_rand_cauchy},
+	{"Normal",&clouds_rand_normal},
+	{"Pseudo-Exponential",&clouds_rand_exp_cos},
+	{"Sech^2",&clouds_rand_sechsquare}};
 
 CloudsWidget::CloudsWidget()
 {
-	QFormLayout *layout = new QFormLayout;
-	spinSize = new SizeSpin(2);
-	layout->addRow(tr("Size"),spinSize);
-	comboSymmetry = new SymmetryCombo();
-	layout->addRow(tr("Symmetry"),comboSymmetry);
-	comboRandom = newComboRandom();
-	layout->addRow(tr("Distribution"),comboRandom);
-	color1 = new ColorButton(qRgb(255,255,0));
-	layout->addRow(tr("Color 1"),color1);
-	color2 = new ColorButton(qRgb(255,0,255));
-	layout->addRow(tr("Color 2"),color2);
-	color3 = new ColorButton(qRgb(0,255,255));
-	layout->addRow(tr("Color 3"),color3);
-	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
-	layout->addRow(buttonDraw);
-	setLayout(layout);
-	connect(buttonDraw,&QPushButton::clicked,this,&CloudsWidget::draw);
+	auto sz = new SizeSpin(2);
+	layout()->addRow("Size",sz);
+	auto sym = new SymmetryCombo;
+	layout()->addRow("Symmetry",sym);
+	auto col1 = new ColorButton(qRgb(255,255,0));
+	layout()->addRow("Color 1",col1);
+	auto col2 = new ColorButton(qRgb(255,0,255));
+	layout()->addRow("Color 2",col2);
+	auto col3 = new ColorButton(qRgb(0,255,255));
+	layout()->addRow("Color 3",col3);
+	DataComboAdapter<clouds_randfunc> rnd(randfuncs);
+	layout()->addRow("Distribution",rnd.box());
+	addGenerator("Draw",[=] () {
+		return paint_clouds(sz->value(),sym->group(),col1->color(),
+			col2->color(),col3->color(),rnd.value());
+	});
 }
 
-static clouds_randfunc randfuncs[] = {
-	&clouds_rand_cauchy,
-	&clouds_rand_normal,
-	&clouds_rand_exp_cos,
-	&clouds_rand_sechsquare
-};
-
-void CloudsWidget::draw()
+HyperbolicCloudsWidget::HyperbolicCloudsWidget()
 {
-	symgroup sg=symgroup(comboSymmetry->group());
-	auto canvas=paint_clouds(spinSize->value(),sg,color1->color(),color2->color(),
-		color3->color(),randfuncs[comboRandom->currentIndex()]);
-	emit newImage(ImageData(std::move(canvas)));
+	auto sz = new SizeSpin;
+	layout()->addRow("Size",sz);
+	auto sym = new HyperbolicSymmetryChooser;
+	layout()->addRow(sym);
+	EnumComboAdapter<projtype> pt;
+	layout()->addRow("Model",pt.box());
+	auto col1 = new ColorButton(qRgb(255,255,0));
+	layout()->addRow("Color 1",col1);
+	auto col2 = new ColorButton(qRgb(255,0,255));
+	layout()->addRow("Color 2",col2);
+	auto col3 = new ColorButton(qRgb(0,255,255));
+	layout()->addRow("Color 3",col3);
+	DataComboAdapter<clouds_randfunc> rnd(randfuncs);
+	layout()->addRow("Distribution",rnd.box());
+	addGenerator("Draw",[=] () {
+		return paint_hyperbolic_clouds(sz->value(),sym->domain(),pt.value(),
+			col1->color(),col2->color(),col3->color(),rnd.value());
+	});
 }

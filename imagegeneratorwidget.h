@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2014-2015 by Daniel Gulotta                       *
+ *   Copyright (C) 2008, 2014-2016 by Daniel Gulotta                       *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,39 +21,31 @@
 #ifndef _IMAGEGENERATORWIDGET_H
 #define _IMAGEGENERATORWIDGET_H
 
-#include <QStringList>
+#include <QFormLayout>
+#include <QMessageBox>
+#include <QPushButton>
 #include <QWidget>
-#include <QComboBox>
-#include <QSpinBox>
-#include <vector>
-#include "symmetry.h"
-
-struct ImageData;
-
-class SymmetryCombo : public QComboBox
-{
-	Q_OBJECT
-public:
-	SymmetryCombo(bool random=true);
-	SymmetryCombo(const std::vector<symgroup> &groups,bool random=true);
-	symgroup group();
-	static const QStringList symmetryStrings;
-};
-
-class SizeSpin : public QSpinBox
-{
-	Q_OBJECT
-public:
-	SizeSpin(int step=1);
-protected:
-	int valueFromText(const QString &text) const;
-};
+#include "imagedata.h"
 
 class ImageGeneratorWidget : public QWidget
 {
 	Q_OBJECT
 public:
-	static QSpinBox * newColorSpin();
+	ImageGeneratorWidget() { setLayout(new QFormLayout); }
+	QFormLayout * layout() { return static_cast<QFormLayout *>(QWidget::layout()); }
+	template<typename Fn>
+	QPushButton * addGenerator(const QString &name, const Fn &f, const std::vector<layer> *l=nullptr, bool orig=true) {
+		QPushButton *b = new QPushButton(name);
+		layout()->addRow(b);
+		connect(b,&QPushButton::clicked,[this,f,l,orig] {
+			try {
+				emit newImage(ImageData(f(),l,orig));
+			} catch(const std::logic_error &e) {
+				QMessageBox::information(this,"Paintlines",e.what());
+			}
+		});
+		return b;
+	}
 signals:
 	void newImage(const ImageData &data);
 };

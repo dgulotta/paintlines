@@ -18,27 +18,48 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtWidgets>
+#include <QDoubleSpinBox>
 #include "../imagedata.h"
+#include "../inputwidgets.h"
 #include "trap.h"
 #include "trapwidget.h"
 
 TrapWidget::TrapWidget()
 {
-	QFormLayout *layout = new QFormLayout;
-	spinSize = new SizeSpin(2);
-	layout->addRow(tr("Size"),spinSize);
-	comboSymmetry = new SymmetryCombo;
-	layout->addRow(tr("Symmetry"),comboSymmetry);
-	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
-	layout->addRow(buttonDraw);
-	connect(buttonDraw,&QPushButton::clicked,this,&TrapWidget::draw);
-	setLayout(layout);
+	auto spinSize = new SizeSpin(2);
+	layout()->addRow(tr("Size"),spinSize);
+	auto comboSymmetry = new SymmetryCombo;
+	layout()->addRow(tr("Symmetry"),comboSymmetry);
+	addGenerator("Draw",[=] () {
+		symmetric_canvas<color_t> img(spinSize->value(),comboSymmetry->group());
+		drawtrap(img);
+		return img;
+	});
 }
 
-void TrapWidget::draw()
+QuasiTrapWidget::QuasiTrapWidget()
 {
-	symmetric_canvas<color_t> img(spinSize->value(),(symgroup)comboSymmetry->group());
-	drawtrap(img);
-	emit newImage(ImageData(std::move(img)));
+	auto spinHeight = new QSpinBox;
+	spinHeight->setRange(1,0x10000);
+	spinHeight->setValue(900);
+	layout()->addRow(tr("Height"),spinHeight);
+	auto spinWidth = new QSpinBox;
+	spinWidth->setRange(1,0x10000);
+	spinWidth->setValue(1600);
+	layout()->addRow(tr("Width"),spinWidth);
+	auto spinQuasiperiod = new QDoubleSpinBox;
+	spinQuasiperiod->setRange(1,0x10000);
+	spinQuasiperiod->setValue(100);
+	layout()->addRow(tr("Quasiperiod"),spinQuasiperiod);
+	DataComboAdapter<int> comboSymmetry({{"5",5},{"8",8},{"10",10},{"12",12}});
+	layout()->addRow(tr("Symmetry"),comboSymmetry.box());
+	auto comboType = new QComboBox;
+	comboType->addItems({"Trig","Polynomial"});
+	layout()->addRow(tr("Type"),comboType);
+	addGenerator("Draw",[=] () {
+		auto img=canvas<color_t>(spinWidth->value(),spinHeight->value());
+		auto fn = comboType->currentIndex() ? drawquasitrap_poly : drawquasitrap;
+		fn(img,comboSymmetry.value(),spinQuasiperiod->value());
+		return img;
+	});
 }

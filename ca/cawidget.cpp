@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 by Daniel Gulotta                                  *
+ *   Copyright (C) 2014, 2016 by Daniel Gulotta                            *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,106 +18,93 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtWidgets>
+#include <QDoubleSpinBox>
+#include <QLabel>
 #include "../imagedata.h"
+#include "../inputwidgets.h"
 #include "cawidget.h"
 
-using std::get;
+Q_DECLARE_METATYPE(const rule*);
 
 CAWidget::CAWidget()
 {
-	QFormLayout *layout = new QFormLayout;
-	spinWidth = new QSpinBox;
-	spinWidth->setMaximum(65536);
-	spinWidth->setValue(1600);
-	layout->addRow("Width",spinWidth);
-	spinHeight = new QSpinBox;
-	spinHeight->setMaximum(65536);
-	spinHeight->setValue(900);
-	layout->addRow("Height",spinHeight);
-	comboRule = new QComboBox;
-	addRule("34 Life",rule::threefour);
-	addRule("Banners",rule::banners);
-	addRule("Beams",rule::beams);
-	addRule("Blob",rule::blob);
-	addRule("Bombers",rule::bombers);
-	addRule("Bubbles",rule::bubbles3);
-	addRule("Colony",rule::colony);
-	addRule("Coral",rule::coral);
-	addRule("Conway's Life",rule::conway);
-	addRule("Diamoeba",rule::diamoeba);
-	addRule("Dust Clouds",rule::dustclouds);
-	addRule("Ebb & Flow",rule::ebbandflow);
-	addRule("Fireworks",rule::fireworks);
-	addRule("Flakes",rule::flakes);
-	addRule("Gnats",rule::gnats);
-	addRule("Polluters",rule::polluters);
-	addRule("Prairie on Fire",rule::prairieonfire);
-	addRule("Pyramids",rule::pyramids);
-	addRule("Seeds",rule::seeds);
-	addRule("Soft Freeze",rule::softfreeze);
-	addRule("Smoke Plumes",rule::plumes);
-	addRule("Spill",rule::spill);
-	addRule("Sponge",rule::sponge);
-	addRule("Streets",rule::streets);
-	addRule("Streaks",rule::streaks);
-	addRule("Tendrils",rule::tendrils);
-	addRule("Tubes",rule::tubes);
-	addRule("Wanderers",rule::wanderers);
-	layout->addRow("Rule",comboRule);
-	layout->addRow(new QLabel("Starting area"));
-	spinLeft = new QSpinBox;
-	spinLeft->setMaximum(65536);
-	spinLeft->setValue(797);
-	layout->addRow("Left",spinLeft);
-	spinTop = new QSpinBox;
-	spinTop->setMaximum(65536);
-	spinTop->setValue(447);
-	layout->addRow("Top",spinTop);
-	spinRight = new QSpinBox;
-	spinRight->setMaximum(65536);
-	spinRight->setValue(803);
-	layout->addRow("Right",spinRight);
-	spinBottom = new QSpinBox;
-	spinBottom->setMaximum(65536);
-	spinBottom->setValue(453);
-	layout->addRow("Bottom",spinBottom);
-	spinTurns = new QSpinBox;
-	spinTurns->setMaximum(65536);
-	spinTurns->setValue(3000);
-	layout->addRow("Turns",spinTurns);
-	spinIntensity = new QDoubleSpinBox;
-	spinIntensity->setMaximum(10.);
-	spinIntensity->setValue(1.);
-	spinIntensity->setSingleStep(.01);
-	layout->addRow("Intensity",spinIntensity);
-	QPushButton *buttonDraw = new QPushButton("Start");
-	layout->addRow(buttonDraw);
-	buttonContinue = new QPushButton("Continue");
+	auto width = new QSpinBox;
+	width->setRange(1,0x10000);
+	width->setValue(1600);
+	layout()->addRow("Width",width);
+	auto height = new QSpinBox;
+	height->setRange(1,0x10000);
+	height->setValue(900);
+	layout()->addRow("Height",height);
+	DataComboAdapter<const rule *> comboRule({
+		{"34 Life",&rule::threefour},
+		{"Banners",&rule::banners},
+		{"Beams",&rule::beams},
+		{"Blob",&rule::blob},
+		{"Bombers",&rule::bombers},
+		{"Bubbles",&rule::bubbles3},
+		{"Colony",&rule::colony},
+		{"Coral",&rule::coral},
+		{"Conway's Life",&rule::conway},
+		{"Diamoeba",&rule::diamoeba},
+		{"Dust Clouds",&rule::dustclouds},
+		{"Ebb & Flow",&rule::ebbandflow},
+		{"Fireworks",&rule::fireworks},
+		{"Flakes",&rule::flakes},
+		{"Gnats",&rule::gnats},
+		{"Polluters",&rule::polluters},
+		{"Prairie on Fire",&rule::prairieonfire},
+		{"Pyramids",&rule::pyramids},
+		{"Seeds",&rule::seeds},
+		{"Soft Freeze",&rule::softfreeze},
+		{"Smoke Plumes",&rule::plumes},
+		{"Spill",&rule::spill},
+		{"Sponge",&rule::sponge},
+		{"Streets",&rule::streets},
+		{"Streaks",&rule::streaks},
+		{"Tendrils",&rule::tendrils},
+		{"Tubes",&rule::tubes},
+		{"Wanderers",&rule::wanderers}
+	});
+	layout()->addRow("Rule",comboRule.box());
+	layout()->addRow(new QLabel("Starting area"));
+	auto left = new QSpinBox;
+	left->setRange(1,0x10000);
+	left->setValue(797);
+	layout()->addRow("Left",left);
+	auto top = new QSpinBox;
+	top->setRange(1,0x10000);
+	top->setValue(447);
+	layout()->addRow("Top",top);
+	auto right = new QSpinBox;
+	right->setRange(1,0x10000);
+	right->setValue(803);
+	layout()->addRow("Right",right);
+	auto bottom = new QSpinBox;
+	bottom->setRange(1,0x10000);
+	bottom->setValue(453);
+	layout()->addRow("Bottom",bottom);
+	auto turns = new QSpinBox;
+	turns->setRange(1,0x10000);
+	turns->setValue(3000);
+	layout()->addRow("Turns",turns);
+	auto intensity = new QDoubleSpinBox;
+	intensity->setMaximum(10.);
+	intensity->setValue(1.);
+	intensity->setSingleStep(.01);
+	layout()->addRow("Intensity",intensity);
+	auto cont = [=] () {
+		ca_sim->run_for(turns->value());
+		return ca_sim->get_diff_image(intensity->value());
+	};
+	auto buttonStart = addGenerator("Start",[=] () {
+		ca_sim.reset(new ca(width->value(),height->value(),
+			*(comboRule.value())));
+		ca_sim->random_rectangle(left->value(),top->value(),right->value(),
+			bottom->value());
+		return cont();
+	});
+	auto buttonContinue = addGenerator("Continue",cont);
 	buttonContinue->setEnabled(false);
-	layout->addRow(buttonContinue);
-	setLayout(layout);
-	connect(buttonContinue,&QPushButton::clicked,this,&CAWidget::cont);
-	connect(buttonDraw,&QPushButton::clicked,this,&CAWidget::draw);
-}
-
-void CAWidget::addRule(const QString &s, const rule &r)
-{
-	comboRule->addItem(s,QVariant::fromValue(&r));
-}
-
-void CAWidget::draw()
-{
-	buttonContinue->setEnabled(true);
-	const rule *r = comboRule->itemData(comboRule->currentIndex()).value<const rule *>();
-	ca_sim.reset(new ca(spinWidth->value(),spinHeight->value(),*r));
-	ca_sim->random_rectangle(spinLeft->value(),spinTop->value(),
-		spinRight->value(),spinBottom->value());
-	cont();
-}
-
-void CAWidget::cont()
-{
-	ca_sim->run_for(spinTurns->value());
-	emit newImage(ImageData(ca_sim->get_diff_image(spinIntensity->value())));
+	connect(buttonStart,&QPushButton::clicked,[=] () { buttonContinue->setEnabled(true); });
 }

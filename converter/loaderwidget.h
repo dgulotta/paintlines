@@ -24,6 +24,7 @@
 #include <functional>
 #include <memory>
 #include "../imagegeneratorwidget.h"
+#include "../inputwidgets.h"
 
 template<typename T>
 class symmetric_canvas;

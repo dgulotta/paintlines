@@ -25,7 +25,7 @@
 
 ConverterWidget::ConverterWidget()
 {
-	QFormLayout *layout = new QFormLayout;
+	QFormLayout *layout = this->layout();
 	randomizeWidget = new RandomizeWidget;
 	layout->addRow(randomizeWidget);
 	spinSize = new QSpinBox();
@@ -33,10 +33,7 @@ ConverterWidget::ConverterWidget()
 	spinSize->setMaximum(65536);
 	spinSize->setValue(256);
 	layout->addRow(tr("Size"),spinSize);
-	comboModel = new QComboBox;
-	comboModel->addItem(tr("Poincare"));
-	comboModel->addItem(tr("Klein"));
-	layout->addRow(tr("Model"),comboModel);
+	layout->addRow(tr("Model"),comboModel.box());
 	buttonHyperbolic = new QPushButton(tr("Make hyperbolic"));
 	buttonHyperbolic->setEnabled(false);
 	layout->addRow(buttonHyperbolic);
@@ -46,7 +43,6 @@ ConverterWidget::ConverterWidget()
 	buttonRestore = new QPushButton("&Restore");
 	buttonRestore->setEnabled(false);
 	layout->addRow(buttonRestore);
-	setLayout(layout);
 	connect(buttonHyperbolic,&QPushButton::clicked,this,&ConverterWidget::makeHyperbolic);
 	connect(buttonHexStretch,&QPushButton::clicked,this,&ConverterWidget::hexagonalStretch);
 	connect(buttonRestore,&QPushButton::clicked,this,&ConverterWidget::restore);
@@ -90,6 +86,6 @@ void ConverterWidget::hexagonalStretch()
 void ConverterWidget::makeHyperbolic()
 {
 	auto img = make_hyperbolic(*(restoreData.img.sym_view),
-		(projtype)comboModel->currentIndex(),spinSize->value());
+		comboModel.value(),spinSize->value());
 	emit newImage(ImageData(std::move(img),nullptr,false));
 }

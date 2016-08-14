@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
+ *   Copyright (C) 2016 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -21,44 +21,20 @@
 #ifndef _CLOUDSWIDGET_H
 #define _CLOUDSWIDGET_H
 
-#include "../color.h"
 #include "../imagegeneratorwidget.h"
-
-class QMouseEvent;
-
-class ColorButton : public QWidget
-{
-Q_OBJECT
-public:
-	ColorButton(QWidget *parent=0) : QWidget(parent) {
-		setAutoFillBackground(true);
-	}
-	ColorButton(QColor col, QWidget *parent=0) : ColorButton(parent) {
-		setPalette(QPalette(col));
-	}
-	color_t color() {
-		QColor c = palette().color(QPalette::Window);
-		return color_t(c.red(),c.green(),c.blue());
-	}
-protected:
-	virtual void mousePressEvent(QMouseEvent *);
-};
 
 class CloudsWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
 	CloudsWidget();
-	static QComboBox * newComboRandom();
-protected slots:
-	void draw();
-protected:
-	QSpinBox *spinSize;
-	SymmetryCombo *comboSymmetry;
-	ColorButton *color1;
-	ColorButton *color2;
-	ColorButton *color3;
-	QComboBox *comboRandom;
+};
+
+class HyperbolicCloudsWidget : public ImageGeneratorWidget
+{
+	Q_OBJECT
+public:
+	HyperbolicCloudsWidget();
 };
 
 #endif

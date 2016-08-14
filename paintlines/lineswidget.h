@@ -24,6 +24,7 @@
 #include <functional>
 #include <QMetaType>
 #include "../imagegeneratorwidget.h"
+#include "../inputwidgets.h"
 #include "../layer.h"
 #include "../symmetric_canvas.h"
 

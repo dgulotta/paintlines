@@ -23,20 +23,11 @@
 
 #include "../imagegeneratorwidget.h"
 
-class QSpinBox;
-class QDoubleSpinBox;
-
 class QuasiStripesWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
 	QuasiStripesWidget();
-protected slots:
-	void draw();
-protected:
-	QSpinBox *spinSize;
-	QSpinBox *spinQuasiSize;
-	QDoubleSpinBox *spinAlpha;
 };
 
 #endif

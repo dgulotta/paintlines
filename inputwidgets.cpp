@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2013-2015 by Daniel Gulotta                             *
+ *   Copyright (C) 2013-2016 by Daniel Gulotta                             *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,8 +18,9 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtWidgets>
-#include "imagegeneratorwidget.h"
+#include <QColorDialog>
+#include <QDoubleSpinBox>
+#include "inputwidgets.h"
 #include "randgen.h"
 
 SymmetryCombo::SymmetryCombo(bool random)
@@ -70,8 +71,7 @@ const QStringList SymmetryCombo::symmetryStrings = {
 
 SizeSpin::SizeSpin(int step)
 {
-	setMinimum(step);
-	setMaximum(65536);
+	setRange(step,0x10000-(0x10000%step));
 	setSingleStep(step);
 	setValue(256);
 }
@@ -85,9 +85,21 @@ int SizeSpin::valueFromText(const QString &text) const
 	return val;
 }
 
-QSpinBox * ImageGeneratorWidget::newColorSpin() {
-	QSpinBox *spinColors = new QSpinBox;
-	spinColors->setValue(25);
-	return spinColors;
+void ColorButton::mousePressEvent(QMouseEvent *)
+{
+	QColor col=QColorDialog::getColor(palette().color(QPalette::Window));
+	if(col.isValid()) {
+		setPalette(col);
+	}
 }
 
+enum class projtype;
+enum class flip_type;
+
+template<>
+const QStringList EnumComboAdapter<projtype>::defaultItems=
+	{"Poincare","Klein"};
+
+template<>
+const QStringList EnumComboAdapter<flip_type>::defaultItems=
+	{"All","Det > 0","Random"};

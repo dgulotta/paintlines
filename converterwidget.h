@@ -23,8 +23,11 @@
 
 #include "imagedata.h"
 #include "imagegeneratorwidget.h"
+#include "inputwidgets.h"
 #include "mainform.h"
 
+enum class projtype;
+class QSpinBox;
 class QPushButton;
 class RandomizeWidget;
 
@@ -41,7 +44,7 @@ public slots:
 	void hexagonalStretch();
 private:
 	QSpinBox *spinSize;
-	QComboBox *comboModel;
+	EnumComboAdapter<projtype> comboModel;
 	QPushButton *buttonHyperbolic;
 	QPushButton *buttonRestore;
 	QPushButton *buttonHexStretch;

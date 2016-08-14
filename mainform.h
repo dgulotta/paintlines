@@ -29,7 +29,6 @@
 class ImageGeneratorWidget;
 class LoaderWidget;
 class QActionGroup;
-class QComboBox;
 class QDragEnterEvent;
 class QDropEvent;
 class QStackedWidget;
@@ -59,7 +58,7 @@ signals:
 	void enableSaveLayers(bool);
 private:
 	void recomputeTiling();
-	std::vector<layer> *layers;
+	const std::vector<layer> *layers;
 	QPixmap pix;
 	QImage img;
 	bool imageIsTileable;

@@ -56,12 +56,13 @@ void PaintRuleWidget::addRule(const QString &s, const paintfunc &f)
 
 LinesWidget::LinesWidget()
 {
-	QFormLayout *layout = new QFormLayout;
+	QFormLayout *layout = this->layout();
 	spinSize = new SizeSpin(2);
 	layout->addRow(tr("Size"),spinSize);
 	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
-	spinColors = newColorSpin();
+	spinColors = new QSpinBox;
+	spinColors->setValue(DEFAULT_NCOLORS);
 	layout->addRow(tr("Colors"),spinColors);
 #ifdef LUARULES
 	QPushButton *buttonAddRule = new QPushButton(tr("Load rule"));
@@ -91,7 +92,6 @@ LinesWidget::LinesWidget()
 	layout->addRow(colorWidget);
 	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
 	layout->addRow(buttonDraw);
-	setLayout(layout);
 	connect(buttonDraw,&QPushButton::clicked,this,&LinesWidget::draw);
 }
 

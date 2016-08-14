@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
+ *   Copyright (C) 2016 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -23,20 +23,11 @@
 
 #include "../imagegeneratorwidget.h"
 
-class QSpinBox;
-class QDoubleSpinBox;
-
 class StripesWidget : public ImageGeneratorWidget
 {
-  Q_OBJECT
+	Q_OBJECT
 public:
 	StripesWidget();
-protected slots:
-	void draw();
-protected:
-	QSpinBox *spinSize;
-	SymmetryCombo *comboSymmetry;
-	QDoubleSpinBox *spinAlpha;
 };
 
 #endif

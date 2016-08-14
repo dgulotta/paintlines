@@ -23,16 +23,18 @@
 #include "squiggleswidget.h"
 #include "paintsquiggles.h"
 #include "../imagedata.h"
+#include "../inputwidgets.h"
 #include "../randomcolorwidget.h"
 
 SquigglesWidget::SquigglesWidget()
 {
-	QFormLayout *layout = new QFormLayout;
+	QFormLayout *layout = this->layout();
 	spinSize = new SizeSpin(2);
 	layout->addRow(tr("Size"),spinSize);
 	comboSymmetry = new SymmetryCombo();
 	layout->addRow(tr("Symmetry"),comboSymmetry);
-	spinColors = newColorSpin();
+	spinColors = new QSpinBox;
+	spinColors->setValue(DEFAULT_NCOLORS);
 	layout->addRow(tr("Colors"),spinColors);
 	spinAlpha = new QDoubleSpinBox;
 	spinAlpha->setMinimum(.01);
@@ -55,7 +57,6 @@ SquigglesWidget::SquigglesWidget()
 	newColorButton = new QPushButton(tr("Change Colors"));
 	layout->addRow(newColorButton);
 	newColorButton->setEnabled(false);
-	setLayout(layout);
 	connect(buttonDraw,&QPushButton::clicked,this,&SquigglesWidget::draw);
 	connect(newColorButton,&QPushButton::clicked,this,&SquigglesWidget::resetColors);
 }

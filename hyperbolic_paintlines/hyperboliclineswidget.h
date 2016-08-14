@@ -25,26 +25,12 @@
 #include "../canvas.h"
 #include "../layer.h"
 
-class QComboBox;
-class QSpinBox;
-class QDoubleSpinBox;
-class HyperbolicSymmetryChooser;
-
 class HyperbolicLinesWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT;
 public:
 	HyperbolicLinesWidget();
-protected slots:
-	void draw();
 protected:
-	QComboBox *comboModel;
-	HyperbolicSymmetryChooser *chooser;
-	QComboBox *comboSubset;
-	QSpinBox *spinSize;
-	QSpinBox *spinColors;
-	QDoubleSpinBox *spinThickness;
-	QDoubleSpinBox *spinSharpness;
 	std::vector<canvas<uint8_t>> grids;
 	std::vector<layer> layers;
 };

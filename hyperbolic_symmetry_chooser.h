@@ -48,7 +48,7 @@ class HyperbolicSymmetryChooser : public QWidget
 {
 	Q_OBJECT
 public:
-	HyperbolicSymmetryChooser(QWidget *parent=nullptr);
+	HyperbolicSymmetryChooser(bool add_default=true);
 	fundamental_domain domain() const { return currentItem()->domain(); }
 	fundamental_domain_family domain_family() const { return currentItem()->domain_family(); }
 	void add(const fundamental_domain_family &fdf,const std::vector<int> &defaults);

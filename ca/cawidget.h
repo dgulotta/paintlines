@@ -21,35 +21,16 @@
 #ifndef _CAWIDGET_H
 #define _CAWIDGET_H
 
-#include <QMetaType>
 #include "../imagegeneratorwidget.h"
 #include "ca.h"
-
-Q_DECLARE_METATYPE(const rule*);
-
-class QDoubleSpinBox;
-class QPushButton;
 
 class CAWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
 public:
 	CAWidget();
-protected slots:
-	void draw();
-	void cont();
 protected:
 	void addRule(const QString &s, const rule &r);
-	QSpinBox *spinWidth;
-	QSpinBox *spinHeight;
-	QComboBox *comboRule;
-	QSpinBox *spinLeft;
-	QSpinBox *spinRight;
-	QSpinBox *spinTop;
-	QSpinBox *spinBottom;
-	QSpinBox *spinTurns;
-	QDoubleSpinBox *spinIntensity;
-	QPushButton *buttonContinue;
 	QScopedPointer<ca> ca_sim;
 };
 

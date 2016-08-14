@@ -30,14 +30,13 @@ HEADERS += canvas.h \
 	converter/loaderwidget.h \
 	hyperbolic_paintlines/hyperboliclineswidget.h \
 	hyperbolic_paintlines/hyperbolic_paintlines.h \
+	inputwidgets.h \
 	paintclouds/cloudswidget.h \
-	paintclouds/hyperboliccloudswidget.h \
 	paintclouds/paintclouds.h \
 	paintlines/lineswidget.h \
 	paintlines/paintlines.h \
 	trap/trap.h \
 	trap/trapwidget.h \
-	trap/quasitrapwidget.h
 
 SOURCES += converterwidget.cpp \
 	hyperbolic.cpp \
@@ -45,7 +44,7 @@ SOURCES += converterwidget.cpp \
 	hyperbolic_polygons.cpp \
 	hyperbolic_symmetry_chooser.cpp \
 	imagedata.cpp \
-	imagegeneratorwidget.cpp \
+	inputwidgets.cpp \
 	interpolate.cpp \
 	layer.cpp \
 	main.cpp \
@@ -61,13 +60,11 @@ SOURCES += converterwidget.cpp \
 	hyperbolic_paintlines/hyperbolic_paintlines.cpp \
 	hyperbolic_paintlines/hyperboliclineswidget.cpp \
 	paintclouds/cloudswidget.cpp \
-	paintclouds/hyperboliccloudswidget.cpp \
 	paintclouds/paintclouds.cpp \
 	paintlines/paintlines.cpp \
 	paintlines/lineswidget.cpp \
 	trap/trap.cpp \
 	trap/trapwidget.cpp \
-	trap/quasitrapwidget.cpp
 
 packagesExist(GraphicsMagick++) {
 	PKGCONFIG += GraphicsMagick++

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2008, 2013-2014, 2016 by Daniel Gulotta                 *
+ *   Copyright (C) 2016 by Daniel Gulotta                                  *
  *   dgulotta@alum.mit.edu                                                 *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,32 +18,21 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
-#include <QtWidgets>
-
-#include "../imagedata.h"
+#include <QDoubleSpinBox>
+#include "inputwidgets.h"
 #include "paintstripes.h"
 #include "stripeswidget.h"
 
 StripesWidget::StripesWidget()
 {
-	QFormLayout *layout = new QFormLayout;
-	spinSize = new SizeSpin(2);
-	layout->addRow(tr("Size"),spinSize);
-	comboSymmetry = new SymmetryCombo();
-	layout->addRow(tr("Symmetry"),comboSymmetry);
-	spinAlpha = new QDoubleSpinBox;
-	spinAlpha->setMinimum(.01);
-	spinAlpha->setMaximum(2.);
-	spinAlpha->setValue(1.);
-	layout->addRow(tr("Alpha"),spinAlpha);
-	QPushButton *buttonDraw = new QPushButton(tr("Draw"));
-	layout->addRow(buttonDraw);
-	setLayout(layout);
-	connect(buttonDraw,&QPushButton::clicked,this,&StripesWidget::draw);
-}
-
-void StripesWidget::draw()
-{
-	auto img=paint_stripes(spinSize->value(),(symgroup)comboSymmetry->group(),spinAlpha->value());
-	emit newImage(ImageData(std::move(img)));
+	auto sz = new SizeSpin(2);
+	layout()->addRow("Size",sz);
+	auto sym = new SymmetryCombo;
+	layout()->addRow("Symmetry",sym);
+	auto alpha = new QDoubleSpinBox;
+	alpha->setRange(.01,2.);
+	alpha->setValue(1.);
+	addGenerator("Draw",[=] () {
+		return paint_stripes(sz->value(),sym->group(),alpha->value());
+	});
 }

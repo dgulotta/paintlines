@@ -28,11 +28,13 @@ class TrapWidget : public ImageGeneratorWidget
 	Q_OBJECT
 public:
 	TrapWidget();
-private slots:
-	void draw();
-private:
-	QSpinBox *spinSize;
-	SymmetryCombo *comboSymmetry;
+};
+
+class QuasiTrapWidget : public ImageGeneratorWidget
+{
+	Q_OBJECT
+public:
+	QuasiTrapWidget();
 };
 
 #endif

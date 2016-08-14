@@ -25,10 +25,8 @@
 #include "hyperbolic_paintlines/hyperboliclineswidget.h"
 #include "imagedata.h"
 #include "paintclouds/cloudswidget.h"
-#include "paintclouds/hyperboliccloudswidget.h"
 #include "paintlines/lineswidget.h"
 #include "trap/trapwidget.h"
-#include "trap/quasitrapwidget.h"
 #ifdef FFTWPROGS
 #include "paintsquiggles/squiggleswidget.h"
 #include "paintstripes/stripeswidget.h"
