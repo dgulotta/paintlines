@@ -117,8 +117,10 @@ gcc|clang {
 }
 
 linux-clang {
-	DEFINES += _OPENMP=201107
-	QMAKE_CXXFLAGS += -Wno-macro-redefined
+	system(clang++ --version | grep 'version.3.[0-8]') {
+		DEFINES += _OPENMP=201107
+		QMAKE_CXXFLAGS += -Wno-macro-redefined
+	}
 }
 
 unix {

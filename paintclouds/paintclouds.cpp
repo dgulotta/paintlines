@@ -102,14 +102,14 @@ int tri_size(int m)
 void copy(symmetric_canvas<color_t> &img, canvas<color_t> &tri, int x1, int y1, int x2, int y2, int x3, int y3, int scale=1, bool reverse=false)
 {
 	int d=tri.height()-1;
-	long xmin=divide(min({x1,x2,x3}),scale), ymin=divide(min({y1,y2,y3}),scale);
-	long xmax=-divide(-max({x1,x2,x3}),scale), ymax=-divide(-max({y1,y2,y3}),scale);
-	long t=(x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2));
-	for(long x=xmin;x<=xmax;x++)
-		for(long y=ymin;y<=ymax;y++) {
-			long a1 = scale*x*(y2-y3)+x2*(y3-scale*y)+x3*(scale*y-y2);
-			long a2 = x1*(scale*y-y3)+scale*x*(y3-y1)+x3*(y1-scale*y);
-			long a3 = x1*(y2-scale*y)+x2*(scale*y-y1)+scale*x*(y1-y2);
+	long long xmin=divide(min({x1,x2,x3}),scale), ymin=divide(min({y1,y2,y3}),scale);
+	long long xmax=-divide(-max({x1,x2,x3}),scale), ymax=-divide(-max({y1,y2,y3}),scale);
+	long long t=(x1*(y2-y3)+x2*(y3-y1)+x3*(y1-y2));
+	for(long long x=xmin;x<=xmax;x++)
+		for(long long y=ymin;y<=ymax;y++) {
+			long long a1 = scale*x*(y2-y3)+x2*(y3-scale*y)+x3*(scale*y-y2);
+			long long a2 = x1*(scale*y-y3)+scale*x*(y3-y1)+x3*(y1-scale*y);
+			long long a3 = x1*(y2-scale*y)+x2*(scale*y-y1)+scale*x*(y1-y2);
 			if(a1*t>=0&&a2*t>=0&&a3*t>=0) {
 				int tx = (d*a2)/t, ty = (d*a3)/t;
 				if(reverse)
