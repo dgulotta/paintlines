@@ -34,6 +34,7 @@ QuasiStripesWidget::QuasiStripesWidget()
 	auto alpha = new QDoubleSpinBox;
 	alpha->setRange(.01,2.);
 	alpha->setValue(1.);
+	layout()->addRow("Alpha",alpha);
 	addGenerator("Draw",[=] () {
 		return paint_quasiperiodic_stripes(sz->value(),qsz->value(),
 			alpha->value());

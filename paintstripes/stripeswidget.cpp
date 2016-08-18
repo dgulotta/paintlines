@@ -32,6 +32,7 @@ StripesWidget::StripesWidget()
 	auto alpha = new QDoubleSpinBox;
 	alpha->setRange(.01,2.);
 	alpha->setValue(1.);
+	layout()->addRow("Alpha",alpha);
 	addGenerator("Draw",[=] () {
 		return paint_stripes(sz->value(),sym->group(),alpha->value());
 	});
