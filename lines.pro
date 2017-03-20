@@ -37,6 +37,8 @@ HEADERS += canvas.h \
 	paintlines/paintlines.h \
 	trap/trap.h \
 	trap/trapwidget.h \
+	walk/walk.h \
+	walk/walkwidget.h
 
 SOURCES += converterwidget.cpp \
 	hyperbolic.cpp \
@@ -65,6 +67,8 @@ SOURCES += converterwidget.cpp \
 	paintlines/lineswidget.cpp \
 	trap/trap.cpp \
 	trap/trapwidget.cpp \
+	walk/walk.cpp \
+	walk/walkwidget.cpp \
 
 packagesExist(GraphicsMagick++) {
 	PKGCONFIG += GraphicsMagick++

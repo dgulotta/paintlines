@@ -115,3 +115,8 @@ int random_weighted(const vector<int> &v)
 {
 	return discrete_distribution<>(v.begin(),v.end())(rnd);
 }
+
+int random_weighted(const vector<double> &v)
+{
+	return discrete_distribution<>(v.begin(),v.end())(rnd);
+}

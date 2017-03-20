@@ -33,7 +33,7 @@ inline int mod(int x, int y)
 
 inline int divide(int x, int y)
 {
-	return (x>0)?(x/y):(-(-x)/y);
+	return (x>=0)?(x/y):~((~x)/y);
 }
 
 

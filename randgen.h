@@ -58,5 +58,6 @@ template<typename T>
 T random_choice(const std::vector<T> &v) { return v[random_int(v.size())]; }
 
 int random_weighted(const std::vector<int> &v);
+int random_weighted(const std::vector<double> &v);
 
 #endif

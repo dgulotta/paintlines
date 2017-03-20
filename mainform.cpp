@@ -27,6 +27,7 @@
 #include "paintclouds/cloudswidget.h"
 #include "paintlines/lineswidget.h"
 #include "trap/trapwidget.h"
+#include "walk/walkwidget.h"
 #ifdef FFTWPROGS
 #include "paintsquiggles/squiggleswidget.h"
 #include "paintstripes/stripeswidget.h"
@@ -84,6 +85,7 @@ MainForm::MainForm()
 	addDesign("Squiggles",new SquigglesWidget);
 	addDesign("Stripes",new StripesWidget);
 #endif
+	addDesign("Walk",new WalkWidget);
 	converterWidget->makeConnections(this);
 	connect(this,&MainForm::newImage,imageWidget,&ImageWidget::setImage);
 	connect(actionSaveAs,&QAction::triggered,imageWidget,&ImageWidget::saveAs);
