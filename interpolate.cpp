@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include "interpolate.h"
+#include <cmath>
 
 using std::make_tuple;
 

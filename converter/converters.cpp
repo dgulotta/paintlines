@@ -25,6 +25,7 @@
 #include "../symmetric_canvas.h"
 #include "converters.h"
 
+#include <cmath>
 #include <functional>
 #include <tuple>
 
