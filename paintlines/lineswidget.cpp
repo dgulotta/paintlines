@@ -118,15 +118,16 @@ void LinesWidget::draw() {
 	transform(rules.begin(),rules.end(),weights.begin(),[] (auto &r) { return r->rule().weight; });
 	grids.resize(spinColors->value());
 	layers.resize(spinColors->value());
+	symgroup sg = comboSymmetry->group();
 	for(size_t i=0;i<grids.size();i++) {
 		auto rule=rules[random_weighted(weights)]->rule();
-		grids[i]=symmetric_canvas<uint8_t>(spinSize->value(),comboSymmetry->group());
+		grids[i]=symmetric_canvas<uint8_t>(spinSize->value(),sg);
 		rule.func(grids[i]);
 		layers[i].pixels=&(grids[i].unsafe_get_canvas());
 		layers[i].color=colorWidget->generate();
 		layers[i].pastel=rule.pastel;
 	}
-	symmetric_canvas<color_t> image(spinSize->value(),comboSymmetry->group());
+	symmetric_canvas<color_t> image(spinSize->value(),sg);
 	merge(image.unsafe_get_canvas(),layers);
 	emit newImage(ImageData(std::move(image),&layers));
 	checkLuaErrors();
