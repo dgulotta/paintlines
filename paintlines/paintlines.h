@@ -36,6 +36,7 @@ void generate_tree(symmetric_canvas<uint8_t> &g);
 void generate_smoothline5(symmetric_canvas<uint8_t> &g);
 void generate_granules(symmetric_canvas<uint8_t> &g);
 void generate_star(symmetric_canvas<uint8_t> &g);
+void generate_curl(symmetric_canvas<uint8_t> &g);
 
 class paintlines_layer_generator
 {

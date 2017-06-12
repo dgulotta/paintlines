@@ -153,6 +153,21 @@ void paintlines_layer_generator::drawdotsymmetric(int x, int y, int radius,doubl
 	} 
 }
 
+void generate_curl(symmetric_canvas<uint8_t> &g)
+{
+	paintlines_layer_generator gen(g);
+	double x=g.size()*random_uniform(), y=g.size()*random_uniform(), q=random_angle(), dq=random_cauchy(.167);
+	int imax = random_poisson(2500.);
+	for(int i=0;i<imax;i++) {
+		dq*=.97;
+		dq+=random_cauchy(.005);
+		q+=dq;
+		x+=cos(q);
+		y+=sin(q);
+		gen.drawdotsymmetric(x,y,5,1);
+	}
+}
+
 void paintlines_layer_generator::drawcluster(double x, double y, double var, int maxdepth)
 {
   double mx=x,my=y;

@@ -78,6 +78,7 @@ LinesWidget::LinesWidget()
 	emit addRule("Arc",generate_smootharc);
 	emit addRule("Beads",generate_smoothline2_beads);
 	emit addRule("Cluster",generate_cluster);
+	emit addRule("Curl",generate_curl);
 	emit addRule("Flower",generate_flower);
 	emit addRule("Fractal",generate_cluster2);
 	emit addRule("Granules",generate_granules);
