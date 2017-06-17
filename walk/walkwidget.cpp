@@ -12,7 +12,10 @@ WalkWidget::WalkWidget()
 	auto ba = new QCheckBox("Balanced");
 	ba->setChecked(true);
 	layout()->addRow(ba);
-	addGenerator("Draw",[=] () {
+	addGenerator("Draw (tiled)",[=] () {
 		return draw_walk(wd->value(),ht->value(),ba->isChecked());
+	});
+	addGenerator("Draw (not tiled)",[=] () {
+		return draw_walk2(wd->value(),ht->value(),ba->isChecked());
 	});
 }
