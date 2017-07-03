@@ -43,8 +43,10 @@ void drawtrap(symmetric_canvas<color_t> &c);
 void drawquasitrap(canvas<color_t> &c,int symmetry,double quasiperiod);
 void drawquasitrap_poly(canvas<color_t> &c,int symmetry,double quasiperiod);
 
-wrap_canvas<color_t> draw_walk(int height, int width, bool balanced);
-canvas<color_t> draw_walk2(int height, int width, bool balanced);
+enum class walk_fill { AREA, LENGTH };
+
+wrap_canvas<color_t> draw_walk(int height, int width, bool balanced, walk_fill wf);
+canvas<color_t> draw_walk2(int height, int width, bool balanced, walk_fill wf);
 
 #ifdef FFTWPROGS
 #include <vector>

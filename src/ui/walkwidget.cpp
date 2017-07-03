@@ -32,10 +32,14 @@ WalkWidget::WalkWidget()
 	auto ba = new QCheckBox("Balanced");
 	ba->setChecked(true);
 	layout()->addRow(ba);
+	auto wf = new QComboBox;
+	wf->addItem("Area");
+	wf->addItem("Length");
+	layout()->addRow("Mode",wf);
 	addGenerator("Draw (tiled)",[=] () {
-		return draw_walk(wd->value(),ht->value(),ba->isChecked());
+		return draw_walk(wd->value(),ht->value(),ba->isChecked(),(walk_fill)wf->currentIndex());
 	});
 	addGenerator("Draw (not tiled)",[=] () {
-		return draw_walk2(wd->value(),ht->value(),ba->isChecked());
+		return draw_walk2(wd->value(),ht->value(),ba->isChecked(),(walk_fill)wf->currentIndex());
 	});
 }

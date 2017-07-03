@@ -18,12 +18,14 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <algorithm>
+#include <numeric>
 #include <tuple>
+#include <vector>
 #include "randgen.hpp"
 #include "generators.hpp"
 
-using std::make_tuple;
-using std::tuple;
+using namespace std;
 
 int sgn(long x)
 {
@@ -46,6 +48,7 @@ struct level_struct_1
 	wrap_canvas<int> mark;
 	wrap_canvas<tuple<int8_t,int8_t>> dirs;
 	std::vector<long> areas;
+	std::vector<int> lengths;
 };
 
 struct level_struct_2
@@ -59,6 +62,7 @@ struct level_struct_2
 	canvas<int> mark;
 	canvas<tuple<int8_t,int8_t>> dirs;
 	std::vector<long> areas;
+	std::vector<int> lengths;
 };
 
 template<typename LS>
@@ -67,6 +71,7 @@ void step(LS &l, int i, int j, int dx, int dy)
 	if (l.mark(i,j)>=0) return;
 	int x=i, y=j, n=l.areas.size();
 	long area=0;
+	int length=0;
 	while(l.mark(x,y)<0) {
 		l.mark(x,y)=n;
 		l.dirs(x,y)=make_tuple((int8_t)dx,(int8_t)dy);
@@ -88,12 +93,14 @@ void step(LS &l, int i, int j, int dx, int dy)
 				newdy=dy;
 		}
 		area+=(2*y+dy+newdy)*(dx+newdx);
+		length+=1;
 		x+=dx+newdx;
 		y+=dy+newdy;
 		dx=newdx;
 		dy=newdy;
 	}
 	l.areas.push_back(l.area(area,i,j,x,y));
+	l.lengths.push_back(length);
 }
 
 template<typename LS>
@@ -135,7 +142,53 @@ typename LS::out_type fill(LS &l)
 	return sc;
 }
 
-wrap_canvas<uint8_t> levels(const wrap_canvas<uint8_t> &c)
+struct fill2mag
+{
+	fill2mag(const vector<int> &l) : lengths(l), sorted(l), total(l.size()) {
+		sort(sorted.begin(),sorted.end());
+		partial_sum(sorted.begin(),sorted.end(),total.begin());
+	}
+	double operator () (int n) {
+		auto r = equal_range(sorted.begin(),sorted.end(),lengths[n]);
+		int i1 = r.first-sorted.begin()-1;
+		int i2 = r.second-sorted.begin()-1;
+		int p1 = i1<0 ? 0 : total[i1];
+		int p2 = total[i2];
+		return (p1+p2)/(2.*total.back());
+	}
+	const vector<int> &lengths;
+	vector<int> sorted;
+	vector<int> total;
+};
+
+template<typename LS>
+typename LS::out_type fill2(LS &l)
+{
+	int w = l.mark.width()-l.c.width(), h = l.mark.height()-l.c.height();
+	fill2mag mag(l.lengths);
+	typename LS::out_type sc(w,h);
+	for(int i=0;i<w;i++)
+		for(int j=0;j<h;j++) {
+			double v=0.;
+			if(!l.out_of_bounds(2*i-1,2*j)) {
+				v+=mag(l.mark(2*i-1,2*j));
+			}
+			if(!l.out_of_bounds(2*i,2*j-1)) {
+				v+=mag(l.mark(2*i,2*j-1));
+			}
+			if(!l.out_of_bounds(2*i+1,2*j)) {
+				v+=mag(l.mark(2*i+1,2*j));
+			}
+			if(!l.out_of_bounds(2*i,2*j+1)) {
+				v+=mag(l.mark(2*i,2*j+1));
+			}
+			uint8_t col = colorchop(63.999*v);
+			sc(i,j) = col;
+		}
+	return sc;
+}
+
+wrap_canvas<uint8_t> levels(const wrap_canvas<uint8_t> &c, walk_fill wf)
 {
 	int w=c.width(), h=c.height();
 	level_struct_1 ls(c);
@@ -143,10 +196,10 @@ wrap_canvas<uint8_t> levels(const wrap_canvas<uint8_t> &c)
 		for(int j=(i&1)^1;j<2*h;j+=2) {
 			step(ls,i,j,j&1,i&1);
 		}
-	return fill(ls);
+	return wf==walk_fill::AREA ? fill(ls) : fill2(ls);
 }
 
-canvas<uint8_t> levels2(const canvas<uint8_t> &c)
+canvas<uint8_t> levels2(const canvas<uint8_t> &c, walk_fill wf)
 {
 	int w=c.width(), h=c.height();
 	level_struct_2 ls(c);
@@ -162,7 +215,7 @@ canvas<uint8_t> levels2(const canvas<uint8_t> &c)
 		for(int j=(i&1)+1;j<2*h;j+=2) {
 			step(ls,i,j,j&1,i&1);
 		}
-	return fill(ls);
+	return wf==walk_fill::AREA ? fill(ls) : fill2(ls);
 }
 
 template<typename C>
@@ -226,15 +279,15 @@ void generate_paths(C &cr, C &cg, C &cb, bool balanced)
 		}
 }
 
-wrap_canvas<color_t> draw_walk(int width, int height, bool balanced)
+wrap_canvas<color_t> draw_walk(int width, int height, bool balanced, walk_fill wf)
 {
 	wrap_canvas<uint8_t> cr(width,height);
 	wrap_canvas<uint8_t> cg(width,height);
 	wrap_canvas<uint8_t> cb(width,height);
 	generate_paths(cr,cg,cb,balanced);
-	auto sr = levels(cr);
-	auto sg = levels(cg);
-	auto sb = levels(cb);
+	auto sr = levels(cr,wf);
+	auto sg = levels(cg,wf);
+	auto sb = levels(cb,wf);
 	wrap_canvas<color_t> sc(width,height);
 	for(int i=0;i<width;i++)
 		for(int j=0;j<height;j++)
@@ -242,15 +295,15 @@ wrap_canvas<color_t> draw_walk(int width, int height, bool balanced)
 	return sc;
 }
 
-canvas<color_t> draw_walk2(int width, int height, bool balanced)
+canvas<color_t> draw_walk2(int width, int height, bool balanced, walk_fill wf)
 {
 	canvas<uint8_t> cr(width-1,height-1);
 	canvas<uint8_t> cg(width-1,height-1);
 	canvas<uint8_t> cb(width-1,height-1);
 	generate_paths(cr,cg,cb,balanced);
-	auto sr = levels2(cr);
-	auto sg = levels2(cg);
-	auto sb = levels2(cb);
+	auto sr = levels2(cr,wf);
+	auto sg = levels2(cg,wf);
+	auto sb = levels2(cb,wf);
 	canvas<color_t> sc(width,height);
 	for(int i=0;i<width;i++)
 		for(int j=0;j<height;j++)
