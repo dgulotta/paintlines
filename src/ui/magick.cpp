@@ -26,7 +26,7 @@
 
 using namespace Magick;
 
-bool save_multilayer(int width, int height, const std::vector<layer> &layers, const std::string &name) {
+QString save_multilayer(int width, int height, const std::vector<layer> &layers, const std::string &name) {
 	try {
 		// GraphicsMagick's alpha channel is the inverse of the usual
 		// alpha channel (0 = opaque, 255 = transparent)
@@ -46,9 +46,9 @@ bool save_multilayer(int width, int height, const std::vector<layer> &layers, co
 					images[i+1].pixelColor(x,y,Color(col.red,col.green,col.blue,255-img(x,y)));
 		}
 		writeImages(images.begin(),images.end(),name);
-	} catch(Exception &) {
-		return false;
+	} catch(Exception &e) {
+		return QString(e.what());
 	}
-	return true;
+	return QString();
 }
 #endif

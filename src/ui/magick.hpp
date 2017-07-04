@@ -22,9 +22,11 @@
 #define _MAGICK_H
 #ifdef MULTIPAGE
 
+#include <QString>
+
 class layer;
 
-bool save_multilayer(int width, int height, const std::vector<layer> &layers, const std::string &name);
+QString save_multilayer(int width, int height, const std::vector<layer> &layers, const std::string &name);
 
 #endif
 #endif

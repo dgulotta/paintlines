@@ -94,7 +94,22 @@ MainForm::MainForm()
 bool ImageWidget::saveAs()
 {
 	QString s=QFileDialog::getSaveFileName();
-	if(!s.isEmpty()) return img.save(s);
+	if(!s.isEmpty()) {
+		QImageWriter writer(s);
+		bool b = writer.write(img);
+		if(!b) {
+			QString err = writer.errorString();
+			if(writer.error()==QImageWriter::UnsupportedFormatError) {
+				QTextStream st(&err,QIODevice::WriteOnly|QIODevice::Text);
+				st << "\n\nSupported formats are:";
+				for(auto fmt: writer.supportedImageFormats()) {
+					st << "\n" << fmt;
+				}
+			}
+			QMessageBox::critical(this,"Save failed",err);
+		}
+		return b;
+	}
 	return false;
 }
 
@@ -102,7 +117,13 @@ bool ImageWidget::saveLayers()
 {
 #ifdef MULTIPAGE
 	QString s=QFileDialog::getSaveFileName();
-	if(!s.isEmpty()) return save_multilayer(img.width(),img.height(),*layers,s.toStdString());
+	if(!s.isEmpty()) {
+		QString err = save_multilayer(img.width(),img.height(),*layers,s.toStdString());
+		if(!err.isNull()) {
+			QMessageBox::critical(this,"Save failed",err);
+		}
+		return err.isNull();
+	}
 #endif
 	return false;
 }
