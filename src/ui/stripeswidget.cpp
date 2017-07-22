@@ -35,7 +35,7 @@ StripesWidget::StripesWidget()
 	alpha->setValue(1.);
 	layout()->addRow("Alpha",alpha);
 	addGenerator("Draw",[=] () {
-		return paint_stripes(sz->value(),sym->group(),alpha->value());
+		return ImageData(paint_stripes(sz->value(),sym->group(),alpha->value()));
 	});
 }
 

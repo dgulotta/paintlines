@@ -441,8 +441,9 @@ function<double(double,double)> distfunc(symgroup sg)
 
 using std::max;
 
-void drawtrap(symmetric_canvas<color_t> &c)
+symmetric_canvas<color_t> drawtrap(int sz, symgroup sg)
 {
+	symmetric_canvas<color_t> c(sz,sg);
 	canvas<color_t> &cc=c.unsafe_get_canvas();
 	iterfunc f = random_iterfunc(c.group());
 	auto d = distfunc(c.group());
@@ -458,6 +459,7 @@ void drawtrap(symmetric_canvas<color_t> &c)
 		uint8_t v=colorchop(64*(dm+2));
 		cc(xx,yy)=color_t(v,v,v);
 	}
+	return c;
 }
 
 typedef complex<double> cx;
@@ -760,8 +762,9 @@ qpiterfunc random_qpiterfunc12()
 	};
 }
 
-void drawquasitrap_poly(canvas<color_t> &c, int symmetry, double quasiperiod)
+canvas<color_t> drawquasitrap_poly(int width, int height, int symmetry, double quasiperiod)
 {
+	canvas<color_t> c(width,height);
 	double xr=random_angle(), yr=random_angle(), zr=random_angle(), wr=random_angle();
 	double fct=2.*M_PI/quasiperiod;
 	qpiterfunc f;
@@ -800,10 +803,12 @@ void drawquasitrap_poly(canvas<color_t> &c, int symmetry, double quasiperiod)
 			uint8_t v=colorchop(128*(dm+1));
 			c(xx,yy)=color_t(v,v,v);
 		}
+	return c;
 }
 
-void drawquasitrap(canvas<color_t> &c, int symmetry, double quasiperiod)
+canvas<color_t> drawquasitrap(int width, int height, int symmetry, double quasiperiod)
 {
+	canvas<color_t> c(width,height);
 	double xr=random_angle(), yr=random_angle(), zr=random_angle(), wr=random_angle();
 	double fct=2.*M_PI/quasiperiod;
 	qiterfunc f;
@@ -841,4 +846,5 @@ void drawquasitrap(canvas<color_t> &c, int symmetry, double quasiperiod)
 			uint8_t v=colorchop(128*(dm+1));
 			c(xx,yy)=color_t(v,v,v);
 		}
+	return c;
 }

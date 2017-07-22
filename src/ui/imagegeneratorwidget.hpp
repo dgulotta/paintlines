@@ -34,12 +34,12 @@ public:
 	ImageGeneratorWidget() { setLayout(new QFormLayout); }
 	QFormLayout * layout() { return static_cast<QFormLayout *>(QWidget::layout()); }
 	template<typename Fn>
-	QPushButton * addGenerator(const QString &name, const Fn &f, const std::vector<layer> *l=nullptr, bool orig=true) {
+	QPushButton * addGenerator(const QString &name, const Fn &f) {
 		QPushButton *b = new QPushButton(name);
 		layout()->addRow(b);
-		connect(b,&QPushButton::clicked,[this,f,l,orig] {
+		connect(b,&QPushButton::clicked,[this,f] {
 			try {
-				emit newImage(ImageData(f(),l,orig));
+				emit newImage(f());
 			} catch(const std::logic_error &e) {
 				QMessageBox::information(this,"Paintlines",e.what());
 			}

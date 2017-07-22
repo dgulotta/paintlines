@@ -39,14 +39,14 @@ canvas<uint8_t> paint_hyperbolic_lines(const hyperbolic_symmetry_group &sg,const
 
 symmetric_canvas<color_t> paint_stripes(int sz, symgroup sym, double alpha);
 
-void drawtrap(symmetric_canvas<color_t> &c);
-void drawquasitrap(canvas<color_t> &c,int symmetry,double quasiperiod);
-void drawquasitrap_poly(canvas<color_t> &c,int symmetry,double quasiperiod);
+symmetric_canvas<color_t> drawtrap(int sz, symgroup sg);
+canvas<color_t> drawquasitrap(int width, int height,int symmetry,double quasiperiod);
+canvas<color_t> drawquasitrap_poly(int width, int height ,int symmetry,double quasiperiod);
 
 enum class walk_fill { AREA, LENGTH };
 
-wrap_canvas<color_t> draw_walk(int height, int width, bool balanced, walk_fill wf);
-canvas<color_t> draw_walk2(int height, int width, bool balanced, walk_fill wf);
+wrap_canvas<color_t> draw_walk(int width, int height, bool balanced, walk_fill wf);
+canvas<color_t> draw_walk2(int width, int height, bool balanced, walk_fill wf);
 
 #ifdef FFTWPROGS
 #include <vector>

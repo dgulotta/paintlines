@@ -21,12 +21,13 @@
 #ifndef _LAYER_H
 #define _LAYER_H
 
+#include <memory>
 #include "canvas.hpp"
 #include "color.hpp"
 
 struct layer {
 	layer() : pixels(nullptr), color(black), pastel(false) {}
-	const canvas<uint8_t> *pixels;
+	std::shared_ptr<const canvas<uint8_t>> pixels;
 	color_t color;
 	bool pastel;
 };

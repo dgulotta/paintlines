@@ -95,7 +95,7 @@ CAWidget::CAWidget()
 	layout()->addRow("Intensity",intensity);
 	auto cont = [=] () {
 		ca_sim->run_for(turns->value());
-		return ca_sim->get_diff_image(intensity->value());
+		return ImageData(ca_sim->get_diff_image(intensity->value()));
 	};
 	auto buttonStart = addGenerator("Start",[=] () {
 		ca_sim.reset(new ca(width->value(),height->value(),

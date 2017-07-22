@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #ifdef FFTWPROGS
+#include <memory>
 #include <QtWidgets>
 
 #include "squiggleswidget.hpp"
@@ -26,6 +27,10 @@
 #include "imagedata.hpp"
 #include "inputwidgets.hpp"
 #include "randomcolorwidget.hpp"
+
+using std::make_shared;
+using std::shared_ptr;
+using std::vector;
 
 SquigglesWidget::SquigglesWidget()
 {
@@ -66,17 +71,18 @@ void SquigglesWidget::draw()
 {
 	if(!colorWidget->load())
 		QMessageBox::information(this,"paintsquggles",tr("Failed to load color palette image"));
-	grids=paint_squiggles(spinColors->value(),
+	auto grids=paint_squiggles(spinColors->value(),
 		spinSize->value(),
 		comboSymmetry->group(),
 		spinAlpha->value(),
 		spinExponent->value(),
 		spinThickness->value(),
 		spinSharpness->value());
-	layers.resize(grids.size());
+	layers = make_shared<vector<layer>>(grids.size());
 	for(size_t i=0;i<grids.size();i++) {
-		layers[i].pixels=&(grids[i].as_canvas());
-		layers[i].pastel=false;
+		auto p_grid = make_shared<symmetric_canvas<uint8_t>>(std::move(grids[i]));
+		(*layers)[i].pixels=shared_ptr<const canvas<uint8_t>>(p_grid,&(p_grid->as_canvas()));
+		(*layers)[i].pastel=false;
 	}
 	updateImage();
 	newColorButton->setEnabled(true);
@@ -85,10 +91,10 @@ void SquigglesWidget::draw()
 void SquigglesWidget::updateImage()
 {
 	symmetric_canvas<color_t> image(spinSize->value(),comboSymmetry->group());
-	for(size_t i=0;i<grids.size();i++)
-		layers[i].color=colorWidget->generate();
-	merge(image.unsafe_get_canvas(),layers);
-	emit newImage(ImageData(std::move(image),&layers));
+	for(size_t i=0;i<layers->size();i++)
+		(*layers)[i].color=colorWidget->generate();
+	merge(image.unsafe_get_canvas(),*layers);
+	emit newImage(ImageData(std::move(image),layers));
 }
 
 void SquigglesWidget::resetColors()

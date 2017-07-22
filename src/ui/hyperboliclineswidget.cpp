@@ -22,8 +22,12 @@
 #include "hyperbolic_symmetry_chooser.hpp"
 #include "imagedata.hpp"
 #include "inputwidgets.hpp"
-#include "hyperboliclineswidget.hpp"
+#include "genwidgets.hpp"
 #include "lib/generators.hpp"
+#include "lib/layer.hpp"
+
+using std::shared_ptr;
+using std::vector;
 
 HyperbolicLinesWidget::HyperbolicLinesWidget()
 {
@@ -55,18 +59,16 @@ HyperbolicLinesWidget::HyperbolicLinesWidget()
 			(float)(5*th*th),
 			(float)(spinSharpness->value()),
 			comboModel.value()};
-		grids.resize(spinColors->value());
+		auto layers = std::make_shared<vector<layer>>(spinColors->value());
 		#pragma omp parallel for
-		for(int i=0; i<grids.size(); i++)
-			grids[i]=paint_hyperbolic_lines(sg,params);
-		layers.resize(grids.size());
-		for(int i=0;i<grids.size();i++) {
-			layers[i].pixels=&(grids[i]);
-			layers[i].color=default_color_generator();
-			layers[i].pastel=false;
+		for(int i=0;i<layers->size();i++) {
+			(*layers)[i].pixels=std::make_shared<canvas<uint8_t>>
+				(paint_hyperbolic_lines(sg,params));
+			(*layers)[i].color=default_color_generator();
+			(*layers)[i].pastel=false;
 		}
 		canvas<color_t> img(spinSize->value(),spinSize->value());
-		merge(img,layers);
-		return img;
-	},&layers);
+		merge(img,*layers);
+		return ImageData(std::move(img),std::move(layers));
+	});
 }

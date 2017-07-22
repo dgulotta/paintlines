@@ -55,12 +55,11 @@ struct ImageData
 {
 	ImageData() : layers(nullptr), original(true) {}
 	template<typename U>
-	explicit ImageData(U &&c, const std::vector<layer> *l=nullptr,
+	explicit ImageData(U &&c, std::shared_ptr<const std::vector<layer>> l=nullptr,
 		bool o=true) : img(std::forward<U>(c)), layers(l), original(o) {}
 	CanvasView<color_t> img;
-	const std::vector<layer> *layers;
+	std::shared_ptr<const std::vector<layer>> layers;
 	bool original;
-	// layers should probably also have shared ownership
 };
 
 #endif

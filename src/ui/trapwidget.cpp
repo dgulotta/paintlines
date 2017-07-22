@@ -31,9 +31,7 @@ TrapWidget::TrapWidget()
 	auto comboSymmetry = new SymmetryCombo;
 	layout()->addRow(tr("Symmetry"),comboSymmetry);
 	addGenerator("Draw",[=] () {
-		symmetric_canvas<color_t> img(spinSize->value(),comboSymmetry->group());
-		drawtrap(img);
-		return img;
+		return ImageData(drawtrap(spinSize->value(), comboSymmetry->group()));
 	});
 }
 
@@ -57,9 +55,8 @@ QuasiTrapWidget::QuasiTrapWidget()
 	comboType->addItems({"Trig","Polynomial"});
 	layout()->addRow(tr("Type"),comboType);
 	addGenerator("Draw",[=] () {
-		auto img=canvas<color_t>(spinWidth->value(),spinHeight->value());
 		auto fn = comboType->currentIndex() ? drawquasitrap_poly : drawquasitrap;
-		fn(img,comboSymmetry.value(),spinQuasiperiod->value());
-		return img;
+		return ImageData(fn(spinWidth->value(), spinHeight->value(),
+			comboSymmetry.value(), spinQuasiperiod->value()));
 	});
 }

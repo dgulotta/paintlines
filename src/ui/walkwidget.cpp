@@ -25,21 +25,26 @@
 
 WalkWidget::WalkWidget()
 {
-	auto ht = new SizeSpin(1);
-	layout()->addRow("Height",ht);
 	auto wd = new SizeSpin(1);
 	layout()->addRow("Width",wd);
+	auto ht = new SizeSpin(1);
+	layout()->addRow("Height",ht);
 	auto ba = new QCheckBox("Balanced");
 	ba->setChecked(true);
 	layout()->addRow(ba);
+	auto ti = new QCheckBox("Tiled");
+	ti->setChecked(true);
+	layout()->addRow(ti);
 	auto wf = new QComboBox;
 	wf->addItem("Area");
 	wf->addItem("Length");
 	layout()->addRow("Mode",wf);
-	addGenerator("Draw (tiled)",[=] () {
-		return draw_walk(wd->value(),ht->value(),ba->isChecked(),(walk_fill)wf->currentIndex());
-	});
-	addGenerator("Draw (not tiled)",[=] () {
-		return draw_walk2(wd->value(),ht->value(),ba->isChecked(),(walk_fill)wf->currentIndex());
+	addGenerator("Draw",[=] () {
+		if(ti->isChecked())
+			return ImageData(draw_walk(wd->value(), ht->value(),
+				ba->isChecked(), (walk_fill) wf->currentIndex()));
+		else
+			return ImageData(draw_walk2(wd->value(), ht->value(),
+				ba->isChecked(), (walk_fill) wf->currentIndex()));
 	});
 }

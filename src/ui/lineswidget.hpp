@@ -75,8 +75,6 @@ protected:
 	SymmetryCombo *comboSymmetry;
 	std::vector<PaintRuleWidget *> rules;
 	RandomColorWidget *colorWidget;
-	std::vector<symmetric_canvas<uint8_t>> grids;
-	std::vector<layer> layers;
 };
 
 #endif

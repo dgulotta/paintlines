@@ -37,6 +37,13 @@ public:
 	HyperbolicCloudsWidget();
 };
 
+class HyperbolicLinesWidget : public ImageGeneratorWidget
+{
+	Q_OBJECT;
+public:
+	HyperbolicLinesWidget();
+};
+
 class TrapWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT

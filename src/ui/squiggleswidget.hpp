@@ -52,8 +52,7 @@ protected:
 	QDoubleSpinBox *spinSharpness;
 	RandomColorWidget *colorWidget;
 	QPushButton *newColorButton;
-	std::vector<symmetric_canvas<uint8_t>> grids;
-	std::vector<layer> layers;
+	std::shared_ptr<std::vector<layer>> layers;
 };
 
 #endif

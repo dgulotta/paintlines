@@ -23,7 +23,6 @@
 #include "cawidget.hpp"
 #include "genwidgets.hpp"
 #include "loaderwidget.hpp"
-#include "hyperboliclineswidget.hpp"
 #include "imagedata.hpp"
 #include "lineswidget.hpp"
 #include "squiggleswidget.hpp"

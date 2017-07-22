@@ -46,8 +46,8 @@ CloudsWidget::CloudsWidget()
 	DataComboAdapter<clouds_randfunc> rnd(randfuncs);
 	layout()->addRow("Distribution",rnd.box());
 	addGenerator("Draw",[=] () {
-		return paint_clouds(sz->value(),sym->group(),col1->color(),
-			col2->color(),col3->color(),rnd.value());
+		return ImageData(paint_clouds(sz->value(),sym->group(),col1->color(),
+			col2->color(),col3->color(),rnd.value()));
 	});
 }
 
@@ -68,7 +68,7 @@ HyperbolicCloudsWidget::HyperbolicCloudsWidget()
 	DataComboAdapter<clouds_randfunc> rnd(randfuncs);
 	layout()->addRow("Distribution",rnd.box());
 	addGenerator("Draw",[=] () {
-		return paint_hyperbolic_clouds(sz->value(),sym->domain(),pt.value(),
-			col1->color(),col2->color(),col3->color(),rnd.value());
+		return ImageData(paint_hyperbolic_clouds(sz->value(),sym->domain(),
+			pt.value(),col1->color(),col2->color(),col3->color(),rnd.value()));
 	});
 }

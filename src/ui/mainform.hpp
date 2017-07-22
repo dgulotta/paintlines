@@ -21,6 +21,7 @@
 #ifndef _MAINFORM_H
 #define _MAINFORM_H
 
+#include <memory>
 #include <vector>
 #include <QImage>
 #include <QLabel>
@@ -58,7 +59,7 @@ signals:
 	void enableSaveLayers(bool);
 private:
 	void recomputeTiling();
-	const std::vector<layer> *layers;
+	std::shared_ptr<const std::vector<layer>> layers;
 	QPixmap pix;
 	QImage img;
 	bool imageIsTileable;

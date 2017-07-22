@@ -37,8 +37,8 @@ QuasiStripesWidget::QuasiStripesWidget()
 	alpha->setValue(1.);
 	layout()->addRow("Alpha",alpha);
 	addGenerator("Draw",[=] () {
-		return paint_quasiperiodic_stripes(sz->value(),qsz->value(),
-			alpha->value());
+		return ImageData(paint_quasiperiodic_stripes(sz->value(),qsz->value(),
+			alpha->value()));
 	});
 }
 
