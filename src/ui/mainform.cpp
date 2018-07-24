@@ -64,6 +64,9 @@ MainForm::MainForm()
 	QAction *actionTile = menuView->addAction(tr("&Tile"));
 	addDesign("Cellular Automata",new CAWidget);
 	addDesign("Clouds",new CloudsWidget);
+#ifdef FFTWPROGS
+	addDesign("Clusters",new ClustersWidget);
+#endif
 	addDesign("Hyperbolic Clouds",new HyperbolicCloudsWidget);
 	addDesign("Hyperbolic Lines",new HyperbolicLinesWidget);
 	loader = new LoaderWidget;

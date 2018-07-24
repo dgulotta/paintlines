@@ -16,6 +16,7 @@
 .moc
 .obj
 Makefile
+.qmake.stash
 
 # Executables
 /lines

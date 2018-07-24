@@ -74,6 +74,13 @@ public:
 	StripesWidget();
 };
 
+class ClustersWidget : public ImageGeneratorWidget
+{
+	Q_OBJECT
+public:
+	ClustersWidget();
+};
+
 class QuasiStripesWidget : public ImageGeneratorWidget
 {
 	Q_OBJECT
