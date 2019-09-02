@@ -34,7 +34,6 @@ HyperbolicLinesWidget::HyperbolicLinesWidget()
 	EnumComboAdapter<projtype> comboModel;
 	layout()->addRow(tr("Model"),comboModel.box());
 	auto chooser = new HyperbolicSymmetryChooser;
-	chooser->addDefaultItems();
 	layout()->addRow(chooser);
 	EnumComboAdapter<flip_type> comboSubset;
 	layout()->addRow(tr("Subset"),comboSubset.box());
