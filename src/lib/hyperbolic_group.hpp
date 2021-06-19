@@ -78,6 +78,7 @@ public:
 	int rot180s() const;
 	bool orientable() const;
 	int loops() const;
+	int free_parameters() const;
 	const std::vector<side> & get_edges() const { return edges; }
 	fundamental_domain domain(const std::vector<int> &rotations) const;
 private:

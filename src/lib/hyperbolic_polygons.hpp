@@ -36,6 +36,7 @@ public:
 	auto num_sides() const { return dirs.size(); }
 	double cosh_radius() const { return rcosh; }
 	double sinh_radius() const { return rsinh; }
+	static hyperbolic_polygon regular_polygon(int sides, double a);
 private:
 	std::vector<planar_coord> dirs;
 	double rcosh;

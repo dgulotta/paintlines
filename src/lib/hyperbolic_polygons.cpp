@@ -66,3 +66,14 @@ hyperbolic_polygon::hyperbolic_polygon(double a1, double a2, double a3, double a
 	double s1d=2*c1*sqrt(1-c1*c1), s2d=2*c2*sqrt(1-c2*c2), s4d=2*c4*sqrt(1-c4*c4);
 	dirs = {{c1d,s1d},{c1d*c2d-s1d*s2d,c1d*s2d+s1d*c2d},{c4d,-s4d},{1,0}};
 }
+
+hyperbolic_polygon hyperbolic_polygon::regular_polygon(int num_sides, double a)
+{
+	hyperbolic_polygon p;
+	p.rcosh = cos(a/2) / sin(M_PI/num_sides);
+	p.rsinh = sqrt(p.rcosh * p.rcosh - 1);
+	double q = 2 * M_PI / num_sides;
+	for(int n = 0; n < num_sides; n++)
+		p.dirs.push_back(planar_coord(cos(n*q),sin(n*q)));
+	return p;
+}

@@ -257,6 +257,14 @@ int fundamental_domain_family::loops() const
 	return 1+e/2-v-mirrors.size();
 }
 
+int fundamental_domain_family::free_parameters() const
+{
+	int n = rotations.size();
+	for(auto &m: mirrors)
+		n += m.size();
+	return n;
+}
+
 struct rational
 {
 	rational(int n, int d) : num(n), denom(d) {}
@@ -269,7 +277,7 @@ struct rational
 
 fundamental_domain fundamental_domain_family::domain(const vector<int> &rots) const
 {
-	if(edges.size()!=3&&edges.size()!=4)
+	if(!(edges.size()==3||edges.size()==4||free_parameters()==1))
 		throw std::logic_error("Not implemented");
 	vector<double> angles(edges.size());
 	auto it = rots.cbegin();
@@ -293,9 +301,13 @@ fundamental_domain fundamental_domain_family::domain(const vector<int> &rots) co
 		}
 	if(ext_angle_sum<=2)
 		throw std::domain_error("Bad parameters for hyperbolic group");
-	hyperbolic_polygon p=(edges.size()==3)?
-		hyperbolic_polygon(angles[0],angles[1],angles[2]):
-		hyperbolic_polygon(angles[0],angles[1],angles[2],angles[3]);
+	hyperbolic_polygon p;
+	if (edges.size()==3)
+		p = hyperbolic_polygon(angles[0],angles[1],angles[2]);
+	else if (edges.size()==4)
+		p = hyperbolic_polygon(angles[0],angles[1],angles[2],angles[3]);
+	else
+		p = hyperbolic_polygon::regular_polygon(edges.size(), angles[0]);
 	vector<generator> gens;
 	for(int i=0;i<edges.size();i++)
 		gens.emplace_back(p.trans(i,edges[i].opposite,edges[i].flip),p.edge(i));
