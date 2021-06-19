@@ -1,27 +1,21 @@
 sudo: required
-dist: trusty
+dist: bionic
 language: cpp
 compiler:
     - g++
     - clang
 
 before_install:
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-  - sudo add-apt-repository ppa:beineri/opt-qt562-trusty -y
   - sudo apt-get update -qq
   - sudo apt-get install pkg-config -y
   - sudo apt-get install libfftw3-dev -y
   - sudo apt-get install libgraphicsmagick++1-dev -y
   - sudo apt-get install libluajit-5.1-dev -y
-  - sudo apt-get install libgl1-mesa-dev -y
-  - sudo apt-get install qt56base -y
-  - if [[ $CXX == "g++" ]]; then export CVER=4.9; fi
-  - if [[ $CXX == "clang++" ]]; then export CVER=3.5; export QMSPEC="-spec linux-clang"; sudo apt-get install libstdc++-4.9-dev -y; fi
-  - sudo apt-get install $CC-$CVER $CXX-$CVER -y;
-  - sudo update-alternatives --install /usr/bin/$CC $CC /usr/bin/$CC-$CVER 60 --slave /usr/bin/$CXX $CXX /usr/bin/$CXX-$CVER
+  - sudo apt-get install qt5-default -y
+  - if [[ $CXX == "clang++" ]]; then export QMSPEC="-spec linux-clang"; fi
 
 install:
-  - /opt/qt56/bin/qmake $QMSPEC lines.pro
+  - qmake $QMSPEC lines.pro
 
 script:
   - make
