@@ -21,6 +21,7 @@
 #ifndef _PAINTLINES_H
 #define _PAINTLINES_H
 
+#include <cstdint>
 #include "symmetric_canvas.hpp"
 
 void generate_smootharc(symmetric_canvas<uint8_t> &g);
