@@ -27,23 +27,33 @@ using std::placeholders::_1;
 
 const double ZMAX = 50.;
 
+vector<hyperbolic_coord> fd_corners(const vector<generator> &gens) {
+	vector<hyperbolic_coord> c;
+	c.reserve(gens.size());
+	for(int i=0;i<gens.size();i++) {
+		c.push_back(normalize(cross(gens[i].edge,gens[(i+1)%gens.size()].edge)));
+	}
+	return c;
+}
+
 hyperbolic_symmetry_group::hyperbolic_symmetry_group(const vector<generator> &gens,flip_type f)
 : generators(gens)
 {
 	vector<hyperbolic_transformation> queue;
+	vector<hyperbolic_coord> seen;
+	const auto corners = fd_corners(gens);
+	const hyperbolic_coord int_pt(0,0,1);
 	queue.push_back(hyperbolic_transformation::identity);
 	transformations.push_back(hyperbolic_transformation::identity);
-	hyperbolic_coord ip = normalize(hyperbolic_coord(1,2,100));
+	seen.push_back(int_pt);
 	for(int i=0;i<queue.size();i++) {
-		for(auto it = generators.begin();it!=generators.end();++it) {
-			hyperbolic_transformation t = queue[i]*(it->trans);
-			hyperbolic_coord p=t.inverse(ip);
-			//if(p.z>ZMAX) continue;
-			//if(any_of(generators.begin(),generators.end(),[&](generator &g) { return abs(t(g.edge).z)>ZMAX;})) continue;
-			if(it->inside(p)) continue;
-			if(abs(t.zz)>ZMAX) continue;
-			if(!all_of(generators.begin(),it,bind(&generator::inside,_1,p))) continue;
+		for(auto &gen: generators) {
+			hyperbolic_transformation t = queue[i]*gen.trans;
+			if (all_of(corners.begin(),corners.end(),[&](const hyperbolic_coord &c) { return abs(t(c).z) > ZMAX; })) continue;
+			auto ip = t(int_pt);
+			if (any_of(seen.begin(),seen.end(),[&](const hyperbolic_coord &c) { return c*ip < 1.000001; })) continue;
 			queue.push_back(t);
+			seen.push_back(ip);
 			if(f==flip_type::ALL||
 					(f==flip_type::ALTERNATING&&!t.is_flip())||
 					(f==flip_type::RANDOM&&random_bool()))
