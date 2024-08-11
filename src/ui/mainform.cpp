@@ -157,7 +157,7 @@ void ImageWidget::setImage(const ImageData &data)
 	img = makeImage(data.img);
 	pix = QPixmap::fromImage(img);
 	QPalette pal(palette());
-	pal.setBrush(QPalette::Background,pix);
+	pal.setBrush(QPalette::Window,pix);
 	setPalette(pal);
 	imageIsTileable = (bool)(data.img.wrap_view);
 	layers=data.layers;

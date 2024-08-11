@@ -43,7 +43,7 @@ HyperbolicSymmetryItem::HyperbolicSymmetryItem(const fundamental_domain_family &
 		spin->setMinimum(1+2/i);
 		spin->setValue(defaults[idx]);
 		layout->addWidget(spin);
-		name+='a'+(char)idx;
+		name+=QChar('a'+(char)idx);
 		++idx;
 	}
 	for(int i=fdf.rot180s();--i>=0;)
@@ -56,7 +56,7 @@ HyperbolicSymmetryItem::HyperbolicSymmetryItem(const fundamental_domain_family &
 			spin->setMinimum(1+1/i);
 			spin->setValue(defaults[idx]);
 			layout->addWidget(spin);
-			name+='a'+(char)idx;
+			name+=QChar('a'+(char)idx);
 			++idx;
 		}
 	}

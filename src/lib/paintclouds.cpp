@@ -18,6 +18,7 @@
  *   02110-1301  USA                                                       *
  ***************************************************************************/
 
+#include <stdexcept>
 #include <tuple>
 #include "paintclouds.hpp"
 #include "randgen.hpp"

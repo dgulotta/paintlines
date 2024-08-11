@@ -7,7 +7,7 @@ Installation instructions
 =========================
 Paintlines requires the following software:
 * A C++ compiler that supports C++14 and OpenMP (gcc>=4.9 and clang>=3.7 should work)
-* Qt 5.4 or newer
+* Qt 6
 
 The following software is optional:
 * pkg-config

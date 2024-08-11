@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <stdexcept>
 #include "randgen.hpp"
 #include "hyperbolic_group.hpp"
 
